@@ -14,7 +14,7 @@
         android:label="@string/app_name" >
         <activity
             android:label="@string/app_name"
-            android:name=".UniversalImageLoaderActivity" >
+            android:name="com.nostra13.universalimageloader.UniversalImageLoaderActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

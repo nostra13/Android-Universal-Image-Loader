@@ -1,4 +1,6 @@
-package com.nostra13.test.imageloader;
+package com.nostra13.universalimageloader;
+
+import com.nostra13.test.imageloader.R;
 
 /**
  * Constants

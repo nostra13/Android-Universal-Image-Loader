@@ -1,4 +1,4 @@
-package com.nostra13.test.imageloader;
+package com.nostra13.universalimageloader;
 
 /**
  * Listener for image loading process

@@ -1,4 +1,4 @@
-package com.nostra13.test.imageloader;
+package com.nostra13.universalimageloader;
 
 import android.widget.ImageView;
 import android.widget.ListView;

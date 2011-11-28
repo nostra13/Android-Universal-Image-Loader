@@ -1,4 +1,4 @@
-package com.nostra13.test.imageloader;
+package com.nostra13.universalimageloader;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
