@@ -7,6 +7,7 @@
         android:id="@+id/image"
         android:layout_width="50dip"
         android:layout_height="50dip"
+        android:adjustViewBounds="true"
         android:scaleType="centerCrop" />
 
     <TextView

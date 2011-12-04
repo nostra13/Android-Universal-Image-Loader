@@ -6,10 +6,12 @@ import android.widget.ListView;
 /**
  * Contains options for image display. Defines:
  * <ul>
- * <li>whether {@link android.widget.ImageView ImageView} will be reset before image loading</li>
- * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading</li>
+ * <li>whether {@link ImageView} will be reset before image loading</li>
+ * <li>whether stub image will be displayed in {@link ImageView} during image loading</li>
  * <li>whether loaded image will be cached in memory</li>
  * <li>whether loaded image will be cached on disc</li>
+ * <li>width and/or height of {@link ImageView} which will be used for improvement of image caching in memory (by image
+ * size reducing)</li>
  * </ul>
  * 
  * You can create instance:
@@ -28,11 +30,16 @@ public final class DisplayImageOptions {
 	private final boolean cacheImageInMemory;
 	private final boolean cacheImageOnDisc;
 
-	private DisplayImageOptions(boolean resetViewBeforeLoading, boolean showStubImageDuringLoading, boolean cacheImageInMemory, boolean cacheImageOnDisc) {
-		this.resetViewBeforeLoading = resetViewBeforeLoading;
-		this.showStubImageDuringLoading = showStubImageDuringLoading;
-		this.cacheImageInMemory = cacheImageInMemory;
-		this.cacheImageOnDisc = cacheImageOnDisc;
+	private final int viewWidth;
+	private final int viewHeight;
+
+	private DisplayImageOptions(Builder builder) {
+		resetViewBeforeLoading = builder.resetViewBeforeLoading;
+		showStubImageDuringLoading = builder.showStubImageDuringLoading;
+		cacheImageInMemory = builder.cacheImageInMemory;
+		cacheImageOnDisc = builder.cacheImageOnDisc;
+		viewWidth = builder.viewWidth;
+		viewHeight = builder.viewHeight;
 	}
 
 	public boolean isResetViewBeforeLoading() {
@@ -51,11 +58,21 @@ public final class DisplayImageOptions {
 		return cacheImageOnDisc;
 	}
 
+	public int getViewWidth() {
+		return viewWidth;
+	}
+
+	public int getViewHeight() {
+		return viewHeight;
+	}
+
 	public static class Builder {
 		private boolean resetViewBeforeLoading = false;
 		private boolean showStubImageDuringLoading = false;
 		private boolean cacheImageInMemory = false;
 		private boolean cacheImageOnDisc = false;
+		private int viewWidth = 0;
+		private int viewHeight = 0;
 
 		public Builder resetViewBeforeLoading() {
 			resetViewBeforeLoading = true;
@@ -77,10 +94,19 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
-		public DisplayImageOptions build() {
-			return new DisplayImageOptions(resetViewBeforeLoading, showStubImageDuringLoading, cacheImageInMemory, cacheImageOnDisc);
+		public Builder viewWidth(int viewWidth) {
+			this.viewWidth = viewWidth;
+			return this;
 		}
 
+		public Builder viewHeight(int viewHeight) {
+			this.viewHeight = viewHeight;
+			return this;
+		}
+
+		public DisplayImageOptions build() {
+			return new DisplayImageOptions(this);
+		}
 	}
 
 	/**
@@ -93,7 +119,8 @@ public final class DisplayImageOptions {
 	 * </ul>
 	 */
 	public static DisplayImageOptions createForListView() {
-		return new DisplayImageOptions(true, true, true, true);
+		Builder builder = new Builder().resetViewBeforeLoading().showStubImageWhileLoading().cacheImageInMemory().cacheImageOnDisc();
+		return builder.build();
 	}
 
 	/**
@@ -108,6 +135,6 @@ public final class DisplayImageOptions {
 	 * These option are appropriate for simple single-use image (from drawables or from internet) displaying.
 	 */
 	public static DisplayImageOptions createForSingleLoad() {
-		return new DisplayImageOptions(false, false, false, false);
+		return new Builder().build();
 	}
 }

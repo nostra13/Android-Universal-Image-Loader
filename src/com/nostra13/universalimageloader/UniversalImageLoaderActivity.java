@@ -1,9 +1,11 @@
 package com.nostra13.universalimageloader;
 
-import com.nostra13.test.imageloader.R;
-
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -11,15 +13,41 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nostra13.test.imageloader.R;
+
 public class UniversalImageLoaderActivity extends ListActivity {
+
+	public ImageLoader imageLoader;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		imageLoader = ImageLoader.getInstance(UniversalImageLoaderActivity.this);
+
 		ListView listView = getListView();
 		listView.setAdapter(new ItemAdapter());
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.item_clear_memory_cache:
+				imageLoader.clearMemoryCache();
+				return true;
+			case R.id.item_clear_disc_cache:
+				imageLoader.clearDiscCache();
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	class ItemAdapter extends BaseAdapter {
@@ -82,12 +110,6 @@ public class UniversalImageLoaderActivity extends ListActivity {
 				"http://a1.twimg.com/profile_images/645523828/OT_icon_090918_android.png", "http://a1.twimg.com/profile_images/957149154/twitterhalf.jpg",
 				"http://a1.twimg.com/profile_images/349012784/android_logo_small.jpg"};
 
-		public ImageLoader imageLoader;
-
-		public ItemAdapter() {
-			imageLoader = ImageLoader.getInstance(UniversalImageLoaderActivity.this);
-		}
-
 		public int getCount() {
 			return mUrls.length;
 		}
@@ -109,7 +131,7 @@ public class UniversalImageLoaderActivity extends ListActivity {
 			View view = convertView;
 			final ViewHolder holder;
 			if (convertView == null) {
-				view = getLayoutInflater().inflate(R.layout.item, null);
+				view = getLayoutInflater().inflate(R.layout.list_item, null);
 				holder = new ViewHolder();
 				holder.text = (TextView) view.findViewById(R.id.text);
 				holder.image = (ImageView) view.findViewById(R.id.image);
@@ -118,7 +140,7 @@ public class UniversalImageLoaderActivity extends ListActivity {
 				holder = (ViewHolder) view.getTag();
 
 			holder.text.setText("Item " + position);
-			DisplayImageOptions options = new DisplayImageOptions.Builder().resetViewBeforeLoading().cacheImageInMemory().showStubImageWhileLoading().build();
+			DisplayImageOptions options = DisplayImageOptions.createForListView();
 			imageLoader.displayImage(mUrls[position], holder.image, options, new ImageLoadingListener() {
 				@Override
 				public void onLoadStarted() {

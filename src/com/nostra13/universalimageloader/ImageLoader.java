@@ -1,20 +1,23 @@
 package com.nostra13.universalimageloader;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.util.Stack;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
-import java.io.*;
-import java.net.URL;
-import java.util.Stack;
-
 /**
- * 
+ * Singltone for image loading and displaying at {@link ImageView ImageViews}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
@@ -22,30 +25,24 @@ public final class ImageLoader {
 
 	public static final String TAG = ImageLoader.class.getSimpleName();
 
-	private final int MAX_IMAGE_DIMENSION_WIDTH;
-	private final int MAX_IMAGE_DIMENSION_HEIGHT;
-
-	private final ImageCache bitmapCache = new ImageCache(2000000);
+	private final ImageCache bitmapCache = new ImageCache(Constants.MEMORY_CACHE_SIZE);
 	private final File cacheDir;
 
 	private final PhotosQueue photosQueue = new PhotosQueue();
 	private final PhotosLoader photoLoaderThread = new PhotosLoader();
 
-	private static ImageLoader INSTANCE = null;
+	private static ImageLoader instance = null;
 
+	/** Returns singletone class instance */
 	public static ImageLoader getInstance(Context context) {
-		if (INSTANCE == null) {
-			INSTANCE = new ImageLoader(context);
+		if (instance == null) {
+			instance = new ImageLoader(context);
 		}
-		return INSTANCE;
+		return instance;
 	}
 
 	private ImageLoader(Context context) {
-		MAX_IMAGE_DIMENSION_WIDTH = (int) (context.getResources().getDisplayMetrics().widthPixels);
-		MAX_IMAGE_DIMENSION_HEIGHT = (int) (context.getResources().getDisplayMetrics().heightPixels);
-
-		// Make the background thread low priority. This way it will not affect
-		// the UI performance
+		// Make the background thread low priority. This way it will not affect the UI performance
 		photoLoaderThread.setPriority(Thread.NORM_PRIORITY - 1);
 
 		// Find the directory to save cached images
@@ -182,9 +179,10 @@ public final class ImageLoader {
 		// try to load from SD cache
 		try {
 			if (f.exists()) {
-				Bitmap b = decodeFile(f, targetImageSize);
-				if (b != null)
+				Bitmap b = ImageDecoder.decodeFile(f.toURL(), targetImageSize);
+				if (b != null) {
 					return b;
+				}
 			}
 		} catch (IOException e) {
 			// no image in SD cache
@@ -194,92 +192,24 @@ public final class ImageLoader {
 		// from web
 		try {
 			Bitmap bitmap = null;
+			URL imageUrlForDecoding = null;
 			if (cacheImageOnDisc) {
 				InputStream is = new URL(imageUrl).openStream();
 				OutputStream os = new FileOutputStream(f);
 				FileUtils.copyStream(is, os);
 				is.close();
 				os.close();
-				bitmap = decodeFile(f, targetImageSize);
+				imageUrlForDecoding = f.toURL();
 			} else {
-				bitmap = decodeUrlFile(new URL(imageUrl), targetImageSize);
+				imageUrlForDecoding = new URL(imageUrl);
 			}
+
+			bitmap = ImageDecoder.decodeFile(imageUrlForDecoding, targetImageSize);
 			return bitmap;
 		} catch (Exception ex) {
-			Log.e(TAG, "Exception while loading bitmap from URL=" + imageUrl + " : " + ex.getMessage(), ex);
+			Log.e(TAG, String.format("Exception while loading bitmap from URL=%s : %s", imageUrl, ex.getMessage()), ex);
 			return null;
 		}
-	}
-
-	// decodes image and scales it to reduce memory consumption
-	private Bitmap decodeFile(File imageFile, ImageSize targetImageSize) throws IOException {
-		FileInputStream is = new FileInputStream(imageFile);
-		Options decodeOptions = getBitmapOptionsForImageDecoding(is, targetImageSize);
-		is.close();
-
-		is = new FileInputStream(imageFile);
-		Bitmap result = decodeImageStream(is, decodeOptions);
-		is.close();
-
-		return result;
-	}
-
-	private Bitmap decodeUrlFile(URL imageUrl, ImageSize targetImageSize) throws IOException {
-		InputStream is = imageUrl.openStream();
-		Options decodeOptions = getBitmapOptionsForImageDecoding(is, targetImageSize);
-		is.close();
-
-		is = imageUrl.openStream();
-		Bitmap result = decodeImageStream(is, decodeOptions);
-		is.close();
-
-		return result;
-	}
-
-	private Options getBitmapOptionsForImageDecoding(InputStream imageStream, ImageSize targetImageSize) {
-		Options options = new Options();
-		options.inSampleSize = computeImageScale(imageStream, targetImageSize);
-		return options;
-	}
-
-	private int computeImageScale(InputStream imageStream, ImageSize targetImageSize) {
-		int width = targetImageSize.width;
-		int height = targetImageSize.height;
-
-		if (width < 0 && height < 0) {
-			width = MAX_IMAGE_DIMENSION_WIDTH;
-			height = MAX_IMAGE_DIMENSION_HEIGHT;
-		}
-
-		// decode image size
-		Options options = new Options();
-		options.inJustDecodeBounds = true;
-		BitmapFactory.decodeStream(imageStream, null, options);
-
-		// Find the correct scale value. It should be the power of 2.
-		int width_tmp = options.outWidth;
-		int height_tmp = options.outHeight;
-
-		int scale = 1;
-		while (true) {
-			if (width_tmp / 2 < width || height_tmp / 2 < height)
-				break;
-			width_tmp /= 2;
-			height_tmp /= 2;
-			scale *= 2;
-		}
-
-		return scale;
-	}
-
-	private Bitmap decodeImageStream(InputStream imageStream, Options decodeOptions) {
-		Bitmap bitmap = null;
-		try {
-			bitmap = BitmapFactory.decodeStream(imageStream, null, decodeOptions);
-		} catch (Throwable th) {
-			Log.e(TAG, "OUT OF MEMMORY: " + th.getMessage());
-		}
-		return bitmap;
 	}
 
 	public void stopThread() {
@@ -294,34 +224,44 @@ public final class ImageLoader {
 	 * Get device screen dimensions.
 	 */
 	private ImageSize getImageSizeScaleTo(ImageView imageView) {
-		// TypedArray a = imageView.getContext().obtainStyledAttributes(R.styleable.ImageView);
-		// int width = a.getDimensionPixelSize(R.styleable.ImageView_android_maxWidth, -1);
-		// int height = a.getDimensionPixelSize(R.styleable.ImageView_android_maxHeight, -1);
-		// a.recycle();
-
 		int width = -1;
 		int height = -1;
 
+		// Check maxWidth and maxHeight parameters
+		try {
+			Field maxWidthField = ImageView.class.getDeclaredField("mMaxWidth");
+			Field maxHeightField = ImageView.class.getDeclaredField("mMaxHeight");
+			maxWidthField.setAccessible(true);
+			maxHeightField.setAccessible(true);
+			int maxWidth = (Integer) maxWidthField.get(imageView);
+			int maxHeight = (Integer) maxHeightField.get(imageView);
+
+			if (maxWidth >= 0 && maxWidth < Integer.MAX_VALUE) {
+				width = maxWidth;
+			}
+			if (maxHeight >= 0 && maxHeight < Integer.MAX_VALUE) {
+				height = maxHeight;
+			}
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+
 		if (width < 0 && height < 0) {
+			// Get layout width and height parameters
 			LayoutParams params = imageView.getLayoutParams();
 			width = params.width;
 			height = params.height;
-			if (width < 0 && height < 0) {
-//				width = height = MAX_IMAGE_DIMENSION;
-				width = MAX_IMAGE_DIMENSION_WIDTH;
-				height = MAX_IMAGE_DIMENSION_HEIGHT;
-			}
 		}
 		return new ImageSize(width, height);
 	}
 
-	public void clearCache() {
-		// clear memory cache
+	public void clearMemoryCache() {
 		synchronized (bitmapCache) {
 			bitmapCache.clear();
 		}
+	}
 
-		// clear SD cache
+	public void clearDiscCache() {
 		File[] files = cacheDir.listFiles();
 		for (File f : files)
 			f.delete();
@@ -443,7 +383,7 @@ public final class ImageLoader {
 		}
 	}
 
-	private class ImageSize {
+	class ImageSize {
 		int width;
 		int height;
 
