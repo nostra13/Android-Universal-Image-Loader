@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nostra13.test.imageloader.R;
 import com.nostra13.universalimageloader.imageloader.DisplayImageOptions;
 import com.nostra13.universalimageloader.imageloader.ImageLoader;
 import com.nostra13.universalimageloader.imageloader.ImageLoadingListener;

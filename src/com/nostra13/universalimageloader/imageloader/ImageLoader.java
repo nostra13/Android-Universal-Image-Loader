@@ -9,18 +9,18 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Stack;
 
-import com.nostra13.universalimageloader.Constants;
-import com.nostra13.universalimageloader.cache.Cache;
-import com.nostra13.universalimageloader.cache.ImageCache;
-import com.nostra13.universalimageloader.utils.FileUtils;
-import com.nostra13.universalimageloader.utils.StorageUtils;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
+
+import com.nostra13.universalimageloader.Constants;
+import com.nostra13.universalimageloader.cache.Cache;
+import com.nostra13.universalimageloader.cache.ImageCache;
+import com.nostra13.universalimageloader.utils.FileUtils;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 
 /**
  * Singltone for image loading and displaying at {@link ImageView ImageViews}

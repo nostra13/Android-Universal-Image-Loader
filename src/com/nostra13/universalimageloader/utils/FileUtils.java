@@ -1,9 +1,9 @@
 package com.nostra13.universalimageloader.utils;
 
-import android.util.Log;
-
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import android.util.Log;
 
 /**
  * Provides operations with files
