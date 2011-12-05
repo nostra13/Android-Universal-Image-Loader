@@ -36,6 +36,7 @@ public final class ImageLoader {
 
 	private final PhotosQueue photosQueue = new PhotosQueue();
 	private final PhotosLoader photoLoaderThread = new PhotosLoader();
+	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createForListView();
 
 	private static ImageLoader instance = null;
 
@@ -60,19 +61,19 @@ public final class ImageLoader {
 	 * appropriated for ListViews will be used}.
 	 * 
 	 * @param url
-	 *            Image URI (i.e. "http://site.com/image.png", "file://mnt/sdcard/image.png")
+	 *            Image URL (i.e. "http://site.com/image.png", "file://mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 */
 	public void displayImage(String url, ImageView imageView) {
-		displayImage(url, imageView, DisplayImageOptions.createForListView(), null);
+		displayImage(url, imageView, defaultOptions, null);
 	}
 
 	/**
 	 * Add display image task to queue. Image will be set to ImageView when it's turn.
 	 * 
 	 * @param url
-	 *            Image URI (i.e. "http://site.com/image.png", "file://mnt/sdcard/image.png")
+	 *            Image URL (i.e. "http://site.com/image.png", "file://mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param options
@@ -86,15 +87,15 @@ public final class ImageLoader {
 	 * Add display image task to queue. Image will be set to ImageView when it's turn.
 	 * 
 	 * @param url
-	 *            Image URI (i.e. "http://site.com/image.png", "file://mnt/sdcard/image.png")
+	 *            Image URL (i.e. "http://site.com/image.png", "file://mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param options
 	 *            {@link DisplayImageOptions Display options} for image displaying
 	 * @param listener
-	 *            {@link ImageLoadingListener Listener} for image loading process. Listener fire events only if there is
-	 *            no image for loading in memory cache. If there is image for loading in memory cache then image is
-	 *            displayed at ImageView but listener does not fire any event.
+	 *            {@link ImageLoadingListener Listener} for image loading process. Listener fires events only if there
+	 *            is no image for loading in memory cache. If there is image for loading in memory cache then image is
+	 *            displayed at ImageView but listener does not fire any event. Listener fires events on UI thread.
 	 */
 	public void displayImage(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
 		if (url == null || url.length() == 0) {
@@ -130,19 +131,18 @@ public final class ImageLoader {
 		// some old tasks in the queue. We need to discard them.
 		photosQueue.clean(photoToLoad.imageView);
 
-		// Make a two queues for split loading of cached on file system images and loading from web
-		// It will reduce the time of waiting to display cached images (they will be displayed first)
-		if (isCachedImage(photoToLoad.url)) {
-			synchronized (photosQueue.photosToLoadCached) {
-				photosQueue.photosToLoadCached.push(photoToLoad);
-			}
-		} else {
-			synchronized (photosQueue.photosToLoad) {
+		// If image was cached on disc we push load image task onto the top of the stack. 
+		// If not - we push load image task to the bottom of the stack.
+		// Images loaded from the top of the stack. So it will reduce the time of waiting 
+		// to display cached images (they will be displayed first)
+		boolean isCachedOnDisc = isCachedOnDisc(photoToLoad.url);
+		synchronized (photosQueue.photosToLoad) {
+			if (isCachedOnDisc) {
 				photosQueue.photosToLoad.push(photoToLoad);
+			} else {
+				photosQueue.photosToLoad.add(0, photoToLoad);
 			}
-		}
-		synchronized (photosQueue.lock) {
-			photosQueue.lock.notifyAll();
+			photosQueue.photosToLoad.notifyAll();
 		}
 
 		// Start thread if it's not started yet
@@ -151,7 +151,7 @@ public final class ImageLoader {
 		}
 	}
 
-	private boolean isCachedImage(String url) {
+	private boolean isCachedOnDisc(String url) {
 		boolean result = false;
 		File f = getLocalImageFile(url);
 
@@ -171,7 +171,7 @@ public final class ImageLoader {
 	private Bitmap getBitmap(String imageUrl, ImageSize targetImageSize, boolean cacheImageOnDisc) {
 		File f = getLocalImageFile(imageUrl);
 
-		// try to load from SD cache
+		// Try to load image from disc cache
 		try {
 			if (f.exists()) {
 				Bitmap b = ImageDecoder.decodeFile(f.toURL(), targetImageSize);
@@ -180,11 +180,10 @@ public final class ImageLoader {
 				}
 			}
 		} catch (IOException e) {
-			// no image in SD cache
-			// Do nothing
+			// There is no image in disc cache. Do nothing
 		}
 
-		// from web
+		// Load image from Web
 		Bitmap bitmap = null;
 		try {
 			URL imageUrlForDecoding = null;
@@ -276,26 +275,16 @@ public final class ImageLoader {
 		}
 	}
 
-	// stores list of photos to download
+	/** Stores list of images to download */
 	class PhotosQueue {
-		private Object lock = new Object();
 
 		private final Stack<PhotoToLoad> photosToLoad = new Stack<PhotoToLoad>();
-		private final Stack<PhotoToLoad> photosToLoadCached = new Stack<PhotoToLoad>();
 
-		// removes all instances of this ImageView
+		// Removes all instances of this ImageView
 		public void clean(ImageView image) {
 			for (int j = 0; j < photosToLoad.size();) {
 				if (photosToLoad.get(j).imageView == image) {
 					photosToLoad.remove(j);
-				} else {
-					++j;
-				}
-			}
-
-			for (int j = 0; j < photosToLoadCached.size();) {
-				if (photosToLoadCached.get(j).imageView == image) {
-					photosToLoadCached.remove(j);
 				} else {
 					++j;
 				}
@@ -310,17 +299,13 @@ public final class ImageLoader {
 				PhotoToLoad photoToLoad = null;
 				Bitmap bmp = null;
 				try {
-					// thread waits until there are any images to load in the
-					// queue
-					if (photosQueue.photosToLoad.isEmpty() && photosQueue.photosToLoadCached.isEmpty())
-						synchronized (photosQueue.lock) {
-							photosQueue.lock.wait();
+					// thread waits until there are any images to load in the queue
+					if (photosQueue.photosToLoad.isEmpty()) {
+						synchronized (photosQueue.photosToLoad) {
+							photosQueue.photosToLoad.wait();
 						}
-					if (!photosQueue.photosToLoadCached.isEmpty()) {
-						synchronized (photosQueue.photosToLoadCached) {
-							photoToLoad = photosQueue.photosToLoadCached.pop();
-						}
-					} else if (!photosQueue.photosToLoad.isEmpty()) {
+					}
+					if (!photosQueue.photosToLoad.isEmpty()) {
 						synchronized (photosQueue.photosToLoad) {
 							photoToLoad = photosQueue.photosToLoad.pop();
 						}
@@ -343,7 +328,7 @@ public final class ImageLoader {
 						break;
 					}
 				} catch (InterruptedException e) {
-					Log.e(TAG, "" + e.getMessage());
+					Log.e(TAG, e.getMessage(), e);
 				} finally {
 					if (photoToLoad != null) {
 						BitmapDisplayer bd = new BitmapDisplayer(photoToLoad, bmp);
@@ -370,6 +355,7 @@ public final class ImageLoader {
 
 			if (photoToLoad != null && tag != null && tag.equals(photoToLoad.url) && bitmap != null) {
 				photoToLoad.imageView.setImageBitmap(bitmap);
+
 				if (photoToLoad.listener != null) {
 					photoToLoad.listener.onLoadingComplete();
 				}
