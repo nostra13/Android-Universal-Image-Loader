@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Cache. Provides object references (not strong) storing.
+ * Cache. Provides object references (not strong) storing.<br />
+ * Not thread-safe.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @param <K>

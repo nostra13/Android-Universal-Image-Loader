@@ -6,6 +6,7 @@ import java.util.LinkedList;
 /**
  * Limited cache. Provides objects storing. Object has size ({@link #getSize(Object)}), size of all stored object will
  * not to exceed size limit ({@link #getSizeLimit()}).<br />
+ * Not thread-safe.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @param <K>
@@ -14,6 +15,8 @@ import java.util.LinkedList;
  *            value type
  */
 public abstract class LimitedCache<K, V> extends Cache<K, V> {
+
+	private int cacheSize = 0;
 
 	/**
 	 * Contains strong references to stored objects. Each next object is added first. If hard cache size will exceed
@@ -27,26 +30,19 @@ public abstract class LimitedCache<K, V> extends Cache<K, V> {
 		int sizeLimit = getSizeLimit();
 		// add to hard cache
 		if (valueSize < sizeLimit) {
-			while (getMapSize() + valueSize > sizeLimit) {
-				hardCache.removeLast();
+			while (cacheSize + valueSize > sizeLimit) {
+				cacheSize -= getSize(hardCache.removeLast());
 			}
 			hardCache.addFirst(value);
+			cacheSize += valueSize;
 		}
 		// add to soft cache
 		super.put(key, value);
 	}
 
-	// TODO : Reduce method calling by storing cache size as a class member
-	private int getMapSize() {
-		int size = 0;
-		for (V v : hardCache) {
-			size += getSize(v);
-		}
-		return size;
-	}
-
 	public void clear() {
 		hardCache.clear();
+		cacheSize = 0;
 		super.clear();
 	}
 

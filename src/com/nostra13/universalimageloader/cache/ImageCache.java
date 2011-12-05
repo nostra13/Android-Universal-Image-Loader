@@ -6,7 +6,8 @@ import java.lang.ref.WeakReference;
 import android.graphics.Bitmap;
 
 /**
- * Image cache limited by size. Contains Bitmaps.
+ * Image cache limited by size. Contains Bitmaps.<br />
+ * Not thread-safe.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
