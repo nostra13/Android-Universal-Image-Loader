@@ -1,9 +1,7 @@
-package com.nostra13.universalimageloader;
+package com.nostra13.universalimageloader.cache;
 
 import java.lang.ref.Reference;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Limited cache. Provides objects storing. Object has size ({@link #getSize(Object)}), size of all stored object will
@@ -15,7 +13,7 @@ import java.util.Map;
  * @param <V>
  *            value type
  */
-public abstract class LimitedCache<K, V> {
+public abstract class LimitedCache<K, V> extends Cache<K, V> {
 
 	/**
 	 * Contains strong references to stored objects. Each next object is added first. If hard cache size will exceed
@@ -23,20 +21,6 @@ public abstract class LimitedCache<K, V> {
 	 * time)
 	 */
 	private final LinkedList<V> hardCache = new LinkedList<V>();
-	/**
-	 * Stores not strong references to objects. If hard cache contains a stored object from this map then this object
-	 * will not be collected by GC.
-	 */
-	private final Map<K, Reference<V>> softMap = new HashMap<K, Reference<V>>();
-
-	public V get(K key) {
-		if (containsKey(key)) {
-			Reference<V> reference = softMap.get(key);
-			return reference.get();
-		} else {
-			return null;
-		}
-	}
 
 	public void put(K key, V value) {
 		int valueSize = getSize(value);
@@ -49,9 +33,10 @@ public abstract class LimitedCache<K, V> {
 			hardCache.addFirst(value);
 		}
 		// add to soft cache
-		softMap.put(key, createReference(value));
+		super.put(key, value);
 	}
 
+	// TODO : Reduce method calling by storing cache size as a class member
 	private int getMapSize() {
 		int size = 0;
 		for (V v : hardCache) {
@@ -62,11 +47,7 @@ public abstract class LimitedCache<K, V> {
 
 	public void clear() {
 		hardCache.clear();
-		softMap.clear();
-	}
-
-	public boolean containsKey(K key) {
-		return softMap.containsKey(key);
+		super.clear();
 	}
 
 	protected abstract Reference<V> createReference(V value);

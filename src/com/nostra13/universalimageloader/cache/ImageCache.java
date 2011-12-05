@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader;
+package com.nostra13.universalimageloader.cache;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;

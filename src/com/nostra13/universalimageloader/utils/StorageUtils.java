@@ -1,6 +1,8 @@
-package com.nostra13.universalimageloader;
+package com.nostra13.universalimageloader.utils;
 
 import java.io.File;
+
+import com.nostra13.universalimageloader.Constants;
 
 import android.content.Context;
 import android.os.Environment;

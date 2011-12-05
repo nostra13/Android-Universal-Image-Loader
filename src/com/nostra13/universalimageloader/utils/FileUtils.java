@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader;
+package com.nostra13.universalimageloader.utils;
 
 import android.util.Log;
 

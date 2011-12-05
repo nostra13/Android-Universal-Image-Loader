@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader;
+package com.nostra13.universalimageloader.imageloader;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,6 +8,12 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Stack;
+
+import com.nostra13.universalimageloader.Constants;
+import com.nostra13.universalimageloader.cache.Cache;
+import com.nostra13.universalimageloader.cache.ImageCache;
+import com.nostra13.universalimageloader.utils.FileUtils;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,7 +31,7 @@ public final class ImageLoader {
 
 	public static final String TAG = ImageLoader.class.getSimpleName();
 
-	private final ImageCache bitmapCache = new ImageCache(Constants.MEMORY_CACHE_SIZE);
+	private final Cache<String, Bitmap> bitmapCache = new ImageCache(Constants.MEMORY_CACHE_SIZE);
 	private final File cacheDir;
 
 	private final PhotosQueue photosQueue = new PhotosQueue();
@@ -44,7 +50,6 @@ public final class ImageLoader {
 	private ImageLoader(Context context) {
 		// Make the background thread low priority. This way it will not affect the UI performance
 		photoLoaderThread.setPriority(Thread.NORM_PRIORITY - 1);
-
 		// Find the directory to save cached images
 		cacheDir = StorageUtils.getCacheDirectory(context);
 	}
@@ -92,43 +97,33 @@ public final class ImageLoader {
 	 *            displayed at ImageView but listener does not fire any event.
 	 */
 	public void displayImage(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
-		imageView.setTag(url);
 		if (url == null || url.length() == 0) {
 			return;
 		}
+		imageView.setTag(url);
 
 		PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, options, listener);
 
+		Bitmap image = null;
 		synchronized (bitmapCache) {
-			if (bitmapCache.containsKey(url)) {
+			image = bitmapCache.get(url);
+		}
 
-				Object image = bitmapCache.get(url);
-				if (image != null && !((Bitmap) image).isRecycled()) {
-					imageView.setImageBitmap((Bitmap) image);
-				} else {
-					queuePhoto(photoToLoad);
-					if (options.isShowStubImageDuringLoading()) {
-						imageView.setImageResource(Constants.STUB_IMAGE);
-					} else {
-						if (options.isResetViewBeforeLoading())
-							imageView.setImageBitmap(null);
-					}
-				}
+		if (image != null && !image.isRecycled()) {
+			imageView.setImageBitmap(image);
+		} else {
+			queuePhoto(photoToLoad);
+			if (options.isShowStubImage()) {
+				imageView.setImageResource(Constants.STUB_IMAGE);
 			} else {
-				queuePhoto(photoToLoad);
-				if (options.isShowStubImageDuringLoading()) {
-					imageView.setImageResource(Constants.STUB_IMAGE);
-				} else {
-					if (options.isResetViewBeforeLoading())
-						imageView.setImageBitmap(null);
-				}
+				imageView.setImageBitmap(null);
 			}
 		}
 	}
 
 	private void queuePhoto(PhotoToLoad photoToLoad) {
 		if (photoToLoad.listener != null) {
-			photoToLoad.listener.onLoadStarted();
+			photoToLoad.listener.onLoadingStarted();
 		}
 
 		// This ImageView may be used for other images before. So there may be
@@ -190,8 +185,8 @@ public final class ImageLoader {
 		}
 
 		// from web
+		Bitmap bitmap = null;
 		try {
-			Bitmap bitmap = null;
 			URL imageUrlForDecoding = null;
 			if (cacheImageOnDisc) {
 				InputStream is = new URL(imageUrl).openStream();
@@ -205,11 +200,10 @@ public final class ImageLoader {
 			}
 
 			bitmap = ImageDecoder.decodeFile(imageUrlForDecoding, targetImageSize);
-			return bitmap;
 		} catch (Exception ex) {
 			Log.e(TAG, String.format("Exception while loading bitmap from URL=%s : %s", imageUrl, ex.getMessage()), ex);
-			return null;
 		}
+		return bitmap;
 	}
 
 	public void stopThread() {
@@ -334,11 +328,11 @@ public final class ImageLoader {
 
 					if (photoToLoad != null) {
 						ImageSize targetImageSize = getImageSizeScaleTo(photoToLoad.imageView);
-						bmp = getBitmap(photoToLoad.url, targetImageSize, photoToLoad.options.isCacheImageOnDisc());
+						bmp = getBitmap(photoToLoad.url, targetImageSize, photoToLoad.options.isCacheOnDisc());
 						if (bmp == null) {
 							continue;
 						}
-						if (photoToLoad.options.isCacheImageInMemory()) {
+						if (photoToLoad.options.isCacheInMemory()) {
 							synchronized (bitmapCache) {
 								bitmapCache.put(photoToLoad.url, bmp);
 							}
@@ -377,7 +371,7 @@ public final class ImageLoader {
 			if (photoToLoad != null && tag != null && tag.equals(photoToLoad.url) && bitmap != null) {
 				photoToLoad.imageView.setImageBitmap(bitmap);
 				if (photoToLoad.listener != null) {
-					photoToLoad.listener.onLoadComplete();
+					photoToLoad.listener.onLoadingComplete();
 				}
 			}
 		}

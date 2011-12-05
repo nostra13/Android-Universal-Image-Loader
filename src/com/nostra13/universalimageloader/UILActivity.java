@@ -1,10 +1,8 @@
 package com.nostra13.universalimageloader;
 
 import android.app.ListActivity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +12,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nostra13.test.imageloader.R;
+import com.nostra13.universalimageloader.imageloader.DisplayImageOptions;
+import com.nostra13.universalimageloader.imageloader.ImageLoader;
+import com.nostra13.universalimageloader.imageloader.ImageLoadingListener;
 
-public class UniversalImageLoaderActivity extends ListActivity {
+/** Activity for {@link ImageLoader} testing */
+public class UILActivity extends ListActivity {
 
 	public ImageLoader imageLoader;
 
@@ -24,7 +26,7 @@ public class UniversalImageLoaderActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		imageLoader = ImageLoader.getInstance(UniversalImageLoaderActivity.this);
+		imageLoader = ImageLoader.getInstance(UILActivity.this);
 
 		ListView listView = getListView();
 		listView.setAdapter(new ItemAdapter());
@@ -143,12 +145,12 @@ public class UniversalImageLoaderActivity extends ListActivity {
 			DisplayImageOptions options = DisplayImageOptions.createForListView();
 			imageLoader.displayImage(mUrls[position], holder.image, options, new ImageLoadingListener() {
 				@Override
-				public void onLoadStarted() {
+				public void onLoadingStarted() {
 					holder.text.setText("...loading...");
 				}
 
 				@Override
-				public void onLoadComplete() {
+				public void onLoadingComplete() {
 					holder.text.setText("Item " + position);
 				}
 			});

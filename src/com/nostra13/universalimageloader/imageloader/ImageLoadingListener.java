@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader;
+package com.nostra13.universalimageloader.imageloader;
 
 /**
  * Listener for image loading process
@@ -7,7 +7,8 @@ package com.nostra13.universalimageloader;
  */
 public interface ImageLoadingListener {
 
-	void onLoadStarted();
+	/** Is called when image
+	void onLoadingStarted();
 
-	void onLoadComplete();
+	void onLoadingComplete();
 }
