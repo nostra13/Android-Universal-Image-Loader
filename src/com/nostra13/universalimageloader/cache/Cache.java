@@ -22,7 +22,7 @@ public abstract class Cache<K, V> {
 	protected final Map<K, Reference<V>> softMap = new HashMap<K, Reference<V>>();
 
 	public V get(K key) {
-		if (containsKey(key)) {
+		if (softMap.containsKey(key)) {
 			Reference<V> reference = softMap.get(key);
 			return reference.get();
 		} else {
@@ -36,10 +36,6 @@ public abstract class Cache<K, V> {
 
 	public void clear() {
 		softMap.clear();
-	}
-
-	public boolean containsKey(K key) {
-		return softMap.containsKey(key);
 	}
 
 	protected abstract Reference<V> createReference(V value);
