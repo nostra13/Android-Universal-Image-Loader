@@ -15,26 +15,30 @@ import android.widget.ListView;
  * <ul>
  * <li>with {@link Builder}:<br />
  * <b>i.e.</b> :
- * <code>new {@link DisplayImageOptions}.{@link Builder#Builder() Builder()}.{@link Builder#cacheInMemory() cacheImageInMemory()}.
- * {@link Builder#showStubImage() showStubImageWhileLoading()}.{@link Builder#build() build()}</sode><br /></li>
- * <li>or by static methods: {@link #createForListView()}, {@link #createForSingleLoad()}</li> <br />
+ * <code>new {@link DisplayImageOptions}.{@link Builder#Builder() Builder()}.{@link Builder#cacheInMemory() cacheInMemory()}.
+ * {@link Builder#showStubImage(int) showStubImage()}.{@link Builder#build() build()}</sode><br /></li>
+ * <li>or by static method: {@link #createSimple()}</li> <br />
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public final class DisplayImageOptions {
 
-	private final boolean showStubImage;
+	private final Integer stubImage;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
 
 	private DisplayImageOptions(Builder builder) {
-		showStubImage = builder.showStubImage;
+		this.stubImage = builder.stubImage;
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
 	}
 
 	boolean isShowStubImage() {
-		return showStubImage;
+		return stubImage != null;
+	}
+
+	int getStubImage() {
+		return stubImage;
 	}
 
 	boolean isCacheInMemory() {
@@ -51,13 +55,17 @@ public final class DisplayImageOptions {
 	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
 	 */
 	public static class Builder {
-		private boolean showStubImage = false;
+		private Integer stubImage = null;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
 
-		/** Stub image will be displayed in {@link ImageView} during image loading */
-		public Builder showStubImage() {
-			showStubImage = true;
+		/**
+		 * Stub image will be displayed in {@link ImageView} during image loading
+		 * 
+		 * @param stubImageRes Stub image resource
+		 */
+		public Builder showStubImage(int stubImageRes) {
+			stubImage = stubImageRes;
 			return this;
 		}
 
@@ -80,19 +88,6 @@ public final class DisplayImageOptions {
 	}
 
 	/**
-	 * Creates options appropriate for image displaying at {@link ListView}:
-	 * <ul>
-	 * <li>Stub image will be displayed in {@link ImageView} during image loading</li>
-	 * <li>Loaded image will be cached in memory</li>
-	 * <li>Loaded image will be cached on disc (application cache directory or on SD card)</li>
-	 * </ul>
-	 */
-	public static DisplayImageOptions createForListView() {
-		Builder builder = new Builder().showStubImage().cacheInMemory().cacheOnDisc();
-		return builder.build();
-	}
-
-	/**
 	 * Creates options appropriate for single displaying:
 	 * <ul>
 	 * <li>Stub image will <b>not</b> be displayed in {@link ImageView} during image loading</li>
@@ -102,7 +97,7 @@ public final class DisplayImageOptions {
 	 * 
 	 * These option are appropriate for simple single-use image (from drawables or from internet) displaying.
 	 */
-	public static DisplayImageOptions createForSingleLoad() {
+	public static DisplayImageOptions createSimple() {
 		return new Builder().build();
 	}
 }

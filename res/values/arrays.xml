@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="heavy_images">
+        <item>http://www.android.com/media/wallpaper/gif/android_logo.gif</item>
+        <item>http://www.android.com/media/wallpaper/gif/cupcake_2009.gif</item>
+        <item>http://cdn4.digitaltrends.com/wp-content/uploads/2011/04/Google-Android.png</item>
+        <item>http://2.bp.blogspot.com/_JSR8IC77Ub4/TATYokamR0I/AAAAAAAAAhc/O1KKFe5Fay0/s1600/richd-android1920.jpg</item>
+        <item>http://1.bp.blogspot.com/_0nd55rShouI/TPMx2PZMPEI/AAAAAAAAAC8/GSCW4W4fkcA/s1600/android.jpg</item>
+        <item>http://atlantistilemarble.com/wp-content/uploads/2011/02/android-wallpaper1_1024x768.png</item>
+        <item>http://www.android.com/media/wallpaper/gif/androids.gif</item>
+        <item>http://3.bp.blogspot.com/_Sd45ASngYHA/TVC78RORKoI/AAAAAAAAARk/y0GcNkTmb40/s1600/android+logo1.jpg</item>
+        <item>http://1.bp.blogspot.com/-mhrnwr-R_9k/TcwraA1SsWI/AAAAAAAAAjs/LIcWBaOOM88/s1600/Android%2540Home.jpg</item>
+        <item>http://www.android.com/goodies/wallpaper/android-wallpaper4_1024x768.png</item>
+        <item>http://4.bp.blogspot.com/__n_rRWNSWVs/TOyBihqZlVI/AAAAAAAAAms/z23vVZnAtUk/s1600/android_vulnerability.jpg</item>
+        <item>http://3.bp.blogspot.com/__n_rRWNSWVs/THRRtuq-1gI/AAAAAAAAAkc/REqEJwOky2U/s1600/good_looking_android_launcher_pro.png</item>
+        <item>http://4android-phone.com/wp-content/uploads/2011/08/How-to-Browse-Files-on-an-Android-Phone21.png</item>
+        <item>http://img2.etsystatic.com/il_fullxfull.253478178.jpg</item>
+        <item>http://3.bp.blogspot.com/-myXkCrTnCDs/TWmIJiLdWBI/AAAAAAAAmn4/-XRCxm1kCKc/s1600/pXUsV.jpg</item>
+        <item>http://all-free-download.com/downloadfiles/wallpapers/1280_1024/android_wallpaper_google_computers_wallpaper_1280_1024_2675.jpg</item>
+        <item>http://www.designerterminal.com/wp-content/uploads/2011/04/18_thumb.jpg</item>
+        <item>http://www.designerterminal.com/wp-content/uploads/2011/04/13_thumb.jpg</item>
+        <item>http://cdn.androidcentral.com/sites/androidcentral.com/files/postimages/9274/tz.com_3_0.jpg</item>
+        <item>http://2.bp.blogspot.com/-Q78WS_f1YP8/TiQBauodVpI/AAAAAAAAAm8/hmZnQw1g6m8/s1600/IMG_0223.jpg</item>
+        <item>http://2.bp.blogspot.com/_y9zuMy5_0aY/S974L2fvXXI/AAAAAAAACJ8/98KQl0gMAhc/s1600/IMG_0466.jpg</item>
+        <item>http://cache.gawkerassets.com/assets/images/17/2011/05/icecreamsandwich.jpg</item>
+        <item>http://disfi.com/wp-content/uploads/2011/11/panasonicToughpadA1andB11.jpg</item>
+        <item>http://fastcache.gawkerassets.com/assets/images/4/2010/08/decayedandroid2.jpg</item>
+        <item>http://i00.i.aliimg.com/img/pb/767/772/267/1284794302575_hz-myalibaba-temp13_2190.jpg</item>
+        <item>http://img.docstoccdn.com/thumb/orig/17435666.png</item>
+    </string-array>
+    <string-array name="light_images">
+        <item>http://a3.twimg.com/profile_images/670625317/aam-logo-v3-twitter.png</item>
+        <item>http://a3.twimg.com/profile_images/740897825/AndroidCast-350_normal.png</item>
+        <item>http://a3.twimg.com/profile_images/121630227/Droid_normal.jpg</item>
+        <item>http://a1.twimg.com/profile_images/957149154/twitterhalf_normal.jpg</item>
+        <item>http://a1.twimg.com/profile_images/97470808/icon_normal.png</item>
+        <item>http://a3.twimg.com/profile_images/511790713/AG.png</item>
+        <item>http://a3.twimg.com/profile_images/956404323/androinica-avatar_normal.png</item>
+        <item>http://a1.twimg.com/profile_images/909231146/Android_Biz_Man_normal.png</item>
+        <item>http://a3.twimg.com/profile_images/72774055/AndroidHomme-LOGO_normal.jpg</item>
+        <item>http://a1.twimg.com/profile_images/349012784/android_logo_small_normal.jpg</item>
+        <item>http://a1.twimg.com/profile_images/841338368/ea-twitter-icon.png</item>
+        <item>http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png</item>
+        <item>http://a3.twimg.com/profile_images/77641093/AndroidPlanet_normal.png</item>
+        <item>http://a1.twimg.com/profile_images/850960042/elandroidelibre-logo_300x300_normal.jpg</item>
+        <item>http://a1.twimg.com/profile_images/655119538/andbook.png</item>
+        <item>http://a3.twimg.com/profile_images/768060227/ap4u_normal.jpg</item>
+        <item>http://a1.twimg.com/profile_images/74724754/android_logo_normal.png</item>
+        <item>http://a3.twimg.com/profile_images/681537837/SmallAvatarx150_normal.png</item>
+        <item>http://a1.twimg.com/profile_images/63737974/2008-11-06_1637_normal.png</item>
+        <item>http://a3.twimg.com/profile_images/548410609/icon_8_73.png</item>
+        <item>http://a1.twimg.com/profile_images/612232882/nexusoneavatar_normal.jpg</item>
+        <item>http://a1.twimg.com/profile_images/213722080/Bugdroid-phone_normal.png</item>
+        <item>http://a1.twimg.com/profile_images/645523828/OT_icon_090918_android_normal.png</item>
+        <item>http://a3.twimg.com/profile_images/77641093/AndroidPlanet.png</item>
+        <item>http://a1.twimg.com/profile_images/655119538/andbook_normal.png</item>
+        <item>http://a3.twimg.com/profile_images/511790713/AG_normal.png</item>
+        <item>http://a3.twimg.com/profile_images/956404323/androinica-avatar.png</item>
+        <item>http://a1.twimg.com/profile_images/841338368/ea-twitter-icon_normal.png</item>
+        <item>http://a1.twimg.com/profile_images/850960042/elandroidelibre-logo_300x300.jpg</item>
+        <item>http://a3.twimg.com/profile_images/121630227/Droid.jpg</item>
+        <item>http://a1.twimg.com/profile_images/909231146/Android_Biz_Man.png</item>
+        <item>http://a3.twimg.com/profile_images/670625317/aam-logo-v3-twitter_normal.png</item>
+        <item>http://a1.twimg.com/profile_images/97470808/icon.png</item>
+        <item>http://a1.twimg.com/profile_images/74724754/android_logo.png</item>
+        <item>http://a3.twimg.com/profile_images/548410609/icon_8_73_normal.png</item>
+        <item>http://a1.twimg.com/profile_images/645523828/OT_icon_090918_android.png</item>
+        <item>http://a1.twimg.com/profile_images/957149154/twitterhalf.jpg</item>
+        <item>http://a1.twimg.com/profile_images/349012784/android_logo_small.jpg</item>
+    </string-array>
+
+</resources>

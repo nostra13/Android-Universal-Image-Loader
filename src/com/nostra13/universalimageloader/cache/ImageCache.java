@@ -1,7 +1,7 @@
 package com.nostra13.universalimageloader.cache;
 
 import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 
 import android.graphics.Bitmap;
 
@@ -31,6 +31,6 @@ public class ImageCache extends LimitedCache<String, Bitmap> {
 
 	@Override
 	protected Reference<Bitmap> createReference(Bitmap value) {
-		return new WeakReference<Bitmap>(value);
+		return new SoftReference<Bitmap>(value);
 	}
 }

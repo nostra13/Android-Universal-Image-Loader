@@ -36,7 +36,7 @@ public final class ImageLoader {
 
 	private final PhotosQueue photosQueue = new PhotosQueue();
 	private final PhotosLoader photoLoaderThread = new PhotosLoader();
-	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createForListView();
+	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createSimple();
 
 	private static ImageLoader instance = null;
 

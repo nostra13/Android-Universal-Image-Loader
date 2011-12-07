@@ -24,6 +24,15 @@ public final class ImageDecoder {
 	private ImageDecoder() {
 	}
 
+	/**
+	 * Decodes image to {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during decoding. 
+	 * Initial image size is reduced by the power of 2 (according Android recommendations)
+	 * 
+	 * @param imageUrl
+	 * @param targetImageSize
+	 * @return
+	 * @throws IOException
+	 */
 	public static Bitmap decodeFile(URL imageUrl, ImageSize targetImageSize) throws IOException {
 		InputStream is = imageUrl.openStream();
 		Options decodeOptions = getBitmapOptionsForImageDecoding(is, targetImageSize);
@@ -62,8 +71,7 @@ public final class ImageDecoder {
 
 		int scale = 1;
 		while (true) {
-			if (width_tmp / 2 < width || height_tmp / 2 < height)
-				break;
+			if (width_tmp / 2 < width || height_tmp / 2 < height) break;
 			width_tmp /= 2;
 			height_tmp /= 2;
 			scale *= 2;
