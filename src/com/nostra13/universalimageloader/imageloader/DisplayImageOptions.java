@@ -1,7 +1,6 @@
 package com.nostra13.universalimageloader.imageloader;
 
 import android.widget.ImageView;
-import android.widget.ListView;
 
 /**
  * Contains options for image display. Defines:
