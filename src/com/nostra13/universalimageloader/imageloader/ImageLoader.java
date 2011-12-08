@@ -61,7 +61,7 @@ public final class ImageLoader {
 	 * appropriated for ListViews will be used}.
 	 * 
 	 * @param url
-	 *            Image URL (i.e. "http://site.com/image.png", "file://mnt/sdcard/image.png")
+	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 */
@@ -73,7 +73,7 @@ public final class ImageLoader {
 	 * Add display image task to queue. Image will be set to ImageView when it's turn.
 	 * 
 	 * @param url
-	 *            Image URL (i.e. "http://site.com/image.png", "file://mnt/sdcard/image.png")
+	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param options
@@ -87,7 +87,7 @@ public final class ImageLoader {
 	 * Add display image task to queue. Image will be set to ImageView when it's turn.
 	 * 
 	 * @param url
-	 *            Image URL (i.e. "http://site.com/image.png", "file://mnt/sdcard/image.png")
+	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param options
