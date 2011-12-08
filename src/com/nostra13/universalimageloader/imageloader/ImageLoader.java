@@ -115,7 +115,7 @@ public final class ImageLoader {
 		} else {
 			queuePhoto(photoToLoad);
 			if (options.isShowStubImage()) {
-				imageView.setImageResource(Constants.STUB_IMAGE);
+				imageView.setImageResource(options.getStubImage());
 			} else {
 				imageView.setImageBitmap(null);
 			}

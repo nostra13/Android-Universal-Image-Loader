@@ -27,7 +27,7 @@ public final class DisplayImageOptions {
 	private final boolean cacheOnDisc;
 
 	private DisplayImageOptions(Builder builder) {
-		this.stubImage = builder.stubImage;
+		stubImage = builder.stubImage;
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
 	}
@@ -36,7 +36,7 @@ public final class DisplayImageOptions {
 		return stubImage != null;
 	}
 
-	int getStubImage() {
+	Integer getStubImage() {
 		return stubImage;
 	}
 
