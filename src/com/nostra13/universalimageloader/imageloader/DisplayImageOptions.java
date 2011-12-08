@@ -61,7 +61,8 @@ public final class DisplayImageOptions {
 		/**
 		 * Stub image will be displayed in {@link ImageView} during image loading
 		 * 
-		 * @param stubImageRes Stub image resource
+		 * @param stubImageRes
+		 *            Stub image resource
 		 */
 		public Builder showStubImage(int stubImageRes) {
 			stubImage = stubImageRes;

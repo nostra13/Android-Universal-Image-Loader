@@ -23,8 +23,9 @@ public final class FileUtils {
 			byte[] bytes = new byte[buffer_size];
 			while (true) {
 				int count = is.read(bytes, 0, buffer_size);
-				if (count == -1)
+				if (count == -1) {
 					break;
+				}
 				os.write(bytes, 0, count);
 			}
 		} catch (Exception ex) {

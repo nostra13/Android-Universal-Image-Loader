@@ -25,7 +25,7 @@ public final class ImageDecoder {
 	}
 
 	/**
-	 * Decodes image to {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during decoding. 
+	 * Decodes image to {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during decoding.
 	 * Initial image size is reduced by the power of 2 (according Android recommendations)
 	 * 
 	 * @param imageUrl

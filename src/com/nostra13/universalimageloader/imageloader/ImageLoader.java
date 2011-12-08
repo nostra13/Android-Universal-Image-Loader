@@ -127,13 +127,12 @@ public final class ImageLoader {
 			photoToLoad.listener.onLoadingStarted();
 		}
 
-		// This ImageView may be used for other images before. So there may be
-		// some old tasks in the queue. We need to discard them.
+		// This ImageView may be used for other images before. So there may be some old tasks in the queue. We need to discard them.
 		photosQueue.clean(photoToLoad.imageView);
 
 		// If image was cached on disc we push load image task onto the top of the stack. 
 		// If not - we push load image task to the bottom of the stack.
-		// Images loaded from the top of the stack. So it will reduce the time of waiting 
+		// Images are loaded from the top of the stack. So it will reduce the time of waiting 
 		// to display cached images (they will be displayed first)
 		boolean isCachedOnDisc = isCachedOnDisc(photoToLoad.url);
 		synchronized (photosQueue.photosToLoad) {
