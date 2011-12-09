@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Stack;
+
+import org.apache.http.HttpConnection;
 
 import android.app.Activity;
 import android.content.Context;
@@ -209,7 +212,10 @@ public final class ImageLoader {
 	}
 
 	private void saveImageFromUrl(String imageUrl, File targetFile) throws MalformedURLException, IOException {
-		InputStream is = new URL(imageUrl).openStream();
+		HttpURLConnection conn = (HttpURLConnection) new URL(imageUrl).openConnection();
+		conn.setConnectTimeout(Constants.HTTP_CONNECT_TIMEOUT);
+		conn.setReadTimeout(Constants.HTTP_READ_TIMEOUT);
+		InputStream is = conn.getInputStream();
 		try {
 			OutputStream os = new FileOutputStream(targetFile);
 			try {

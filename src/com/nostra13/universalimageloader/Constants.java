@@ -18,4 +18,7 @@ public final class Constants {
 
 	public static final int STUB_IMAGE = R.drawable.stub_image;
 	public static final int MEMORY_CACHE_SIZE = 2000000; // 2 Mb
+	
+	public static final int HTTP_CONNECT_TIMEOUT = 20000; // 20 s
+	public static final int HTTP_READ_TIMEOUT = 30000; // 30 s
 }
