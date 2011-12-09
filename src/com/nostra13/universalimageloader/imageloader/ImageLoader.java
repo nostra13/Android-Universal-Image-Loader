@@ -9,9 +9,8 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Stack;
-
-import org.apache.http.HttpConnection;
+import java.util.LinkedList;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
@@ -38,7 +37,7 @@ public final class ImageLoader {
 	private final Cache<String, Bitmap> bitmapCache = new ImageCache(Constants.MEMORY_CACHE_SIZE);
 	private final File cacheDir;
 
-	private final PhotosQueue photosQueue = new PhotosQueue();
+	private final List<PhotoToLoad> photoToLoadQueue = new LinkedList<ImageLoader.PhotoToLoad>();
 	private final PhotosLoader photoLoaderThread = new PhotosLoader();
 	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createSimple();
 
@@ -136,20 +135,20 @@ public final class ImageLoader {
 		}
 
 		// This ImageView may be used for other images before. So there may be some old tasks in the queue. We need to discard them.
-		photosQueue.clean(photoToLoad.imageView);
+		removeFromQueue(photoToLoad.imageView);
 
-		// If image was cached on disc we push load image task onto the top of the stack. 
-		// If not - we push load image task to the bottom of the stack.
-		// Images are loaded from the top of the stack. So it will reduce the time of waiting 
+		// If image was cached on disc we put load image task in front of the queue. 
+		// If not - we put load image task in the end of the queue.
+		// Images are loaded from the queue beginning. So it will reduce the time of waiting 
 		// to display cached images (they will be displayed first)
 		boolean isCachedOnDisc = isCachedOnDisc(photoToLoad.url);
-		synchronized (photosQueue.photosToLoad) {
+		synchronized (photoToLoadQueue) {
 			if (isCachedOnDisc) {
-				photosQueue.photosToLoad.push(photoToLoad);
+				photoToLoadQueue.add(0, photoToLoad);
 			} else {
-				photosQueue.photosToLoad.add(0, photoToLoad);
+				photoToLoadQueue.add(photoToLoad);
 			}
-			photosQueue.photosToLoad.notifyAll();
+			photoToLoadQueue.notifyAll();
 		}
 
 		// Start thread if it's not started yet
@@ -173,6 +172,17 @@ public final class ImageLoader {
 	private File getLocalImageFile(String imageUrl) {
 		String fileName = String.valueOf(imageUrl.hashCode());
 		return new File(cacheDir, fileName);
+	}
+
+	// Removes all instances of this ImageView
+	public void removeFromQueue(ImageView image) {
+		for (int j = 0; j < photoToLoadQueue.size();) {
+			if (photoToLoadQueue.get(j).imageView == image) {
+				photoToLoadQueue.remove(j);
+			} else {
+				++j;
+			}
+		}
 	}
 
 	private Bitmap getBitmap(String imageUrl, ImageSize targetImageSize, boolean cacheImageOnDisc) {
@@ -298,23 +308,6 @@ public final class ImageLoader {
 		}
 	}
 
-	/** Stores list of images to download */
-	class PhotosQueue {
-
-		private final Stack<PhotoToLoad> photosToLoad = new Stack<PhotoToLoad>();
-
-		// Removes all instances of this ImageView
-		public void clean(ImageView image) {
-			for (int j = 0; j < photosToLoad.size();) {
-				if (photosToLoad.get(j).imageView == image) {
-					photosToLoad.remove(j);
-				} else {
-					++j;
-				}
-			}
-		}
-	}
-
 	class PhotosLoader extends Thread {
 		@Override
 		public void run() {
@@ -323,14 +316,14 @@ public final class ImageLoader {
 				Bitmap bmp = null;
 				try {
 					// thread waits until there are any images to load in the queue
-					if (photosQueue.photosToLoad.isEmpty()) {
-						synchronized (photosQueue.photosToLoad) {
-							photosQueue.photosToLoad.wait();
+					if (photoToLoadQueue.isEmpty()) {
+						synchronized (photoToLoadQueue) {
+							photoToLoadQueue.wait();
 						}
 					}
-					if (!photosQueue.photosToLoad.isEmpty()) {
-						synchronized (photosQueue.photosToLoad) {
-							photoToLoad = photosQueue.photosToLoad.pop();
+					if (!photoToLoadQueue.isEmpty()) {
+						synchronized (photoToLoadQueue) {
+							photoToLoad = photoToLoadQueue.remove(0);
 						}
 					}
 
