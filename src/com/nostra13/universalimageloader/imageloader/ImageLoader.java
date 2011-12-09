@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -135,7 +136,9 @@ public final class ImageLoader {
 		}
 
 		// This ImageView may be used for other images before. So there may be some old tasks in the queue. We need to discard them.
-		removeFromQueue(photoToLoad.imageView);
+		synchronized (photoToLoadQueue) {
+			removeFromQueue(photoToLoad.imageView);
+		}
 
 		// If image was cached on disc we put load image task in front of the queue. 
 		// If not - we put load image task in the end of the queue.
@@ -174,13 +177,12 @@ public final class ImageLoader {
 		return new File(cacheDir, fileName);
 	}
 
-	// Removes all instances of this ImageView
 	public void removeFromQueue(ImageView image) {
-		for (int j = 0; j < photoToLoadQueue.size();) {
-			if (photoToLoadQueue.get(j).imageView == image) {
-				photoToLoadQueue.remove(j);
-			} else {
-				++j;
+		Iterator<PhotoToLoad> it = photoToLoadQueue.iterator();
+		while (it.hasNext()) {
+			PhotoToLoad photo = it.next();
+			if (photo.imageView == image) {
+				it.remove();
 			}
 		}
 	}
