@@ -22,12 +22,12 @@ public abstract class Cache<K, V> {
 	protected final Map<K, Reference<V>> softMap = new HashMap<K, Reference<V>>();
 
 	public V get(K key) {
-		if (softMap.containsKey(key)) {
-			Reference<V> reference = softMap.get(key);
-			return reference.get();
-		} else {
-			return null;
+		V result = null;
+		Reference<V> reference = softMap.get(key);
+		if (reference != null) {
+			result = reference.get();
 		}
+		return result;
 	}
 
 	public void put(K key, V value) {
