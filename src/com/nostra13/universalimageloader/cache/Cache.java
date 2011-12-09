@@ -19,7 +19,7 @@ public abstract class Cache<K, V> {
 	/**
 	 * Stores not strong references to objects.
 	 */
-	protected final Map<K, Reference<V>> softMap = new HashMap<K, Reference<V>>();
+	private final Map<K, Reference<V>> softMap = new HashMap<K, Reference<V>>();
 
 	public V get(K key) {
 		V result = null;
