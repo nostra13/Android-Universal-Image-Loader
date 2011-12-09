@@ -39,12 +39,16 @@ public final class ImageLoader {
 	private final PhotosLoader photoLoaderThread = new PhotosLoader();
 	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createSimple();
 
-	private static ImageLoader instance = null;
+	private volatile static ImageLoader instance = null;
 
 	/** Returns singletone class instance */
 	public static ImageLoader getInstance(Context context) {
 		if (instance == null) {
-			instance = new ImageLoader(context);
+			synchronized (ImageLoader.class) {
+				if (instance == null) {
+					instance = new ImageLoader(context);
+				}
+			}
 		}
 		return instance;
 	}
@@ -203,7 +207,7 @@ public final class ImageLoader {
 		}
 		return bitmap;
 	}
-	
+
 	private void saveImageFromUrl(String imageUrl, File targetFile) throws MalformedURLException, IOException {
 		InputStream is = new URL(imageUrl).openStream();
 		try {
