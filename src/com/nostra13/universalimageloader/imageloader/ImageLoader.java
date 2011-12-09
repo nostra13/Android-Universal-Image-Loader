@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Stack;
 
@@ -187,11 +188,7 @@ public final class ImageLoader {
 		try {
 			URL imageUrlForDecoding = null;
 			if (cacheImageOnDisc) {
-				InputStream is = new URL(imageUrl).openStream();
-				OutputStream os = new FileOutputStream(f);
-				FileUtils.copyStream(is, os);
-				is.close();
-				os.close();
+				saveImageFromUrl(imageUrl, f);
 				imageUrlForDecoding = f.toURL();
 			} else {
 				imageUrlForDecoding = new URL(imageUrl);
@@ -200,8 +197,25 @@ public final class ImageLoader {
 			bitmap = ImageDecoder.decodeFile(imageUrlForDecoding, targetImageSize);
 		} catch (Exception ex) {
 			Log.e(TAG, String.format("Exception while loading bitmap from URL=%s : %s", imageUrl, ex.getMessage()), ex);
+			if (f.exists()) {
+				f.delete();
+			}
 		}
 		return bitmap;
+	}
+	
+	private void saveImageFromUrl(String imageUrl, File targetFile) throws MalformedURLException, IOException {
+		InputStream is = new URL(imageUrl).openStream();
+		try {
+			OutputStream os = new FileOutputStream(targetFile);
+			try {
+				FileUtils.copyStream(is, os);
+			} finally {
+				os.close();
+			}
+		} finally {
+			is.close();
+		}
 	}
 
 	public void stopThread() {

@@ -1,9 +1,8 @@
 package com.nostra13.universalimageloader.utils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import android.util.Log;
 
 /**
  * Provides operations with files
@@ -17,19 +16,15 @@ public final class FileUtils {
 	private FileUtils() {
 	}
 
-	public static void copyStream(InputStream is, OutputStream os) {
+	public static void copyStream(InputStream is, OutputStream os) throws IOException {
 		final int buffer_size = 1024;
-		try {
-			byte[] bytes = new byte[buffer_size];
-			while (true) {
-				int count = is.read(bytes, 0, buffer_size);
-				if (count == -1) {
-					break;
-				}
-				os.write(bytes, 0, count);
+		byte[] bytes = new byte[buffer_size];
+		while (true) {
+			int count = is.read(bytes, 0, buffer_size);
+			if (count == -1) {
+				break;
 			}
-		} catch (Exception ex) {
-			Log.e(TAG, ex.getMessage(), ex);
+			os.write(bytes, 0, count);
 		}
 	}
 }
