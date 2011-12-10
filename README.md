@@ -24,7 +24,10 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
     public void onLoadingComplete() {
         spinner.hide();
     }
-}); // or simple imageLoader.displayImage(imageUrl, imageView);
+});
+
+// or simple way
+imageLoader.displayImage(imageUrl, imageView);
 ```
 
 ## License
