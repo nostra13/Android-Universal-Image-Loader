@@ -109,7 +109,7 @@ public final class ImageLoader {
 		if (url == null || url.length() == 0) {
 			return;
 		}
-		imageView.setTag(url);
+		imageView.setTag(Constants.IMAGE_LOADER_TAG_KEY, url);
 
 		PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, options, listener);
 
@@ -369,7 +369,7 @@ public final class ImageLoader {
 		}
 
 		public void run() {
-			String tag = (String) photoToLoad.imageView.getTag();
+			String tag = (String) photoToLoad.imageView.getTag(Constants.IMAGE_LOADER_TAG_KEY);
 
 			if (photoToLoad != null && tag != null && tag.equals(photoToLoad.url) && bitmap != null) {
 				photoToLoad.imageView.setImageBitmap(bitmap);
