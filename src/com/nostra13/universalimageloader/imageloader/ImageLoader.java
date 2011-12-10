@@ -40,7 +40,7 @@ public final class ImageLoader {
 	private ExecutorService photoLoaderExecutor;
 	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createSimple();
 
-	private volatile static ImageLoader instance = null;
+	private volatile static ImageLoader instance;
 
 	/** Returns singletone class instance */
 	public static ImageLoader getInstance(Context context) {
@@ -321,16 +321,6 @@ public final class ImageLoader {
 					photoToLoad.listener.onLoadingComplete();
 				}
 			}
-		}
-	}
-
-	class ImageSize {
-		int width;
-		int height;
-
-		public ImageSize(int width, int height) {
-			this.width = width;
-			this.height = height;
 		}
 	}
 }
