@@ -9,8 +9,8 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,8 +37,9 @@ public final class ImageLoader {
 	private final Cache<String, Bitmap> bitmapCache = new ImageCache(Constants.MEMORY_CACHE_SIZE);
 	private final File cacheDir;
 
-	private final List<PhotoToLoad> photoToLoadQueue = new LinkedList<ImageLoader.PhotoToLoad>();
-	private final PhotosLoader photoLoaderThread = new PhotosLoader();
+//	private final List<PhotoToLoad> photoToLoadQueue = new LinkedList<ImageLoader.PhotoToLoad>();
+	private ExecutorService executorService;
+//	private final PhotosLoader photoLoaderThread = new PhotosLoader();
 	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createSimple();
 
 	private volatile static ImageLoader instance = null;
@@ -57,7 +58,8 @@ public final class ImageLoader {
 
 	private ImageLoader(Context context) {
 		// Make the background thread low priority. This way it will not affect the UI performance
-		photoLoaderThread.setPriority(Thread.NORM_PRIORITY - 1);
+//		photoLoaderThread.setPriority(Thread.NORM_PRIORITY - 1);
+		executorService = Executors.newFixedThreadPool(Constants.IMAGE_LOADER_THREAD_POOL_SIZE);
 		// Find the directory to save cached images
 		cacheDir = StorageUtils.getCacheDirectory(context);
 	}
@@ -108,7 +110,7 @@ public final class ImageLoader {
 		if (url == null || url.length() == 0 || imageView == null) {
 			return;
 		}
-		
+
 		PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, options, listener);
 
 		Bitmap image = null;
@@ -133,36 +135,7 @@ public final class ImageLoader {
 			photoToLoad.listener.onLoadingStarted();
 		}
 
-		// If image was cached on disc we put load image task in front of the queue. 
-		// If not - we put load image task in the end of the queue.
-		// Images are loaded from the queue beginning. So it will reduce the time of waiting 
-		// to display cached images (they will be displayed first)
-		boolean isCachedOnDisc = isCachedOnDisc(photoToLoad.url);
-		synchronized (photoToLoadQueue) {
-			if (isCachedOnDisc) {
-				photoToLoadQueue.add(0, photoToLoad);
-			} else {
-				photoToLoadQueue.add(photoToLoad);
-			}
-			photoToLoadQueue.notifyAll();
-		}
-
-		// Start thread if it's not started yet
-		if (photoLoaderThread.getState() == Thread.State.NEW) {
-			photoLoaderThread.start();
-		}
-	}
-
-	private boolean isCachedOnDisc(String url) {
-		boolean result = false;
-		File f = getLocalImageFile(url);
-
-		try {
-			result = f.exists();
-		} catch (Exception e) {
-		}
-
-		return result;
+		executorService.submit(new PhotosLoader(photoToLoad));
 	}
 
 	private File getLocalImageFile(String imageUrl) {
@@ -224,7 +197,7 @@ public final class ImageLoader {
 	}
 
 	public void stopThread() {
-		photoLoaderThread.interrupt();
+		executorService.shutdown();
 	}
 
 	/**
@@ -294,61 +267,42 @@ public final class ImageLoader {
 		}
 
 		boolean isConsistent() {
-			return url != null && url.equals(imageView.getTag(Constants.IMAGE_LOADER_TAG_KEY));
+			Log.i(TAG, "isConsistent" + url.equals(imageView.getTag(Constants.IMAGE_LOADER_TAG_KEY)));
+			return url.equals(imageView.getTag(Constants.IMAGE_LOADER_TAG_KEY));
 		}
 	}
 
-	class PhotosLoader extends Thread {
+	class PhotosLoader implements Runnable {
+
+		private PhotoToLoad photoToLoad;
+
+		PhotosLoader(PhotoToLoad photoToLoad) {
+			this.photoToLoad = photoToLoad;
+		}
+
 		@Override
 		public void run() {
-			while (true) {
-				PhotoToLoad photoToLoad = null;
-				Bitmap bmp = null;
-				try {
-					// thread waits until there are any images to load in the queue
-					if (photoToLoadQueue.isEmpty()) {
-						synchronized (photoToLoadQueue) {
-							photoToLoadQueue.wait();
-						}
-					}
-					if (!photoToLoadQueue.isEmpty()) {
-						synchronized (photoToLoadQueue) {
-							photoToLoad = photoToLoadQueue.remove(0);
-						}
-					}
+			if (!photoToLoad.isConsistent()) {
+				return;
+			}
+			// Load bitmap						
+			ImageSize targetImageSize = getImageSizeScaleTo(photoToLoad.imageView);
+			Bitmap bmp = getBitmap(photoToLoad.url, targetImageSize, photoToLoad.options.isCacheOnDisc());
 
-					if (photoToLoad != null) {
-						if (!photoToLoad.isConsistent()) {
-							continue;
-						}
-						// Load bitmap						
-						ImageSize targetImageSize = getImageSizeScaleTo(photoToLoad.imageView);
-						bmp = getBitmap(photoToLoad.url, targetImageSize, photoToLoad.options.isCacheOnDisc());
-						
-						if (!photoToLoad.isConsistent() || bmp == null) {
-							continue;
-						}
-						// Cache bitmap in memory
-						if (photoToLoad.options.isCacheInMemory()) {
-							synchronized (bitmapCache) {
-								bitmapCache.put(photoToLoad.url, bmp);
-							}
-						}
-					}
-
-					if (Thread.interrupted()) {
-						break;
-					}
-				} catch (InterruptedException e) {
-					Log.e(TAG, e.getMessage(), e);
-				} finally {
-					if (photoToLoad != null && bmp != null) {
-						BitmapDisplayer bd = new BitmapDisplayer(photoToLoad, bmp);
-						Activity a = (Activity) photoToLoad.imageView.getContext();
-						a.runOnUiThread(bd);
-					}
+			if (!photoToLoad.isConsistent() || bmp == null) {
+				return;
+			}
+			// Cache bitmap in memory
+			if (photoToLoad.options.isCacheInMemory()) {
+				synchronized (bitmapCache) {
+					bitmapCache.put(photoToLoad.url, bmp);
 				}
 			}
+
+			// Display image in {@link ImageView} on UI thread
+			BitmapDisplayer bd = new BitmapDisplayer(photoToLoad, bmp);
+			Activity a = (Activity) photoToLoad.imageView.getContext();
+			a.runOnUiThread(bd);
 		}
 	}
 
