@@ -54,11 +54,6 @@ public final class ImageDecoder {
 		int width = targetImageSize.width;
 		int height = targetImageSize.height;
 
-		if (width < 0 && height < 0) {
-			width = Constants.SCREEN_WIDTH;
-			height = Constants.SCREEN_HEIGHT;
-		}
-
 		// decode image size
 		Options options = new Options();
 		options.inJustDecodeBounds = true;

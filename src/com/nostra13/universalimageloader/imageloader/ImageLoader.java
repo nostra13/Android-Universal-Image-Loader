@@ -37,7 +37,7 @@ public final class ImageLoader {
 	private final Cache<String, Bitmap> bitmapCache = new ImageCache(Constants.MEMORY_CACHE_SIZE);
 	private final File cacheDir;
 
-	private ExecutorService photoLoaderExecutor;
+	private ExecutorService imageLoadingExecutor;
 	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createSimple();
 
 	private volatile static ImageLoader instance;
@@ -55,14 +55,13 @@ public final class ImageLoader {
 	}
 
 	private ImageLoader(Context context) {
-		photoLoaderExecutor = Executors.newFixedThreadPool(Constants.THREAD_POOL_SIZE);
+		imageLoadingExecutor = Executors.newFixedThreadPool(Constants.THREAD_POOL_SIZE);
 		cacheDir = StorageUtils.getCacheDirectory(context);
 	}
 
 	/**
-	 * Adds display image task to queue. Image will be set to ImageView when it's turn. <br/>
-	 * {@linkplain DisplayImageOptions Display image options} {@linkplain DisplayImageOptions#createForListView()
-	 * appropriated for ListViews will be used}.
+	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn. <br/>
+	 * {@linkplain DisplayImageOptions#createSimple() Simple display image options } will be used.
 	 * 
 	 * @param url
 	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
@@ -74,7 +73,7 @@ public final class ImageLoader {
 	}
 
 	/**
-	 * Add display image task to queue. Image will be set to ImageView when it's turn.
+	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.
 	 * 
 	 * @param url
 	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
@@ -88,7 +87,7 @@ public final class ImageLoader {
 	}
 
 	/**
-	 * Add display image task to queue. Image will be set to ImageView when it's turn.
+	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.
 	 * 
 	 * @param url
 	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
@@ -106,7 +105,7 @@ public final class ImageLoader {
 			return;
 		}
 
-		PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, options, listener);
+		ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, options, listener);
 
 		Bitmap image = null;
 		synchronized (bitmapCache) {
@@ -116,7 +115,7 @@ public final class ImageLoader {
 		if (image != null && !image.isRecycled()) {
 			imageView.setImageBitmap(image);
 		} else {
-			queuePhoto(photoToLoad);
+			submitDisplayImageTask(imageLoadingInfo);
 			if (options.isShowStubImage()) {
 				imageView.setImageResource(options.getStubImage());
 			} else {
@@ -127,15 +126,17 @@ public final class ImageLoader {
 
 	/** Stops all running display image tasks, discards all other scheduled tasks */
 	public void stop() {
-		photoLoaderExecutor.shutdown();
+		imageLoadingExecutor.shutdown();
 	}
 
+	/** Clear memory cache */
 	public void clearMemoryCache() {
 		synchronized (bitmapCache) {
 			bitmapCache.clear();
 		}
 	}
 
+	/** Clear disc cache */
 	public void clearDiscCache() {
 		File[] files = cacheDir.listFiles();
 		for (File f : files) {
@@ -143,12 +144,12 @@ public final class ImageLoader {
 		}
 	}
 
-	private void queuePhoto(PhotoToLoad photoToLoad) {
-		if (photoToLoad.listener != null) {
-			photoToLoad.listener.onLoadingStarted();
+	private void submitDisplayImageTask(ImageLoadingInfo imageLoadingInfo) {
+		if (imageLoadingInfo.listener != null) {
+			imageLoadingInfo.listener.onLoadingStarted();
 		}
 
-		photoLoaderExecutor.submit(new PhotosLoader(photoToLoad));
+		imageLoadingExecutor.submit(new DisplayImageTask(imageLoadingInfo));
 	}
 
 	private File getLocalImageFile(String imageUrl) {
@@ -210,11 +211,11 @@ public final class ImageLoader {
 	}
 
 	/**
-	 * Compute image size for loading at memory (for memory economy).<br />
+	 * Defines image size for loading at memory (for memory economy) by {@link ImageView} parameters.<br />
 	 * Size computing algorithm:<br />
-	 * 1) Gets maxWidth and maxHeight. If both of them are not set then go to step #2. (<i>this step is not working
-	 * now</i>)</br > 2) Get layout_width and layout_height. If both of them are not set then go to step #3.</br > 3)
-	 * Get device screen dimensions.
+	 * 1) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #2.<br />
+	 * 2) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step #3.</br>
+	 * 3) Get device screen dimensions.
 	 */
 	private ImageSize getImageSizeScaleTo(ImageView imageView) {
 		int width = -1;
@@ -245,79 +246,91 @@ public final class ImageLoader {
 			width = params.width;
 			height = params.height;
 		}
+
+		// Get device screen dimensions
+		if (width < 0 && height < 0) {
+			width = Constants.SCREEN_WIDTH;
+			height = Constants.SCREEN_HEIGHT;
+		}
 		return new ImageSize(width, height);
 	}
 
-	// Task for the queue
-	private class PhotoToLoad {
-		private String url;
-		private ImageView imageView;
-		private DisplayImageOptions options;
-		private ImageLoadingListener listener;
+	/** Information about display image task */
+	private final class ImageLoadingInfo {
+		private final String url;
+		private final ImageView imageView;
+		private final DisplayImageOptions options;
+		private final ImageLoadingListener listener;
 
-		PhotoToLoad(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
-			imageView.setTag(Constants.TAG_KEY, url);
+		public ImageLoadingInfo(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
 			this.url = url;
 			this.imageView = imageView;
 			this.options = options;
 			this.listener = listener;
+			// Set specific tag to ImageView. This tag will be used to prevent load image from other URL into this ImageView.
+			imageView.setTag(Constants.IMAGE_TAG_KEY, url);
 		}
 
+		/** Whether current URL matches to URL from ImageView tag */
 		boolean isConsistent() {
-			return url.equals(imageView.getTag(Constants.TAG_KEY));
+			return url.equals(imageView.getTag(Constants.IMAGE_TAG_KEY));
 		}
 	}
 
-	private class PhotosLoader implements Runnable {
+	/**
+	 * Presents display image task. Used to load image from Internet or file system, decode it to {@link Bitmap}, and
+	 * display it in {@link ImageView} through {@link DisplayBitmapTask}.
+	 */
+	private class DisplayImageTask implements Runnable {
 
-		private PhotoToLoad photoToLoad;
+		private final ImageLoadingInfo imageLoadingInfo;
 
-		PhotosLoader(PhotoToLoad photoToLoad) {
-			this.photoToLoad = photoToLoad;
+		public DisplayImageTask(ImageLoadingInfo imageLoadingInfo) {
+			this.imageLoadingInfo = imageLoadingInfo;
 		}
 
 		@Override
 		public void run() {
-			if (!photoToLoad.isConsistent()) {
+			if (!imageLoadingInfo.isConsistent()) {
 				return;
 			}
 			// Load bitmap						
-			ImageSize targetImageSize = getImageSizeScaleTo(photoToLoad.imageView);
-			Bitmap bmp = getBitmap(photoToLoad.url, targetImageSize, photoToLoad.options.isCacheOnDisc());
+			ImageSize targetImageSize = getImageSizeScaleTo(imageLoadingInfo.imageView);
+			Bitmap bmp = getBitmap(imageLoadingInfo.url, targetImageSize, imageLoadingInfo.options.isCacheOnDisc());
 
-			if (!photoToLoad.isConsistent() || bmp == null) {
+			if (!imageLoadingInfo.isConsistent() || bmp == null) {
 				return;
 			}
 			// Cache bitmap in memory
-			if (photoToLoad.options.isCacheInMemory()) {
+			if (imageLoadingInfo.options.isCacheInMemory()) {
 				synchronized (bitmapCache) {
-					bitmapCache.put(photoToLoad.url, bmp);
+					bitmapCache.put(imageLoadingInfo.url, bmp);
 				}
 			}
 
 			// Display image in {@link ImageView} on UI thread
-			BitmapDisplayer bd = new BitmapDisplayer(photoToLoad, bmp);
-			Activity a = (Activity) photoToLoad.imageView.getContext();
-			a.runOnUiThread(bd);
+			DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(imageLoadingInfo, bmp);
+			Activity activity = (Activity) imageLoadingInfo.imageView.getContext();
+			activity.runOnUiThread(displayBitmapTask);
 		}
 	}
 
-	/** Used to display bitmap in the UI thread */
-	private class BitmapDisplayer implements Runnable {
-		Bitmap bitmap;
-		PhotoToLoad photoToLoad;
+	/** Used to display bitmap in {@link ImageView}. Must be called on UI thread. */
+	private class DisplayBitmapTask implements Runnable {
+		private final Bitmap bitmap;
+		private final ImageLoadingInfo imageLoadingInfo;
 
-		public BitmapDisplayer(PhotoToLoad photoToLoad, Bitmap bitmap) {
+		public DisplayBitmapTask(ImageLoadingInfo imageLoadingInfo, Bitmap bitmap) {
 			this.bitmap = bitmap;
-			this.photoToLoad = photoToLoad;
+			this.imageLoadingInfo = imageLoadingInfo;
 		}
 
 		public void run() {
-			if (photoToLoad.isConsistent()) {
-				photoToLoad.imageView.setImageBitmap(bitmap);
+			if (imageLoadingInfo.isConsistent()) {
+				imageLoadingInfo.imageView.setImageBitmap(bitmap);
 				// Notify listener
-				if (photoToLoad.listener != null) {
-					photoToLoad.listener.onLoadingComplete();
+				if (imageLoadingInfo.listener != null) {
+					imageLoadingInfo.listener.onLoadingComplete();
 				}
 			}
 		}
