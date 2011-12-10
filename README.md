@@ -4,6 +4,7 @@ Image loader for Android which ca be used for wide cases of asynchronous image d
 
 ## Usage
 
+``` java
 ImageView imageView = ...
 String imageUrl = "http://site.com/image.png"; // or "file:///mnt/sdcard/images/image.jpg"
 ProgressBar spinner = ...
@@ -23,7 +24,11 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
     public void onLoadingComplete() {
         spinner.hide();
     }
-}); // or simple imageLoader.displayImage(imageUrl, imageView);
+});
+
+// or simple way
+imageLoader.displayImage(imageUrl, imageView);
+```
 
 ## License
 Copyright (c) 2011 [Sergey Tarasevich](http://nostra13android.blogspot.com)
