@@ -9,7 +9,6 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -106,11 +105,10 @@ public final class ImageLoader {
 	 *            displayed at ImageView but listener does not fire any event. Listener fires events on UI thread.
 	 */
 	public void displayImage(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
-		if (url == null || url.length() == 0) {
+		if (url == null || url.length() == 0 || imageView == null) {
 			return;
 		}
-		imageView.setTag(Constants.IMAGE_LOADER_TAG_KEY, url);
-
+		
 		PhotoToLoad photoToLoad = new PhotoToLoad(url, imageView, options, listener);
 
 		Bitmap image = null;
@@ -133,11 +131,6 @@ public final class ImageLoader {
 	private void queuePhoto(PhotoToLoad photoToLoad) {
 		if (photoToLoad.listener != null) {
 			photoToLoad.listener.onLoadingStarted();
-		}
-
-		// This ImageView may be used for other images before. So there may be some old tasks in the queue. We need to discard them.
-		synchronized (photoToLoadQueue) {
-			removeFromQueue(photoToLoad.imageView);
 		}
 
 		// If image was cached on disc we put load image task in front of the queue. 
@@ -175,16 +168,6 @@ public final class ImageLoader {
 	private File getLocalImageFile(String imageUrl) {
 		String fileName = String.valueOf(imageUrl.hashCode());
 		return new File(cacheDir, fileName);
-	}
-
-	public void removeFromQueue(ImageView image) {
-		Iterator<PhotoToLoad> it = photoToLoadQueue.iterator();
-		while (it.hasNext()) {
-			PhotoToLoad photo = it.next();
-			if (photo.imageView == image) {
-				it.remove();
-			}
-		}
 	}
 
 	private Bitmap getBitmap(String imageUrl, ImageSize targetImageSize, boolean cacheImageOnDisc) {
@@ -302,11 +285,16 @@ public final class ImageLoader {
 		private DisplayImageOptions options;
 		private ImageLoadingListener listener;
 
-		public PhotoToLoad(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
+		PhotoToLoad(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
+			imageView.setTag(Constants.IMAGE_LOADER_TAG_KEY, url);
 			this.url = url;
 			this.imageView = imageView;
 			this.options = options;
 			this.listener = listener;
+		}
+
+		boolean isConsistent() {
+			return url != null && url.equals(imageView.getTag(Constants.IMAGE_LOADER_TAG_KEY));
 		}
 	}
 
@@ -330,11 +318,17 @@ public final class ImageLoader {
 					}
 
 					if (photoToLoad != null) {
-						ImageSize targetImageSize = getImageSizeScaleTo(photoToLoad.imageView);
-						bmp = getBitmap(photoToLoad.url, targetImageSize, photoToLoad.options.isCacheOnDisc());
-						if (bmp == null) {
+						if (!photoToLoad.isConsistent()) {
 							continue;
 						}
+						// Load bitmap						
+						ImageSize targetImageSize = getImageSizeScaleTo(photoToLoad.imageView);
+						bmp = getBitmap(photoToLoad.url, targetImageSize, photoToLoad.options.isCacheOnDisc());
+						
+						if (!photoToLoad.isConsistent() || bmp == null) {
+							continue;
+						}
+						// Cache bitmap in memory
 						if (photoToLoad.options.isCacheInMemory()) {
 							synchronized (bitmapCache) {
 								bitmapCache.put(photoToLoad.url, bmp);
@@ -348,7 +342,7 @@ public final class ImageLoader {
 				} catch (InterruptedException e) {
 					Log.e(TAG, e.getMessage(), e);
 				} finally {
-					if (photoToLoad != null) {
+					if (photoToLoad != null && bmp != null) {
 						BitmapDisplayer bd = new BitmapDisplayer(photoToLoad, bmp);
 						Activity a = (Activity) photoToLoad.imageView.getContext();
 						a.runOnUiThread(bd);
@@ -369,11 +363,9 @@ public final class ImageLoader {
 		}
 
 		public void run() {
-			String tag = (String) photoToLoad.imageView.getTag(Constants.IMAGE_LOADER_TAG_KEY);
-
-			if (photoToLoad != null && tag != null && tag.equals(photoToLoad.url) && bitmap != null) {
+			if (photoToLoad.isConsistent()) {
 				photoToLoad.imageView.setImageBitmap(bitmap);
-
+				// Notify listener
 				if (photoToLoad.listener != null) {
 					photoToLoad.listener.onLoadingComplete();
 				}
