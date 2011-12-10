@@ -264,7 +264,6 @@ public final class ImageLoader {
 		}
 
 		boolean isConsistent() {
-			Log.i(TAG, "isConsistent" + url.equals(imageView.getTag(Constants.TAG_KEY)));
 			return url.equals(imageView.getTag(Constants.TAG_KEY));
 		}
 	}
