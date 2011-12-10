@@ -37,9 +37,7 @@ public final class ImageLoader {
 	private final Cache<String, Bitmap> bitmapCache = new ImageCache(Constants.MEMORY_CACHE_SIZE);
 	private final File cacheDir;
 
-//	private final List<PhotoToLoad> photoToLoadQueue = new LinkedList<ImageLoader.PhotoToLoad>();
-	private ExecutorService executorService;
-//	private final PhotosLoader photoLoaderThread = new PhotosLoader();
+	private ExecutorService photoLoaderExecutor;
 	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createSimple();
 
 	private volatile static ImageLoader instance = null;
@@ -57,10 +55,7 @@ public final class ImageLoader {
 	}
 
 	private ImageLoader(Context context) {
-		// Make the background thread low priority. This way it will not affect the UI performance
-//		photoLoaderThread.setPriority(Thread.NORM_PRIORITY - 1);
-		executorService = Executors.newFixedThreadPool(Constants.IMAGE_LOADER_THREAD_POOL_SIZE);
-		// Find the directory to save cached images
+		photoLoaderExecutor = Executors.newFixedThreadPool(Constants.THREAD_POOL_SIZE);
 		cacheDir = StorageUtils.getCacheDirectory(context);
 	}
 
@@ -130,12 +125,30 @@ public final class ImageLoader {
 		}
 	}
 
+	/** Stops all running display image tasks, discards all other scheduled tasks */
+	public void stop() {
+		photoLoaderExecutor.shutdown();
+	}
+
+	public void clearMemoryCache() {
+		synchronized (bitmapCache) {
+			bitmapCache.clear();
+		}
+	}
+
+	public void clearDiscCache() {
+		File[] files = cacheDir.listFiles();
+		for (File f : files) {
+			f.delete();
+		}
+	}
+
 	private void queuePhoto(PhotoToLoad photoToLoad) {
 		if (photoToLoad.listener != null) {
 			photoToLoad.listener.onLoadingStarted();
 		}
 
-		executorService.submit(new PhotosLoader(photoToLoad));
+		photoLoaderExecutor.submit(new PhotosLoader(photoToLoad));
 	}
 
 	private File getLocalImageFile(String imageUrl) {
@@ -196,10 +209,6 @@ public final class ImageLoader {
 		}
 	}
 
-	public void stopThread() {
-		executorService.shutdown();
-	}
-
 	/**
 	 * Compute image size for loading at memory (for memory economy).<br />
 	 * Size computing algorithm:<br />
@@ -239,18 +248,6 @@ public final class ImageLoader {
 		return new ImageSize(width, height);
 	}
 
-	public void clearMemoryCache() {
-		synchronized (bitmapCache) {
-			bitmapCache.clear();
-		}
-	}
-
-	public void clearDiscCache() {
-		File[] files = cacheDir.listFiles();
-		for (File f : files)
-			f.delete();
-	}
-
 	// Task for the queue
 	private class PhotoToLoad {
 		private String url;
@@ -259,7 +256,7 @@ public final class ImageLoader {
 		private ImageLoadingListener listener;
 
 		PhotoToLoad(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
-			imageView.setTag(Constants.IMAGE_LOADER_TAG_KEY, url);
+			imageView.setTag(Constants.TAG_KEY, url);
 			this.url = url;
 			this.imageView = imageView;
 			this.options = options;
@@ -267,12 +264,12 @@ public final class ImageLoader {
 		}
 
 		boolean isConsistent() {
-			Log.i(TAG, "isConsistent" + url.equals(imageView.getTag(Constants.IMAGE_LOADER_TAG_KEY)));
-			return url.equals(imageView.getTag(Constants.IMAGE_LOADER_TAG_KEY));
+			Log.i(TAG, "isConsistent" + url.equals(imageView.getTag(Constants.TAG_KEY)));
+			return url.equals(imageView.getTag(Constants.TAG_KEY));
 		}
 	}
 
-	class PhotosLoader implements Runnable {
+	private class PhotosLoader implements Runnable {
 
 		private PhotoToLoad photoToLoad;
 
@@ -307,7 +304,7 @@ public final class ImageLoader {
 	}
 
 	/** Used to display bitmap in the UI thread */
-	class BitmapDisplayer implements Runnable {
+	private class BitmapDisplayer implements Runnable {
 		Bitmap bitmap;
 		PhotoToLoad photoToLoad;
 
