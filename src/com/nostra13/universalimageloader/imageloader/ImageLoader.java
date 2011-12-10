@@ -105,17 +105,20 @@ public final class ImageLoader {
 			return;
 		}
 
-		ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, options, listener);
-
-		Bitmap image = null;
+		Bitmap bmp = null;
 		synchronized (bitmapCache) {
-			image = bitmapCache.get(url);
+			bmp = bitmapCache.get(url);
 		}
 
-		if (image != null && !image.isRecycled()) {
-			imageView.setImageBitmap(image);
+		if (bmp != null && !bmp.isRecycled()) {
+			imageView.setImageBitmap(bmp);
 		} else {
-			submitDisplayImageTask(imageLoadingInfo);
+			if (listener != null) {
+				listener.onLoadingStarted();
+			}
+			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, options, listener);
+			imageLoadingExecutor.submit(new DisplayImageTask(imageLoadingInfo));
+
 			if (options.isShowStubImage()) {
 				imageView.setImageResource(options.getStubImage());
 			} else {
@@ -142,117 +145,6 @@ public final class ImageLoader {
 		for (File f : files) {
 			f.delete();
 		}
-	}
-
-	private void submitDisplayImageTask(ImageLoadingInfo imageLoadingInfo) {
-		if (imageLoadingInfo.listener != null) {
-			imageLoadingInfo.listener.onLoadingStarted();
-		}
-
-		imageLoadingExecutor.submit(new DisplayImageTask(imageLoadingInfo));
-	}
-
-	private File getLocalImageFile(String imageUrl) {
-		String fileName = String.valueOf(imageUrl.hashCode());
-		return new File(cacheDir, fileName);
-	}
-
-	private Bitmap getBitmap(String imageUrl, ImageSize targetImageSize, boolean cacheImageOnDisc) {
-		File f = getLocalImageFile(imageUrl);
-
-		// Try to load image from disc cache
-		try {
-			if (f.exists()) {
-				Bitmap b = ImageDecoder.decodeFile(f.toURL(), targetImageSize);
-				if (b != null) {
-					return b;
-				}
-			}
-		} catch (IOException e) {
-			// There is no image in disc cache. Do nothing
-		}
-
-		// Load image from Web
-		Bitmap bitmap = null;
-		try {
-			URL imageUrlForDecoding = null;
-			if (cacheImageOnDisc) {
-				saveImageFromUrl(imageUrl, f);
-				imageUrlForDecoding = f.toURL();
-			} else {
-				imageUrlForDecoding = new URL(imageUrl);
-			}
-
-			bitmap = ImageDecoder.decodeFile(imageUrlForDecoding, targetImageSize);
-		} catch (Exception ex) {
-			Log.e(TAG, String.format("Exception while loading bitmap from URL=%s : %s", imageUrl, ex.getMessage()), ex);
-			if (f.exists()) {
-				f.delete();
-			}
-		}
-		return bitmap;
-	}
-
-	private void saveImageFromUrl(String imageUrl, File targetFile) throws MalformedURLException, IOException {
-		HttpURLConnection conn = (HttpURLConnection) new URL(imageUrl).openConnection();
-		conn.setConnectTimeout(Constants.HTTP_CONNECT_TIMEOUT);
-		conn.setReadTimeout(Constants.HTTP_READ_TIMEOUT);
-		InputStream is = conn.getInputStream();
-		try {
-			OutputStream os = new FileOutputStream(targetFile);
-			try {
-				FileUtils.copyStream(is, os);
-			} finally {
-				os.close();
-			}
-		} finally {
-			is.close();
-		}
-	}
-
-	/**
-	 * Defines image size for loading at memory (for memory economy) by {@link ImageView} parameters.<br />
-	 * Size computing algorithm:<br />
-	 * 1) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #2.<br />
-	 * 2) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step #3.</br>
-	 * 3) Get device screen dimensions.
-	 */
-	private ImageSize getImageSizeScaleTo(ImageView imageView) {
-		int width = -1;
-		int height = -1;
-
-		// Check maxWidth and maxHeight parameters
-		try {
-			Field maxWidthField = ImageView.class.getDeclaredField("mMaxWidth");
-			Field maxHeightField = ImageView.class.getDeclaredField("mMaxHeight");
-			maxWidthField.setAccessible(true);
-			maxHeightField.setAccessible(true);
-			int maxWidth = (Integer) maxWidthField.get(imageView);
-			int maxHeight = (Integer) maxHeightField.get(imageView);
-
-			if (maxWidth >= 0 && maxWidth < Integer.MAX_VALUE) {
-				width = maxWidth;
-			}
-			if (maxHeight >= 0 && maxHeight < Integer.MAX_VALUE) {
-				height = maxHeight;
-			}
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
-
-		if (width < 0 && height < 0) {
-			// Get layout width and height parameters
-			LayoutParams params = imageView.getLayoutParams();
-			width = params.width;
-			height = params.height;
-		}
-
-		// Get device screen dimensions
-		if (width < 0 && height < 0) {
-			width = Constants.SCREEN_WIDTH;
-			height = Constants.SCREEN_HEIGHT;
-		}
-		return new ImageSize(width, height);
 	}
 
 	/** Information about display image task */
@@ -312,6 +204,109 @@ public final class ImageLoader {
 			DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(imageLoadingInfo, bmp);
 			Activity activity = (Activity) imageLoadingInfo.imageView.getContext();
 			activity.runOnUiThread(displayBitmapTask);
+		}
+
+		/**
+		 * Defines image size for loading at memory (for memory economy) by {@link ImageView} parameters.<br />
+		 * Size computing algorithm:<br />
+		 * 1) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #2.<br />
+		 * 2) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step
+		 * #3.</br> 3) Get device screen dimensions.
+		 */
+		private ImageSize getImageSizeScaleTo(ImageView imageView) {
+			int width = -1;
+			int height = -1;
+
+			// Check maxWidth and maxHeight parameters
+			try {
+				Field maxWidthField = ImageView.class.getDeclaredField("mMaxWidth");
+				Field maxHeightField = ImageView.class.getDeclaredField("mMaxHeight");
+				maxWidthField.setAccessible(true);
+				maxHeightField.setAccessible(true);
+				int maxWidth = (Integer) maxWidthField.get(imageView);
+				int maxHeight = (Integer) maxHeightField.get(imageView);
+
+				if (maxWidth >= 0 && maxWidth < Integer.MAX_VALUE) {
+					width = maxWidth;
+				}
+				if (maxHeight >= 0 && maxHeight < Integer.MAX_VALUE) {
+					height = maxHeight;
+				}
+			} catch (Exception e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+
+			if (width < 0 && height < 0) {
+				// Get layout width and height parameters
+				LayoutParams params = imageView.getLayoutParams();
+				width = params.width;
+				height = params.height;
+			}
+
+			// Get device screen dimensions
+			if (width < 0 && height < 0) {
+				width = Constants.SCREEN_WIDTH;
+				height = Constants.SCREEN_HEIGHT;
+			}
+			return new ImageSize(width, height);
+		}
+
+		private Bitmap getBitmap(String imageUrl, ImageSize targetImageSize, boolean cacheImageOnDisc) {
+			File f = getLocalImageFile(imageUrl);
+
+			// Try to load image from disc cache
+			try {
+				if (f.exists()) {
+					Bitmap b = ImageDecoder.decodeFile(f.toURL(), targetImageSize);
+					if (b != null) {
+						return b;
+					}
+				}
+			} catch (IOException e) {
+				// There is no image in disc cache. Do nothing
+			}
+
+			// Load image from Web
+			Bitmap bitmap = null;
+			try {
+				URL imageUrlForDecoding = null;
+				if (cacheImageOnDisc) {
+					saveImageFromUrl(imageUrl, f);
+					imageUrlForDecoding = f.toURL();
+				} else {
+					imageUrlForDecoding = new URL(imageUrl);
+				}
+
+				bitmap = ImageDecoder.decodeFile(imageUrlForDecoding, targetImageSize);
+			} catch (Exception ex) {
+				Log.e(TAG, String.format("Exception while loading bitmap from URL=%s : %s", imageUrl, ex.getMessage()), ex);
+				if (f.exists()) {
+					f.delete();
+				}
+			}
+			return bitmap;
+		}
+
+		private File getLocalImageFile(String imageUrl) {
+			String fileName = String.valueOf(imageUrl.hashCode());
+			return new File(cacheDir, fileName);
+		}
+
+		private void saveImageFromUrl(String imageUrl, File targetFile) throws MalformedURLException, IOException {
+			HttpURLConnection conn = (HttpURLConnection) new URL(imageUrl).openConnection();
+			conn.setConnectTimeout(Constants.HTTP_CONNECT_TIMEOUT);
+			conn.setReadTimeout(Constants.HTTP_READ_TIMEOUT);
+			InputStream is = conn.getInputStream();
+			try {
+				OutputStream os = new FileOutputStream(targetFile);
+				try {
+					FileUtils.copyStream(is, os);
+				} finally {
+					os.close();
+				}
+			} finally {
+				is.close();
+			}
 		}
 	}
 
