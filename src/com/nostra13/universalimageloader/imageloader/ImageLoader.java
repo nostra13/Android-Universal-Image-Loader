@@ -32,7 +32,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
  */
 public final class ImageLoader {
 
-	public static final String TAG = ImageLoader.class.getSimpleName();
+	private static final String TAG = ImageLoader.class.getSimpleName();
 
 	private final Cache<String, Bitmap> bitmapCache = new ImageCache(Constants.MEMORY_CACHE_SIZE);
 	private final File cacheDir;

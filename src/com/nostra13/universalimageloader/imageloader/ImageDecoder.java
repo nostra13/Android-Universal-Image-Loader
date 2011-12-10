@@ -16,7 +16,7 @@ import android.util.Log;
  */
 public final class ImageDecoder {
 
-	public static final String TAG = ImageDecoder.class.getSimpleName();
+	private static final String TAG = ImageDecoder.class.getSimpleName();
 
 	private ImageDecoder() {
 	}
@@ -26,8 +26,10 @@ public final class ImageDecoder {
 	 * Initial image size is reduced by the power of 2 (according Android recommendations)
 	 * 
 	 * @param imageUrl
+	 *            Image URL
 	 * @param targetImageSize
-	 * @return
+	 *            Image size to scale to during decoding
+	 * @return Decoded bitmap
 	 * @throws IOException
 	 */
 	public static Bitmap decodeFile(URL imageUrl, ImageSize targetImageSize) throws IOException {

@@ -11,8 +11,6 @@ import java.io.OutputStream;
  */
 public final class FileUtils {
 
-	public static final String TAG = FileUtils.class.getSimpleName();
-
 	private FileUtils() {
 	}
 
