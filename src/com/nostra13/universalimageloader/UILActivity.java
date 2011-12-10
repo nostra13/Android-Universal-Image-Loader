@@ -36,6 +36,12 @@ public class UILActivity extends ListActivity {
 	}
 
 	@Override
+	protected void onDestroy() {
+		imageLoader.stop();
+		super.onDestroy();
+	}
+	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main_menu, menu);
 		return true;

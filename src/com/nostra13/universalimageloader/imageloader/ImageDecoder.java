@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory.Options;
 import android.util.Log;
 
 import com.nostra13.universalimageloader.Constants;
-import com.nostra13.universalimageloader.imageloader.ImageLoader.ImageSize;
 
 /**
  * Decodes image from URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png") into {@link Bitmap}

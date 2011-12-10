@@ -17,9 +17,10 @@ public final class Constants {
 	public static final String APP_CACHE_DIRECTORY = "Cache";
 
 	public static final int STUB_IMAGE = R.drawable.stub_image;
-	public static final int IMAGE_LOADER_TAG_KEY = R.id.tag_image_loader;
-	public static final int MEMORY_CACHE_SIZE = 2000000; // 2 Mb
+	public static final int TAG_KEY = R.id.tag_image_loader;
+	public static final int MEMORY_CACHE_SIZE = 2000000; // bytes
+	public static final int THREAD_POOL_SIZE = 3; 
 
-	public static final int HTTP_CONNECT_TIMEOUT = 20000; // 20 s
-	public static final int HTTP_READ_TIMEOUT = 30000; // 30 s
+	public static final int HTTP_CONNECT_TIMEOUT = 5000; // milliseconds
+	public static final int HTTP_READ_TIMEOUT = 20000; // milliseconds
 }
