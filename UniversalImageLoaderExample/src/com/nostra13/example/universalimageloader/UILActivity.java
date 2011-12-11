@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader;
+package com.nostra13.example.universalimageloader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.Constants;
 import com.nostra13.universalimageloader.imageloader.DisplayImageOptions;
 import com.nostra13.universalimageloader.imageloader.ImageLoader;
 import com.nostra13.universalimageloader.imageloader.ImageLoadingListener;

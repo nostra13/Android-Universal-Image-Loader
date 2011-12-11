@@ -1,4 +1,6 @@
-package com.nostra13.universalimageloader;
+package com.nostra13.example.universalimageloader;
+
+import com.nostra13.universalimageloader.Constants;
 
 import android.app.Application;
 import android.util.DisplayMetrics;
