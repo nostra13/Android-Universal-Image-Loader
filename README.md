@@ -1,6 +1,6 @@
 # Universal Image Loader for Android
 
-Image loader for Android which ca be used for wide cases of asynchronous image displaying.
+Image loader for Android which can be used for wide cases of asynchronous image displaying.
 
 ## Usage
 
