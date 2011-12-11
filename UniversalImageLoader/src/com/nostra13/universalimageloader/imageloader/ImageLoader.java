@@ -104,6 +104,8 @@ public final class ImageLoader {
 		if (url == null || url.length() == 0 || imageView == null) {
 			return;
 		}
+		// Set specific tag to ImageView. This tag will be used to prevent load image from other URL into this ImageView.
+		imageView.setTag(Constants.IMAGE_TAG_KEY, url);
 
 		Bitmap bmp = null;
 		synchronized (bitmapCache) {
@@ -159,8 +161,6 @@ public final class ImageLoader {
 			this.imageView = imageView;
 			this.options = options;
 			this.listener = listener;
-			// Set specific tag to ImageView. This tag will be used to prevent load image from other URL into this ImageView.
-			imageView.setTag(Constants.IMAGE_TAG_KEY, url);
 		}
 
 		/** Whether current URL matches to URL from ImageView tag */
@@ -321,6 +321,7 @@ public final class ImageLoader {
 		}
 
 		public void run() {
+			Log.e("NOSTRA", "#3");
 			if (imageLoadingInfo.isConsistent()) {
 				imageLoadingInfo.imageView.setImageBitmap(bitmap);
 				// Notify listener
