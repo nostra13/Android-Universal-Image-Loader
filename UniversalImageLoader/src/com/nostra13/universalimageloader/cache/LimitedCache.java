@@ -1,7 +1,9 @@
 package com.nostra13.universalimageloader.cache;
 
 import java.lang.ref.Reference;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Limited cache. Provides objects storing. Object has size ({@link #getSize(Object)}), size of all stored object will
@@ -19,11 +21,11 @@ public abstract class LimitedCache<K, V> extends Cache<K, V> {
 	private int cacheSize = 0;
 
 	/**
-	 * Contains strong references to stored objects. Each next object is added first. If hard cache size will exceed
-	 * limit then last object is deleted (but it continue exist at {@link #softMap} and can be collected by GC at any
-	 * time)
+	 * Contains strong references to stored objects (keys) and last object usage date (in milliseconds). If hard cache
+	 * size will exceed limit then object with the oldest last usage date is deleted (but it continue exist at
+	 * {@link #softMap} and can be collected by GC at any time)
 	 */
-	private final LinkedList<V> hardCache = new LinkedList<V>();
+	private final Map<V, Long> hardCache = new HashMap<V, Long>();
 
 	public void put(K key, V value) {
 		int valueSize = getSize(value);
@@ -31,19 +33,51 @@ public abstract class LimitedCache<K, V> extends Cache<K, V> {
 		// add to hard cache
 		if (valueSize < sizeLimit) {
 			while (cacheSize + valueSize > sizeLimit) {
-				cacheSize -= getSize(hardCache.removeLast());
+				cacheSize -= getSize(removeMostLongUsed());
 			}
-			hardCache.addFirst(value);
+			hardCache.put(value, System.currentTimeMillis());
 			cacheSize += valueSize;
 		}
 		// add to soft cache
 		super.put(key, value);
 	}
 
+	public V get(K key) {
+		V value = super.get(key);
+		// Save current usage date for value if value is contained in hardCahe
+		if (value != null) {
+			Long lastUsage = hardCache.get(value);
+			if (lastUsage != null) {
+				hardCache.put(value, System.currentTimeMillis());
+			}
+		}
+		return value;
+	}
+
 	public void clear() {
 		hardCache.clear();
 		cacheSize = 0;
 		super.clear();
+	}
+
+	// TODO : Implement different logic variants for element removing (FIFO, remove the biggest)
+	private V removeMostLongUsed() {
+		Long oldestUsage = null;
+		V leastUsedValue = null;
+		for (Entry<V, Long> entry : hardCache.entrySet()) {
+			if (leastUsedValue == null) {
+				leastUsedValue = entry.getKey();
+				oldestUsage = entry.getValue();
+			} else {
+				Long lastValueUsage = entry.getValue();
+				if (lastValueUsage < oldestUsage) {
+					oldestUsage = lastValueUsage;
+					leastUsedValue = entry.getKey();
+				}
+			}
+		}
+		hardCache.remove(leastUsedValue);
+		return leastUsedValue;
 	}
 
 	protected abstract Reference<V> createReference(V value);
