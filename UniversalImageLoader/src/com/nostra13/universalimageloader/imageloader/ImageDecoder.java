@@ -14,7 +14,7 @@ import android.util.Log;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public final class ImageDecoder {
+final class ImageDecoder {
 
 	private static final String TAG = ImageDecoder.class.getSimpleName();
 
