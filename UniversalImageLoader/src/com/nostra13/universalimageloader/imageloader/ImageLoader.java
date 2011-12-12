@@ -119,6 +119,9 @@ public final class ImageLoader {
 				listener.onLoadingStarted();
 			}
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, options, listener);
+			if (imageLoadingExecutor.isShutdown()) {
+				imageLoadingExecutor = Executors.newFixedThreadPool(Constants.THREAD_POOL_SIZE);
+			}
 			imageLoadingExecutor.submit(new DisplayImageTask(imageLoadingInfo));
 
 			if (options.isShowStubImage()) {
@@ -321,7 +324,6 @@ public final class ImageLoader {
 		}
 
 		public void run() {
-			Log.e("NOSTRA", "#3");
 			if (imageLoadingInfo.isConsistent()) {
 				imageLoadingInfo.imageView.setImageBitmap(bitmap);
 				// Notify listener
