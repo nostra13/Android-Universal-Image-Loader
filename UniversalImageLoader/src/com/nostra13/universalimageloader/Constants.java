@@ -5,7 +5,11 @@ package com.nostra13.universalimageloader;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class Constants {
+public final class Constants {
+
+	private Constants() {
+	}
+
 	// Default values of ImageLoaderConfiguration
 	/** {@value} pixels*/
 	public static final int DEFAULT_MAX_IMAGE_WIDTH = 800;
