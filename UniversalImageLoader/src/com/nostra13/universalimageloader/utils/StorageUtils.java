@@ -22,9 +22,9 @@ public final class StorageUtils {
 	 * @param context
 	 *            Application context
 	 * @param cacheDirPath
-	 *            Cache directory path for SD card (if SD card is mounted).<br />
-	 *            <b>i.e.:</b> "AppDir_cache", "AppDir/Cache/Images" 
-	 * @return
+	 *            Cache directory path for SD card (if SD card is mounted). <b>i.e.:</b> "AppDir_cache",
+	 *            "AppDir/Cache/Images"
+	 * @return Cache {@link File directory}
 	 */
 	public static File getCacheDirectory(Context context, String cacheDirPath) {
 		File appCacheDir;

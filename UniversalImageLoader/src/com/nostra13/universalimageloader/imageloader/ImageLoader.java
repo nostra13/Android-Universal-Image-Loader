@@ -34,7 +34,6 @@ public final class ImageLoader {
 
 	private ImageLoaderConfiguration configuration;
 	private ExecutorService imageLoadingExecutor;
-	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createSimple();
 
 	private volatile static ImageLoader instance;
 
@@ -57,7 +56,8 @@ public final class ImageLoader {
 
 	/**
 	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn. <br/>
-	 * {@linkplain DisplayImageOptions#createSimple() Simple display image options } will be used.
+	 * Default {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
+	 * configuration} will be used.
 	 * 
 	 * @param url
 	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
@@ -65,7 +65,7 @@ public final class ImageLoader {
 	 *            {@link ImageView} which should display image
 	 */
 	public void displayImage(String url, ImageView imageView) {
-		displayImage(url, imageView, defaultOptions, null);
+		displayImage(url, imageView, null, null);
 	}
 
 	/**
@@ -76,7 +76,9 @@ public final class ImageLoader {
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param options
-	 *            {@link DisplayImageOptions Display options} for image displaying
+	 *            {@link DisplayImageOptions Display image options} for image displaying. If <b>null</b> - default
+	 *            {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
+	 *            configuration} will be used.
 	 */
 	public void displayImage(String url, ImageView imageView, DisplayImageOptions options) {
 		displayImage(url, imageView, options, null);
@@ -90,7 +92,9 @@ public final class ImageLoader {
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param options
-	 *            {@link DisplayImageOptions Display options} for image displaying
+	 *            {@link DisplayImageOptions Display image options} for image displaying. If <b>null</b> - default
+	 *            {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
+	 *            configuration} will be used.
 	 * @param listener
 	 *            {@link ImageLoadingListener Listener} for image loading process. Listener fires events only if there
 	 *            is no image for loading in memory cache. If there is image for loading in memory cache then image is
@@ -109,6 +113,9 @@ public final class ImageLoader {
 		} else {
 			if (listener != null) {
 				listener.onLoadingStarted();
+			}
+			if (options == null) {
+				options = configuration.defaultDisplayImageOptions;
 			}
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, options, listener);
 			if (imageLoadingExecutor.isShutdown()) {

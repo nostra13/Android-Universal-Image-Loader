@@ -21,5 +21,4 @@ public class DefaultDiscCache extends DiscCache {
 		String fileName = String.valueOf(url.hashCode());
 		return new File(getCacheDir(), fileName);
 	}
-
 }
