@@ -1,11 +1,9 @@
 package com.nostra13.universalimageloader.imageloader;
 
-import android.widget.ImageView;
-
 /**
  * Contains options for image display. Defines:
  * <ul>
- * <li>whether stub image will be displayed in {@link ImageView} during image loading</li>
+ * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading</li>
  * <li>whether loaded image will be cached in memory</li>
  * <li>whether loaded image will be cached on disc</li>
  * </ul>
@@ -59,7 +57,7 @@ public final class DisplayImageOptions {
 		private boolean cacheOnDisc = false;
 
 		/**
-		 * Stub image will be displayed in {@link ImageView} during image loading
+		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
 		 * 
 		 * @param stubImageRes
 		 *            Stub image resource
@@ -90,7 +88,7 @@ public final class DisplayImageOptions {
 	/**
 	 * Creates options appropriate for single displaying:
 	 * <ul>
-	 * <li>Stub image will <b>not</b> be displayed in {@link ImageView} during image loading</li>
+	 * <li>Stub image will <b>not</b> be displayed in {@link android.widget.ImageView ImageView} during image loading</li>
 	 * <li>Loaded image will <b>not</b> be cached in memory</li>
 	 * <li>Loaded image will <b>not</b> be cached on disc (application cache directory or on SD card)</li>
 	 * </ul>

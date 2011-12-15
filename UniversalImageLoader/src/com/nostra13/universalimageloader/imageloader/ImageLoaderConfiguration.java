@@ -47,14 +47,18 @@ public final class ImageLoaderConfiguration {
 	 * Creates default configuration for {@link ImageLoader} <br />
 	 * <b>Default values:</b>
 	 * <ul>
-	 * <li>maxImageWidthForMemoryCache = {@link Constants#DEFAULT_MAX_IMAGE_WIDTH}</li>
-	 * <li>maxImageHeightForMemoryCache = {@link Constants#DEFAULT_MAX_IMAGE_HEIGHT}</li>
-	 * <li>httpConnectTimeout = {@link Constants#DEFAULT_HTTP_CONNECTION_TIMEOUT}</li>
-	 * <li>httpReadTimeout = {@link Constants#DEFAULT_HTTP_READ_TIMEOUT}</li>
-	 * <li>threadPoolSize = {@link Constants#DEFAULT_THREAD_POOL_SIZE}</li>
-	 * <li>memoryCache = {@link UsingFreqLimitedCache} with limited memory cache size (
-	 * {@link Constants#DEFAULT_MEMORY_CACHE_SIZE} bytes)</li>
-	 * <li>discCache = {@link DefaultDiscCache}</li>
+	 * <li>maxImageWidthForMemoryCache = {@link com.nostra13.universalimageloader.Constants#DEFAULT_MAX_IMAGE_WIDTH
+	 * this}</li>
+	 * <li>maxImageHeightForMemoryCache = {@link com.nostra13.universalimageloader.Constants#DEFAULT_MAX_IMAGE_HEIGHT
+	 * this}</li>
+	 * <li>httpConnectTimeout = {@link com.nostra13.universalimageloader.Constants#DEFAULT_HTTP_CONNECTION_TIMEOUT this}
+	 * </li>
+	 * <li>httpReadTimeout = {@link com.nostra13.universalimageloader.Constants#DEFAULT_HTTP_READ_TIMEOUT this}</li>
+	 * <li>threadPoolSize = {@link com.nostra13.universalimageloader.Constants#DEFAULT_THREAD_POOL_SIZE this}</li>
+	 * <li>memoryCache = {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache
+	 * UsingFreqLimitedCache} with limited memory cache size (
+	 * {@link com.nostra13.universalimageloader.Constants#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
+	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache this}</li>
 	 * <li>defaultDisplayImageOptions = {@link DisplayImageOptions#createSimple() Simple options}</li>
 	 * </ul>
 	 * */
@@ -85,8 +89,9 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets maximum image width which will be used for memory saving during decoding an image to {@link Bitmap}.<br />
-		 * Default value - {@link Constants#DEFAULT_MAX_IMAGE_WIDTH}
+		 * Sets maximum image width which will be used for memory saving during decoding an image to
+		 * {@link android.graphics.Bitmap Bitmap}.<br />
+		 * Default value - {@link com.nostra13.universalimageloader.Constants#DEFAULT_MAX_IMAGE_WIDTH this}
 		 * */
 		public Builder maxImageWidthForMemoryCache(int maxImageWidthForMemoryCache) {
 			this.maxImageWidthForMemoryCache = maxImageWidthForMemoryCache;
@@ -94,8 +99,9 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets maximum image height which will be used for memory saving during decoding an image to {@link Bitmap}.<br />
-		 * Default value - {@link Constants#DEFAULT_MAX_IMAGE_HEIGHT}
+		 * Sets maximum image height which will be used for memory saving during decoding an image to
+		 * {@link android.graphics.Bitmap Bitmap}.<br />
+		 * Default value - {@link com.nostra13.universalimageloader.Constants#DEFAULT_MAX_IMAGE_HEIGHT this}
 		 * */
 		public Builder maxImageHeightForMemoryCache(int maxImageHeightForMemoryCache) {
 			this.maxImageHeightForMemoryCache = maxImageHeightForMemoryCache;
@@ -104,7 +110,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets timeout for HTTP connection establishment (during image loading).<br />
-		 * Default value - {@link Constants#DEFAULT_HTTP_CONNECTION_TIMEOUT}
+		 * Default value - {@link com.nostra13.universalimageloader.Constants#DEFAULT_HTTP_CONNECTION_TIMEOUT this}
 		 * */
 		public Builder httpConnectTimeout(int timeout) {
 			httpConnectTimeout = timeout;
@@ -113,7 +119,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets timeout for HTTP reading (during image loading).<br />
-		 * Default value - {@link Constants#DEFAULT_HTTP_READ_TIMEOUT}
+		 * Default value - {@link com.nostra13.universalimageloader.Constants#DEFAULT_HTTP_READ_TIMEOUT this}
 		 * */
 		public Builder httpReadTimeout(int timeout) {
 			httpReadTimeout = timeout;
@@ -122,7 +128,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets thread pool size for image display tasks.<br />
-		 * Default value - {@link Constants#DEFAULT_THREAD_POOL_SIZE}
+		 * Default value - {@link com.nostra13.universalimageloader.Constants#DEFAULT_THREAD_POOL_SIZE this}
 		 * */
 		public Builder threadPoolSize(int threadPoolSize) {
 			this.threadPoolSize = threadPoolSize;
@@ -130,9 +136,10 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets memory cache for {@link Bitmap bitmaps}.<br />
-		 * Default value - {@link UsingFreqLimitedCache} with limited memory cache size (
-		 * {@link Constants#DEFAULT_MEMORY_CACHE_SIZE} bytes)
+		 * Sets memory cache for {@link android.graphics.Bitmap bitmaps}.<br />
+		 * Default value - {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache
+		 * UsingFreqLimitedCache} with limited memory cache size (size =
+		 * {@link com.nostra13.universalimageloader.Constants#DEFAULT_MEMORY_CACHE_SIZE this})
 		 */
 		public Builder memoryCache(MemoryCache<String, Bitmap> memoryCache) {
 			this.memoryCache = memoryCache;
@@ -140,8 +147,9 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets memory cache for {@link Bitmap bitmaps}.<br />
-		 * Default value - {@link DefaultDiscCache}
+		 * Sets memory cache for {@link android.graphics.Bitmap bitmaps}.<br />
+		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache
+		 * this}
 		 */
 		public Builder discCache(DiscCache discCache) {
 			this.discCache = discCache;
@@ -149,9 +157,9 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets default {@linkplain DisplayImageOptions display image options} for image displaying. It will be used for
-		 * every {@linkplain ImageLoader#displayImage(String, android.widget.ImageView) image display call} without
-		 * defined custom {@linkplain DisplayImageOptions options}<br />
+		 * Sets default {@linkplain DisplayImageOptions display image options} for image displaying. These options will
+		 * be used for every {@linkplain ImageLoader#displayImage(String, android.widget.ImageView) image display call}
+		 * without passing custom {@linkplain DisplayImageOptions options}<br />
 		 * Default value - {@link DisplayImageOptions#createSimple() Simple options}
 		 */
 		public Builder defaultDisplayImageOptions(DisplayImageOptions defaultDisplayImageOptions) {
@@ -162,7 +170,6 @@ public final class ImageLoaderConfiguration {
 		/** Builds configured {@link ImageLoaderConfiguration} object */
 		public ImageLoaderConfiguration build() {
 			initEmptyFiledsWithDefaultValues();
-			context = null;
 			return new ImageLoaderConfiguration(this);
 		}
 

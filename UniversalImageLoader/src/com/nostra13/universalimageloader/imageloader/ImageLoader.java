@@ -22,7 +22,7 @@ import com.nostra13.universalimageloader.R;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
 /**
- * Singltone for image loading and displaying at {@link ImageView ImageViews}
+ * Singletone for image loading and displaying at {@link ImageView ImageViews}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
@@ -37,7 +37,14 @@ public final class ImageLoader {
 
 	private volatile static ImageLoader instance;
 
-	/** Returns singletone class instance */
+	/**
+	 * Returns singletone class instance. Incoming <b>configuration</b> parameter used for first instance
+	 * initialization.
+	 * 
+	 * @param configuration
+	 *            {@linkplain ImageLoaderConfiguration ImageLoader configuration}
+	 * @return Singletone class instance
+	 */
 	public static ImageLoader getInstance(ImageLoaderConfiguration configuration) {
 		if (instance == null) {
 			synchronized (ImageLoader.class) {
