@@ -33,8 +33,10 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 			.discCache(new DefaultDiscCache(cacheDir)) // You can pass your own disc cache implementation
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
 			.build();
+// Create ImageLoader by created configuration
 ImageLoader imageLoader = ImageLoader.getInstance(config);
-// Creates display image options
+
+// Creates display image options for custom display task
 DisplayImageOptions options = new DisplayImageOptions.Builder()
                                        .showStubImage(R.drawable.stub_image)
                                        .cacheInMemory()
