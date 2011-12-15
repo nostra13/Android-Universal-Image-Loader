@@ -76,8 +76,9 @@ public final class ImageLoader {
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param options
-	 *            {@link DisplayImageOptions Display image options} for image displaying. If <b>null</b> - default
-	 *            {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
+	 *            {@linkplain DisplayImageOptions Display image options} for image displaying. If <b>null</b> - default
+	 *            display image options
+	 *            {@linkplain ImageLoaderConfiguration.Builder#defaultDisplayImageOptions(DisplayImageOptions) from
 	 *            configuration} will be used.
 	 */
 	public void displayImage(String url, ImageView imageView, DisplayImageOptions options) {
@@ -92,13 +93,15 @@ public final class ImageLoader {
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param options
-	 *            {@link DisplayImageOptions Display image options} for image displaying. If <b>null</b> - default
-	 *            {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
+	 *            {@linkplain DisplayImageOptions Display image options} for image displaying. If <b>null</b> - default
+	 *            display image options
+	 *            {@linkplain ImageLoaderConfiguration.Builder#defaultDisplayImageOptions(DisplayImageOptions) from
 	 *            configuration} will be used.
 	 * @param listener
-	 *            {@link ImageLoadingListener Listener} for image loading process. Listener fires events only if there
-	 *            is no image for loading in memory cache. If there is image for loading in memory cache then image is
-	 *            displayed at ImageView but listener does not fire any event. Listener fires events on UI thread.
+	 *            {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events only if
+	 *            there is no image for loading in memory cache. If there is image for loading in memory cache then
+	 *            image is displayed at ImageView but listener does not fire any event. Listener fires events on UI
+	 *            thread.
 	 */
 	public void displayImage(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
 		if (url == null || url.length() == 0 || imageView == null) {
