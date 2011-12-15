@@ -10,7 +10,7 @@ import android.graphics.BitmapFactory.Options;
 import android.util.Log;
 
 /**
- * Decodes image from URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png") into {@link Bitmap}
+ * Decodes images to {@link Bitmap}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
@@ -22,11 +22,11 @@ final class ImageDecoder {
 	}
 
 	/**
-	 * Decodes image to {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during decoding.
-	 * Initial image size is reduced by the power of 2 (according Android recommendations)
+	 * Decodes image from URL into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
+	 * decoding. Initial image size is reduced by the power of 2 (according Android recommendations)
 	 * 
 	 * @param imageUrl
-	 *            Image URL
+	 *            Image URL (<b>i.e.:</b> "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param targetImageSize
 	 *            Image size to scale to during decoding
 	 * @return Decoded bitmap
