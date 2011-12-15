@@ -1,11 +1,13 @@
 package com.nostra13.example.universalimageloader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,10 +17,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache;
+import com.nostra13.universalimageloader.cache.memory.impl.FIFOLimitedCache;
 import com.nostra13.universalimageloader.imageloader.DisplayImageOptions;
 import com.nostra13.universalimageloader.imageloader.ImageLoader;
 import com.nostra13.universalimageloader.imageloader.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.imageloader.ImageLoadingListener;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 
 /** Activity for {@link ImageLoader} testing */
 public class UILActivity extends ListActivity {
@@ -30,7 +35,24 @@ public class UILActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		imageLoader = ImageLoader.getInstance(ImageLoaderConfiguration.createDefault(getApplicationContext()));
+		DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
+		File cacheDir = StorageUtils.getCacheDirectory(getApplicationContext(), "UniversalImageLoader/Cache");
+
+		// This configuration tuning is full. You don't have to tune every option. 
+		// You may tune some of them or create default configuration by 
+		//  ImageLoaderConfiguration.createDefault()
+		// method.
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+			.maxImageWidthForMemoryCache(displayMetrics.widthPixels)
+			.maxImageHeightForMemoryCache(displayMetrics.heightPixels)
+			.httpConnectTimeout(5000)
+			.httpReadTimeout(30000)
+			.threadPoolSize(5)
+			.memoryCache(new FIFOLimitedCache(2000000))
+			.discCache(new DefaultDiscCache(cacheDir))
+			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
+			.build();
+		imageLoader = ImageLoader.getInstance(config);
 
 		ListView listView = getListView();
 		listView.setAdapter(new ItemAdapter());
@@ -105,18 +127,23 @@ public class UILActivity extends ListActivity {
 				holder = (ViewHolder) view.getTag();
 
 			holder.text.setText("Item " + position);
+			
+			// Full "displayImage" method using.
+			// You can use simple call:
+			//  imageLoader.displayImage(imageUrls.get(position), holder.image);
+			// instead of.
 			DisplayImageOptions options = new DisplayImageOptions.Builder().showStubImage(R.drawable.stub_image).cacheInMemory().cacheOnDisc().build();
 			imageLoader.displayImage(imageUrls.get(position), holder.image, options, new ImageLoadingListener() {
 				@Override
 				public void onLoadingStarted() {
 					holder.text.setText("...loading...");
 				}
-
 				@Override
 				public void onLoadingComplete() {
 					holder.text.setText("Item " + position);
 				}
 			});
+
 			return view;
 		}
 	}
