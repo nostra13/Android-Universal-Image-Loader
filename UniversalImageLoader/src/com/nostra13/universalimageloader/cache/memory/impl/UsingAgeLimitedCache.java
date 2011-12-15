@@ -14,8 +14,8 @@ import android.graphics.Bitmap;
 
 /**
  * Limited {@link Bitmap bitmap} cache. Provides {@link Bitmap bitmaps} storing. Size of all stored bitmaps will not to
- * exceed size limit ( {@link #getSizeLimit()}). When cache reaches limit size then the bitmap which has the oldest
- * usage date is deleted from cache .
+ * exceed size limit ({@link #getSizeLimit()}). When cache reaches limit size then the bitmap which has the oldest usage
+ * date is deleted from cache .
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */

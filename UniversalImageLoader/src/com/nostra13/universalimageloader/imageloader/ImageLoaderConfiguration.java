@@ -12,6 +12,15 @@ import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
+/**
+ * Presents configuration for {@link ImageLoader}
+ * 
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @see ImageLoader
+ * @see MemoryCache
+ * @see DiscCache
+ * @see DisplayImageOptions
+ */
 public final class ImageLoaderConfiguration {
 
 	final int maxImageWidthForMemoryCache;
@@ -34,10 +43,30 @@ public final class ImageLoaderConfiguration {
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
 	}
 
+	/**
+	 * Creates default configuration for {@link ImageLoader} <br />
+	 * <b>Default values:</b>
+	 * <ul>
+	 * <li>maxImageWidthForMemoryCache = {@link Constants#DEFAULT_MAX_IMAGE_WIDTH}</li>
+	 * <li>maxImageHeightForMemoryCache = {@link Constants#DEFAULT_MAX_IMAGE_HEIGHT}</li>
+	 * <li>httpConnectTimeout = {@link Constants#DEFAULT_HTTP_CONNECTION_TIMEOUT}</li>
+	 * <li>httpReadTimeout = {@link Constants#DEFAULT_HTTP_READ_TIMEOUT}</li>
+	 * <li>threadPoolSize = {@link Constants#DEFAULT_THREAD_POOL_SIZE}</li>
+	 * <li>memoryCache = {@link UsingFreqLimitedCache} with limited memory cache size (
+	 * {@link Constants#DEFAULT_MEMORY_CACHE_SIZE} bytes)</li>
+	 * <li>discCache = {@link DefaultDiscCache}</li>
+	 * <li>defaultDisplayImageOptions = {@link DisplayImageOptions#createSimple() Simple options}</li>
+	 * </ul>
+	 * */
 	public static ImageLoaderConfiguration createDefault(Context context) {
 		return new Builder(context).build();
 	}
 
+	/**
+	 * Builder for {@link ImageLoaderConfiguration}
+	 * 
+	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+	 */
 	public static class Builder {
 
 		private Context context;
