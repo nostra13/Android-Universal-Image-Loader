@@ -13,17 +13,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.Constants;
-import com.nostra13.universalimageloader.cache.Cache;
-import com.nostra13.universalimageloader.cache.ImageCache;
+import com.nostra13.universalimageloader.R;
 import com.nostra13.universalimageloader.utils.FileUtils;
-import com.nostra13.universalimageloader.utils.StorageUtils;
 
 /**
  * Singltone for image loading and displaying at {@link ImageView ImageViews}
@@ -34,29 +30,29 @@ public final class ImageLoader {
 
 	private static final String TAG = ImageLoader.class.getSimpleName();
 
-	private final Cache<String, Bitmap> bitmapCache = new ImageCache(Constants.MEMORY_CACHE_SIZE);
-	private final File cacheDir;
+	private static final int IMAGE_TAG_KEY = R.id.tag_image_loader;
 
+	private ImageLoaderConfiguration configuration;
 	private ExecutorService imageLoadingExecutor;
 	private final DisplayImageOptions defaultOptions = DisplayImageOptions.createSimple();
 
 	private volatile static ImageLoader instance;
 
 	/** Returns singletone class instance */
-	public static ImageLoader getInstance(Context context) {
+	public static ImageLoader getInstance(ImageLoaderConfiguration configuration) {
 		if (instance == null) {
 			synchronized (ImageLoader.class) {
 				if (instance == null) {
-					instance = new ImageLoader(context);
+					instance = new ImageLoader(configuration);
 				}
 			}
 		}
 		return instance;
 	}
 
-	private ImageLoader(Context context) {
-		imageLoadingExecutor = Executors.newFixedThreadPool(Constants.THREAD_POOL_SIZE);
-		cacheDir = StorageUtils.getCacheDirectory(context);
+	private ImageLoader(ImageLoaderConfiguration configuration) {
+		this.configuration = configuration;
+		imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
 	}
 
 	/**
@@ -105,13 +101,9 @@ public final class ImageLoader {
 			return;
 		}
 		// Set specific tag to ImageView. This tag will be used to prevent load image from other URL into this ImageView.
-		imageView.setTag(Constants.IMAGE_TAG_KEY, url);
+		imageView.setTag(IMAGE_TAG_KEY, url);
 
-		Bitmap bmp = null;
-		synchronized (bitmapCache) {
-			bmp = bitmapCache.get(url);
-		}
-
+		Bitmap bmp = configuration.memoryCache.get(url);
 		if (bmp != null && !bmp.isRecycled()) {
 			imageView.setImageBitmap(bmp);
 		} else {
@@ -120,7 +112,7 @@ public final class ImageLoader {
 			}
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, options, listener);
 			if (imageLoadingExecutor.isShutdown()) {
-				imageLoadingExecutor = Executors.newFixedThreadPool(Constants.THREAD_POOL_SIZE);
+				imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
 			}
 			imageLoadingExecutor.submit(new DisplayImageTask(imageLoadingInfo));
 
@@ -139,17 +131,12 @@ public final class ImageLoader {
 
 	/** Clear memory cache */
 	public void clearMemoryCache() {
-		synchronized (bitmapCache) {
-			bitmapCache.clear();
-		}
+		configuration.memoryCache.clear();
 	}
 
 	/** Clear disc cache */
 	public void clearDiscCache() {
-		File[] files = cacheDir.listFiles();
-		for (File f : files) {
-			f.delete();
-		}
+		configuration.discCache.clear();
 	}
 
 	/** Information about display image task */
@@ -168,7 +155,7 @@ public final class ImageLoader {
 
 		/** Whether current URL matches to URL from ImageView tag */
 		boolean isConsistent() {
-			return url.equals(imageView.getTag(Constants.IMAGE_TAG_KEY));
+			return url.equals(imageView.getTag(IMAGE_TAG_KEY));
 		}
 	}
 
@@ -198,9 +185,7 @@ public final class ImageLoader {
 			}
 			// Cache bitmap in memory
 			if (imageLoadingInfo.options.isCacheInMemory()) {
-				synchronized (bitmapCache) {
-					bitmapCache.put(imageLoadingInfo.url, bmp);
-				}
+				configuration.memoryCache.put(imageLoadingInfo.url, bmp);
 			}
 
 			// Display image in {@link ImageView} on UI thread
@@ -248,14 +233,14 @@ public final class ImageLoader {
 
 			// Get device screen dimensions
 			if (width < 0 && height < 0) {
-				width = Constants.SCREEN_WIDTH;
-				height = Constants.SCREEN_HEIGHT;
+				width = configuration.maxImageWidthForMemoryCache;
+				height = configuration.maxImageHeightForMemoryCache;
 			}
 			return new ImageSize(width, height);
 		}
 
 		private Bitmap getBitmap(String imageUrl, ImageSize targetImageSize, boolean cacheImageOnDisc) {
-			File f = getLocalImageFile(imageUrl);
+			File f = configuration.discCache.getFile(imageUrl);
 
 			// Try to load image from disc cache
 			try {
@@ -290,15 +275,10 @@ public final class ImageLoader {
 			return bitmap;
 		}
 
-		private File getLocalImageFile(String imageUrl) {
-			String fileName = String.valueOf(imageUrl.hashCode());
-			return new File(cacheDir, fileName);
-		}
-
 		private void saveImageFromUrl(String imageUrl, File targetFile) throws MalformedURLException, IOException {
 			HttpURLConnection conn = (HttpURLConnection) new URL(imageUrl).openConnection();
-			conn.setConnectTimeout(Constants.HTTP_CONNECT_TIMEOUT);
-			conn.setReadTimeout(Constants.HTTP_READ_TIMEOUT);
+			conn.setConnectTimeout(configuration.httpConnectTimeout);
+			conn.setReadTimeout(configuration.httpReadTimeout);
 			InputStream is = conn.getInputStream();
 			try {
 				OutputStream os = new FileOutputStream(targetFile);

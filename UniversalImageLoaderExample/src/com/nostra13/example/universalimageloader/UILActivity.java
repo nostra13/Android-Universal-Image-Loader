@@ -15,9 +15,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.Constants;
 import com.nostra13.universalimageloader.imageloader.DisplayImageOptions;
 import com.nostra13.universalimageloader.imageloader.ImageLoader;
+import com.nostra13.universalimageloader.imageloader.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.imageloader.ImageLoadingListener;
 
 /** Activity for {@link ImageLoader} testing */
@@ -30,7 +30,7 @@ public class UILActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		imageLoader = ImageLoader.getInstance(UILActivity.this);
+		imageLoader = ImageLoader.getInstance(ImageLoaderConfiguration.createDefault(getApplicationContext()));
 
 		ListView listView = getListView();
 		listView.setAdapter(new ItemAdapter());
@@ -41,7 +41,7 @@ public class UILActivity extends ListActivity {
 		imageLoader.stop();
 		super.onDestroy();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -105,7 +105,7 @@ public class UILActivity extends ListActivity {
 				holder = (ViewHolder) view.getTag();
 
 			holder.text.setText("Item " + position);
-			DisplayImageOptions options = new DisplayImageOptions.Builder().showStubImage(Constants.STUB_IMAGE).cacheInMemory().cacheOnDisc().build();
+			DisplayImageOptions options = new DisplayImageOptions.Builder().showStubImage(R.drawable.stub_image).cacheInMemory().cacheOnDisc().build();
 			imageLoader.displayImage(imageUrls.get(position), holder.image, options, new ImageLoadingListener() {
 				@Override
 				public void onLoadingStarted() {
