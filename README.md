@@ -10,7 +10,7 @@ Image loader for Android which can be used for wide cases of asynchronous image 
 ImageView imageView = ...
 String imageUrl = "http://site.com/image.png"; // or "file:///mnt/sdcard/images/image.jpg"
 
-ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault();
+ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(context);
 ImageLoader imageLoader = ImageLoader.getInstance(config);
 imageLoader.displayImage(imageUrl, imageView);
 ```
