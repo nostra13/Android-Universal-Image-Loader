@@ -16,9 +16,9 @@ public abstract class DiscCache {
 	}
 
 	/**
-	 * Returns {@link File file object} by URL.<br />
-	 * <b>NOTE:</b> Must <b>not to return</b> a null. Method must return specific {@link File file object} for incoming
-	 * URL whether file exists or not.
+	 * Returns {@linkplain File file object} appropriate incoming URL.<br />
+	 * <b>NOTE:</b> Must <b>not to return</b> a null. Method must return specific {@linkplain File file object} for
+	 * incoming URL whether file exists or not.
 	 */
 	public abstract File getFile(String url);
 

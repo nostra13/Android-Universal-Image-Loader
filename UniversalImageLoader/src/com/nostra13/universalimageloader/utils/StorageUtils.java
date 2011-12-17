@@ -6,7 +6,7 @@ import android.content.Context;
 import android.os.Environment;
 
 /**
- * Provides application storage paths.
+ * Provides application storage paths
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */

@@ -10,8 +10,11 @@ Image loader for Android which can be used for wide cases of asynchronous image 
 ImageView imageView = ...
 String imageUrl = "http://site.com/image.png"; // or "file:///mnt/sdcard/images/image.jpg"
 
-ImageLoaderConfiguration config = ImageLoaderConfiguration.createDefault(context);
-ImageLoader imageLoader = ImageLoader.getInstance(config);
+// Get singletone instance of ImageLoader
+ImageLoader imageLoader = ImageLoader.getInstance();
+// Initialize ImageLoader with configuration. Do it once.
+imageLoader.init(ImageLoaderConfiguration.createDefault(context));
+// Load and display image asynchronously
 imageLoader.displayImage(imageUrl, imageView);
 ```
 
@@ -22,6 +25,8 @@ String imageUrl = "http://site.com/image.png"; // or "file:///mnt/sdcard/images/
 ProgressBar spinner = ...
 File cacheDir = StorageUtils.getCacheDirectory(getApplicationContext(), "UniversalImageLoader/Cache");
 
+// Get singletone instance of ImageLoader
+ImageLoader imageLoader = ImageLoader.getInstance();
 // Create configuration for ImageLoader
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
 			.maxImageWidthForMemoryCache(800)
@@ -33,8 +38,8 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 			.discCache(new DefaultDiscCache(cacheDir)) // You can pass your own disc cache implementation
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
 			.build();
-// Create ImageLoader by created configuration
-ImageLoader imageLoader = ImageLoader.getInstance(config);
+// Initialize ImageLoader with created configuration. Do it once.
+imageLoader.init(config);
 
 // Creates display image options for custom display task
 DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -42,7 +47,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
                                        .cacheInMemory()
                                        .cacheOnDisc()
                                        .build();
-// Display image
+// Load and display image
 imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener() {
     @Override
     public void onLoadingStarted() {

@@ -5,7 +5,6 @@ import java.io.File;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.nostra13.universalimageloader.Constants;
 import com.nostra13.universalimageloader.cache.disc.DiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache;
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
@@ -47,18 +46,14 @@ public final class ImageLoaderConfiguration {
 	 * Creates default configuration for {@link ImageLoader} <br />
 	 * <b>Default values:</b>
 	 * <ul>
-	 * <li>maxImageWidthForMemoryCache = {@link com.nostra13.universalimageloader.Constants#DEFAULT_MAX_IMAGE_WIDTH
-	 * this}</li>
-	 * <li>maxImageHeightForMemoryCache = {@link com.nostra13.universalimageloader.Constants#DEFAULT_MAX_IMAGE_HEIGHT
-	 * this}</li>
-	 * <li>httpConnectTimeout = {@link com.nostra13.universalimageloader.Constants#DEFAULT_HTTP_CONNECTION_TIMEOUT this}
-	 * </li>
-	 * <li>httpReadTimeout = {@link com.nostra13.universalimageloader.Constants#DEFAULT_HTTP_READ_TIMEOUT this}</li>
-	 * <li>threadPoolSize = {@link com.nostra13.universalimageloader.Constants#DEFAULT_THREAD_POOL_SIZE this}</li>
+	 * <li>maxImageWidthForMemoryCache = {@link Builder#DEFAULT_MAX_IMAGE_WIDTH this}</li>
+	 * <li>maxImageHeightForMemoryCache = {@link Builder#DEFAULT_MAX_IMAGE_HEIGHT this}</li>
+	 * <li>httpConnectTimeout = {@link Builder#DEFAULT_HTTP_CONNECTION_TIMEOUT this}</li>
+	 * <li>httpReadTimeout = {@link Builder#DEFAULT_HTTP_READ_TIMEOUT this}</li>
+	 * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
 	 * <li>memoryCache = {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache
-	 * UsingFreqLimitedCache} with limited memory cache size (
-	 * {@link com.nostra13.universalimageloader.Constants#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
-	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache this}</li>
+	 * UsingFreqLimitedCache} with limited memory cache size ( {@link Builder#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
+	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache}</li>
 	 * <li>defaultDisplayImageOptions = {@link DisplayImageOptions#createSimple() Simple options}</li>
 	 * </ul>
 	 * */
@@ -73,13 +68,28 @@ public final class ImageLoaderConfiguration {
 	 */
 	public static class Builder {
 
+		/** pixels */
+		public static final int DEFAULT_MAX_IMAGE_WIDTH = 800;
+		/** pixels */
+		public static final int DEFAULT_MAX_IMAGE_HEIGHT = 480;
+		/** milliseconds */
+		public static final int DEFAULT_HTTP_CONNECTION_TIMEOUT = 5000;
+		/** milliseconds */
+		public static final int DEFAULT_HTTP_READ_TIMEOUT = 20000;
+		/** {@value} */
+		public static final int DEFAULT_THREAD_POOL_SIZE = 5;
+		/** bytes */
+		public static final int DEFAULT_MEMORY_CACHE_SIZE = 2000000;
+		/** {@value} */
+		public static final String DEFAULT_CACHE_DIRECTORY = "UniversalImageLoader/Cache";
+
 		private Context context;
 
-		private int maxImageWidthForMemoryCache = Constants.DEFAULT_MAX_IMAGE_WIDTH;
-		private int maxImageHeightForMemoryCache = Constants.DEFAULT_MAX_IMAGE_HEIGHT;
-		private int httpConnectTimeout = Constants.DEFAULT_HTTP_CONNECTION_TIMEOUT;
-		private int httpReadTimeout = Constants.DEFAULT_HTTP_READ_TIMEOUT;
-		private int threadPoolSize = Constants.DEFAULT_THREAD_POOL_SIZE;
+		private int maxImageWidthForMemoryCache = DEFAULT_MAX_IMAGE_WIDTH;
+		private int maxImageHeightForMemoryCache = DEFAULT_MAX_IMAGE_HEIGHT;
+		private int httpConnectTimeout = DEFAULT_HTTP_CONNECTION_TIMEOUT;
+		private int httpReadTimeout = DEFAULT_HTTP_READ_TIMEOUT;
+		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
 		private MemoryCache<String, Bitmap> memoryCache = null;
 		private DiscCache discCache = null;
 		private DisplayImageOptions defaultDisplayImageOptions = null;
@@ -91,7 +101,7 @@ public final class ImageLoaderConfiguration {
 		/**
 		 * Sets maximum image width which will be used for memory saving during decoding an image to
 		 * {@link android.graphics.Bitmap Bitmap}.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.Constants#DEFAULT_MAX_IMAGE_WIDTH this}
+		 * Default value - {@link #DEFAULT_MAX_IMAGE_WIDTH this}
 		 * */
 		public Builder maxImageWidthForMemoryCache(int maxImageWidthForMemoryCache) {
 			this.maxImageWidthForMemoryCache = maxImageWidthForMemoryCache;
@@ -110,7 +120,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets timeout for HTTP connection establishment (during image loading).<br />
-		 * Default value - {@link com.nostra13.universalimageloader.Constants#DEFAULT_HTTP_CONNECTION_TIMEOUT this}
+		 * Default value - {@link #DEFAULT_HTTP_CONNECTION_TIMEOUT this}
 		 * */
 		public Builder httpConnectTimeout(int timeout) {
 			httpConnectTimeout = timeout;
@@ -119,7 +129,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets timeout for HTTP reading (during image loading).<br />
-		 * Default value - {@link com.nostra13.universalimageloader.Constants#DEFAULT_HTTP_READ_TIMEOUT this}
+		 * Default value - {@link #DEFAULT_HTTP_READ_TIMEOUT this}
 		 * */
 		public Builder httpReadTimeout(int timeout) {
 			httpReadTimeout = timeout;
@@ -128,7 +138,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets thread pool size for image display tasks.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.Constants#DEFAULT_THREAD_POOL_SIZE this}
+		 * Default value - {@link #DEFAULT_THREAD_POOL_SIZE this}
 		 * */
 		public Builder threadPoolSize(int threadPoolSize) {
 			this.threadPoolSize = threadPoolSize;
@@ -138,8 +148,7 @@ public final class ImageLoaderConfiguration {
 		/**
 		 * Sets memory cache for {@link android.graphics.Bitmap bitmaps}.<br />
 		 * Default value - {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache
-		 * UsingFreqLimitedCache} with limited memory cache size (size =
-		 * {@link com.nostra13.universalimageloader.Constants#DEFAULT_MEMORY_CACHE_SIZE this})
+		 * UsingFreqLimitedCache} with limited memory cache size (size = {@link #DEFAULT_MEMORY_CACHE_SIZE this})
 		 */
 		public Builder memoryCache(MemoryCache<String, Bitmap> memoryCache) {
 			this.memoryCache = memoryCache;
@@ -148,8 +157,10 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets memory cache for {@link android.graphics.Bitmap bitmaps}.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache
-		 * this}
+		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache}.
+		 * Cache directory is defined by <b>{@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context, String)
+		 * StorageUtils.getCacheDirectory(context, cacheDirPath)}</b>, where <b>cacheDirPath</b> =
+		 * {@link #DEFAULT_CACHE_DIRECTORY this}</b>.
 		 */
 		public Builder discCache(DiscCache discCache) {
 			this.discCache = discCache;
@@ -175,11 +186,11 @@ public final class ImageLoaderConfiguration {
 
 		private void initEmptyFiledsWithDefaultValues() {
 			if (discCache == null) {
-				File cacheDir = StorageUtils.getCacheDirectory(context, Constants.DEFAULT_CACHE_DIRECTORY);
+				File cacheDir = StorageUtils.getCacheDirectory(context, DEFAULT_CACHE_DIRECTORY);
 				discCache = new DefaultDiscCache(cacheDir);
 			}
 			if (memoryCache == null) {
-				memoryCache = new UsingFreqLimitedCache(Constants.DEFAULT_MEMORY_CACHE_SIZE);
+				memoryCache = new UsingFreqLimitedCache(DEFAULT_MEMORY_CACHE_SIZE);
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();

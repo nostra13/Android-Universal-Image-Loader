@@ -6,48 +6,29 @@ import java.util.List;
 
 import android.app.ListActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.imageloader.DisplayImageOptions;
 import com.nostra13.universalimageloader.imageloader.ImageLoader;
-import com.nostra13.universalimageloader.imageloader.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.imageloader.ImageLoadingListener;
 
 /** Activity for {@link ImageLoader} testing */
 public class UILActivity extends ListActivity {
 
-	private static final int IMAGE_LOADER_THREAD_POOL_SIZE = 3;
-	
-	public ImageLoader imageLoader;
+	public ImageLoader imageLoader = ImageLoader.getInstance();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
-
-		// This configuration tuning is custom. You can tune every option, you may tune some of them, 
-		// or you can create default configuration by
-		//  ImageLoaderConfiguration.createDefault()
-		// method.
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-			.maxImageWidthForMemoryCache(displayMetrics.widthPixels)
-			.maxImageHeightForMemoryCache(displayMetrics.heightPixels)
-			.threadPoolSize(IMAGE_LOADER_THREAD_POOL_SIZE)
-			.build();
-		imageLoader = ImageLoader.getInstance(config);
-
-		ListView listView = getListView();
-		listView.setAdapter(new ItemAdapter());
+		getListView().setAdapter(new ItemAdapter());
 	}
 
 	@Override
@@ -134,6 +115,7 @@ public class UILActivity extends ListActivity {
 				public void onLoadingStarted() {
 					holder.text.setText("...loading...");
 				}
+
 				@Override
 				public void onLoadingComplete() {
 					holder.text.setText("Item " + position);

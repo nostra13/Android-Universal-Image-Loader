@@ -22,61 +22,77 @@ import com.nostra13.universalimageloader.R;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
 /**
- * Singletone for image loading and displaying at {@link ImageView ImageViews}
+ * Singletone for image loading and displaying at {@link ImageView ImageViews}<br />
+ * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before any other method.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public final class ImageLoader {
+public class ImageLoader {
 
 	private static final String TAG = ImageLoader.class.getSimpleName();
-
+	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
+	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
 	private static final int IMAGE_TAG_KEY = R.id.tag_image_loader;
 
-	private ImageLoaderConfiguration configuration;
+	private ImageLoaderConfiguration configuration = null;
 	private ExecutorService imageLoadingExecutor;
 
 	private volatile static ImageLoader instance;
 
-	/**
-	 * Returns singletone class instance. Incoming <b>configuration</b> parameter used for first instance
-	 * initialization.
-	 * 
-	 * @param configuration
-	 *            {@linkplain ImageLoaderConfiguration ImageLoader configuration}
-	 * @return Singletone class instance
-	 */
-	public static ImageLoader getInstance(ImageLoaderConfiguration configuration) {
+	/** Returns singletone class instance */
+	public static ImageLoader getInstance() {
 		if (instance == null) {
 			synchronized (ImageLoader.class) {
 				if (instance == null) {
-					instance = new ImageLoader(configuration);
+					instance = new ImageLoader();
 				}
 			}
 		}
 		return instance;
 	}
 
-	private ImageLoader(ImageLoaderConfiguration configuration) {
-		this.configuration = configuration;
-		imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
+	private ImageLoader() {
+	}
+
+	/**
+	 * Initializes ImageLoader's singletone instance with configuration. Method shoiuld be called <b>once</b> (each
+	 * following call will have no effect)<br />
+	 * 
+	 * @param configuration
+	 *            {@linkplain ImageLoaderConfiguration ImageLoader configuration}
+	 * @throws IllegalArgumentException
+	 *             if <b>configuration</b> parameter is null
+	 */
+	public synchronized void init(ImageLoaderConfiguration configuration) {
+		if (configuration == null) {
+			throw new IllegalArgumentException(ERROR_INIT_CONFIG_WITH_NULL);
+		}
+		if (this.configuration == null) {
+			this.configuration = configuration;
+			imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
+		}
 	}
 
 	/**
 	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn. <br/>
 	 * Default {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
-	 * configuration} will be used.
+	 * configuration} will be used.<br />
+	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
 	 * @param url
 	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
+	 * @throws RuntimeException
+	 *             if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void displayImage(String url, ImageView imageView) {
 		displayImage(url, imageView, null, null);
 	}
 
 	/**
-	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.
+	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.<br />
+	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
 	 * @param url
 	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
@@ -87,13 +103,16 @@ public final class ImageLoader {
 	 *            display image options
 	 *            {@linkplain ImageLoaderConfiguration.Builder#defaultDisplayImageOptions(DisplayImageOptions) from
 	 *            configuration} will be used.
+	 * @throws RuntimeException
+	 *             if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void displayImage(String url, ImageView imageView, DisplayImageOptions options) {
 		displayImage(url, imageView, options, null);
 	}
 
 	/**
-	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.
+	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.<br />
+	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
 	 * @param url
 	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
@@ -109,8 +128,13 @@ public final class ImageLoader {
 	 *            there is no image for loading in memory cache. If there is image for loading in memory cache then
 	 *            image is displayed at ImageView but listener does not fire any event. Listener fires events on UI
 	 *            thread.
+	 * @throws RuntimeException
+	 *             if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void displayImage(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
+		if (configuration == null) {
+			throw new RuntimeException(ERROR_NOT_INIT);
+		}
 		if (url == null || url.length() == 0 || imageView == null) {
 			return;
 		}
@@ -127,10 +151,11 @@ public final class ImageLoader {
 			if (options == null) {
 				options = configuration.defaultDisplayImageOptions;
 			}
-			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, options, listener);
 			if (imageLoadingExecutor.isShutdown()) {
 				imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
 			}
+			
+			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, options, listener);
 			imageLoadingExecutor.submit(new DisplayImageTask(imageLoadingInfo));
 
 			if (options.isShowStubImage()) {
@@ -143,17 +168,29 @@ public final class ImageLoader {
 
 	/** Stops all running display image tasks, discards all other scheduled tasks */
 	public void stop() {
-		imageLoadingExecutor.shutdown();
+		if (imageLoadingExecutor != null) {
+			imageLoadingExecutor.shutdown();
+		}
 	}
 
-	/** Clear memory cache */
+	/**
+	 * Clear memory cache.<br />
+	 * Do nothing if {@link #init(ImageLoaderConfiguration)} method wasn't called before.
+	 */
 	public void clearMemoryCache() {
-		configuration.memoryCache.clear();
+		if (configuration != null) {
+			configuration.memoryCache.clear();
+		}
 	}
 
-	/** Clear disc cache */
+	/**
+	 * Clear disc cache.<br />
+	 * Do nothing if {@link #init(ImageLoaderConfiguration)} method wasn't called before.
+	 */
 	public void clearDiscCache() {
-		configuration.discCache.clear();
+		if (configuration != null) {
+			configuration.discCache.clear();
+		}
 	}
 
 	/** Information about display image task */
@@ -276,7 +313,7 @@ public final class ImageLoader {
 			try {
 				URL imageUrlForDecoding = null;
 				if (cacheImageOnDisc) {
-					saveImageFromUrl(imageUrl, f);
+					saveImageOnDisc(imageUrl, f);
 					imageUrlForDecoding = f.toURL();
 				} else {
 					imageUrlForDecoding = new URL(imageUrl);
@@ -292,7 +329,7 @@ public final class ImageLoader {
 			return bitmap;
 		}
 
-		private void saveImageFromUrl(String imageUrl, File targetFile) throws MalformedURLException, IOException {
+		private void saveImageOnDisc(String imageUrl, File targetFile) throws MalformedURLException, IOException {
 			HttpURLConnection conn = (HttpURLConnection) new URL(imageUrl).openConnection();
 			conn.setConnectTimeout(configuration.httpConnectTimeout);
 			conn.setReadTimeout(configuration.httpReadTimeout);
