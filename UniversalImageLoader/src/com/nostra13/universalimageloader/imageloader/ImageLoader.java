@@ -112,6 +112,28 @@ public class ImageLoader {
 
 	/**
 	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.<br />
+	 * Default {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
+	 * configuration} will be used.<br />
+	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
+	 * 
+	 * @param url
+	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param imageView
+	 *            {@link ImageView} which should display image
+	 * @param listener
+	 *            {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events only if
+	 *            there is no image for loading in memory cache. If there is image for loading in memory cache then
+	 *            image is displayed at ImageView but listener does not fire any event. Listener fires events on UI
+	 *            thread.
+	 * @throws RuntimeException
+	 *             if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 */
+	public void displayImage(String url, ImageView imageView, ImageLoadingListener listener) {
+		displayImage(url, imageView, null, listener);
+	}
+
+	/**
+	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
 	 * @param url
@@ -154,7 +176,7 @@ public class ImageLoader {
 			if (imageLoadingExecutor.isShutdown()) {
 				imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
 			}
-			
+
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, options, listener);
 			imageLoadingExecutor.submit(new DisplayImageTask(imageLoadingInfo));
 
