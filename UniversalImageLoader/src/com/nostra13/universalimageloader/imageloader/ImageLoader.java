@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.location.GpsStatus.Listener;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
