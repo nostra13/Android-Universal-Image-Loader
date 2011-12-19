@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.location.GpsStatus.Listener;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
@@ -255,8 +256,14 @@ public class ImageLoader {
 			// Load bitmap						
 			ImageSize targetImageSize = getImageSizeScaleTo(imageLoadingInfo.imageView);
 			Bitmap bmp = getBitmap(imageLoadingInfo.url, targetImageSize, imageLoadingInfo.options.isCacheOnDisc());
+			if (bmp == null) {
+				if (imageLoadingInfo.listener != null) {
+					imageLoadingInfo.listener.onLoadingFailed();
+				}
+				return;
+			}
 
-			if (!imageLoadingInfo.isConsistent() || bmp == null) {
+			if (!imageLoadingInfo.isConsistent()) {
 				return;
 			}
 			// Cache bitmap in memory

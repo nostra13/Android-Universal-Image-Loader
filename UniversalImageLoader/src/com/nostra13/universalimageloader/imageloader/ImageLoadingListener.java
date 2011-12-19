@@ -9,9 +9,12 @@ import android.widget.ImageView;
  */
 public interface ImageLoadingListener {
 
-	/** Is called when image loading put into queue for loading */
+	/** Is called when image loading task was put into thread execution pool */
 	void onLoadingStarted();
 
-	/** Is called when image is loaded and displyed in {@link ImageView} */
+	/** Is called when an error was occurred during image loading */
+	void onLoadingFailed();
+
+	/** Is called when image is loaded successfully and displayed in {@link ImageView} */
 	void onLoadingComplete();
 }

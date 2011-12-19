@@ -117,6 +117,11 @@ public class UILActivity extends ListActivity {
 				}
 
 				@Override
+				public void onLoadingFailed() {
+					holder.text.setText("Error!");
+				}
+
+				@Override
 				public void onLoadingComplete() {
 					holder.text.setText("Item " + position);
 				}
