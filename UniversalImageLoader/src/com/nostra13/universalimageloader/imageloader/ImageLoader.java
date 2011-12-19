@@ -34,8 +34,9 @@ public class ImageLoader {
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
 	private static final int IMAGE_TAG_KEY = R.id.tag_image_loader;
 
-	private ImageLoaderConfiguration configuration = null;
+	private ImageLoaderConfiguration configuration;
 	private ExecutorService imageLoadingExecutor;
+	private ImageLoadingListener emptyListener;
 
 	private volatile static ImageLoader instance;
 
@@ -70,6 +71,7 @@ public class ImageLoader {
 		if (this.configuration == null) {
 			this.configuration = configuration;
 			imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
+			emptyListener = new EmptyImageLoadingListener();
 		}
 	}
 
@@ -160,6 +162,12 @@ public class ImageLoader {
 		if (url == null || url.length() == 0 || imageView == null) {
 			return;
 		}
+		if (listener == null) {
+			listener = emptyListener;
+		}
+		if (options == null) {
+			options = configuration.defaultDisplayImageOptions;
+		}
 		// Set specific tag to ImageView. This tag will be used to prevent load image from other URL into this ImageView.
 		imageView.setTag(IMAGE_TAG_KEY, url);
 
@@ -167,12 +175,7 @@ public class ImageLoader {
 		if (bmp != null && !bmp.isRecycled()) {
 			imageView.setImageBitmap(bmp);
 		} else {
-			if (listener != null) {
-				listener.onLoadingStarted();
-			}
-			if (options == null) {
-				options = configuration.defaultDisplayImageOptions;
-			}
+			listener.onLoadingStarted();
 			if (imageLoadingExecutor.isShutdown()) {
 				imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
 			}
@@ -256,9 +259,7 @@ public class ImageLoader {
 			ImageSize targetImageSize = getImageSizeScaleTo(imageLoadingInfo.imageView);
 			Bitmap bmp = getBitmap(imageLoadingInfo.url, targetImageSize, imageLoadingInfo.options.isCacheOnDisc());
 			if (bmp == null) {
-				if (imageLoadingInfo.listener != null) {
-					imageLoadingInfo.listener.onLoadingFailed();
-				}
+				imageLoadingInfo.listener.onLoadingFailed();
 				return;
 			}
 
@@ -388,11 +389,22 @@ public class ImageLoader {
 		public void run() {
 			if (imageLoadingInfo.isConsistent()) {
 				imageLoadingInfo.imageView.setImageBitmap(bitmap);
-				// Notify listener
-				if (imageLoadingInfo.listener != null) {
-					imageLoadingInfo.listener.onLoadingComplete();
-				}
+				imageLoadingInfo.listener.onLoadingComplete();
 			}
+		}
+	}
+
+	private class EmptyImageLoadingListener implements ImageLoadingListener {
+		@Override
+		public void onLoadingStarted() {
+		}
+
+		@Override
+		public void onLoadingFailed() {
+		}
+
+		@Override
+		public void onLoadingComplete() {
 		}
 	}
 }
