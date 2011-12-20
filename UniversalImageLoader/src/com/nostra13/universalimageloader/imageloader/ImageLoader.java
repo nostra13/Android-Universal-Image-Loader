@@ -366,7 +366,10 @@ public class ImageLoader {
 			try {
 				OutputStream os = new FileOutputStream(targetFile);
 				try {
+					long start = System.currentTimeMillis();
 					FileUtils.copyStream(is, os);
+					long finish = System.currentTimeMillis();
+					Log.i("NOSTRA", finish - start + " ms");
 				} finally {
 					os.close();
 				}
