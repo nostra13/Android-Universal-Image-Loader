@@ -71,7 +71,7 @@ public class ImageLoader {
 		if (this.configuration == null) {
 			this.configuration = configuration;
 			imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
-			emptyListener = new EmptyImageLoadingListener();
+			emptyListener = new EmptyListener();
 		}
 	}
 
@@ -394,7 +394,7 @@ public class ImageLoader {
 		}
 	}
 
-	private class EmptyImageLoadingListener implements ImageLoadingListener {
+	private class EmptyListener implements ImageLoadingListener {
 		@Override
 		public void onLoadingStarted() {
 		}
