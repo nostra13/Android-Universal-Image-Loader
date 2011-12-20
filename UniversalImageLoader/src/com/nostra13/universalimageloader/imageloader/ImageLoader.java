@@ -1,9 +1,9 @@
 package com.nostra13.universalimageloader.imageloader;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
@@ -362,11 +362,14 @@ public class ImageLoader {
 			HttpURLConnection conn = (HttpURLConnection) new URL(imageUrl).openConnection();
 			conn.setConnectTimeout(configuration.httpConnectTimeout);
 			conn.setReadTimeout(configuration.httpReadTimeout);
-			InputStream is = conn.getInputStream();
+			BufferedInputStream is = new BufferedInputStream(conn.getInputStream());
 			try {
 				OutputStream os = new FileOutputStream(targetFile);
 				try {
+					long start = System.currentTimeMillis();
 					FileUtils.copyStream(is, os);
+					long finish = System.currentTimeMillis();
+					Log.i("NOSTRA", finish - start + " ms");
 				} finally {
 					os.close();
 				}
