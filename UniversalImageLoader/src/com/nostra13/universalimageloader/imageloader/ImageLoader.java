@@ -1,9 +1,9 @@
 package com.nostra13.universalimageloader.imageloader;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
@@ -34,8 +34,9 @@ public class ImageLoader {
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
 	private static final int IMAGE_TAG_KEY = R.id.tag_image_loader;
 
-	private ImageLoaderConfiguration configuration = null;
+	private ImageLoaderConfiguration configuration;
 	private ExecutorService imageLoadingExecutor;
+	private ImageLoadingListener emptyListener;
 
 	private volatile static ImageLoader instance;
 
@@ -70,6 +71,7 @@ public class ImageLoader {
 		if (this.configuration == null) {
 			this.configuration = configuration;
 			imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
+			emptyListener = new EmptyListener();
 		}
 	}
 
@@ -160,6 +162,12 @@ public class ImageLoader {
 		if (url == null || url.length() == 0 || imageView == null) {
 			return;
 		}
+		if (listener == null) {
+			listener = emptyListener;
+		}
+		if (options == null) {
+			options = configuration.defaultDisplayImageOptions;
+		}
 		// Set specific tag to ImageView. This tag will be used to prevent load image from other URL into this ImageView.
 		imageView.setTag(IMAGE_TAG_KEY, url);
 
@@ -167,12 +175,7 @@ public class ImageLoader {
 		if (bmp != null && !bmp.isRecycled()) {
 			imageView.setImageBitmap(bmp);
 		} else {
-			if (listener != null) {
-				listener.onLoadingStarted();
-			}
-			if (options == null) {
-				options = configuration.defaultDisplayImageOptions;
-			}
+			listener.onLoadingStarted();
 			if (imageLoadingExecutor.isShutdown()) {
 				imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
 			}
@@ -255,8 +258,12 @@ public class ImageLoader {
 			// Load bitmap						
 			ImageSize targetImageSize = getImageSizeScaleTo(imageLoadingInfo.imageView);
 			Bitmap bmp = getBitmap(imageLoadingInfo.url, targetImageSize, imageLoadingInfo.options.isCacheOnDisc());
+			if (bmp == null) {
+				imageLoadingInfo.listener.onLoadingFailed();
+				return;
+			}
 
-			if (!imageLoadingInfo.isConsistent() || bmp == null) {
+			if (!imageLoadingInfo.isConsistent()) {
 				return;
 			}
 			// Cache bitmap in memory
@@ -355,7 +362,7 @@ public class ImageLoader {
 			HttpURLConnection conn = (HttpURLConnection) new URL(imageUrl).openConnection();
 			conn.setConnectTimeout(configuration.httpConnectTimeout);
 			conn.setReadTimeout(configuration.httpReadTimeout);
-			InputStream is = conn.getInputStream();
+			BufferedInputStream is = new BufferedInputStream(conn.getInputStream());
 			try {
 				OutputStream os = new FileOutputStream(targetFile);
 				try {
@@ -382,11 +389,22 @@ public class ImageLoader {
 		public void run() {
 			if (imageLoadingInfo.isConsistent()) {
 				imageLoadingInfo.imageView.setImageBitmap(bitmap);
-				// Notify listener
-				if (imageLoadingInfo.listener != null) {
-					imageLoadingInfo.listener.onLoadingComplete();
-				}
+				imageLoadingInfo.listener.onLoadingComplete();
 			}
+		}
+	}
+
+	private class EmptyListener implements ImageLoadingListener {
+		@Override
+		public void onLoadingStarted() {
+		}
+
+		@Override
+		public void onLoadingFailed() {
+		}
+
+		@Override
+		public void onLoadingComplete() {
 		}
 	}
 }

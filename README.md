@@ -1,6 +1,13 @@
 # Universal Image Loader for Android
 
-Image loader for Android which can be used for wide cases of asynchronous image displaying.
+This project aims to provide a reusable instrument for asynchronous image loading, caching and displaying. It is originally based on [Fedor Vlasov's project](https://github.com/thest1/LazyList) and has been vastly refactored and improved since then.
+
+## Features
+ * Multithread image loading
+ * Possibility of wide tuning ImageLoader's configuration (thread pool size, HTTP options, memory and disc cache, display image options, and others)
+ * Possibility of image caching in memory and/or on device's file sysytem (or SD card)
+ * Possibility to "listen" loading process
+ * Possibility to customize every display image call with separated options
 
 ## Usage
 
