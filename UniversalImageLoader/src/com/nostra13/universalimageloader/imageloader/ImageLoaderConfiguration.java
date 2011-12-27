@@ -111,7 +111,7 @@ public final class ImageLoaderConfiguration {
 		/**
 		 * Sets maximum image height which will be used for memory saving during decoding an image to
 		 * {@link android.graphics.Bitmap Bitmap}.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.Constants#DEFAULT_MAX_IMAGE_HEIGHT this}
+		 * Default value - {@link #DEFAULT_MAX_IMAGE_HEIGHT this}
 		 * */
 		public Builder maxImageHeightForMemoryCache(int maxImageHeightForMemoryCache) {
 			this.maxImageHeightForMemoryCache = maxImageHeightForMemoryCache;
@@ -146,9 +146,24 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
+		 * Sets memory cache size for {@link android.graphics.Bitmap bitmaps} (in bytes).<br />
+		 * Default value - {@link #DEFAULT_MEMORY_CACHE_SIZE this}<br />
+		 * <b>NOTE:</b> If you use this method then
+		 * {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache UsingFreqLimitedCache} will
+		 * be used as memory cache. You can use {@link #memoryCache(MemoryCache)} method for introduction your own
+		 * implementation of {@link MemoryCache}.
+		 */
+		public Builder memoryCacheSize(int memoryCacheSize) {
+			this.memoryCache = new UsingFreqLimitedCache(memoryCacheSize);
+			return this;
+		}
+
+		/**
 		 * Sets memory cache for {@link android.graphics.Bitmap bitmaps}.<br />
 		 * Default value - {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache
-		 * UsingFreqLimitedCache} with limited memory cache size (size = {@link #DEFAULT_MEMORY_CACHE_SIZE this})
+		 * UsingFreqLimitedCache} with limited memory cache size (size = {@link #DEFAULT_MEMORY_CACHE_SIZE this})<br />
+		 * <b>NOTE:</b> You can use {@link #memoryCacheSize(int)} method instead of this method to simplify memory cache
+		 * tuning.
 		 */
 		public Builder memoryCache(MemoryCache<String, Bitmap> memoryCache) {
 			this.memoryCache = memoryCache;
@@ -156,11 +171,30 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets memory cache for {@link android.graphics.Bitmap bitmaps}.<br />
+		 * Sets cache directory path for images on SD card.
+		 * {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache} will be used in
+		 * this case.<br />
+		 * Default value - {@link #DEFAULT_CACHE_DIRECTORY this}</b>.<br />
+		 * <b>NOTE:</b> If you use this method then
+		 * {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache} will be used as
+		 * disc cache. You can use {@link #discCache(DiscCache)} method for introduction your own implementation of
+		 * {@link DiscCache}.
+		 */
+		public Builder discCacheDir(String discCacheDirPath) {
+			File cacheDir = StorageUtils.getCacheDirectory(context, discCacheDirPath);
+			this.discCache = new DefaultDiscCache(cacheDir);
+			return this;
+		}
+
+		/**
+		 * Sets disc cache for {@link android.graphics.Bitmap bitmaps}.<br />
 		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache}.
-		 * Cache directory is defined by <b>{@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context, String)
+		 * Cache directory is defined by <b>
+		 * {@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context, String)
 		 * StorageUtils.getCacheDirectory(context, cacheDirPath)}</b>, where <b>cacheDirPath</b> =
-		 * {@link #DEFAULT_CACHE_DIRECTORY this}</b>.
+		 * {@link #DEFAULT_CACHE_DIRECTORY this}</b>.<br />
+		 * <b>NOTE:</b> You can use {@link #discCacheDir(String)} method instead of this method to simplify disc cache
+		 * tuning.
 		 */
 		public Builder discCache(DiscCache discCache) {
 			this.discCache = discCache;
