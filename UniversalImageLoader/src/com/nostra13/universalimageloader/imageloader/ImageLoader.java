@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
@@ -32,6 +33,7 @@ public class ImageLoader {
 	private static final String TAG = ImageLoader.class.getSimpleName();
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
+	private static final String ERROR_IMAGEVIEW_CONTEXT = "ImageView context must be of Activity type";
 	private static final int IMAGE_TAG_KEY = R.id.tag_image_loader;
 
 	private ImageLoaderConfiguration configuration;
@@ -273,8 +275,13 @@ public class ImageLoader {
 
 			// Display image in {@link ImageView} on UI thread
 			DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(imageLoadingInfo, bmp);
-			Activity activity = (Activity) imageLoadingInfo.imageView.getContext();
-			activity.runOnUiThread(displayBitmapTask);
+			Context context = imageLoadingInfo.imageView.getContext();
+			if (context instanceof Activity) {
+				((Activity) context).runOnUiThread(displayBitmapTask);
+			} else {
+				Log.e(TAG, ERROR_IMAGEVIEW_CONTEXT);
+				imageLoadingInfo.listener.onLoadingFailed();
+			}
 		}
 
 		/**
