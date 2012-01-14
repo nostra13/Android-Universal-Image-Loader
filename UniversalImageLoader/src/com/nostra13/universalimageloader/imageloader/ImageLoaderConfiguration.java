@@ -4,6 +4,7 @@ import java.io.File;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache;
@@ -68,10 +69,6 @@ public final class ImageLoaderConfiguration {
 	 */
 	public static class Builder {
 
-		/** {@value} pixels */
-		public static final int DEFAULT_MAX_IMAGE_WIDTH = Integer.MAX_VALUE;
-		/** {@value} pixels */
-		public static final int DEFAULT_MAX_IMAGE_HEIGHT = Integer.MAX_VALUE;
 		/** {@value} milliseconds */
 		public static final int DEFAULT_HTTP_CONNECTION_TIMEOUT = 5000;
 		/** {@value} milliseconds */
@@ -85,8 +82,8 @@ public final class ImageLoaderConfiguration {
 
 		private Context context;
 
-		private int maxImageWidthForMemoryCache = DEFAULT_MAX_IMAGE_WIDTH;
-		private int maxImageHeightForMemoryCache = DEFAULT_MAX_IMAGE_HEIGHT;
+		private int maxImageWidthForMemoryCache = 0;
+		private int maxImageHeightForMemoryCache = 0;
 		private int httpConnectTimeout = DEFAULT_HTTP_CONNECTION_TIMEOUT;
 		private int httpReadTimeout = DEFAULT_HTTP_READ_TIMEOUT;
 		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
@@ -228,6 +225,13 @@ public final class ImageLoaderConfiguration {
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();
+			}
+			DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+			if (maxImageWidthForMemoryCache == 0) {
+				maxImageWidthForMemoryCache = displayMetrics.widthPixels;
+			}
+			if (maxImageHeightForMemoryCache == 0) {
+				maxImageHeightForMemoryCache = displayMetrics.heightPixels;
 			}
 		}
 	}

@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
@@ -325,6 +326,14 @@ public class ImageLoader {
 			if (width < 0 && height < 0) {
 				width = configuration.maxImageWidthForMemoryCache;
 				height = configuration.maxImageHeightForMemoryCache;
+
+				int screenOrientation = imageView.getContext().getResources().getConfiguration().orientation;
+				if ((screenOrientation == Configuration.ORIENTATION_PORTRAIT && width > height)
+						|| (screenOrientation == Configuration.ORIENTATION_LANDSCAPE && width < height)) {
+					int tmp = width;
+					width = height;
+					height = tmp;
+				}
 			}
 			return new ImageSize(width, height);
 		}
