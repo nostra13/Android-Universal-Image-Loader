@@ -32,7 +32,7 @@ import com.nostra13.universalimageloader.utils.FileUtils;
 public class ImageLoader {
 
 	static final String TAG = ImageLoader.class.getSimpleName();
-	
+
 	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (image URL and ImageView reference are required)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
@@ -325,12 +325,6 @@ public class ImageLoader {
 			// Load bitmap						
 			Bitmap bmp = loadBitmap();
 			if (bmp == null) {
-				tryRunOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						imageLoadingInfo.listener.onLoadingFailed();
-					}
-				});
 				return;
 			}
 
@@ -343,7 +337,7 @@ public class ImageLoader {
 				configuration.memoryCache.put(memoryCacheKey, bmp);
 			}
 
-			// Display image in {@link ImageView} on UI thread
+			// Display bitmap in ImageView on UI thread
 			DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(imageLoadingInfo, bmp);
 			tryRunOnUiThread(displayBitmapTask);
 		}
@@ -351,21 +345,17 @@ public class ImageLoader {
 		private Bitmap loadBitmap() {
 			File f = configuration.discCache.getFile(imageLoadingInfo.url);
 
-			// Try to load image from disc cache
+			Bitmap bitmap = null;
 			try {
+				// Try to load image from disc cache
 				if (f.exists()) {
-					Bitmap b = ImageDecoder.decodeFile(f.toURL(), imageLoadingInfo.targetSize);
+					Bitmap b = decodeImage(f.toURL());
 					if (b != null) {
 						return b;
 					}
 				}
-			} catch (IOException e) {
-				// There is no image in disc cache. Do nothing
-			}
 
-			// Load image from Web
-			Bitmap bitmap = null;
-			try {
+				// Load image from Web
 				URL imageUrlForDecoding = null;
 				if (imageLoadingInfo.options.isCacheOnDisc()) {
 					saveImageOnDisc(f);
@@ -374,14 +364,29 @@ public class ImageLoader {
 					imageUrlForDecoding = new URL(imageLoadingInfo.url);
 				}
 
-				bitmap = ImageDecoder.decodeFile(imageUrlForDecoding, imageLoadingInfo.targetSize);
-			} catch (Exception ex) {
-				Log.e(TAG, String.format("Exception while loading bitmap from URL=%s : %s", imageLoadingInfo.url, ex.getMessage()), ex);
+				bitmap = decodeImage(imageUrlForDecoding);
+			} catch (IOException e) {
+				Log.e(TAG, e.getMessage(), e);
+				fireImageLoadingFailedEvent(FailReason.IO_ERROR);
 				if (f.exists()) {
 					f.delete();
 				}
+			} catch (Throwable ex) {
+				Log.e(TAG, String.format("Exception while loading bitmap from URL=%s : %s", imageLoadingInfo.url, ex.getMessage()), ex);
+				fireImageLoadingFailedEvent(FailReason.UNKNOWN);
 			}
 			return bitmap;
+		}
+
+		private Bitmap decodeImage(URL imageUrl) throws IOException {
+			Bitmap bmp = null;
+			try {
+				bmp = ImageDecoder.decodeFile(imageUrl, imageLoadingInfo.targetSize);
+			} catch (OutOfMemoryError e) {
+				Log.e(TAG, e.getMessage(), e);
+				fireImageLoadingFailedEvent(FailReason.MEMORY_OVERFLOW);
+			}
+			return bmp;
 		}
 
 		private void saveImageOnDisc(File targetFile) throws MalformedURLException, IOException {
@@ -401,13 +406,22 @@ public class ImageLoader {
 			}
 		}
 
+		private void fireImageLoadingFailedEvent(final FailReason reason) {
+			tryRunOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					imageLoadingInfo.listener.onLoadingFailed(reason);
+				}
+			});
+		}
+
 		private void tryRunOnUiThread(Runnable runnable) {
 			Context context = imageLoadingInfo.imageView.getContext();
 			if (context instanceof Activity) {
 				((Activity) context).runOnUiThread(runnable);
 			} else {
 				Log.e(TAG, ERROR_IMAGEVIEW_CONTEXT);
-				imageLoadingInfo.listener.onLoadingFailed();
+				imageLoadingInfo.listener.onLoadingFailed(FailReason.WRONG_CONTEXT);
 			}
 		}
 	}
@@ -436,7 +450,7 @@ public class ImageLoader {
 		}
 
 		@Override
-		public void onLoadingFailed() {
+		public void onLoadingFailed(FailReason failReason) {
 		}
 
 		@Override

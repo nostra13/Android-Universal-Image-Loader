@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.imageloader.DisplayImageOptions;
+import com.nostra13.universalimageloader.imageloader.FailReason;
 import com.nostra13.universalimageloader.imageloader.ImageLoader;
 import com.nostra13.universalimageloader.imageloader.ImageLoadingListener;
 
@@ -117,8 +118,20 @@ public class UILActivity extends ListActivity {
 				}
 
 				@Override
-				public void onLoadingFailed() {
-					holder.text.setText("Error!");
+				public void onLoadingFailed(FailReason failReason) {
+					String error;
+					switch (failReason) {
+						case IO_ERROR:
+							error = "IO error!";
+							break;
+						case MEMORY_OVERFLOW:
+							error = "Out Of Memory error!";
+							break;
+						default:
+							error = "Error!";
+							break;
+					}
+					holder.text.setText(error);
 					holder.image.setImageResource(android.R.drawable.ic_delete);
 				}
 

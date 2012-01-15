@@ -13,7 +13,7 @@ public interface ImageLoadingListener {
 	void onLoadingStarted();
 
 	/** Is called when an error was occurred during image loading */
-	void onLoadingFailed();
+	void onLoadingFailed(FailReason failReason);
 
 	/** Is called when image is loaded successfully and displayed in {@link ImageView} */
 	void onLoadingComplete();

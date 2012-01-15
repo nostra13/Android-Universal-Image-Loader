@@ -7,7 +7,6 @@ import java.net.URL;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
-import android.util.Log;
 
 /**
  * Decodes images to {@link Bitmap}
@@ -32,12 +31,21 @@ final class ImageDecoder {
 	 */
 	public static Bitmap decodeFile(URL imageUrl, ImageSize targetImageSize) throws IOException {
 		InputStream is = imageUrl.openStream();
-		Options decodeOptions = getBitmapOptionsForImageDecoding(is, targetImageSize);
-		is.close();
+
+		Options decodeOptions;
+		try {
+			decodeOptions = getBitmapOptionsForImageDecoding(is, targetImageSize);
+		} finally {
+			is.close();
+		}
 
 		is = imageUrl.openStream();
-		Bitmap result = decodeImageStream(is, decodeOptions);
-		is.close();
+		Bitmap result;
+		try {
+			result = BitmapFactory.decodeStream(is, null, decodeOptions);
+		} finally {
+			is.close();
+		}
 
 		return result;
 	}
@@ -70,15 +78,5 @@ final class ImageDecoder {
 		}
 
 		return scale;
-	}
-
-	private static Bitmap decodeImageStream(InputStream imageStream, Options decodeOptions) {
-		Bitmap bitmap = null;
-		try {
-			bitmap = BitmapFactory.decodeStream(imageStream, null, decodeOptions);
-		} catch (Throwable th) {
-			Log.e(ImageLoader.TAG, "OUT OF MEMMORY: " + th.getMessage(), th);
-		}
-		return bitmap;
 	}
 }
