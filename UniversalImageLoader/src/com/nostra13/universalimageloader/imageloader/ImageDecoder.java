@@ -16,8 +16,6 @@ import android.util.Log;
  */
 final class ImageDecoder {
 
-	private static final String TAG = ImageDecoder.class.getSimpleName();
-
 	private ImageDecoder() {
 	}
 
@@ -79,7 +77,7 @@ final class ImageDecoder {
 		try {
 			bitmap = BitmapFactory.decodeStream(imageStream, null, decodeOptions);
 		} catch (Throwable th) {
-			Log.e(TAG, "OUT OF MEMMORY: " + th.getMessage(), th);
+			Log.e(ImageLoader.TAG, "OUT OF MEMMORY: " + th.getMessage(), th);
 		}
 		return bitmap;
 	}

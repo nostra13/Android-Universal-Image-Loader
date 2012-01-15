@@ -31,7 +31,9 @@ import com.nostra13.universalimageloader.utils.FileUtils;
  */
 public class ImageLoader {
 
-	private static final String TAG = ImageLoader.class.getSimpleName();
+	static final String TAG = ImageLoader.class.getSimpleName();
+	
+	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (image URL and ImageView reference are required)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
 	private static final String ERROR_IMAGEVIEW_CONTEXT = "ImageView context must be of Activity type";
@@ -163,6 +165,7 @@ public class ImageLoader {
 			throw new RuntimeException(ERROR_NOT_INIT);
 		}
 		if (url == null || url.length() == 0 || imageView == null) {
+			Log.w(TAG, ERROR_WRONG_ARGUMENTS);
 			return;
 		}
 		if (listener == null) {
@@ -172,8 +175,8 @@ public class ImageLoader {
 			options = configuration.defaultDisplayImageOptions;
 		}
 
-		ImageSize imageSize = getImageSizeScaleTo(imageView);
-		String memoryCacheKey = getMemoryCacheKey(url, imageSize);
+		ImageSize targetSize = getImageSizeScaleTo(imageView);
+		String memoryCacheKey = getMemoryCacheKey(url, targetSize);
 		imageView.setTag(IMAGE_TAG_KEY, memoryCacheKey);
 
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
@@ -185,7 +188,7 @@ public class ImageLoader {
 				imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
 			}
 
-			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, imageSize, options, listener);
+			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, targetSize, options, listener);
 			imageLoadingExecutor.submit(new DisplayImageTask(imageLoadingInfo));
 
 			if (options.isShowStubImage()) {
@@ -320,9 +323,9 @@ public class ImageLoader {
 				return;
 			}
 			// Load bitmap						
-			Bitmap bmp = getBitmap(imageLoadingInfo.url, imageLoadingInfo.targetSize, imageLoadingInfo.options.isCacheOnDisc());
+			Bitmap bmp = loadBitmap();
 			if (bmp == null) {
-				runOnUiThread(new Runnable() {
+				tryRunOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						imageLoadingInfo.listener.onLoadingFailed();
@@ -342,16 +345,16 @@ public class ImageLoader {
 
 			// Display image in {@link ImageView} on UI thread
 			DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(imageLoadingInfo, bmp);
-			runOnUiThread(displayBitmapTask);
+			tryRunOnUiThread(displayBitmapTask);
 		}
 
-		private Bitmap getBitmap(String imageUrl, ImageSize targetImageSize, boolean cacheImageOnDisc) {
-			File f = configuration.discCache.getFile(imageUrl);
+		private Bitmap loadBitmap() {
+			File f = configuration.discCache.getFile(imageLoadingInfo.url);
 
 			// Try to load image from disc cache
 			try {
 				if (f.exists()) {
-					Bitmap b = ImageDecoder.decodeFile(f.toURL(), targetImageSize);
+					Bitmap b = ImageDecoder.decodeFile(f.toURL(), imageLoadingInfo.targetSize);
 					if (b != null) {
 						return b;
 					}
@@ -364,16 +367,16 @@ public class ImageLoader {
 			Bitmap bitmap = null;
 			try {
 				URL imageUrlForDecoding = null;
-				if (cacheImageOnDisc) {
-					saveImageOnDisc(imageUrl, f);
+				if (imageLoadingInfo.options.isCacheOnDisc()) {
+					saveImageOnDisc(f);
 					imageUrlForDecoding = f.toURL();
 				} else {
-					imageUrlForDecoding = new URL(imageUrl);
+					imageUrlForDecoding = new URL(imageLoadingInfo.url);
 				}
 
-				bitmap = ImageDecoder.decodeFile(imageUrlForDecoding, targetImageSize);
+				bitmap = ImageDecoder.decodeFile(imageUrlForDecoding, imageLoadingInfo.targetSize);
 			} catch (Exception ex) {
-				Log.e(TAG, String.format("Exception while loading bitmap from URL=%s : %s", imageUrl, ex.getMessage()), ex);
+				Log.e(TAG, String.format("Exception while loading bitmap from URL=%s : %s", imageLoadingInfo.url, ex.getMessage()), ex);
 				if (f.exists()) {
 					f.delete();
 				}
@@ -381,8 +384,8 @@ public class ImageLoader {
 			return bitmap;
 		}
 
-		private void saveImageOnDisc(String imageUrl, File targetFile) throws MalformedURLException, IOException {
-			HttpURLConnection conn = (HttpURLConnection) new URL(imageUrl).openConnection();
+		private void saveImageOnDisc(File targetFile) throws MalformedURLException, IOException {
+			HttpURLConnection conn = (HttpURLConnection) new URL(imageLoadingInfo.url).openConnection();
 			conn.setConnectTimeout(configuration.httpConnectTimeout);
 			conn.setReadTimeout(configuration.httpReadTimeout);
 			BufferedInputStream is = new BufferedInputStream(conn.getInputStream());
@@ -398,7 +401,7 @@ public class ImageLoader {
 			}
 		}
 
-		private void runOnUiThread(Runnable runnable) {
+		private void tryRunOnUiThread(Runnable runnable) {
 			Context context = imageLoadingInfo.imageView.getContext();
 			if (context instanceof Activity) {
 				((Activity) context).runOnUiThread(runnable);
