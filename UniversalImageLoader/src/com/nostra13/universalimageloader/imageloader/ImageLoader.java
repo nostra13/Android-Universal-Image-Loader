@@ -171,10 +171,12 @@ public class ImageLoader {
 		if (options == null) {
 			options = configuration.defaultDisplayImageOptions;
 		}
-		// Set specific tag to ImageView. This tag will be used to prevent load image from other URL into this ImageView.
-		imageView.setTag(IMAGE_TAG_KEY, url);
 
-		Bitmap bmp = configuration.memoryCache.get(url);
+		ImageSize imageSize = getImageSizeScaleTo(imageView);
+		String memoryCacheKey = getMemoryCacheKey(url, imageSize);
+		imageView.setTag(IMAGE_TAG_KEY, memoryCacheKey);
+
+		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
 			imageView.setImageBitmap(bmp);
 		} else {
@@ -183,7 +185,7 @@ public class ImageLoader {
 				imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
 			}
 
-			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, options, listener);
+			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, imageSize, options, listener);
 			imageLoadingExecutor.submit(new DisplayImageTask(imageLoadingInfo));
 
 			if (options.isShowStubImage()) {
@@ -221,23 +223,82 @@ public class ImageLoader {
 		}
 	}
 
+	private String getMemoryCacheKey(String imageUrl, ImageSize targetSize) {
+		return imageUrl + targetSize.toString();
+	}
+
+	/**
+	 * Defines image size for loading at memory (for memory economy) by {@link ImageView} parameters.<br />
+	 * Size computing algorithm:<br />
+	 * 1) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #2.<br />
+	 * 2) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step #3.</br>
+	 * 3) Get device screen dimensions.
+	 */
+	private ImageSize getImageSizeScaleTo(ImageView imageView) {
+		int width = -1;
+		int height = -1;
+
+		// Check maxWidth and maxHeight parameters
+		try {
+			Field maxWidthField = ImageView.class.getDeclaredField("mMaxWidth");
+			Field maxHeightField = ImageView.class.getDeclaredField("mMaxHeight");
+			maxWidthField.setAccessible(true);
+			maxHeightField.setAccessible(true);
+			int maxWidth = (Integer) maxWidthField.get(imageView);
+			int maxHeight = (Integer) maxHeightField.get(imageView);
+
+			if (maxWidth >= 0 && maxWidth < Integer.MAX_VALUE) {
+				width = maxWidth;
+			}
+			if (maxHeight >= 0 && maxHeight < Integer.MAX_VALUE) {
+				height = maxHeight;
+			}
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+
+		if (width < 0 && height < 0) {
+			// Get layout width and height parameters
+			LayoutParams params = imageView.getLayoutParams();
+			width = params.width;
+			height = params.height;
+		}
+
+		// Get device screen dimensions
+		if (width < 0 && height < 0) {
+			width = configuration.maxImageWidthForMemoryCache;
+			height = configuration.maxImageHeightForMemoryCache;
+
+			int screenOrientation = imageView.getContext().getResources().getConfiguration().orientation;
+			if ((screenOrientation == Configuration.ORIENTATION_PORTRAIT && width > height)
+					|| (screenOrientation == Configuration.ORIENTATION_LANDSCAPE && width < height)) {
+				int tmp = width;
+				width = height;
+				height = tmp;
+			}
+		}
+		return new ImageSize(width, height);
+	}
+
 	/** Information about display image task */
 	private final class ImageLoadingInfo {
 		private final String url;
 		private final ImageView imageView;
+		private final ImageSize targetSize;
 		private final DisplayImageOptions options;
 		private final ImageLoadingListener listener;
 
-		public ImageLoadingInfo(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
+		public ImageLoadingInfo(String url, ImageView imageView, ImageSize targetSize, DisplayImageOptions options, ImageLoadingListener listener) {
 			this.url = url;
 			this.imageView = imageView;
+			this.targetSize = targetSize;
 			this.options = options;
 			this.listener = listener;
 		}
 
 		/** Whether current URL matches to URL from ImageView tag */
 		boolean isConsistent() {
-			return url.equals(imageView.getTag(IMAGE_TAG_KEY));
+			return getMemoryCacheKey(url, targetSize).equals(imageView.getTag(IMAGE_TAG_KEY));
 		}
 	}
 
@@ -259,8 +320,7 @@ public class ImageLoader {
 				return;
 			}
 			// Load bitmap						
-			ImageSize targetImageSize = getImageSizeScaleTo(imageLoadingInfo.imageView);
-			Bitmap bmp = getBitmap(imageLoadingInfo.url, targetImageSize, imageLoadingInfo.options.isCacheOnDisc());
+			Bitmap bmp = getBitmap(imageLoadingInfo.url, imageLoadingInfo.targetSize, imageLoadingInfo.options.isCacheOnDisc());
 			if (bmp == null) {
 				imageLoadingInfo.listener.onLoadingFailed();
 				return;
@@ -271,7 +331,8 @@ public class ImageLoader {
 			}
 			// Cache bitmap in memory
 			if (imageLoadingInfo.options.isCacheInMemory()) {
-				configuration.memoryCache.put(imageLoadingInfo.url, bmp);
+				String memoryCacheKey = getMemoryCacheKey(imageLoadingInfo.url, imageLoadingInfo.targetSize);
+				configuration.memoryCache.put(memoryCacheKey, bmp);
 			}
 
 			// Display image in {@link ImageView} on UI thread
@@ -283,59 +344,6 @@ public class ImageLoader {
 				Log.e(TAG, ERROR_IMAGEVIEW_CONTEXT);
 				imageLoadingInfo.listener.onLoadingFailed();
 			}
-		}
-
-		/**
-		 * Defines image size for loading at memory (for memory economy) by {@link ImageView} parameters.<br />
-		 * Size computing algorithm:<br />
-		 * 1) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #2.<br />
-		 * 2) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step
-		 * #3.</br> 3) Get device screen dimensions.
-		 */
-		private ImageSize getImageSizeScaleTo(ImageView imageView) {
-			int width = -1;
-			int height = -1;
-
-			// Check maxWidth and maxHeight parameters
-			try {
-				Field maxWidthField = ImageView.class.getDeclaredField("mMaxWidth");
-				Field maxHeightField = ImageView.class.getDeclaredField("mMaxHeight");
-				maxWidthField.setAccessible(true);
-				maxHeightField.setAccessible(true);
-				int maxWidth = (Integer) maxWidthField.get(imageView);
-				int maxHeight = (Integer) maxHeightField.get(imageView);
-
-				if (maxWidth >= 0 && maxWidth < Integer.MAX_VALUE) {
-					width = maxWidth;
-				}
-				if (maxHeight >= 0 && maxHeight < Integer.MAX_VALUE) {
-					height = maxHeight;
-				}
-			} catch (Exception e) {
-				Log.e(TAG, e.getMessage(), e);
-			}
-
-			if (width < 0 && height < 0) {
-				// Get layout width and height parameters
-				LayoutParams params = imageView.getLayoutParams();
-				width = params.width;
-				height = params.height;
-			}
-
-			// Get device screen dimensions
-			if (width < 0 && height < 0) {
-				width = configuration.maxImageWidthForMemoryCache;
-				height = configuration.maxImageHeightForMemoryCache;
-
-				int screenOrientation = imageView.getContext().getResources().getConfiguration().orientation;
-				if ((screenOrientation == Configuration.ORIENTATION_PORTRAIT && width > height)
-						|| (screenOrientation == Configuration.ORIENTATION_LANDSCAPE && width < height)) {
-					int tmp = width;
-					width = height;
-					height = tmp;
-				}
-			}
-			return new ImageSize(width, height);
 		}
 
 		private Bitmap getBitmap(String imageUrl, ImageSize targetImageSize, boolean cacheImageOnDisc) {
