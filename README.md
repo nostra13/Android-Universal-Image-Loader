@@ -60,6 +60,10 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
     public void onLoadingStarted() {
        spinner.show();
     }
+	@Override
+	public void onLoadingFailed() {
+		spinner.hide();
+	}
     @Override
     public void onLoadingComplete() {
         spinner.hide();
