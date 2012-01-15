@@ -322,7 +322,12 @@ public class ImageLoader {
 			// Load bitmap						
 			Bitmap bmp = getBitmap(imageLoadingInfo.url, imageLoadingInfo.targetSize, imageLoadingInfo.options.isCacheOnDisc());
 			if (bmp == null) {
-				imageLoadingInfo.listener.onLoadingFailed();
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						imageLoadingInfo.listener.onLoadingFailed();
+					}
+				});
 				return;
 			}
 
@@ -337,13 +342,7 @@ public class ImageLoader {
 
 			// Display image in {@link ImageView} on UI thread
 			DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(imageLoadingInfo, bmp);
-			Context context = imageLoadingInfo.imageView.getContext();
-			if (context instanceof Activity) {
-				((Activity) context).runOnUiThread(displayBitmapTask);
-			} else {
-				Log.e(TAG, ERROR_IMAGEVIEW_CONTEXT);
-				imageLoadingInfo.listener.onLoadingFailed();
-			}
+			runOnUiThread(displayBitmapTask);
 		}
 
 		private Bitmap getBitmap(String imageUrl, ImageSize targetImageSize, boolean cacheImageOnDisc) {
@@ -396,6 +395,16 @@ public class ImageLoader {
 				}
 			} finally {
 				is.close();
+			}
+		}
+
+		private void runOnUiThread(Runnable runnable) {
+			Context context = imageLoadingInfo.imageView.getContext();
+			if (context instanceof Activity) {
+				((Activity) context).runOnUiThread(runnable);
+			} else {
+				Log.e(TAG, ERROR_IMAGEVIEW_CONTEXT);
+				imageLoadingInfo.listener.onLoadingFailed();
 			}
 		}
 	}

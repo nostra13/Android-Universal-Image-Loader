@@ -119,6 +119,7 @@ public class UILActivity extends ListActivity {
 				@Override
 				public void onLoadingFailed() {
 					holder.text.setText("Error!");
+					holder.image.setImageResource(android.R.drawable.ic_delete);
 				}
 
 				@Override
