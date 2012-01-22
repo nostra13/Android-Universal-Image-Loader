@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader.imageloader;
+package com.nostra13.universalimageloader.core;
 
 /**
  * Contains options for image display. Defines:

@@ -14,10 +14,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.imageloader.DisplayImageOptions;
-import com.nostra13.universalimageloader.imageloader.FailReason;
-import com.nostra13.universalimageloader.imageloader.ImageLoader;
-import com.nostra13.universalimageloader.imageloader.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.FailReason;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoadingListener;
 
 /** Activity for {@link ImageLoader} testing */
 public class UILActivity extends ListActivity {

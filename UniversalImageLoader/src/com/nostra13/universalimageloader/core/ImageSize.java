@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader.imageloader;
+package com.nostra13.universalimageloader.core;
 
 /**
  * Present width and height values

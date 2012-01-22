@@ -2,8 +2,8 @@ package com.nostra13.example.universalimageloader;
 
 import android.app.Application;
 
-import com.nostra13.universalimageloader.imageloader.ImageLoader;
-import com.nostra13.universalimageloader.imageloader.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class UILApplication extends Application {
 

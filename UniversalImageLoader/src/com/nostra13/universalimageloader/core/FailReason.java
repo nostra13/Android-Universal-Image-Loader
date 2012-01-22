@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader.imageloader;
+package com.nostra13.universalimageloader.core;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
