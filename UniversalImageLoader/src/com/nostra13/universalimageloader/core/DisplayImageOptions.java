@@ -23,11 +23,13 @@ public final class DisplayImageOptions {
 	private final Integer stubImage;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
+	private final DecodingType decodingType;
 
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
+		decodingType = builder.decodingType;
 	}
 
 	boolean isShowStubImage() {
@@ -46,6 +48,10 @@ public final class DisplayImageOptions {
 		return cacheOnDisc;
 	}
 
+	DecodingType getDecodingType() {
+		return decodingType;
+	}
+
 	/**
 	 * Builder for {@link DisplayImageOptions}
 	 * 
@@ -55,6 +61,7 @@ public final class DisplayImageOptions {
 		private Integer stubImage = null;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
+		private DecodingType decodingType = DecodingType.FAST;
 
 		/**
 		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
@@ -76,6 +83,12 @@ public final class DisplayImageOptions {
 		/** Loaded image will be cached on disc */
 		public Builder cacheOnDisc() {
 			cacheOnDisc = true;
+			return this;
+		}
+
+		/** Sets {@link DecodingType decoding type} for image loading task. Default value - {@link DecodingType#FAST} */
+		public Builder decodingType(DecodingType decodingType) {
+			this.decodingType = decodingType;
 			return this;
 		}
 

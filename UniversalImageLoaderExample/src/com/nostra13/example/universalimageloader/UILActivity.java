@@ -14,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DecodingType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.FailReason;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -110,6 +111,7 @@ public class UILActivity extends ListActivity {
 				.showStubImage(R.drawable.stub_image)
 				.cacheInMemory()
 				.cacheOnDisc()
+				.decodingType(DecodingType.MEMORY_SAVING)
 				.build();
 			imageLoader.displayImage(imageUrls.get(position), holder.image, options, new ImageLoadingListener() {
 				@Override

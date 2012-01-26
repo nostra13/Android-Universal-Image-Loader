@@ -381,7 +381,9 @@ public class ImageLoader {
 		private Bitmap decodeImage(URL imageUrl) throws IOException {
 			Bitmap bmp = null;
 			try {
-				bmp = ImageDecoder.decodeFile(imageUrl, imageLoadingInfo.targetSize);
+				ImageDecoder decoder = new ImageDecoder(imageUrl, imageLoadingInfo.targetSize, imageLoadingInfo.options.getDecodingType());
+				bmp = decoder.decodeFile();
+				decoder = null;
 			} catch (OutOfMemoryError e) {
 				Log.e(TAG, e.getMessage(), e);
 				fireImageLoadingFailedEvent(FailReason.MEMORY_OVERFLOW);

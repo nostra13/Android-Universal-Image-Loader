@@ -53,6 +53,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
                                        .showStubImage(R.drawable.stub_image)
                                        .cacheInMemory()
                                        .cacheOnDisc()
+									   .decodingType(DecodingType.MEMORY_SAVING)
                                        .build();
 // Load and display image
 imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener() {

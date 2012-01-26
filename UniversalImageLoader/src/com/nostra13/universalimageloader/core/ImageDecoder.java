@@ -15,32 +15,36 @@ import android.graphics.BitmapFactory.Options;
  */
 final class ImageDecoder {
 
-	private ImageDecoder() {
+	private URL imageUrl;
+	private ImageSize targetSize;
+	private DecodingType decodingType;
+
+	/**
+	 * @param imageUrl
+	 *            Image URL (<b>i.e.:</b> "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param targetImageSize
+	 *            Image size to scale to during decoding
+	 * @param decodingType
+	 *            {@link DecodingType Decoding type}
+	 */
+	ImageDecoder(URL imageUrl, ImageSize targetImageSize, DecodingType decodingType) {
+		this.imageUrl = imageUrl;
+		this.targetSize = targetImageSize;
+		this.decodingType = decodingType;
 	}
 
 	/**
 	 * Decodes image from URL into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
 	 * decoding. Initial image size is reduced by the power of 2 (according Android recommendations)
 	 * 
-	 * @param imageUrl
-	 *            Image URL (<b>i.e.:</b> "http://site.com/image.png", "file:///mnt/sdcard/image.png")
-	 * @param targetImageSize
-	 *            Image size to scale to during decoding
 	 * @return Decoded bitmap
 	 * @throws IOException
 	 */
-	public static Bitmap decodeFile(URL imageUrl, ImageSize targetImageSize) throws IOException {
-		InputStream is = imageUrl.openStream();
+	public Bitmap decodeFile() throws IOException {
+		Options decodeOptions = getBitmapOptionsForImageDecoding();
 
-		Options decodeOptions;
-		try {
-			decodeOptions = getBitmapOptionsForImageDecoding(is, targetImageSize);
-		} finally {
-			is.close();
-		}
-
-		is = imageUrl.openStream();
 		Bitmap result;
+		InputStream is = imageUrl.openStream();
 		try {
 			result = BitmapFactory.decodeStream(is, null, decodeOptions);
 		} finally {
@@ -50,31 +54,49 @@ final class ImageDecoder {
 		return result;
 	}
 
-	private static Options getBitmapOptionsForImageDecoding(InputStream imageStream, ImageSize targetImageSize) {
+	private Options getBitmapOptionsForImageDecoding() throws IOException {
 		Options options = new Options();
-		options.inSampleSize = computeImageScale(imageStream, targetImageSize);
+		InputStream is = imageUrl.openStream();
+		try {
+			options.inSampleSize = computeImageScale(is);
+		} finally {
+			is.close();
+		}
 		return options;
 	}
 
-	private static int computeImageScale(InputStream imageStream, ImageSize targetImageSize) {
-		int width = targetImageSize.width;
-		int height = targetImageSize.height;
+	private int computeImageScale(InputStream imageStream) {
+		int width = targetSize.width;
+		int height = targetSize.height;
 
 		// decode image size
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
 		BitmapFactory.decodeStream(imageStream, null, options);
 
-		// Find the correct scale value. It should be the power of 2.
-		int width_tmp = options.outWidth;
-		int height_tmp = options.outHeight;
-
 		int scale = 1;
-		while (true) {
-			if (width_tmp / 2 < width || height_tmp / 2 < height) break;
-			width_tmp /= 2;
-			height_tmp /= 2;
-			scale *= 2;
+		switch (decodingType) {
+			default:
+			case FAST:
+				// Find the correct scale value. It should be the power of 2.
+				int width_tmp = options.outWidth;
+				int height_tmp = options.outHeight;
+
+				while (true) {
+					if (width_tmp / 2 < width || height_tmp / 2 < height) break;
+					width_tmp /= 2;
+					height_tmp /= 2;
+					scale *= 2;
+				}
+				break;
+			case MEMORY_SAVING:
+				int widthScale = (int) (Math.floor(((double) options.outWidth) / width));
+				int heightScale = (int) (Math.floor(((double) options.outHeight) / height));
+				int minScale = Math.min(widthScale, heightScale);
+				if (minScale > 1) {
+					scale = minScale;
+				}
+				break;
 		}
 
 		return scale;
