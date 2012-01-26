@@ -28,6 +28,7 @@ public final class ImageLoaderConfiguration {
 	final int httpConnectTimeout;
 	final int httpReadTimeout;
 	final int threadPoolSize;
+	final int threadPriority;
 	final MemoryCache<String, Bitmap> memoryCache;
 	final DiscCache discCache;
 	final DisplayImageOptions defaultDisplayImageOptions;
@@ -38,6 +39,7 @@ public final class ImageLoaderConfiguration {
 		httpConnectTimeout = builder.httpConnectTimeout;
 		httpReadTimeout = builder.httpReadTimeout;
 		threadPoolSize = builder.threadPoolSize;
+		threadPriority = builder.threadPriority;
 		discCache = builder.discCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
@@ -75,6 +77,8 @@ public final class ImageLoaderConfiguration {
 		public static final int DEFAULT_HTTP_READ_TIMEOUT = 20000;
 		/** {@value} */
 		public static final int DEFAULT_THREAD_POOL_SIZE = 5;
+		/** {@value} */
+		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
 		/** {@value} bytes */
 		public static final int DEFAULT_MEMORY_CACHE_SIZE = 2000000;
 		/** {@value} */
@@ -87,6 +91,7 @@ public final class ImageLoaderConfiguration {
 		private int httpConnectTimeout = DEFAULT_HTTP_CONNECTION_TIMEOUT;
 		private int httpReadTimeout = DEFAULT_HTTP_READ_TIMEOUT;
 		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
+		private int threadPriority = DEFAULT_THREAD_PRIORITY;
 		private MemoryCache<String, Bitmap> memoryCache = null;
 		private DiscCache discCache = null;
 		private DisplayImageOptions defaultDisplayImageOptions = null;
@@ -139,6 +144,24 @@ public final class ImageLoaderConfiguration {
 		 * */
 		public Builder threadPoolSize(int threadPoolSize) {
 			this.threadPoolSize = threadPoolSize;
+			return this;
+		}
+
+		/**
+		 * Sets the priority for image loading threads. Must be <b>NOT</b> greater than {@link Thread#MAX_PRIORITY} or
+		 * less than {@link Thread#MIN_PRIORITY}<br />
+		 * Default value - {@link #DEFAULT_THREAD_PRIORITY this}
+		 * */
+		public Builder threadPriority(int threadPriority) {
+			if (threadPriority < Thread.MIN_PRIORITY) {
+				this.threadPriority = Thread.MIN_PRIORITY;
+			} else {
+				if (threadPriority > Thread.MAX_PRIORITY) {
+					threadPriority = Thread.MAX_PRIORITY;
+				} else {
+					this.threadPriority = threadPriority;
+				}
+			}
 			return this;
 		}
 

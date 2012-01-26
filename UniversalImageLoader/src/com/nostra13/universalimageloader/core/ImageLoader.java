@@ -189,7 +189,9 @@ public class ImageLoader {
 			}
 
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, targetSize, options, listener);
-			imageLoadingExecutor.submit(new DisplayImageTask(imageLoadingInfo));
+			Thread displayImageTask = new Thread(new DisplayImageTask(imageLoadingInfo));
+			displayImageTask.setPriority(configuration.threadPriority);
+			imageLoadingExecutor.submit(displayImageTask);
 
 			if (options.isShowStubImage()) {
 				imageView.setImageResource(options.getStubImage());
