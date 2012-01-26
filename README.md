@@ -41,6 +41,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 			.httpConnectTimeout(5000)
 			.httpReadTimeout(30000)
 			.threadPoolSize(5)
+			.threadPriority(Thread.MIN_PRIORITY + 2)
 			.memoryCache(new UsingFreqLimitedCache(2000000)) // You can pass your own memory cache implementation
 			.discCache(new DefaultDiscCache(cacheDir)) // You can pass your own disc cache implementation
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
