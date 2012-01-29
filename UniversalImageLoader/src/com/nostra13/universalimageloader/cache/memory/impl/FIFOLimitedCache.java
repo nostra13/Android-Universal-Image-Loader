@@ -12,8 +12,7 @@ import android.graphics.Bitmap;
 
 /**
  * Limited {@link Bitmap bitmap} cache. Provides {@link Bitmap bitmaps} storing. Size of all stored bitmaps will not to
- * exceed size limit. When cache reaches limit size then cache clearing is processed by FIFO
- * principle.
+ * exceed size limit. When cache reaches limit size then cache clearing is processed by FIFO principle.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
@@ -33,6 +32,15 @@ public class FIFOLimitedCache extends LimitedCache<String, Bitmap> {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public void remove(String key) {
+		Bitmap value = super.get(key);
+		if (value != null) {
+			queue.remove(value);
+		}
+		super.remove(key);
 	}
 
 	@Override

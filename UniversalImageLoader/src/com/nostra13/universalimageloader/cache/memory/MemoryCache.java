@@ -1,16 +1,17 @@
 package com.nostra13.universalimageloader.cache.memory;
 
 import java.lang.ref.Reference;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Cache. Provides object references ({@linkplain Reference not strong}) storing.
+ * Memory cache. Provides object references ({@linkplain Reference not strong}) storing.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public abstract class MemoryCache<K, V> {
+public abstract class MemoryCache<K, V> implements MemoryCacheable<K, V> {
 
 	/** Stores not strong references to objects */
 	private final Map<K, Reference<V>> softMap = Collections.synchronizedMap(new HashMap<K, Reference<V>>());
@@ -36,7 +37,14 @@ public abstract class MemoryCache<K, V> {
 		return true;
 	}
 
-	/** Clears cache */
+	public void remove(K key) {
+		softMap.remove(key);
+	}
+
+	public Collection<K> keys() {
+		return softMap.keySet();
+	}
+
 	public void clear() {
 		softMap.clear();
 	}

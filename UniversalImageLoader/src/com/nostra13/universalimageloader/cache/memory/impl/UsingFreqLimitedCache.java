@@ -14,8 +14,8 @@ import android.graphics.Bitmap;
 
 /**
  * Limited {@link Bitmap bitmap} cache. Provides {@link Bitmap bitmaps} storing. Size of all stored bitmaps will not to
- * exceed size limit. When cache reaches limit size then the bitmap which used the least
- * frequently is deleted from cache.
+ * exceed size limit. When cache reaches limit size then the bitmap which used the least frequently is deleted from
+ * cache.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
@@ -26,7 +26,7 @@ public class UsingFreqLimitedCache extends LimitedCache<String, Bitmap> {
 	 * size will exceed limit then object with the least frequently usage is deleted (but it continue exist at
 	 * {@link #softMap} and can be collected by GC at any time)
 	 */
-	private final Map<Bitmap, Integer> hardCache = Collections.synchronizedMap(new HashMap<Bitmap, Integer>());
+	private final Map<Bitmap, Integer> usingCounts = Collections.synchronizedMap(new HashMap<Bitmap, Integer>());
 
 	public UsingFreqLimitedCache(int sizeLimit) {
 		super(sizeLimit);
@@ -35,7 +35,7 @@ public class UsingFreqLimitedCache extends LimitedCache<String, Bitmap> {
 	@Override
 	public boolean put(String key, Bitmap value) {
 		if (super.put(key, value)) {
-			hardCache.put(value, 0);
+			usingCounts.put(value, 0);
 			return true;
 		} else {
 			return false;
@@ -47,18 +47,27 @@ public class UsingFreqLimitedCache extends LimitedCache<String, Bitmap> {
 		Bitmap value = super.get(key);
 		// Increment usage count for value if value is contained in hardCahe
 		if (value != null) {
-			Integer usageCount = hardCache.get(value);
+			Integer usageCount = usingCounts.get(value);
 			if (usageCount != null) {
-				hardCache.put(value, usageCount + 1);
+				usingCounts.put(value, usageCount + 1);
 			}
 		}
 		return value;
 	}
 
 	@Override
+	public void remove(String key) {
+		Bitmap value = super.get(key);
+		if (value != null) {
+			usingCounts.remove(value);
+		}
+		super.remove(key);
+	}
+
+	@Override
 	public void clear() {
 		super.clear();
-		hardCache.clear();
+		usingCounts.clear();
 	}
 
 	@Override
@@ -70,8 +79,8 @@ public class UsingFreqLimitedCache extends LimitedCache<String, Bitmap> {
 	protected Bitmap removeNext() {
 		Integer minUsageCount = null;
 		Bitmap leastUsedValue = null;
-		Set<Entry<Bitmap, Integer>> entries = hardCache.entrySet();
-		synchronized (hardCache) {
+		Set<Entry<Bitmap, Integer>> entries = usingCounts.entrySet();
+		synchronized (usingCounts) {
 			for (Entry<Bitmap, Integer> entry : entries) {
 				if (leastUsedValue == null) {
 					leastUsedValue = entry.getKey();
@@ -85,7 +94,7 @@ public class UsingFreqLimitedCache extends LimitedCache<String, Bitmap> {
 				}
 			}
 		}
-		hardCache.remove(leastUsedValue);
+		usingCounts.remove(leastUsedValue);
 		return leastUsedValue;
 	}
 

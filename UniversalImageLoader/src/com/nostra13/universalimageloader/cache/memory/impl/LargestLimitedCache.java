@@ -14,8 +14,8 @@ import android.graphics.Bitmap;
 
 /**
  * Limited {@link Bitmap bitmap} cache. Provides {@link Bitmap bitmaps} storing. Size of all stored bitmaps will not to
- * exceed size limit. When cache reaches limit size then the bitmap which used the least
- * frequently is deleted from cache.
+ * exceed size limit. When cache reaches limit size then the bitmap which used the least frequently is deleted from
+ * cache.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
@@ -40,6 +40,15 @@ public class LargestLimitedCache extends LimitedCache<String, Bitmap> {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public void remove(String key) {
+		Bitmap value = super.get(key);
+		if (value != null) {
+			valueSizes.remove(value);
+		}
+		super.remove(key);
 	}
 
 	@Override

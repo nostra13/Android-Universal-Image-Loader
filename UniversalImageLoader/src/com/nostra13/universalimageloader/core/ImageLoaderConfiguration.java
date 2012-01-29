@@ -8,6 +8,8 @@ import android.util.DisplayMetrics;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache;
+import com.nostra13.universalimageloader.cache.memory.MemoryCacheable;
+import com.nostra13.universalimageloader.cache.memory.FuzzyKeyCache;
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache;
 import com.nostra13.universalimageloader.utils.StorageUtils;
@@ -29,7 +31,8 @@ public final class ImageLoaderConfiguration {
 	final int httpReadTimeout;
 	final int threadPoolSize;
 	final int threadPriority;
-	final MemoryCache<String, Bitmap> memoryCache;
+	final boolean allowCacheImageMultipleSizesInMemory;
+	final MemoryCacheable<String, Bitmap> memoryCache;
 	final DiscCache discCache;
 	final DisplayImageOptions defaultDisplayImageOptions;
 
@@ -40,6 +43,7 @@ public final class ImageLoaderConfiguration {
 		httpReadTimeout = builder.httpReadTimeout;
 		threadPoolSize = builder.threadPoolSize;
 		threadPriority = builder.threadPriority;
+		allowCacheImageMultipleSizesInMemory = builder.allowCacheImageMultipleSizesInMemory;
 		discCache = builder.discCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
@@ -55,6 +59,7 @@ public final class ImageLoaderConfiguration {
 	 * <li>httpReadTimeout = {@link Builder#DEFAULT_HTTP_READ_TIMEOUT this}</li>
 	 * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
 	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
+	 * <li>allow to cache different sizes of image in memory</li>
 	 * <li>memoryCache = {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache
 	 * UsingFreqLimitedCache} with limited memory cache size ( {@link Builder#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
 	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache}</li>
@@ -93,7 +98,8 @@ public final class ImageLoaderConfiguration {
 		private int httpReadTimeout = DEFAULT_HTTP_READ_TIMEOUT;
 		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
 		private int threadPriority = DEFAULT_THREAD_PRIORITY;
-		private MemoryCache<String, Bitmap> memoryCache = null;
+		private boolean allowCacheImageMultipleSizesInMemory = true;
+		private MemoryCacheable<String, Bitmap> memoryCache = null;
 		private DiscCache discCache = null;
 		private DisplayImageOptions defaultDisplayImageOptions = null;
 
@@ -163,6 +169,19 @@ public final class ImageLoaderConfiguration {
 					this.threadPriority = threadPriority;
 				}
 			}
+			return this;
+		}
+
+		/**
+		 * When you display an image in a small {@link android.widget.ImageView ImageView} and later you try to display
+		 * this image (from identical URL) in a larger {@link android.widget.ImageView ImageView} so decoded image of
+		 * bigger size will be cached in memory as a previous decoded image of smaller size.<br />
+		 * So <b>the default behavior is to allow to cache multiple sizes of one image in memory</b>. You can
+		 * <b>deny</b> it by calling <b>this</b> method: so when some image will be cached in memory then previous
+		 * cached size of this image (if it exists) will be removed from memory cache before.
+		 * */
+		public Builder denyCacheImageMultipleSizesInMemory() {
+			this.allowCacheImageMultipleSizesInMemory = false;
 			return this;
 		}
 
@@ -246,6 +265,9 @@ public final class ImageLoaderConfiguration {
 			}
 			if (memoryCache == null) {
 				memoryCache = new UsingFreqLimitedCache(DEFAULT_MEMORY_CACHE_SIZE);
+			}
+			if (!allowCacheImageMultipleSizesInMemory) {
+				memoryCache = new FuzzyKeyCache<String, Bitmap>(memoryCache, MemoryCacheKeyUtil.createFuzzyKeyComparator());
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();

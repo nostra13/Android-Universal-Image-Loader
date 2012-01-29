@@ -52,8 +52,14 @@ public abstract class LimitedCache<K, V> extends MemoryCache<K, V> {
 	}
 
 	@Override
-	public V get(K key) {
-		return super.get(key);
+	public void remove(K key) {
+		V value = super.get(key);
+		if (value != null) {
+			if (hardCache.remove(value)) {
+				cacheSize -= getSize(value);
+			}
+		}
+		super.remove(key);
 	}
 
 	@Override
