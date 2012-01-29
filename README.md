@@ -42,6 +42,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 			.httpReadTimeout(30000)
 			.threadPoolSize(5)
 			.threadPriority(Thread.MIN_PRIORITY + 2)
+			.denyCacheImageMultipleSizesInMemory()
 			.memoryCache(new UsingFreqLimitedCache(2000000)) // You can pass your own memory cache implementation
 			.discCache(new DefaultDiscCache(cacheDir)) // You can pass your own disc cache implementation
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
@@ -73,6 +74,12 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
 });
 ```
 
+## Useful info
+For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...)) you can use already prepared implementations:
+ * UsingFreqLimitedCache (the least frequently used bitmap is deleted when cache size limit is exceeded)
+ * UsingAgeLimitedCache (bitmap with the oldest using time is deleted when cache size limit is exceeded)
+ * FIFOLimitedCache (FIFO rule is used for deletion when cache size limit is exceeded)
+ * LargestLimitedCache (the largest bitmap is deleted when cache size limit is exceeded)
 
 ## License
 Copyright (c) 2011 [Sergey Tarasevich](http://nostra13android.blogspot.com)
