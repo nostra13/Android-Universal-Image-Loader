@@ -15,12 +15,22 @@
         android:name=".UILApplication" >
         <activity
             android:label="@string/app_name"
-            android:name="com.nostra13.example.universalimageloader.UILActivity" >
+            android:name=".HomeActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:label="@string/ac_name_image_list"
+            android:name=".ImageListActivity" />
+        <activity
+            android:label="@string/ac_name_image_grid"
+            android:name=".ImageGridActivity" />
+        <activity
+            android:label="@string/ac_name_image_gallery"
+            android:name=".ImageGalleryActivity" />
     </application>
 
 </manifest>

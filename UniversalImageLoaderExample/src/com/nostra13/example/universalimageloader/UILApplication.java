@@ -20,6 +20,7 @@ public class UILApplication extends Application {
 			.threadPriority(Thread.MIN_PRIORITY + 2)
 			.discCacheDir("UniversalImageLoaderApp/Cache")
 			.memoryCacheSize(1500000)
+			.denyCacheImageMultipleSizesInMemory()
 			.build();
 		// Initialize ImageLoader with configuration.
 		ImageLoader.getInstance().init(config);
