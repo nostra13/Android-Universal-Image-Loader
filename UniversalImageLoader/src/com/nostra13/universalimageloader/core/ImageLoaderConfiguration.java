@@ -54,6 +54,7 @@ public final class ImageLoaderConfiguration {
 	 * <li>httpConnectTimeout = {@link Builder#DEFAULT_HTTP_CONNECTION_TIMEOUT this}</li>
 	 * <li>httpReadTimeout = {@link Builder#DEFAULT_HTTP_READ_TIMEOUT this}</li>
 	 * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
+	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
 	 * <li>memoryCache = {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache
 	 * UsingFreqLimitedCache} with limited memory cache size ( {@link Builder#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
 	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache}</li>
@@ -103,7 +104,7 @@ public final class ImageLoaderConfiguration {
 		/**
 		 * Sets maximum image width which will be used for memory saving during decoding an image to
 		 * {@link android.graphics.Bitmap Bitmap}.<br />
-		 * Default value - {@link #DEFAULT_MAX_IMAGE_WIDTH this}
+		 * Default value - device's screen width
 		 * */
 		public Builder maxImageWidthForMemoryCache(int maxImageWidthForMemoryCache) {
 			this.maxImageWidthForMemoryCache = maxImageWidthForMemoryCache;
@@ -113,7 +114,7 @@ public final class ImageLoaderConfiguration {
 		/**
 		 * Sets maximum image height which will be used for memory saving during decoding an image to
 		 * {@link android.graphics.Bitmap Bitmap}.<br />
-		 * Default value - {@link #DEFAULT_MAX_IMAGE_HEIGHT this}
+		 * Default value - device's screen height
 		 * */
 		public Builder maxImageHeightForMemoryCache(int maxImageHeightForMemoryCache) {
 			this.maxImageHeightForMemoryCache = maxImageHeightForMemoryCache;

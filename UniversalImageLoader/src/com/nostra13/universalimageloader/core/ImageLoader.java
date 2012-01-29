@@ -269,11 +269,12 @@ public class ImageLoader {
 			height = params.height;
 		}
 
-		// Get device screen dimensions
 		if (width < 0 && height < 0) {
+			// Get device screen dimensions
 			width = configuration.maxImageWidthForMemoryCache;
 			height = configuration.maxImageHeightForMemoryCache;
 
+			// Consider device screen orientation
 			int screenOrientation = imageView.getContext().getResources().getConfiguration().orientation;
 			if ((screenOrientation == Configuration.ORIENTATION_PORTRAIT && width > height)
 					|| (screenOrientation == Configuration.ORIENTATION_LANDSCAPE && width < height)) {
