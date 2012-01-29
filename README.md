@@ -76,6 +76,7 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
 
 ## Useful info
 For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...)) you can use already prepared implementations:
+
  * UsingFreqLimitedCache (the least frequently used bitmap is deleted when cache size limit is exceeded)
  * UsingAgeLimitedCache (bitmap with the oldest using time is deleted when cache size limit is exceeded)
  * FIFOLimitedCache (FIFO rule is used for deletion when cache size limit is exceeded)
