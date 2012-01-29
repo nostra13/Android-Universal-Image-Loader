@@ -31,7 +31,6 @@ public final class ImageLoaderConfiguration {
 	final int httpReadTimeout;
 	final int threadPoolSize;
 	final int threadPriority;
-	final boolean allowCacheImageMultipleSizesInMemory;
 	final MemoryCacheable<String, Bitmap> memoryCache;
 	final DiscCache discCache;
 	final DisplayImageOptions defaultDisplayImageOptions;
@@ -43,7 +42,6 @@ public final class ImageLoaderConfiguration {
 		httpReadTimeout = builder.httpReadTimeout;
 		threadPoolSize = builder.threadPoolSize;
 		threadPriority = builder.threadPriority;
-		allowCacheImageMultipleSizesInMemory = builder.allowCacheImageMultipleSizesInMemory;
 		discCache = builder.discCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
