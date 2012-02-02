@@ -190,7 +190,7 @@ public class ImageLoader {
 
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
-			Log.i(TAG, LOG_LOAD_IMAGE_FROM_MEMORY_CACHE);
+			Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey));
 			imageView.setImageBitmap(bmp);
 		} else {
 			listener.onLoadingStarted();
