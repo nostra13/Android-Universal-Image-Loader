@@ -5,7 +5,7 @@ import java.io.File;
 import com.nostra13.universalimageloader.cache.disc.DiscCache;
 
 /**
- * Default implementation of {@link DiscCache disc cache}. Names file as file URL {@link String#hashCode() hashcode}.
+ * Default implementation of {@linkplain DiscCache disc cache}. Names file as file URL {@linkplain String#hashCode() hashcode}.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see DiscCache

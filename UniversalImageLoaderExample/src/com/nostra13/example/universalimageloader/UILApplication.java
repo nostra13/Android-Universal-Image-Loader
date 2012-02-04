@@ -18,7 +18,6 @@ public class UILApplication extends Application {
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
 			.threadPoolSize(3)
 			.threadPriority(Thread.MIN_PRIORITY + 2)
-			.discCacheDir("UniversalImageLoaderApp/Cache")
 			.memoryCacheSize(1500000)
 			.denyCacheImageMultipleSizesInMemory()
 			.build();

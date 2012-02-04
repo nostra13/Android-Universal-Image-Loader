@@ -31,7 +31,7 @@ import com.nostra13.universalimageloader.utils.FileUtils;
  */
 public class ImageLoader {
 
-	static final String TAG = ImageLoader.class.getSimpleName();
+	public static final String TAG = ImageLoader.class.getSimpleName();
 
 	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (image URL and ImageView reference are required)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";

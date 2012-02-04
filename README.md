@@ -32,7 +32,7 @@ imageLoader.displayImage(imageUrl, imageView);
 ImageView imageView = ...
 String imageUrl = "http://site.com/image.png"; // or "file:///mnt/sdcard/images/image.jpg"
 ProgressBar spinner = ...
-File cacheDir = StorageUtils.getCacheDirectory(getApplicationContext(), "UniversalImageLoader/Cache");
+File cacheDir = new File(Environment.getExternalStorageDirectory(), "UniversalImageLoader/Cache");
 
 // Get singletone instance of ImageLoader
 ImageLoader imageLoader = ImageLoader.getInstance();

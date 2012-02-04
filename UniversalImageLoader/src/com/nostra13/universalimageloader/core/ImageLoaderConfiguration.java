@@ -85,8 +85,6 @@ public final class ImageLoaderConfiguration {
 		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
 		/** {@value} bytes */
 		public static final int DEFAULT_MEMORY_CACHE_SIZE = 2000000;
-		/** {@value} */
-		public static final String DEFAULT_CACHE_DIRECTORY = "UniversalImageLoader/Cache";
 
 		private Context context;
 
@@ -209,30 +207,11 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets cache directory path for images on SD card.
-		 * {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache} will be used in
-		 * this case.<br />
-		 * Default value - {@link #DEFAULT_CACHE_DIRECTORY this}</b>.<br />
-		 * <b>NOTE:</b> If you use this method then
-		 * {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache} will be used as
-		 * disc cache. You can use {@link #discCache(DiscCache)} method for introduction your own implementation of
-		 * {@link DiscCache}.
-		 */
-		public Builder discCacheDir(String discCacheDirPath) {
-			File cacheDir = StorageUtils.getCacheDirectory(context, discCacheDirPath);
-			this.discCache = new DefaultDiscCache(cacheDir);
-			return this;
-		}
-
-		/**
-		 * Sets disc cache for {@link android.graphics.Bitmap bitmaps}.<br />
+		 * Sets disc cache for images.<br />
 		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache}.
 		 * Cache directory is defined by <b>
-		 * {@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context, String)
-		 * StorageUtils.getCacheDirectory(context, cacheDirPath)}</b>, where <b>cacheDirPath</b> =
-		 * {@link #DEFAULT_CACHE_DIRECTORY this}</b>.<br />
-		 * <b>NOTE:</b> You can use {@link #discCacheDir(String)} method instead of this method to simplify disc cache
-		 * tuning.
+		 * {@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context)
+		 * StorageUtils.getCacheDirectory(Context)}.<br />
 		 */
 		public Builder discCache(DiscCache discCache) {
 			this.discCache = discCache;
@@ -258,7 +237,7 @@ public final class ImageLoaderConfiguration {
 
 		private void initEmptyFiledsWithDefaultValues() {
 			if (discCache == null) {
-				File cacheDir = StorageUtils.getCacheDirectory(context, DEFAULT_CACHE_DIRECTORY);
+				File cacheDir = StorageUtils.getCacheDirectory(context);
 				discCache = new DefaultDiscCache(cacheDir);
 			}
 			if (memoryCache == null) {

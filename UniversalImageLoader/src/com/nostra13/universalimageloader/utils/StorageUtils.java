@@ -1,9 +1,13 @@
 package com.nostra13.universalimageloader.utils;
 
 import java.io.File;
+import java.io.IOException;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 /**
  * Provides application storage paths
@@ -16,25 +20,38 @@ public final class StorageUtils {
 	}
 
 	/**
-	 * Returns application cache directory. Cache directory will be created on SD card if card is mounted. Else -
-	 * Android defines cache directory on device's file system.
+	 * Returns application cache directory. Cache directory will be created on SD card
+	 * <i>("/Android/[app_package_name]/cache")</i> if card is mounted. Else - Android defines cache directory on
+	 * device's file system.
 	 * 
 	 * @param context
 	 *            Application context
-	 * @param cacheDirPath
-	 *            Cache directory path for SD card (if SD card is mounted). <b>i.e.:</b> "AppDir_cache",
-	 *            "AppDir/Cache/Images"
 	 * @return Cache {@link File directory}
 	 */
-	public static File getCacheDirectory(Context context, String cacheDirPath) {
-		File appCacheDir;
+	public static File getCacheDirectory(Context context) {
+		File appCacheDir = null;
 		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
-			appCacheDir = new File(Environment.getExternalStorageDirectory(), cacheDirPath);
-		} else {
+			appCacheDir = getExternalCacheDir(context);
+		}
+		if (appCacheDir == null) {
 			appCacheDir = context.getCacheDir();
 		}
+		return appCacheDir;
+	}
+
+	private static File getExternalCacheDir(Context context) {
+		File dataDir = new File(new File(Environment.getExternalStorageDirectory(), "Android"), "data");
+		File appCacheDir = new File(new File(dataDir, context.getPackageName()), "cache");
 		if (!appCacheDir.exists()) {
-			appCacheDir.mkdirs();
+			try {
+				new File(dataDir, ".nomedia").createNewFile();
+			} catch (IOException e) {
+				Log.w(ImageLoader.TAG, "Can't create \".nomedia\" file in application external cache directory", e);
+			}
+			if (!appCacheDir.mkdirs()) {
+				Log.w(ImageLoader.TAG, "Unable to create external cache directory");
+				return null;
+			}
 		}
 		return appCacheDir;
 	}
