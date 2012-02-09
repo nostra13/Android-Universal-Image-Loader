@@ -1,4 +1,7 @@
-/bin
-/gen
+*/bin
+*/gen
 .project
-.classpath
+/UniversalImageLoader/.classpath
+*/.externalToolBuilders
+build.xml
+local.properties

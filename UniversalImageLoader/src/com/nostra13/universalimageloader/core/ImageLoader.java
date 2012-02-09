@@ -9,6 +9,9 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,7 +23,6 @@ import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.R;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
 /**
@@ -46,11 +48,12 @@ public class ImageLoader {
 	private static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
 	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
 
-	private static final int IMAGE_TAG_KEY = R.id.tag_image_loader;
-
 	private ImageLoaderConfiguration configuration;
 	private ExecutorService imageLoadingExecutor;
+	private ExecutorService cachedImageLoadingExecutor;
 	private ImageLoadingListener emptyListener;
+
+	private Map<ImageView, String> cacheKeyForImageView = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 
 	private volatile static ImageLoader instance;
 
@@ -84,7 +87,6 @@ public class ImageLoader {
 		}
 		if (this.configuration == null) {
 			this.configuration = configuration;
-			imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
 			emptyListener = new EmptyListener();
 		}
 	}
@@ -186,7 +188,7 @@ public class ImageLoader {
 
 		ImageSize targetSize = getImageSizeScaleTo(imageView);
 		String memoryCacheKey = MemoryCacheKeyUtil.generateKey(url, targetSize);
-		imageView.setTag(IMAGE_TAG_KEY, memoryCacheKey);
+		cacheKeyForImageView.put(imageView, memoryCacheKey);
 
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
@@ -194,14 +196,15 @@ public class ImageLoader {
 			imageView.setImageBitmap(bmp);
 		} else {
 			listener.onLoadingStarted();
-			if (imageLoadingExecutor.isShutdown()) {
-				imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize);
-			}
+			checkExecutors();
 
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, targetSize, options, listener);
-			Thread displayImageTask = new Thread(new DisplayImageTask(imageLoadingInfo));
-			displayImageTask.setPriority(configuration.threadPriority);
-			imageLoadingExecutor.submit(displayImageTask);
+			DisplayImageTask displayImageTask = new DisplayImageTask(imageLoadingInfo);
+			if (displayImageTask.isImageCachedOnDisc()) {
+				cachedImageLoadingExecutor.submit(displayImageTask);
+			} else {
+				imageLoadingExecutor.submit(displayImageTask);
+			}
 
 			if (options.isShowStubImage()) {
 				imageView.setImageResource(options.getStubImage());
@@ -211,10 +214,22 @@ public class ImageLoader {
 		}
 	}
 
+	private void checkExecutors() {
+		if (imageLoadingExecutor == null || imageLoadingExecutor.isShutdown()) {
+			imageLoadingExecutor = Executors.newFixedThreadPool(configuration.threadPoolSize, configuration.displayImageThreadFactory);
+		}
+		if (cachedImageLoadingExecutor == null || cachedImageLoadingExecutor.isShutdown()) {
+			cachedImageLoadingExecutor = Executors.newSingleThreadExecutor(configuration.displayImageThreadFactory);
+		}
+	}
+
 	/** Stops all running display image tasks, discards all other scheduled tasks */
 	public void stop() {
 		if (imageLoadingExecutor != null) {
 			imageLoadingExecutor.shutdown();
+		}
+		if (cachedImageLoadingExecutor != null) {
+			cachedImageLoadingExecutor.shutdown();
 		}
 	}
 
@@ -310,9 +325,11 @@ public class ImageLoader {
 			memoryCacheKey = MemoryCacheKeyUtil.generateKey(url, targetSize);
 		}
 
-		/** Whether current URL matches to URL from ImageView tag */
+		/** Whether image URL of this task matches to URL which corresponds to current ImageView */
 		boolean isConsistent() {
-			return memoryCacheKey.equals(imageView.getTag(IMAGE_TAG_KEY));
+			String currentCacheKey = cacheKeyForImageView.get(imageView);
+			// Entry with imageView could be collected by GC. In that case we also consider that current memory cache key (image URL) is right.
+			return currentCacheKey == null || memoryCacheKey.equals(currentCacheKey);
 		}
 	}
 
@@ -389,6 +406,11 @@ public class ImageLoader {
 				fireImageLoadingFailedEvent(FailReason.UNKNOWN);
 			}
 			return bitmap;
+		}
+
+		private boolean isImageCachedOnDisc() {
+			File f = configuration.discCache.getFile(imageLoadingInfo.url);
+			return f.exists();
 		}
 
 		private Bitmap decodeImage(URL imageUrl) throws IOException {

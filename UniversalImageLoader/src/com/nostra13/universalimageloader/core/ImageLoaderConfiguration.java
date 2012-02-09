@@ -1,6 +1,7 @@
 package com.nostra13.universalimageloader.core;
 
 import java.io.File;
+import java.util.concurrent.ThreadFactory;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,9 +9,9 @@ import android.util.DisplayMetrics;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache;
-import com.nostra13.universalimageloader.cache.memory.MemoryCacheable;
 import com.nostra13.universalimageloader.cache.memory.FuzzyKeyCache;
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
+import com.nostra13.universalimageloader.cache.memory.MemoryCacheable;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
@@ -30,21 +31,28 @@ public final class ImageLoaderConfiguration {
 	final int httpConnectTimeout;
 	final int httpReadTimeout;
 	final int threadPoolSize;
-	final int threadPriority;
 	final MemoryCacheable<String, Bitmap> memoryCache;
 	final DiscCache discCache;
 	final DisplayImageOptions defaultDisplayImageOptions;
+	final ThreadFactory displayImageThreadFactory;
 
-	private ImageLoaderConfiguration(Builder builder) {
+	private ImageLoaderConfiguration(final Builder builder) {
 		maxImageWidthForMemoryCache = builder.maxImageWidthForMemoryCache;
 		maxImageHeightForMemoryCache = builder.maxImageHeightForMemoryCache;
 		httpConnectTimeout = builder.httpConnectTimeout;
 		httpReadTimeout = builder.httpReadTimeout;
 		threadPoolSize = builder.threadPoolSize;
-		threadPriority = builder.threadPriority;
 		discCache = builder.discCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
+		displayImageThreadFactory = new ThreadFactory() {
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread t = new Thread(r);
+				t.setPriority(builder.threadPriority);
+				return t;
+			}
+		};
 	}
 
 	/**
