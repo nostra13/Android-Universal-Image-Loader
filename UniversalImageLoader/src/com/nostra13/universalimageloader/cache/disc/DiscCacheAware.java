@@ -23,6 +23,6 @@ public interface DiscCacheAware {
 	 */
 	File get(String key);
 
-	/** Clears cache direcory */
+	/** Clears cache directory */
 	void clear();
 }

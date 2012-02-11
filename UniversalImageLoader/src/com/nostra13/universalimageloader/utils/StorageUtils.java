@@ -16,6 +16,8 @@ import android.util.Log;
  */
 public final class StorageUtils {
 
+	private static final String INDIVIDUAL_DIR_NAME = "uil-images";
+
 	private StorageUtils() {
 	}
 
@@ -37,6 +39,24 @@ public final class StorageUtils {
 			appCacheDir = context.getCacheDir();
 		}
 		return appCacheDir;
+	}
+
+	/**
+	 * Returns individual application cache directory (for only image caching from ImageLoader). Cache directory will be
+	 * created on SD card <i>("/Android/data/[app_package_name]/cache/uil-images")</i> if card is mounted. Else -
+	 * Android defines cache directory on device's file system.
+	 * 
+	 * @param context
+	 *            Application context
+	 * @return Cache {@link File directory}
+	 */
+	public static File getIndividualCacheDirectory(Context context) {
+		File cacheDir = getCacheDirectory(context);
+		File individualCacheDir = new File(cacheDir, INDIVIDUAL_DIR_NAME);
+		if (!individualCacheDir.mkdir()) {
+			individualCacheDir = cacheDir;
+		}
+		return individualCacheDir;
 	}
 
 	private static File getExternalCacheDir(Context context) {

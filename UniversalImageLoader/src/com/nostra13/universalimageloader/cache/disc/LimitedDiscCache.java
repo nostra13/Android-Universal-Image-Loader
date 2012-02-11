@@ -17,7 +17,7 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 
 	private int cacheSize = 0;
 
-	private long sizeLimit;
+	private int sizeLimit;
 
 	private final Map<File, Long> lastUsageDates = Collections.synchronizedMap(new HashMap<File, Long>());
 
@@ -47,10 +47,10 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 
 	@Override
 	public void put(String key, File file) {
-		long valueSize = getSize(file);
+		int valueSize = getSize(file);
 		if (valueSize < sizeLimit) {
 			while (cacheSize + valueSize > sizeLimit) {
-				long freedSize = removeNext();
+				int freedSize = removeNext();
 				cacheSize -= freedSize;
 			}
 			cacheSize += valueSize;
@@ -79,7 +79,7 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	}
 
 	/** Remove next file and returns it's size */
-	private long removeNext() {
+	private int removeNext() {
 		Long oldestUsage = null;
 		File mostLongUsedFile = null;
 		Set<Entry<File, Long>> entries = lastUsageDates.entrySet();
@@ -97,10 +97,10 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 				}
 			}
 		}
-		long fileSize = getSize(mostLongUsedFile);
+		int fileSize = getSize(mostLongUsedFile);
 		lastUsageDates.remove(mostLongUsedFile);
 		return fileSize;
 	}
 
-	protected abstract long getSize(File file);
+	protected abstract int getSize(File file);
 }

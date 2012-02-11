@@ -17,16 +17,16 @@ public class FileCountLimitedDiscCache extends LimitedDiscCache {
 	 * @param cacheDir
 	 *            Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's needed
 	 *            for right cache limit work.
-	 * @param sizeLimit
+	 * @param maxFileCount
 	 *            Maximum file count for cache. If file count in cache directory exceeds this limit then file with the
 	 *            most oldest last usage date will be deleted.
 	 */
-	public FileCountLimitedDiscCache(File cacheDir, int sizeLimit) {
-		super(cacheDir, sizeLimit);
+	public FileCountLimitedDiscCache(File cacheDir, int maxFileCount) {
+		super(cacheDir, maxFileCount);
 	}
 
 	@Override
-	protected long getSize(File file) {
+	protected int getSize(File file) {
 		return 1;
 	}
 

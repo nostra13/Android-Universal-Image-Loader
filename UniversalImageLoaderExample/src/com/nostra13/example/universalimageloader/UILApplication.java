@@ -19,6 +19,7 @@ public class UILApplication extends Application {
 			.threadPoolSize(3)
 			.threadPriority(Thread.NORM_PRIORITY - 2)
 			.memoryCacheSize(1500000)
+			.discCacheSize(50000000)
 			.httpReadTimeout(10000)
 			.denyCacheImageMultipleSizesInMemory()
 			.build();

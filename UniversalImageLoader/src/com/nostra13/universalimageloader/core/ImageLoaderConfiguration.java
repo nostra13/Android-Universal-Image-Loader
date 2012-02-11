@@ -8,9 +8,10 @@ import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
+import com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.memory.FuzzyKeyMemoryCache;
-import com.nostra13.universalimageloader.cache.memory.BaseMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
 import com.nostra13.universalimageloader.utils.StorageUtils;
@@ -190,12 +191,12 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets memory cache size for {@link android.graphics.Bitmap bitmaps} (in bytes).<br />
+		 * Sets maximum memory cache size for {@link android.graphics.Bitmap bitmaps} (in bytes).<br />
 		 * Default value - {@link #DEFAULT_MEMORY_CACHE_SIZE this}<br />
 		 * <b>NOTE:</b> If you use this method then
 		 * {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache UsingFreqLimitedCache} will
-		 * be used as memory cache. You can use {@link #memoryCache(BaseMemoryCache)} method for introduction your own
-		 * implementation of {@link BaseMemoryCache}.
+		 * be used as memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method for introduction your own
+		 * implementation of {@link MemoryCacheAware}.
 		 */
 		public Builder memoryCacheSize(int memoryCacheSize) {
 			this.memoryCache = new UsingFreqLimitedMemoryCache(memoryCacheSize);
@@ -209,11 +210,37 @@ public final class ImageLoaderConfiguration {
 		 * <b>NOTE:</b> You can use {@link #memoryCacheSize(int)} method instead of this method to simplify memory cache
 		 * tuning.
 		 */
-		public Builder memoryCache(BaseMemoryCache<String, Bitmap> memoryCache) {
+		public Builder memoryCache(MemoryCacheAware<String, Bitmap> memoryCache) {
 			this.memoryCache = memoryCache;
 			return this;
 		}
 
+		/**
+		 * Sets maximum disc cache size for images (in bytes).<br />
+		 * <b>NOTE:</b> If you use this method then
+		 * {@link com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache TotalSizeLimitedDiscCache}
+		 * will be used as disc cache. You can use {@link #discCache(DiscCacheAware)} method for introduction your own
+		 * implementation of {@link DiscCacheAware}
+		 */
+		public Builder discCacheSize(int maxCacheSize) {
+			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
+			this.discCache = new TotalSizeLimitedDiscCache(individualCacheDir, maxCacheSize);
+			return this;
+		}
+
+		/**
+		 * Sets maximum file count in disc cache directory.<br />
+		 * <b>NOTE:</b> If you use this method then
+		 * {@link com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache FileCountLimitedDiscCache}
+		 * will be used as disc cache. You can use {@link #discCache(DiscCacheAware)} method for introduction your own
+		 * implementation of {@link DiscCacheAware}
+		 */
+		public Builder discCacheFileCount(int maxFileCount) {
+			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
+			this.discCache = new FileCountLimitedDiscCache(individualCacheDir, maxFileCount);
+			return this;
+		}
+		
 		/**
 		 * Sets disc cache for images.<br />
 		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache UnlimitedDiscCache}.
