@@ -370,7 +370,7 @@ public class ImageLoader {
 		}
 
 		private Bitmap loadBitmap() {
-			File f = configuration.discCache.getFile(imageLoadingInfo.url);
+			File f = configuration.discCache.get(imageLoadingInfo.url);
 
 			Bitmap bitmap = null;
 			try {
@@ -395,21 +395,25 @@ public class ImageLoader {
 				}
 
 				bitmap = decodeImage(imageUrlForDecoding);
+				
+				if (imageLoadingInfo.options.isCacheOnDisc()) {
+					configuration.discCache.put(imageLoadingInfo.url, f);
+				}
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage(), e);
 				fireImageLoadingFailedEvent(FailReason.IO_ERROR);
 				if (f.exists()) {
 					f.delete();
 				}
-			} catch (Throwable ex) {
-				Log.e(TAG, String.format("Exception while loading bitmap from URL=%s : %s", imageLoadingInfo.url, ex.getMessage()), ex);
+			} catch (Throwable e) {
+				Log.e(TAG, e.getMessage(), e);
 				fireImageLoadingFailedEvent(FailReason.UNKNOWN);
 			}
 			return bitmap;
 		}
 
 		private boolean isImageCachedOnDisc() {
-			File f = configuration.discCache.getFile(imageLoadingInfo.url);
+			File f = configuration.discCache.get(imageLoadingInfo.url);
 			return f.exists();
 		}
 

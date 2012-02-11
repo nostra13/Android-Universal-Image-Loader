@@ -7,12 +7,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 
-import com.nostra13.universalimageloader.cache.disc.DiscCache;
-import com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache;
-import com.nostra13.universalimageloader.cache.memory.FuzzyKeyCache;
-import com.nostra13.universalimageloader.cache.memory.MemoryCache;
-import com.nostra13.universalimageloader.cache.memory.MemoryCacheable;
-import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache;
+import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.memory.FuzzyKeyMemoryCache;
+import com.nostra13.universalimageloader.cache.memory.BaseMemoryCache;
+import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 /**
@@ -20,8 +20,8 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see ImageLoader
- * @see MemoryCache
- * @see DiscCache
+ * @see MemoryCacheAware
+ * @see DiscCacheAware
  * @see DisplayImageOptions
  */
 public final class ImageLoaderConfiguration {
@@ -31,8 +31,8 @@ public final class ImageLoaderConfiguration {
 	final int httpConnectTimeout;
 	final int httpReadTimeout;
 	final int threadPoolSize;
-	final MemoryCacheable<String, Bitmap> memoryCache;
-	final DiscCache discCache;
+	final MemoryCacheAware<String, Bitmap> memoryCache;
+	final DiscCacheAware discCache;
 	final DisplayImageOptions defaultDisplayImageOptions;
 	final ThreadFactory displayImageThreadFactory;
 
@@ -66,9 +66,9 @@ public final class ImageLoaderConfiguration {
 	 * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
 	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
 	 * <li>allow to cache different sizes of image in memory</li>
-	 * <li>memoryCache = {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache
+	 * <li>memoryCache = {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache
 	 * UsingFreqLimitedCache} with limited memory cache size ( {@link Builder#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
-	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache}</li>
+	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache UnlimitedDiscCache}</li>
 	 * <li>defaultDisplayImageOptions = {@link DisplayImageOptions#createSimple() Simple options}</li>
 	 * </ul>
 	 * */
@@ -103,8 +103,8 @@ public final class ImageLoaderConfiguration {
 		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
 		private int threadPriority = DEFAULT_THREAD_PRIORITY;
 		private boolean allowCacheImageMultipleSizesInMemory = true;
-		private MemoryCacheable<String, Bitmap> memoryCache = null;
-		private DiscCache discCache = null;
+		private MemoryCacheAware<String, Bitmap> memoryCache = null;
+		private DiscCacheAware discCache = null;
 		private DisplayImageOptions defaultDisplayImageOptions = null;
 
 		public Builder(Context context) {
@@ -193,35 +193,35 @@ public final class ImageLoaderConfiguration {
 		 * Sets memory cache size for {@link android.graphics.Bitmap bitmaps} (in bytes).<br />
 		 * Default value - {@link #DEFAULT_MEMORY_CACHE_SIZE this}<br />
 		 * <b>NOTE:</b> If you use this method then
-		 * {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache UsingFreqLimitedCache} will
-		 * be used as memory cache. You can use {@link #memoryCache(MemoryCache)} method for introduction your own
-		 * implementation of {@link MemoryCache}.
+		 * {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache UsingFreqLimitedCache} will
+		 * be used as memory cache. You can use {@link #memoryCache(BaseMemoryCache)} method for introduction your own
+		 * implementation of {@link BaseMemoryCache}.
 		 */
 		public Builder memoryCacheSize(int memoryCacheSize) {
-			this.memoryCache = new UsingFreqLimitedCache(memoryCacheSize);
+			this.memoryCache = new UsingFreqLimitedMemoryCache(memoryCacheSize);
 			return this;
 		}
 
 		/**
 		 * Sets memory cache for {@link android.graphics.Bitmap bitmaps}.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedCache
+		 * Default value - {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache
 		 * UsingFreqLimitedCache} with limited memory cache size (size = {@link #DEFAULT_MEMORY_CACHE_SIZE this})<br />
 		 * <b>NOTE:</b> You can use {@link #memoryCacheSize(int)} method instead of this method to simplify memory cache
 		 * tuning.
 		 */
-		public Builder memoryCache(MemoryCache<String, Bitmap> memoryCache) {
+		public Builder memoryCache(BaseMemoryCache<String, Bitmap> memoryCache) {
 			this.memoryCache = memoryCache;
 			return this;
 		}
 
 		/**
 		 * Sets disc cache for images.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.DefaultDiscCache DefaultDiscCache}.
+		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache UnlimitedDiscCache}.
 		 * Cache directory is defined by <b>
 		 * {@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context)
 		 * StorageUtils.getCacheDirectory(Context)}.<br />
 		 */
-		public Builder discCache(DiscCache discCache) {
+		public Builder discCache(DiscCacheAware discCache) {
 			this.discCache = discCache;
 			return this;
 		}
@@ -246,13 +246,13 @@ public final class ImageLoaderConfiguration {
 		private void initEmptyFiledsWithDefaultValues() {
 			if (discCache == null) {
 				File cacheDir = StorageUtils.getCacheDirectory(context);
-				discCache = new DefaultDiscCache(cacheDir);
+				discCache = new UnlimitedDiscCache(cacheDir);
 			}
 			if (memoryCache == null) {
-				memoryCache = new UsingFreqLimitedCache(DEFAULT_MEMORY_CACHE_SIZE);
+				memoryCache = new UsingFreqLimitedMemoryCache(DEFAULT_MEMORY_CACHE_SIZE);
 			}
 			if (!allowCacheImageMultipleSizesInMemory) {
-				memoryCache = new FuzzyKeyCache<String, Bitmap>(memoryCache, MemoryCacheKeyUtil.createFuzzyKeyComparator());
+				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheKeyUtil.createFuzzyKeyComparator());
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();

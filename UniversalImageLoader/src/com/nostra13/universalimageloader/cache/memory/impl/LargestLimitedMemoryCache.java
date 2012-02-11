@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.nostra13.universalimageloader.cache.memory.LimitedCache;
+import com.nostra13.universalimageloader.cache.memory.LimitedMemoryCache;
 
 import android.graphics.Bitmap;
 
@@ -19,7 +19,7 @@ import android.graphics.Bitmap;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class LargestLimitedCache extends LimitedCache<String, Bitmap> {
+public class LargestLimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
 
 	/**
 	 * Contains strong references to stored objects (keys) and last object usage date (in milliseconds). If hard cache
@@ -28,7 +28,7 @@ public class LargestLimitedCache extends LimitedCache<String, Bitmap> {
 	 */
 	private final Map<Bitmap, Integer> valueSizes = Collections.synchronizedMap(new HashMap<Bitmap, Integer>());
 
-	public LargestLimitedCache(int sizeLimit) {
+	public LargestLimitedMemoryCache(int sizeLimit) {
 		super(sizeLimit);
 	}
 
@@ -53,8 +53,8 @@ public class LargestLimitedCache extends LimitedCache<String, Bitmap> {
 
 	@Override
 	public void clear() {
-		super.clear();
 		valueSizes.clear();
+		super.clear();
 	}
 
 	@Override

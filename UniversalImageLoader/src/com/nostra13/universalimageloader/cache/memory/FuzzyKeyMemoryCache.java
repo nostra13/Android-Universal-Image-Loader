@@ -5,18 +5,18 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 /**
- * Decorator for {@link MemoryCacheable}. Provides special feature for cache: some different keys are considered as
+ * Decorator for {@link MemoryCacheAware}. Provides special feature for cache: some different keys are considered as
  * equals (using {@link Comparator comparator}). And when you try to put some value into cache by key so entries with
  * "equals" keys will be removed from cache before.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class FuzzyKeyCache<K, V> implements MemoryCacheable<K, V> {
+public class FuzzyKeyMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 
-	private MemoryCacheable<K, V> cache;
+	private MemoryCacheAware<K, V> cache;
 	private Comparator<K> keyComparator;
 
-	public FuzzyKeyCache(MemoryCacheable<K, V> cache, Comparator<K> keyComparator) {
+	public FuzzyKeyMemoryCache(MemoryCacheAware<K, V> cache, Comparator<K> keyComparator) {
 		this.cache = cache;
 		this.keyComparator = keyComparator;
 	}

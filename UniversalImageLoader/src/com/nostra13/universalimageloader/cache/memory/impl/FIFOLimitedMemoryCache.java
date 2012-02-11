@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.nostra13.universalimageloader.cache.memory.LimitedCache;
+import com.nostra13.universalimageloader.cache.memory.LimitedMemoryCache;
 
 import android.graphics.Bitmap;
 
@@ -16,11 +16,11 @@ import android.graphics.Bitmap;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class FIFOLimitedCache extends LimitedCache<String, Bitmap> {
+public class FIFOLimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
 
 	private final List<Bitmap> queue = Collections.synchronizedList(new LinkedList<Bitmap>());
 
-	public FIFOLimitedCache(int sizeLimit) {
+	public FIFOLimitedMemoryCache(int sizeLimit) {
 		super(sizeLimit);
 	}
 
@@ -45,8 +45,8 @@ public class FIFOLimitedCache extends LimitedCache<String, Bitmap> {
 
 	@Override
 	public void clear() {
-		super.clear();
 		queue.clear();
+		super.clear();
 	}
 
 	@Override

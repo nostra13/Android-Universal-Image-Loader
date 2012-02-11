@@ -79,10 +79,16 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
 ## Useful info
 For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...)) you can use already prepared implementations:
 
- * UsingFreqLimitedCache (the least frequently used bitmap is deleted when cache size limit is exceeded)
- * UsingAgeLimitedCache (bitmap with the oldest using time is deleted when cache size limit is exceeded)
+ * UsingFreqLimitedCache (The least frequently used bitmap is deleted when cache size limit is exceeded) - Used by default
+ * UsingAgeLimitedCache (Bitmap with the oldest using time is deleted when cache size limit is exceeded)
  * FIFOLimitedCache (FIFO rule is used for deletion when cache size limit is exceeded)
- * LargestLimitedCache (the largest bitmap is deleted when cache size limit is exceeded)
+ * LargestLimitedCache (The largest bitmap is deleted when cache size limit is exceeded)
+ 
+ For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) you can use already prepared implementations:
+
+ * UnlimitedDiscCache (The fastest cache, doesn't limit cache size) - Used by default
+ * TotalSizeLimitedDiscCache (Cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last usage date will be deleted)
+ * FileCountLimitedDiscCache (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
 
 ## License
 Copyright (c) 2011 [Sergey Tarasevich](http://nostra13android.blogspot.com)

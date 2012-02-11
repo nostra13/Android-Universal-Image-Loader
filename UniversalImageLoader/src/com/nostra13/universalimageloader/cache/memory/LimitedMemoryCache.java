@@ -9,9 +9,9 @@ import java.util.List;
  * {@link #getSizeLimit()}).
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @see MemoryCache
+ * @see BaseMemoryCache
  */
-public abstract class LimitedCache<K, V> extends MemoryCache<K, V> {
+public abstract class LimitedMemoryCache<K, V> extends BaseMemoryCache<K, V> {
 
 	private final int sizeLimit;
 
@@ -24,7 +24,11 @@ public abstract class LimitedCache<K, V> extends MemoryCache<K, V> {
 	 */
 	private final List<V> hardCache = Collections.synchronizedList(new LinkedList<V>());
 
-	public LimitedCache(int sizeLimit) {
+	/**
+	 * @param sizeLimit
+	 *            Maximum size for cache (in bytes)
+	 */
+	public LimitedMemoryCache(int sizeLimit) {
 		this.sizeLimit = sizeLimit;
 	}
 

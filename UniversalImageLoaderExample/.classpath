@@ -5,6 +5,6 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="lib" path="lib/android-support-v4.jar"/>
-	<classpathentry kind="lib" path="lib/universal-image-loader-1.0.0.jar" sourcepath="lib/universal-image-loader-1.0.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/universal-image-loader.jar" sourcepath="lib/universal-image-loader-sources.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
