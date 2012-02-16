@@ -193,7 +193,9 @@ public class ImageLoader {
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
 			Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey));
+			listener.onLoadingStarted();
 			imageView.setImageBitmap(bmp);
+			listener.onLoadingComplete();
 		} else {
 			listener.onLoadingStarted();
 			checkExecutors();
