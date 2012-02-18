@@ -25,5 +25,6 @@ public class UILApplication extends Application {
 			.build();
 		// Initialize ImageLoader with configuration.
 		ImageLoader.getInstance().init(config);
+		ImageLoader.getInstance().enableLogging();
 	}
 }

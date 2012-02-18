@@ -38,7 +38,8 @@ public class ImageLoader {
 	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (image URL and ImageView reference are required)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
-	private static final String ERROR_IMAGEVIEW_CONTEXT = "ImageView context must be of Activity type";
+	private static final String ERROR_IMAGEVIEW_CONTEXT = "ImageView context must be of Activity type"
+			+ "If you create ImageView in code you must pass your current activity in ImageView constructor (e.g. new ImageView(MyActivity.this); or new ImageView(getActivity())).";
 
 	private static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
 	private static final String LOG_LOAD_IMAGE_FROM_INTERNET = "Load image from Internet [%s]";
@@ -54,6 +55,8 @@ public class ImageLoader {
 	private ImageLoadingListener emptyListener;
 
 	private Map<ImageView, String> cacheKeyForImageView = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+
+	private boolean loggingEnabled = false;
 
 	private volatile static ImageLoader instance;
 
@@ -192,7 +195,7 @@ public class ImageLoader {
 
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
-			Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey));
+			if (loggingEnabled) Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey));
 			listener.onLoadingStarted();
 			imageView.setImageBitmap(bmp);
 			listener.onLoadingComplete();
@@ -253,6 +256,11 @@ public class ImageLoader {
 		if (configuration != null) {
 			configuration.discCache.clear();
 		}
+	}
+
+	/** Enables logging of loading image process (in LogCat) */
+	public void enableLogging() {
+		loggingEnabled = true;
 	}
 
 	/**
@@ -349,7 +357,7 @@ public class ImageLoader {
 
 		@Override
 		public void run() {
-			Log.i(TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, imageLoadingInfo.memoryCacheKey));
+			if (loggingEnabled) Log.i(TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, imageLoadingInfo.memoryCacheKey));
 			if (!imageLoadingInfo.isConsistent()) {
 				return;
 			}
@@ -363,7 +371,7 @@ public class ImageLoader {
 			}
 
 			if (imageLoadingInfo.options.isCacheInMemory()) {
-				Log.i(TAG, String.format(LOG_CACHE_IMAGE_IN_MEMORY, imageLoadingInfo.memoryCacheKey));
+				if (loggingEnabled) Log.i(TAG, String.format(LOG_CACHE_IMAGE_IN_MEMORY, imageLoadingInfo.memoryCacheKey));
 				configuration.memoryCache.put(imageLoadingInfo.memoryCacheKey, bmp);
 			}
 
@@ -378,7 +386,7 @@ public class ImageLoader {
 			try {
 				// Try to load image from disc cache
 				if (f.exists()) {
-					Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_DISC_CACHE, imageLoadingInfo.memoryCacheKey));
+					if (loggingEnabled) Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_DISC_CACHE, imageLoadingInfo.memoryCacheKey));
 					Bitmap b = decodeImage(f.toURL());
 					if (b != null) {
 						return b;
@@ -386,10 +394,10 @@ public class ImageLoader {
 				}
 
 				// Load image from Web
-				Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_INTERNET, imageLoadingInfo.memoryCacheKey));
+				if (loggingEnabled) Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_INTERNET, imageLoadingInfo.memoryCacheKey));
 				URL imageUrlForDecoding = null;
 				if (imageLoadingInfo.options.isCacheOnDisc()) {
-					Log.i(TAG, String.format(LOG_CACHE_IMAGE_ON_DISC, imageLoadingInfo.memoryCacheKey));
+					if (loggingEnabled) Log.i(TAG, String.format(LOG_CACHE_IMAGE_ON_DISC, imageLoadingInfo.memoryCacheKey));
 					saveImageOnDisc(f);
 					imageUrlForDecoding = f.toURL();
 				} else {
@@ -397,7 +405,7 @@ public class ImageLoader {
 				}
 
 				bitmap = decodeImage(imageUrlForDecoding);
-				
+
 				if (imageLoadingInfo.options.isCacheOnDisc()) {
 					configuration.discCache.put(imageLoadingInfo.url, f);
 				}
@@ -481,7 +489,7 @@ public class ImageLoader {
 
 		public void run() {
 			if (imageLoadingInfo.isConsistent()) {
-				Log.i(TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, imageLoadingInfo.memoryCacheKey));
+				if (loggingEnabled) Log.i(TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, imageLoadingInfo.memoryCacheKey));
 				imageLoadingInfo.imageView.setImageBitmap(bitmap);
 				imageLoadingInfo.listener.onLoadingComplete();
 			}
