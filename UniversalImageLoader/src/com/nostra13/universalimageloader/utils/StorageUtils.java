@@ -53,8 +53,10 @@ public final class StorageUtils {
 	public static File getIndividualCacheDirectory(Context context) {
 		File cacheDir = getCacheDirectory(context);
 		File individualCacheDir = new File(cacheDir, INDIVIDUAL_DIR_NAME);
-		if (!individualCacheDir.mkdir()) {
-			individualCacheDir = cacheDir;
+		if (!individualCacheDir.exists()) {
+			if (!individualCacheDir.mkdir()) {
+				individualCacheDir = cacheDir;
+			}
 		}
 		return individualCacheDir;
 	}
