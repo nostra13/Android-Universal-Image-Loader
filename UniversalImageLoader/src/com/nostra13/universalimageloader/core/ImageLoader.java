@@ -35,7 +35,7 @@ public class ImageLoader {
 
 	public static final String TAG = ImageLoader.class.getSimpleName();
 
-	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (image URL and ImageView reference are required)";
+	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (ImageView reference are required)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
 	private static final String ERROR_IMAGEVIEW_CONTEXT = "ImageView context must be of Activity type"
@@ -178,7 +178,7 @@ public class ImageLoader {
 		if (configuration == null) {
 			throw new RuntimeException(ERROR_NOT_INIT);
 		}
-		if (url == null || url.length() == 0 || imageView == null) {
+		if (imageView == null) {
 			Log.w(TAG, ERROR_WRONG_ARGUMENTS);
 			return;
 		}
@@ -187,6 +187,16 @@ public class ImageLoader {
 		}
 		if (options == null) {
 			options = configuration.defaultDisplayImageOptions;
+		}
+
+		if (url == null || url.length() == 0) {
+			cacheKeyForImageView.remove(imageView);
+			if (options.isShowImageForEmptyUrl()) {
+				imageView.setImageResource(options.getImageForEmptyUrl());
+			} else {
+				imageView.setImageBitmap(null);
+			}
+			return;
 		}
 
 		ImageSize targetSize = getImageSizeScaleTo(imageView);
@@ -226,6 +236,16 @@ public class ImageLoader {
 		if (cachedImageLoadingExecutor == null || cachedImageLoadingExecutor.isShutdown()) {
 			cachedImageLoadingExecutor = Executors.newSingleThreadExecutor(configuration.displayImageThreadFactory);
 		}
+	}
+
+	/**
+	 * Cancel the task of loading and displaying image for passed {@link ImageView}.
+	 * 
+	 * @param imageView
+	 *            {@link ImageView} for which display task will be cancelled
+	 */
+	public void cancelDisplayTask(ImageView imageView) {
+		cacheKeyForImageView.remove(imageView);
 	}
 
 	/** Stops all running display image tasks, discards all other scheduled tasks */
@@ -338,8 +358,8 @@ public class ImageLoader {
 		/** Whether image URL of this task matches to URL which corresponds to current ImageView */
 		boolean isConsistent() {
 			String currentCacheKey = cacheKeyForImageView.get(imageView);
-			// Entry with imageView could be collected by GC. In that case we also consider that current memory cache key (image URL) is right.
-			return currentCacheKey == null || memoryCacheKey.equals(currentCacheKey);
+			// Check whether memory cache key (image URL) for current ImageView is actual.
+			return memoryCacheKey.equals(currentCacheKey);
 		}
 	}
 

@@ -4,6 +4,7 @@ package com.nostra13.universalimageloader.core;
  * Contains options for image display. Defines:
  * <ul>
  * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading</li>
+ * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} if empty URL is passed</li>
  * <li>whether loaded image will be cached in memory</li>
  * <li>whether loaded image will be cached on disc</li>
  * </ul>
@@ -21,12 +22,14 @@ package com.nostra13.universalimageloader.core;
 public final class DisplayImageOptions {
 
 	private final Integer stubImage;
+	private final Integer imageForEmptyUrl;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
 	private final DecodingType decodingType;
 
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
+		imageForEmptyUrl = builder.imageForEmptyUrl;
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
 		decodingType = builder.decodingType;
@@ -36,8 +39,16 @@ public final class DisplayImageOptions {
 		return stubImage != null;
 	}
 
+	boolean isShowImageForEmptyUrl() {
+		return imageForEmptyUrl != null;
+	}
+
 	Integer getStubImage() {
 		return stubImage;
+	}
+
+	Integer getImageForEmptyUrl() {
+		return imageForEmptyUrl;
 	}
 
 	boolean isCacheInMemory() {
@@ -59,6 +70,7 @@ public final class DisplayImageOptions {
 	 */
 	public static class Builder {
 		private Integer stubImage = null;
+		private Integer imageForEmptyUrl = null;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
 		private DecodingType decodingType = DecodingType.FAST;
@@ -71,6 +83,18 @@ public final class DisplayImageOptions {
 		 */
 		public Builder showStubImage(int stubImageRes) {
 			stubImage = stubImageRes;
+			return this;
+		}
+
+		/**
+		 * Image will be displayed in {@link android.widget.ImageView ImageView} if empty Url (null or empty string)
+		 * will be passed to <b>ImageLoader.displayImage(...)</b> method.
+		 * 
+		 * @param imageRes
+		 *            Image resource
+		 */
+		public Builder showImageForEmptyUrl(int imageRes) {
+			imageForEmptyUrl = imageRes;
 			return this;
 		}
 

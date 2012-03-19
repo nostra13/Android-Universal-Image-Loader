@@ -18,13 +18,13 @@ public class UILApplication extends Application {
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
 			.threadPoolSize(3)
 			.threadPriority(Thread.NORM_PRIORITY - 2)
-			.memoryCacheSize(1500000)
-			.discCacheSize(50000000)
-			.httpReadTimeout(10000)
+			.memoryCacheSize(1500000) // 1.5 Mb
+			.discCacheSize(50000000) // 50 Mb
+			.httpReadTimeout(10000) // 10 s
 			.denyCacheImageMultipleSizesInMemory()
 			.build();
 		// Initialize ImageLoader with configuration.
 		ImageLoader.getInstance().init(config);
-		ImageLoader.getInstance().enableLogging();
+		ImageLoader.getInstance().enableLogging(); // Not necessary in common
 	}
 }

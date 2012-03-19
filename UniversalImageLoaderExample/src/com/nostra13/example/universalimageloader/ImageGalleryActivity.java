@@ -64,7 +64,7 @@ public class ImageGalleryActivity extends BaseActivity {
 			final ProgressBar loading = (ProgressBar) imageLayout.findViewById(R.id.loading);
 			
 			DisplayImageOptions options = new DisplayImageOptions.Builder()
-				.cacheInMemory()
+				.showImageForEmptyUrl(R.drawable.image_for_empty_url)
 				.cacheOnDisc()
 				.decodingType(DecodingType.MEMORY_SAVING)
 				.build();
@@ -78,7 +78,7 @@ public class ImageGalleryActivity extends BaseActivity {
 				public void onLoadingFailed(FailReason failReason) {
 					loading.setVisibility(View.GONE);
 					imageView.setImageResource(android.R.drawable.ic_delete);
-					
+
 					switch (failReason) {
 						case MEMORY_OVERFLOW:
 							imageLoader.clearMemoryCache();

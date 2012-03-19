@@ -56,8 +56,9 @@
         <item>http://c.wrzuta.pl/wm16596/a32f1a47002ab3a949afeb4f</item>
         <item>http://www.itsquix.com/images/buttons/myspace_button.png</item>
         <item>http://macprovid.vo.llnwd.net/o43/hub/media/1090/6882/01_headline_Muse.jpg</item>
-        <item>http://bit.ly/soBiXr</item>
-        <item>http://bit.ly/corruptedLink</item>
+        <item>http://bit.ly/soBiXr</item> <!-- Redirect link -->
+        <item>http://bit.ly/corruptedLink</item> <!-- Wrong link -->
+        <item></item> <!-- Empty link -->
     </string-array>
 
 </resources>

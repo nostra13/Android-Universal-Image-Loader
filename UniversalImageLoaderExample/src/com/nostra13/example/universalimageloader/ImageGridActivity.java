@@ -10,7 +10,6 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.DecodingType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.FailReason;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -78,9 +77,9 @@ public class ImageGridActivity extends BaseActivity {
 
 			DisplayImageOptions options = new DisplayImageOptions.Builder()
 				.showStubImage(R.drawable.stub_image)
+				.showImageForEmptyUrl(R.drawable.image_for_empty_url)
 				.cacheInMemory()
 				.cacheOnDisc()
-				.decodingType(DecodingType.FAST)
 				.build();
 			imageLoader.displayImage(imageUrls[position], imageView, options, new ImageLoadingListener() {
 				@Override
