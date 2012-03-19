@@ -60,6 +60,7 @@ imageLoader.init(config);
 // Creates display image options for custom display task
 DisplayImageOptions options = new DisplayImageOptions.Builder()
                                        .showStubImage(R.drawable.stub_image)
+									   .showImageForEmptyUrl(R.drawable.image_for_empty_url)
                                        .cacheInMemory()
                                        .cacheOnDisc()
 									   .decodingType(DecodingType.MEMORY_SAVING)
