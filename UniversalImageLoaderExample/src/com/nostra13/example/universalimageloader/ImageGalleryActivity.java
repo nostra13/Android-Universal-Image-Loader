@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 
 import com.nostra13.universalimageloader.core.DecodingType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.FailReason;
 import com.nostra13.universalimageloader.core.ImageLoadingListener;
 
 /** Home activity */
@@ -75,15 +74,9 @@ public class ImageGalleryActivity extends BaseActivity {
 				}
 
 				@Override
-				public void onLoadingFailed(FailReason failReason) {
+				public void onLoadingFailed() {
 					loading.setVisibility(View.GONE);
 					imageView.setImageResource(android.R.drawable.ic_delete);
-
-					switch (failReason) {
-						case MEMORY_OVERFLOW:
-							imageLoader.clearMemoryCache();
-							break;
-					}
 				}
 
 				@Override

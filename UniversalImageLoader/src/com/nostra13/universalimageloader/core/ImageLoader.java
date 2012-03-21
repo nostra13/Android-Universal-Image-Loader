@@ -49,6 +49,8 @@ public class ImageLoader {
 	private static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
 	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
 
+	private static final int ATTEMPT_COUNT_TO_DECODE_BITMAP = 3;
+
 	private ImageLoaderConfiguration configuration;
 	private ExecutorService imageLoadingExecutor;
 	private ExecutorService cachedImageLoadingExecutor;
@@ -431,13 +433,13 @@ public class ImageLoader {
 				}
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage(), e);
-				fireImageLoadingFailedEvent(FailReason.IO_ERROR);
+				fireImageLoadingFailedEvent();
 				if (f.exists()) {
 					f.delete();
 				}
 			} catch (Throwable e) {
 				Log.e(TAG, e.getMessage(), e);
-				fireImageLoadingFailedEvent(FailReason.UNKNOWN);
+				fireImageLoadingFailedEvent();
 			}
 			return bitmap;
 		}
@@ -449,14 +451,36 @@ public class ImageLoader {
 
 		private Bitmap decodeImage(URL imageUrl) throws IOException {
 			Bitmap bmp = null;
-			try {
-				ImageDecoder decoder = new ImageDecoder(imageUrl, imageLoadingInfo.targetSize, imageLoadingInfo.options.getDecodingType());
-				bmp = decoder.decodeFile();
-				decoder = null;
-			} catch (OutOfMemoryError e) {
-				Log.e(TAG, e.getMessage(), e);
-				fireImageLoadingFailedEvent(FailReason.MEMORY_OVERFLOW);
+			ImageDecoder decoder = new ImageDecoder(imageUrl, imageLoadingInfo.targetSize, imageLoadingInfo.options.getDecodingType());
+			
+			for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
+				try {
+					bmp = decoder.decodeFile();
+					break;
+				} catch (OutOfMemoryError e) {
+					Log.e(TAG, e.getMessage(), e);
+					
+					switch (attempt) {
+						case 1:
+							System.gc();
+							break;
+						case 2:
+							configuration.memoryCache.clear();
+							System.gc();
+							break;
+						case 3:
+							throw e;
+					}
+					// Wait some time while GC is working
+					try {
+						Thread.sleep(attempt * 1000);
+					} catch (InterruptedException ie) {
+						Log.e(TAG, ie.getMessage(), ie);
+					}
+				}
 			}
+			
+			decoder = null;
 			return bmp;
 		}
 
@@ -477,11 +501,11 @@ public class ImageLoader {
 			}
 		}
 
-		private void fireImageLoadingFailedEvent(final FailReason reason) {
+		private void fireImageLoadingFailedEvent() {
 			tryRunOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					imageLoadingInfo.listener.onLoadingFailed(reason);
+					imageLoadingInfo.listener.onLoadingFailed();
 				}
 			});
 		}
@@ -492,7 +516,7 @@ public class ImageLoader {
 				((Activity) context).runOnUiThread(runnable);
 			} else {
 				Log.e(TAG, ERROR_IMAGEVIEW_CONTEXT);
-				imageLoadingInfo.listener.onLoadingFailed(FailReason.WRONG_CONTEXT);
+				imageLoadingInfo.listener.onLoadingFailed();
 			}
 		}
 	}
@@ -518,15 +542,15 @@ public class ImageLoader {
 
 	private class EmptyListener implements ImageLoadingListener {
 		@Override
-		public void onLoadingStarted() {
+		public void onLoadingStarted() { // Do nothing
 		}
 
 		@Override
-		public void onLoadingFailed(FailReason failReason) {
+		public void onLoadingFailed() { // Do nothing
 		}
 
 		@Override
-		public void onLoadingComplete() {
+		public void onLoadingComplete() { // Do nothing
 		}
 	}
 }

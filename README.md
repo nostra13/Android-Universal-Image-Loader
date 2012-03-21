@@ -72,7 +72,7 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
        spinner.show();
     }
 	@Override
-	public void onLoadingFailed(FailReason failReason) {
+	public void onLoadingFailed() {
 		spinner.hide();
 	}
     @Override

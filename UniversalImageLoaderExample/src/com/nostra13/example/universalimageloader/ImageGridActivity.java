@@ -11,7 +11,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.FailReason;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoadingListener;
 
@@ -88,14 +87,8 @@ public class ImageGridActivity extends BaseActivity {
 				}
 
 				@Override
-				public void onLoadingFailed(FailReason failReason) {
+				public void onLoadingFailed() {
 					imageView.setImageResource(android.R.drawable.ic_delete);
-
-					switch (failReason) {
-						case MEMORY_OVERFLOW:
-							imageLoader.clearMemoryCache();
-							break;
-					}
 				}
 
 				@Override
