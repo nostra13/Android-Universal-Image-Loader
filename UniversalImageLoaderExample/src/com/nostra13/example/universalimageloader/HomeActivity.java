@@ -8,16 +8,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-/** Home activity */
+/**
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ */
 public class HomeActivity extends BaseActivity {
 
 	private String[] imageUrls;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ac_home);
-		
+
 		String[] heavyImages = getResources().getStringArray(R.array.heavy_images);
 		String[] lightImages = getResources().getStringArray(R.array.light_images);
 
@@ -39,7 +41,13 @@ public class HomeActivity extends BaseActivity {
 		intent.putExtra(Extra.IMAGES, imageUrls);
 		startActivity(intent);
 	}
-	
+
+	public void onImagePagerClick(View view) {
+		Intent intent = new Intent(this, ImagePagerActivity.class);
+		intent.putExtra(Extra.IMAGES, imageUrls);
+		startActivity(intent);
+	}
+
 	public void onImageGalleryClick(View view) {
 		Intent intent = new Intent(this, ImageGalleryActivity.class);
 		intent.putExtra(Extra.IMAGES, imageUrls);

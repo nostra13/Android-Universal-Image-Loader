@@ -12,13 +12,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoadingListener;
 
-/** Activity for {@link ImageLoader} testing */
+/**
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ */
 public class ImageListActivity extends BaseActivity {
 
 	private String[] imageUrls;
+
+	private DisplayImageOptions options;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,12 @@ public class ImageListActivity extends BaseActivity {
 
 		Bundle bundle = getIntent().getExtras();
 		imageUrls = bundle.getStringArray(Extra.IMAGES);
+
+		options = new DisplayImageOptions.Builder()
+			.showStubImage(R.drawable.stub_image)
+			.cacheInMemory()
+			.cacheOnDisc()
+			.build();
 
 		ListView listView = (ListView) findViewById(android.R.id.list);
 		listView.setAdapter(new ItemAdapter());
@@ -45,7 +53,7 @@ public class ImageListActivity extends BaseActivity {
 	}
 
 	private void startImageGalleryActivity(int position) {
-		Intent intent = new Intent(this, ImageGalleryActivity.class);
+		Intent intent = new Intent(this, ImagePagerActivity.class);
 		intent.putExtra(Extra.IMAGES, imageUrls);
 		intent.putExtra(Extra.IMAGE_POSITION, position);
 		startActivity(intent);
@@ -88,32 +96,7 @@ public class ImageListActivity extends BaseActivity {
 
 			holder.text.setText("Item " + position);
 
-			// Full "displayImage" method using.
-			// You can use simple call:
-			//  imageLoader.displayImage(imageUrls.get(position), holder.image);
-			// instead of.
-			DisplayImageOptions options = new DisplayImageOptions.Builder()
-				.showStubImage(R.drawable.stub_image)
-				.cacheInMemory()
-				.cacheOnDisc()
-				.build();
-			imageLoader.displayImage(imageUrls[position], holder.image, options, new ImageLoadingListener() {
-				@Override
-				public void onLoadingStarted() {
-					holder.text.setText("...loading...");
-				}
-
-				@Override
-				public void onLoadingFailed() {
-					holder.text.setText("Error!");
-					holder.image.setImageResource(android.R.drawable.ic_delete);
-				}
-
-				@Override
-				public void onLoadingComplete() {
-					holder.text.setText("Item " + position);
-				}
-			});
+			imageLoader.displayImage(imageUrls[position], holder.image, options);
 
 			return view;
 		}

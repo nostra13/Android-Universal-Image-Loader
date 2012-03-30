@@ -44,14 +44,14 @@ ImageLoader imageLoader = ImageLoader.getInstance();
 // Create configuration for ImageLoader
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
 			.maxImageWidthForMemoryCache(800)
-			.maxImageHeightForMemoryCache(480)
+			.maxImageHeightForMemoryCache(800)
 			.httpConnectTimeout(5000)
 			.httpReadTimeout(30000)
 			.threadPoolSize(5)
 			.threadPriority(Thread.MIN_PRIORITY + 2)
 			.denyCacheImageMultipleSizesInMemory()
 			.memoryCache(new UsingFreqLimitedCache(2000000)) // You can pass your own memory cache implementation
-			.discCache(new DefaultDiscCache(cacheDir)) // You can pass your own disc cache implementation
+			.discCache(new UnlimitedDiscCache(cacheDir)) // You can pass your own disc cache implementation
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
 			.build();
 // Initialize ImageLoader with created configuration. Do it once.

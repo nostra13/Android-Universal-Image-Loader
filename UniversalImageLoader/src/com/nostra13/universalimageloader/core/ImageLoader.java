@@ -6,9 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -485,7 +485,7 @@ public class ImageLoader {
 		}
 
 		private void saveImageOnDisc(File targetFile) throws MalformedURLException, IOException {
-			HttpURLConnection conn = (HttpURLConnection) new URL(imageLoadingInfo.url).openConnection();
+			URLConnection conn = new URL(imageLoadingInfo.url).openConnection();
 			conn.setConnectTimeout(configuration.httpConnectTimeout);
 			conn.setReadTimeout(configuration.httpReadTimeout);
 			BufferedInputStream is = new BufferedInputStream(conn.getInputStream());

@@ -1,23 +1,23 @@
 package com.nostra13.example.universalimageloader;
 
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
-import com.nostra13.universalimageloader.core.DecodingType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoadingListener;
 
-/** Home activity */
+/**
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ */
 public class ImageGalleryActivity extends BaseActivity {
 
-	private ViewPager gallery;
+	private Gallery gallery;
+
+	private DisplayImageOptions options;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,12 +27,19 @@ public class ImageGalleryActivity extends BaseActivity {
 		String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
 		int galleryPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
 
-		gallery = (ViewPager) findViewById(R.id.pager);
+		options = new DisplayImageOptions.Builder()
+			.showImageForEmptyUrl(R.drawable.image_for_empty_url)
+			.showStubImage(R.drawable.stub_image)
+			.cacheInMemory()
+			.cacheOnDisc()
+			.build();
+
+		gallery = (Gallery) findViewById(R.id.gallery);
 		gallery.setAdapter(new ImagePagerAdapter(imageUrls));
-		gallery.setCurrentItem(galleryPosition);
+		gallery.setSelection(galleryPosition);
 	}
 
-	private class ImagePagerAdapter extends PagerAdapter {
+	private class ImagePagerAdapter extends BaseAdapter {
 
 		private String[] images;
 		private LayoutInflater inflater;
@@ -43,68 +50,28 @@ public class ImageGalleryActivity extends BaseActivity {
 		}
 
 		@Override
-		public void destroyItem(View container, int position, Object object) {
-			((ViewPager) container).removeView((View) object);
-		}
-
-		@Override
-		public void finishUpdate(View container) {
-		}
-
-		@Override
 		public int getCount() {
 			return images.length;
 		}
 
 		@Override
-		public Object instantiateItem(View view, int position) {
-			final FrameLayout imageLayout = (FrameLayout) inflater.inflate(R.layout.item_gallery_image, null);
-			final ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
-			final ProgressBar loading = (ProgressBar) imageLayout.findViewById(R.id.loading);
-			
-			DisplayImageOptions options = new DisplayImageOptions.Builder()
-				.showImageForEmptyUrl(R.drawable.image_for_empty_url)
-				.cacheOnDisc()
-				.decodingType(DecodingType.MEMORY_SAVING)
-				.build();
-			imageLoader.displayImage(images[position], imageView, options, new ImageLoadingListener() {
-				@Override
-				public void onLoadingStarted() {
-					loading.setVisibility(View.VISIBLE);
-				}
-
-				@Override
-				public void onLoadingFailed() {
-					loading.setVisibility(View.GONE);
-					imageView.setImageResource(android.R.drawable.ic_delete);
-				}
-
-				@Override
-				public void onLoadingComplete() {
-					loading.setVisibility(View.GONE);
-				}
-			});
-			((ViewPager) view).addView(imageLayout, 0);
-			return imageLayout;
+		public Object getItem(int position) {
+			return position;
 		}
 
 		@Override
-		public boolean isViewFromObject(View view, Object object) {
-			return view.equals(object);
+		public long getItemId(int position) {
+			return position;
 		}
 
 		@Override
-		public void restoreState(Parcelable state, ClassLoader loader) {
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ImageView imageView = (ImageView) convertView;
+			if (imageView == null) {
+				imageView = (ImageView) inflater.inflate(R.layout.item_gallery_image, parent, false);
+			}
+			imageLoader.displayImage(images[position], imageView, options);
+			return imageView;
 		}
-
-		@Override
-		public Parcelable saveState() {
-			return null;
-		}
-
-		@Override
-		public void startUpdate(View container) {
-		}
-
 	}
 }

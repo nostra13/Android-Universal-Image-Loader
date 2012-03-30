@@ -6,7 +6,10 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class BaseActivity extends Activity {
+/**
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ */
+public abstract class BaseActivity extends Activity {
 
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 

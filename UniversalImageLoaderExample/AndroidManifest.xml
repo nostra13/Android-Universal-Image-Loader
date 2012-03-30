@@ -1,36 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nostra13.example.universalimageloader"
-    android:versionCode="7"
-    android:versionName="1.2.1" >
+    android:versionCode="8"
+    android:versionName="1.2.2" >
 
-    <uses-sdk android:minSdkVersion="4" />
+    <uses-sdk
+        android:minSdkVersion="4"
+        android:targetSdkVersion="4" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".UILApplication"
         android:icon="@drawable/app_icon"
-        android:label="@string/app_name"
-        android:name=".UILApplication" >
+        android:label="@string/app_name" >
         <activity
-            android:label="@string/app_name"
-            android:name=".HomeActivity" >
-            <intent-filter >
+            android:name=".HomeActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:label="@string/ac_name_image_list"
-            android:name=".ImageListActivity" />
+            android:name=".ImageListActivity"
+            android:label="@string/ac_name_image_list" />
         <activity
-            android:label="@string/ac_name_image_grid"
-            android:name=".ImageGridActivity" />
+            android:name=".ImageGridActivity"
+            android:label="@string/ac_name_image_grid" />
         <activity
-            android:label="@string/ac_name_image_gallery"
-            android:name=".ImageGalleryActivity" />
+            android:name=".ImagePagerActivity"
+            android:label="@string/ac_name_image_pager" />
+        <activity
+            android:name=".ImageGalleryActivity"
+            android:label="@string/ac_name_image_gallery" />
     </application>
 
 </manifest>

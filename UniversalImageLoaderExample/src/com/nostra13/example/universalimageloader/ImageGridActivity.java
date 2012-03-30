@@ -11,13 +11,15 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoadingListener;
 
-/** Activity for {@link ImageLoader} testing */
+/**
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ */
 public class ImageGridActivity extends BaseActivity {
 
 	private String[] imageUrls;
+
+	private DisplayImageOptions options;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,14 @@ public class ImageGridActivity extends BaseActivity {
 
 		Bundle bundle = getIntent().getExtras();
 		imageUrls = bundle.getStringArray(Extra.IMAGES);
+
+		options = new DisplayImageOptions.Builder()
+			.showStubImage(R.drawable.stub_image)
+			.showImageForEmptyUrl(R.drawable.image_for_empty_url)
+			.cacheInMemory()
+			.cacheOnDisc()
+			.build();
+
 		GridView gridView = (GridView) findViewById(R.id.gridview);
 		gridView.setAdapter(new ImageAdapter());
 		gridView.setOnItemClickListener(new OnItemClickListener() {
@@ -43,7 +53,7 @@ public class ImageGridActivity extends BaseActivity {
 	}
 
 	private void startImageGalleryActivity(int position) {
-		Intent intent = new Intent(this, ImageGalleryActivity.class);
+		Intent intent = new Intent(this, ImagePagerActivity.class);
 		intent.putExtra(Extra.IMAGES, imageUrls);
 		intent.putExtra(Extra.IMAGE_POSITION, position);
 		startActivity(intent);
@@ -67,35 +77,12 @@ public class ImageGridActivity extends BaseActivity {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			final ImageView imageView;
-			if (convertView == null) {
+			ImageView imageView = (ImageView) convertView;
+			if (imageView == null) {
 				imageView = (ImageView) getLayoutInflater().inflate(R.layout.item_grid_image, parent, false);
-			} else {
-				imageView = (ImageView) convertView;
 			}
 
-			DisplayImageOptions options = new DisplayImageOptions.Builder()
-				.showStubImage(R.drawable.stub_image)
-				.showImageForEmptyUrl(R.drawable.image_for_empty_url)
-				.cacheInMemory()
-				.cacheOnDisc()
-				.build();
-			imageLoader.displayImage(imageUrls[position], imageView, options, new ImageLoadingListener() {
-				@Override
-				public void onLoadingStarted() {
-					// do nothing
-				}
-
-				@Override
-				public void onLoadingFailed() {
-					imageView.setImageResource(android.R.drawable.ic_delete);
-				}
-
-				@Override
-				public void onLoadingComplete() {
-					// do nothing
-				}
-			});
+			imageLoader.displayImage(imageUrls[position], imageView, options);
 
 			return imageView;
 		}

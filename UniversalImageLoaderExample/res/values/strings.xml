@@ -5,6 +5,7 @@
     <string name="app_name">UniversalImageLoader</string>
     <string name="ac_name_image_list">Image List Example</string>
     <string name="ac_name_image_grid">Image Grid Example</string>
+    <string name="ac_name_image_pager">Image Pager Example</string>
     <string name="ac_name_image_gallery">Image Gallery Example</string>
     <!-- Labels -->
     <string name="label_activity_examples">Activity Examples</string>
@@ -12,6 +13,7 @@
     <string name="menu_item_clear_disc_cache">Clear disc cache</string>
     <string name="button_image_list">Image List</string>
     <string name="button_image_grid">Image Grid</string>
+    <string name="button_image_pager">Image Pager</string>
     <string name="button_image_gallery">Image Gallery</string>
 
 </resources>

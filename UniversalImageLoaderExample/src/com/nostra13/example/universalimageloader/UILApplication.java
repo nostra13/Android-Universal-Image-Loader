@@ -5,6 +5,9 @@ import android.app.Application;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+/**
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ */
 public class UILApplication extends Application {
 
 	@Override
