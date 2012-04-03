@@ -48,13 +48,12 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	@Override
 	public void put(String key, File file) {
 		int valueSize = getSize(file);
-		if (valueSize < sizeLimit) {
-			while (cacheSize + valueSize > sizeLimit) {
-				int freedSize = removeNext();
-				cacheSize -= freedSize;
-			}
-			cacheSize += valueSize;
+		while (cacheSize + valueSize > sizeLimit) {
+			int freedSize = removeNext();
+			if (freedSize == 0) break; // cache is empty (have nothing to delete)
+			cacheSize -= freedSize;
 		}
+		cacheSize += valueSize;
 
 		Long currentTime = System.currentTimeMillis();
 		file.setLastModified(currentTime);
@@ -74,12 +73,17 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 
 	@Override
 	public void clear() {
-		super.clear();
 		lastUsageDates.clear();
+		cacheSize = 0;
+		super.clear();
 	}
 
 	/** Remove next file and returns it's size */
 	private int removeNext() {
+		if (lastUsageDates.isEmpty()) {
+			return 0;
+		}
+
 		Long oldestUsage = null;
 		File mostLongUsedFile = null;
 		Set<Entry<File, Long>> entries = lastUsageDates.entrySet();
@@ -97,8 +101,11 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 				}
 			}
 		}
+
 		int fileSize = getSize(mostLongUsedFile);
-		lastUsageDates.remove(mostLongUsedFile);
+		if (mostLongUsedFile.delete()) {
+			lastUsageDates.remove(mostLongUsedFile);
+		}
 		return fileSize;
 	}
 

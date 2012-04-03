@@ -97,6 +97,6 @@ For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...
  * FileCountLimitedDiscCache (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
 
 ## License
-Copyright (c) 2012 [Sergey Tarasevich](http://nostra13android.blogspot.com)
+Copyright (c) 2011-2012 [Sergey Tarasevich](http://nostra13android.blogspot.com)
 
 Licensed under the [BSD 3-clause](http://www.opensource.org/licenses/BSD-3-Clause)

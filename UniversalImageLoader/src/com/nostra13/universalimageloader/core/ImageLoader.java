@@ -417,20 +417,17 @@ public class ImageLoader {
 
 				// Load image from Web
 				if (loggingEnabled) Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_INTERNET, imageLoadingInfo.memoryCacheKey));
-				URL imageUrlForDecoding = null;
+				URL imageUrlForDecoding;
 				if (imageLoadingInfo.options.isCacheOnDisc()) {
 					if (loggingEnabled) Log.i(TAG, String.format(LOG_CACHE_IMAGE_ON_DISC, imageLoadingInfo.memoryCacheKey));
 					saveImageOnDisc(f);
+					configuration.discCache.put(imageLoadingInfo.url, f);
 					imageUrlForDecoding = f.toURL();
 				} else {
 					imageUrlForDecoding = new URL(imageLoadingInfo.url);
 				}
 
 				bitmap = decodeImage(imageUrlForDecoding);
-
-				if (imageLoadingInfo.options.isCacheOnDisc()) {
-					configuration.discCache.put(imageLoadingInfo.url, f);
-				}
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage(), e);
 				fireImageLoadingFailedEvent();
