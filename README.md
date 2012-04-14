@@ -96,7 +96,14 @@ For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...
  * TotalSizeLimitedDiscCache (Cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last usage date will be deleted)
  * FileCountLimitedDiscCache (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
 
+## Application using Universal Image Loader
+* 
+ 
 ## License
-Copyright (c) 2011-2012 [Sergey Tarasevich](http://nostra13android.blogspot.com)
+Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
+
+If you use Universal Image Loader code in your application you must mention it in application UI with string **"Used Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"** (e.g. in some "About" section). If you don't want or you can't do it then you can make request for permission not to mention Universal Image Loader in your app. 
+*Email: nostra13[at]gmail[dot]com*.
+Also I will be grateful to you if you'll allow to mention your application [here](https://github.com/nostra13/Android-Universal-Image-Loader) in *"Applications using Universal Image Loader"* section.
 
 Licensed under the [BSD 3-clause](http://www.opensource.org/licenses/BSD-3-Clause)

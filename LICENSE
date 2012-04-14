@@ -1,4 +1,4 @@
-Copyright (c) 2011, Sergey Tarasevich
+Copyright (c) 2011-2012, Sergey Tarasevich
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,3 +13,8 @@ THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE A
 BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
 GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT 
 LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Addition:
+If you use Universal Image Loader code in your application you must mention it in application UI with string "Used Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich" (e.g. in some "About" section). If you don't want or you can't do it then you can make request for permission not to mention Universal Image Loader in your app. 
+Email: nostra13[at]gmail[dot]com.
+Also I will be grateful to you if you'll allow to mention your application at Univeral Image Loader page on Github (https://github.com/nostra13/Android-Universal-Image-Loader) in "Applications using Universal Image Loader" section.
