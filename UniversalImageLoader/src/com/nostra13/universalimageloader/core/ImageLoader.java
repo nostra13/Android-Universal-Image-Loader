@@ -15,10 +15,9 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
@@ -38,8 +37,6 @@ public class ImageLoader {
 	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (ImageView reference are required)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
-	private static final String ERROR_IMAGEVIEW_CONTEXT = "ImageView context must be of Activity type"
-			+ "If you create ImageView in code you must pass your current activity in ImageView constructor (e.g. new ImageView(MyActivity.this); or new ImageView(getActivity())).";
 
 	private static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
 	private static final String LOG_LOAD_IMAGE_FROM_INTERNET = "Load image from Internet [%s]";
@@ -216,7 +213,7 @@ public class ImageLoader {
 			checkExecutors();
 
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, targetSize, options, listener);
-			DisplayImageTask displayImageTask = new DisplayImageTask(imageLoadingInfo);
+			DisplayImageTask displayImageTask = new DisplayImageTask(imageLoadingInfo, new Handler());
 			if (displayImageTask.isImageCachedOnDisc()) {
 				cachedImageLoadingExecutor.submit(displayImageTask);
 			} else {
@@ -372,9 +369,11 @@ public class ImageLoader {
 	private class DisplayImageTask implements Runnable {
 
 		private final ImageLoadingInfo imageLoadingInfo;
+		private final Handler handler;
 
-		public DisplayImageTask(ImageLoadingInfo imageLoadingInfo) {
+		public DisplayImageTask(ImageLoadingInfo imageLoadingInfo, Handler handler) {
 			this.imageLoadingInfo = imageLoadingInfo;
+			this.handler = handler;
 		}
 
 		@Override
@@ -398,7 +397,7 @@ public class ImageLoader {
 			}
 
 			DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(imageLoadingInfo, bmp);
-			tryRunOnUiThread(displayBitmapTask);
+			handler.post(displayBitmapTask);
 		}
 
 		private Bitmap loadBitmap() {
@@ -449,14 +448,14 @@ public class ImageLoader {
 		private Bitmap decodeImage(URL imageUrl) throws IOException {
 			Bitmap bmp = null;
 			ImageDecoder decoder = new ImageDecoder(imageUrl, imageLoadingInfo.targetSize, imageLoadingInfo.options.getDecodingType());
-			
+
 			for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
 				try {
 					bmp = decoder.decodeFile();
 					break;
 				} catch (OutOfMemoryError e) {
 					Log.e(TAG, e.getMessage(), e);
-					
+
 					switch (attempt) {
 						case 1:
 							System.gc();
@@ -476,7 +475,7 @@ public class ImageLoader {
 					}
 				}
 			}
-			
+
 			decoder = null;
 			return bmp;
 		}
@@ -499,22 +498,12 @@ public class ImageLoader {
 		}
 
 		private void fireImageLoadingFailedEvent() {
-			tryRunOnUiThread(new Runnable() {
+			handler.post(new Runnable() {
 				@Override
 				public void run() {
 					imageLoadingInfo.listener.onLoadingFailed();
 				}
 			});
-		}
-
-		private void tryRunOnUiThread(Runnable runnable) {
-			Context context = imageLoadingInfo.imageView.getContext();
-			if (context instanceof Activity) {
-				((Activity) context).runOnUiThread(runnable);
-			} else {
-				Log.e(TAG, ERROR_IMAGEVIEW_CONTEXT);
-				imageLoadingInfo.listener.onLoadingFailed();
-			}
 		}
 	}
 
