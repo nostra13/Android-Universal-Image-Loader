@@ -32,6 +32,7 @@ public final class ImageLoaderConfiguration {
 	final int httpConnectTimeout;
 	final int httpReadTimeout;
 	final int threadPoolSize;
+	final boolean handleOutOfMemory;
 	final MemoryCacheAware<String, Bitmap> memoryCache;
 	final DiscCacheAware discCache;
 	final DisplayImageOptions defaultDisplayImageOptions;
@@ -43,6 +44,7 @@ public final class ImageLoaderConfiguration {
 		httpConnectTimeout = builder.httpConnectTimeout;
 		httpReadTimeout = builder.httpReadTimeout;
 		threadPoolSize = builder.threadPoolSize;
+		handleOutOfMemory = builder.handleOutOfMemory;
 		discCache = builder.discCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
@@ -84,15 +86,15 @@ public final class ImageLoaderConfiguration {
 	 */
 	public static class Builder {
 
-		/** {@value} milliseconds */
+		/** milliseconds */
 		public static final int DEFAULT_HTTP_CONNECTION_TIMEOUT = 5000;
-		/** {@value} milliseconds */
+		/** milliseconds */
 		public static final int DEFAULT_HTTP_READ_TIMEOUT = 20000;
 		/** {@value} */
 		public static final int DEFAULT_THREAD_POOL_SIZE = 5;
 		/** {@value} */
 		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
-		/** {@value} bytes */
+		/** bytes */
 		public static final int DEFAULT_MEMORY_CACHE_SIZE = 2000000;
 
 		private Context context;
@@ -104,6 +106,7 @@ public final class ImageLoaderConfiguration {
 		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
 		private int threadPriority = DEFAULT_THREAD_PRIORITY;
 		private boolean allowCacheImageMultipleSizesInMemory = true;
+		private boolean handleOutOfMemory = true;
 		private MemoryCacheAware<String, Bitmap> memoryCache = null;
 		private DiscCacheAware discCache = null;
 		private DisplayImageOptions defaultDisplayImageOptions = null;
@@ -191,12 +194,23 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
+		 * ImageLoader try clean memory and re-display image it self when {@link OutOfMemoryError} occurs. You can
+		 * switch off this feature by this method and process error by your way (you can know that
+		 * {@link OutOfMemoryError} occurred if you got {@link FailReason#OUT_OF_MEMORY} in
+		 * {@link ImageLoadingListener#onLoadingFailed(FailReason)}).
+		 */
+		public Builder offOutOfMemoryHandling() {
+			this.handleOutOfMemory = false;
+			return this;
+		}
+
+		/**
 		 * Sets maximum memory cache size for {@link android.graphics.Bitmap bitmaps} (in bytes).<br />
 		 * Default value - {@link #DEFAULT_MEMORY_CACHE_SIZE this}<br />
 		 * <b>NOTE:</b> If you use this method then
-		 * {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache UsingFreqLimitedCache} will
-		 * be used as memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method for introduction your own
-		 * implementation of {@link MemoryCacheAware}.
+		 * {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache UsingFreqLimitedCache}
+		 * will be used as memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method for introduction your
+		 * own implementation of {@link MemoryCacheAware}.
 		 */
 		public Builder memoryCacheSize(int memoryCacheSize) {
 			this.memoryCache = new UsingFreqLimitedMemoryCache(memoryCacheSize);
@@ -240,11 +254,11 @@ public final class ImageLoaderConfiguration {
 			this.discCache = new FileCountLimitedDiscCache(individualCacheDir, maxFileCount);
 			return this;
 		}
-		
+
 		/**
 		 * Sets disc cache for images.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache UnlimitedDiscCache}.
-		 * Cache directory is defined by <b>
+		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache
+		 * UnlimitedDiscCache}. Cache directory is defined by <b>
 		 * {@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context)
 		 * StorageUtils.getCacheDirectory(Context)}.<br />
 		 */

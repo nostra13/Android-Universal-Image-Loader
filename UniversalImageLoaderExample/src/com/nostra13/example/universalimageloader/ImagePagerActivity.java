@@ -9,9 +9,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DecodingType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.FailReason;
 import com.nostra13.universalimageloader.core.ImageLoadingListener;
 
 /**
@@ -31,11 +33,8 @@ public class ImagePagerActivity extends BaseActivity {
 		String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
 		int pagerPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
 
-		options = new DisplayImageOptions.Builder()
-			.showImageForEmptyUrl(R.drawable.image_for_empty_url)
-			.cacheOnDisc()
-			.decodingType(DecodingType.MEMORY_SAVING)
-			.build();
+		options = new DisplayImageOptions.Builder().showImageForEmptyUrl(R.drawable.image_for_empty_url).cacheOnDisc().decodingType(DecodingType.MEMORY_SAVING)
+				.build();
 
 		pager = (ViewPager) findViewById(R.id.pager);
 		pager.setAdapter(new ImagePagerAdapter(imageUrls));
@@ -79,7 +78,21 @@ public class ImagePagerActivity extends BaseActivity {
 				}
 
 				@Override
-				public void onLoadingFailed() {
+				public void onLoadingFailed(FailReason failReason) {
+					String message = null;
+					switch (failReason) {
+						case IO_ERROR:
+							message = "Input/Output error";
+							break;
+						case OUT_OF_MEMORY:
+							message = "Out Of Memory error";
+							break;
+						case UNKNOWN:
+							message = "Unknown error";
+							break;
+					}
+					Toast.makeText(ImagePagerActivity.this, message, Toast.LENGTH_SHORT).show();
+
 					spinner.setVisibility(View.GONE);
 					imageView.setImageResource(android.R.drawable.ic_delete);
 				}

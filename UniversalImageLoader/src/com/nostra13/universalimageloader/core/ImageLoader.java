@@ -22,6 +22,8 @@ import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
+import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
 /**
@@ -257,6 +259,16 @@ public class ImageLoader {
 		}
 	}
 
+	/** Returns memory cache */
+	public MemoryCacheAware<String, Bitmap> getMemoryCache() {
+		return configuration.memoryCache;
+	}
+
+	/** Returns disc cache */
+	public DiscCacheAware getDiscCache() {
+		return configuration.discCache;
+	}
+
 	/**
 	 * Clear memory cache.<br />
 	 * Do nothing if {@link #init(ImageLoaderConfiguration)} method wasn't called before.
@@ -429,13 +441,16 @@ public class ImageLoader {
 				bitmap = decodeImage(imageUrlForDecoding);
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage(), e);
-				fireImageLoadingFailedEvent();
+				fireImageLoadingFailedEvent(FailReason.IO_ERROR);
 				if (f.exists()) {
 					f.delete();
 				}
+			} catch (OutOfMemoryError e) {
+				Log.e(TAG, e.getMessage(), e);
+				fireImageLoadingFailedEvent(FailReason.OUT_OF_MEMORY);
 			} catch (Throwable e) {
 				Log.e(TAG, e.getMessage(), e);
-				fireImageLoadingFailedEvent();
+				fireImageLoadingFailedEvent(FailReason.UNKNOWN);
 			}
 			return bitmap;
 		}
@@ -449,31 +464,35 @@ public class ImageLoader {
 			Bitmap bmp = null;
 			ImageDecoder decoder = new ImageDecoder(imageUrl, imageLoadingInfo.targetSize, imageLoadingInfo.options.getDecodingType());
 
-			for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
-				try {
-					bmp = decoder.decodeFile();
-					break;
-				} catch (OutOfMemoryError e) {
-					Log.e(TAG, e.getMessage(), e);
-
-					switch (attempt) {
-						case 1:
-							System.gc();
-							break;
-						case 2:
-							configuration.memoryCache.clear();
-							System.gc();
-							break;
-						case 3:
-							throw e;
-					}
-					// Wait some time while GC is working
+			if (configuration.handleOutOfMemory) {
+				for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
 					try {
-						Thread.sleep(attempt * 1000);
-					} catch (InterruptedException ie) {
-						Log.e(TAG, ie.getMessage(), ie);
+						bmp = decoder.decodeFile();
+						break;
+					} catch (OutOfMemoryError e) {
+						Log.e(TAG, e.getMessage(), e);
+
+						switch (attempt) {
+							case 1:
+								System.gc();
+								break;
+							case 2:
+								configuration.memoryCache.clear();
+								System.gc();
+								break;
+							case 3:
+								throw e;
+						}
+						// Wait some time while GC is working
+						try {
+							Thread.sleep(attempt * 1000);
+						} catch (InterruptedException ie) {
+							Log.e(TAG, ie.getMessage(), ie);
+						}
 					}
 				}
+			} else {
+				bmp = decoder.decodeFile();
 			}
 
 			decoder = null;
@@ -497,11 +516,11 @@ public class ImageLoader {
 			}
 		}
 
-		private void fireImageLoadingFailedEvent() {
+		private void fireImageLoadingFailedEvent(final FailReason failReason) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					imageLoadingInfo.listener.onLoadingFailed();
+					imageLoadingInfo.listener.onLoadingFailed(failReason);
 				}
 			});
 		}
@@ -532,7 +551,7 @@ public class ImageLoader {
 		}
 
 		@Override
-		public void onLoadingFailed() { // Do nothing
+		public void onLoadingFailed(FailReason failReason) { // Do nothing
 		}
 
 		@Override
