@@ -1,4 +1,4 @@
-# Universal Image Loader for Android
+п»ї# Universal Image Loader for Android
 
 This project aims to provide a reusable instrument for asynchronous image loading, caching and displaying. It is originally based on [Fedor Vlasov's project](https://github.com/thest1/LazyList) and has been vastly refactored and improved since then.
 
@@ -99,8 +99,8 @@ For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...
 
 ## Applications using Universal Image Loader
 * [MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)
-* [Деловой Киров](https://play.google.com/store/apps/details?id=ru.normakirov.dknorma)
-* [Бизнес-завтрак](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch)
+* [Р”РµР»РѕРІРѕР№ РљРёСЂРѕРІ](https://play.google.com/store/apps/details?id=ru.normakirov.dknorma)
+* [Р‘РёР·РЅРµСЃ-Р·Р°РІС‚СЂР°Рє](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch)
  
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
