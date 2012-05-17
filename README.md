@@ -50,6 +50,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 			.threadPoolSize(5)
 			.threadPriority(Thread.MIN_PRIORITY + 2)
 			.denyCacheImageMultipleSizesInMemory()
+			.offOutOfMemoryHandling()
 			.memoryCache(new UsingFreqLimitedCache(2000000)) // You can pass your own memory cache implementation
 			.discCache(new UnlimitedDiscCache(cacheDir)) // You can pass your own disc cache implementation
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
@@ -72,7 +73,7 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
        spinner.show();
     }
 	@Override
-	public void onLoadingFailed() {
+	public void onLoadingFailed(FailReason failReason) {
 		spinner.hide();
 	}
     @Override
@@ -98,6 +99,8 @@ For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...
 
 ## Applications using Universal Image Loader
 * [MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)
+* [Деловой Киров](https://play.google.com/store/apps/details?id=ru.normakirov.dknorma)
+* [Бизнес-завтрак](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch)
  
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)

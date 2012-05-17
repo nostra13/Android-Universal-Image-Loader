@@ -2,7 +2,6 @@
 <resources>
 
     <string-array name="heavy_images">
-        <item>file:///mnt/sdcard/Temp/UniversalImageLoader.png</item>
         <item>http://www.android.com/media/wallpaper/gif/android_logo.gif</item>
         <item>http://www.android.com/media/wallpaper/gif/cupcake_2009.gif</item>
         <item>http://cdn4.digitaltrends.com/wp-content/uploads/2011/04/Google-Android.png</item>
