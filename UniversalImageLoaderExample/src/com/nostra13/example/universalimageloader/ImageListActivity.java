@@ -47,9 +47,9 @@ public class ImageListActivity extends BaseActivity {
 	}
 
 	@Override
-	protected void onDestroy() {
+	protected void onStop() {
 		imageLoader.stop();
-		super.onDestroy();
+		super.onStop();
 	}
 
 	private void startImageGalleryActivity(int position) {

@@ -17,6 +17,9 @@ import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 /**
@@ -40,6 +43,7 @@ public final class ImageLoaderConfiguration {
 	final DiscCacheAware discCache;
 	final DisplayImageOptions defaultDisplayImageOptions;
 	final ThreadFactory displayImageThreadFactory;
+	final boolean loggingEnabled;
 
 	private ImageLoaderConfiguration(final Builder builder) {
 		maxImageWidthForMemoryCache = builder.maxImageWidthForMemoryCache;
@@ -51,6 +55,7 @@ public final class ImageLoaderConfiguration {
 		discCache = builder.discCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
+		loggingEnabled = builder.loggingEnabled;
 		displayImageThreadFactory = new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {
@@ -123,6 +128,7 @@ public final class ImageLoaderConfiguration {
 		private int discCacheFileCount = 0;
 		private FileNameGenerator discCacheFileNameGenerator = null;
 		private DiscCacheAware discCache = null;
+		private boolean loggingEnabled = false;
 
 		private DisplayImageOptions defaultDisplayImageOptions = null;
 
@@ -316,6 +322,12 @@ public final class ImageLoaderConfiguration {
 		 */
 		public Builder defaultDisplayImageOptions(DisplayImageOptions defaultDisplayImageOptions) {
 			this.defaultDisplayImageOptions = defaultDisplayImageOptions;
+			return this;
+		}
+
+		/** Enabled detail logging of {@link ImageLoader} work */
+		public Builder enableLogging() {
+			this.loggingEnabled = true;
 			return this;
 		}
 

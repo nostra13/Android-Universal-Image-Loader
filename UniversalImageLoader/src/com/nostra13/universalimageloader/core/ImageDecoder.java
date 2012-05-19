@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import com.nostra13.universalimageloader.core.assist.DecodingType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
@@ -12,6 +15,7 @@ import android.graphics.BitmapFactory.Options;
  * Decodes images to {@link Bitmap}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @see DecodingType
  */
 final class ImageDecoder {
 
@@ -66,8 +70,8 @@ final class ImageDecoder {
 	}
 
 	private int computeImageScale(InputStream imageStream) {
-		int width = targetSize.width;
-		int height = targetSize.height;
+		int width = targetSize.getWidth();
+		int height = targetSize.getHeight();
 
 		// decode image size
 		Options options = new Options();

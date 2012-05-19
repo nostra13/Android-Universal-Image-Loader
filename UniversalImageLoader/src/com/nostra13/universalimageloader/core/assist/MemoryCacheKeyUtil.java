@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader.core;
+package com.nostra13.universalimageloader.core.assist;
 
 import java.util.Comparator;
 
@@ -7,16 +7,16 @@ import java.util.Comparator;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-final class MemoryCacheKeyUtil {
+public final class MemoryCacheKeyUtil {
 
 	private static final String URL_AND_SIZE_SEPARATOR = "_";
 	private static final String MEMORY_CACHE_KEY_FORMAT = "%s" + URL_AND_SIZE_SEPARATOR + "%sx%s";
 
-	static String generateKey(String imageUrl, ImageSize targetSize) {
-		return String.format(MEMORY_CACHE_KEY_FORMAT, imageUrl, targetSize.width, targetSize.height);
+	public static String generateKey(String imageUrl, ImageSize targetSize) {
+		return String.format(MEMORY_CACHE_KEY_FORMAT, imageUrl, targetSize.getWidth(), targetSize.getHeight());
 	}
 
-	static Comparator<String> createFuzzyKeyComparator() {
+	public static Comparator<String> createFuzzyKeyComparator() {
 		return new Comparator<String>() {
 			@Override
 			public int compare(String key1, String key2) {

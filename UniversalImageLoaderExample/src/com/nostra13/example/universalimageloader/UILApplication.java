@@ -25,9 +25,9 @@ public class UILApplication extends Application {
 			.discCacheSize(50000000) // 50 Mb
 			.httpReadTimeout(10000) // 10 s
 			.denyCacheImageMultipleSizesInMemory()
+			.enableLogging() // Not necessary in common
 			.build();
 		// Initialize ImageLoader with configuration.
 		ImageLoader.getInstance().init(config);
-		ImageLoader.getInstance().enableLogging(); // Not necessary in common
 	}
 }

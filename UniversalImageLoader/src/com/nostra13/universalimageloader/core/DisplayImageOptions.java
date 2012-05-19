@@ -1,5 +1,7 @@
 package com.nostra13.universalimageloader.core;
 
+import com.nostra13.universalimageloader.core.assist.DecodingType;
+
 /**
  * Contains options for image display. Defines:
  * <ul>

@@ -1,20 +1,28 @@
-package com.nostra13.universalimageloader.core;
+package com.nostra13.universalimageloader.core.assist;
 
 /**
  * Present width and height values
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-class ImageSize {
+public class ImageSize {
 
 	private static final String TO_STRING_PATTERN = "%sx%s";
 
-	int width;
-	int height;
+	private final int width;
+	private final int height;
 
 	public ImageSize(int width, int height) {
 		this.width = width;
 		this.height = height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
 	}
 
 	@Override

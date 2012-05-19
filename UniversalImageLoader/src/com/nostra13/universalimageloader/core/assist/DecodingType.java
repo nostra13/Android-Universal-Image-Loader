@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader.core;
+package com.nostra13.universalimageloader.core.assist;
 
 /**
  * Type of image decoding. Can be {@link #FAST} or {@link #MEMORY_SAVING}(a little slower but more efficiently use

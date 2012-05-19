@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader.core;
+package com.nostra13.universalimageloader.core.assist;
 
 import android.widget.ImageView;
 

@@ -39,6 +39,12 @@ public class ImageGalleryActivity extends BaseActivity {
 		gallery.setSelection(galleryPosition);
 	}
 
+	@Override
+	protected void onStop() {
+		imageLoader.stop();
+		super.onStop();
+	}
+
 	private class ImagePagerAdapter extends BaseAdapter {
 
 		private String[] images;

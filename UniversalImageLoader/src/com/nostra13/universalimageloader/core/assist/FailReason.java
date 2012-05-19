@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader.core;
+package com.nostra13.universalimageloader.core.assist;
 
 /**
  * Presents the reason why image loading and displaying was failed
