@@ -6,11 +6,14 @@ import java.util.concurrent.ThreadFactory;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
@@ -86,6 +89,13 @@ public final class ImageLoaderConfiguration {
 	 */
 	public static class Builder {
 
+		private static final String WARNING_OVERLAP_MEMORY_CACHE_SIZE = "This method's call overlaps memoryCacheSize() method call";
+		private static final String WARNING_MEMORY_CACHE_ALREADY_SET = "You already have set memory cache. This method call will make no effect.";
+		private static final String WARNING_OVERLAP_DISC_CACHE_SIZE = "This method's call overlaps discCacheSize() method call";
+		private static final String WARNING_OVERLAP_DISC_CACHE_FILE_COUNT = "This method's call overlaps discCacheFileCount() method call";
+		private static final String WARNING_OVERLAP_DISC_CACHE_FILE_NAME_GENERATOR = "This method's call overlaps discCacheFileNameGenerator() method call";
+		private static final String WARNING_DISC_CACHE_ALREADY_SET = "You already have set disc cache. This method call will make no effect.";
+
 		/** {@value} milliseconds */
 		public static final int DEFAULT_HTTP_CONNECTION_TIMEOUT = 5000;
 		/** {@value} milliseconds */
@@ -107,8 +117,13 @@ public final class ImageLoaderConfiguration {
 		private int threadPriority = DEFAULT_THREAD_PRIORITY;
 		private boolean allowCacheImageMultipleSizesInMemory = true;
 		private boolean handleOutOfMemory = true;
+		private int memoryCacheSize = DEFAULT_MEMORY_CACHE_SIZE;
 		private MemoryCacheAware<String, Bitmap> memoryCache = null;
+		private int discCacheSize = 0;
+		private int discCacheFileCount = 0;
+		private FileNameGenerator discCacheFileNameGenerator = null;
 		private DiscCacheAware discCache = null;
+
 		private DisplayImageOptions defaultDisplayImageOptions = null;
 
 		public Builder(Context context) {
@@ -213,7 +228,10 @@ public final class ImageLoaderConfiguration {
 		 * own implementation of {@link MemoryCacheAware}.
 		 */
 		public Builder memoryCacheSize(int memoryCacheSize) {
-			this.memoryCache = new UsingFreqLimitedMemoryCache(memoryCacheSize);
+			if (memoryCacheSize <= 0) throw new IllegalArgumentException("memoryCacheSize must be a positive number");
+			if (memoryCache != null) Log.w(ImageLoader.TAG, WARNING_MEMORY_CACHE_ALREADY_SET);
+
+			this.memoryCacheSize = memoryCacheSize;
 			return this;
 		}
 
@@ -225,6 +243,8 @@ public final class ImageLoaderConfiguration {
 		 * tuning.
 		 */
 		public Builder memoryCache(MemoryCacheAware<String, Bitmap> memoryCache) {
+			if (memoryCacheSize != DEFAULT_MEMORY_CACHE_SIZE) Log.w(ImageLoader.TAG, WARNING_OVERLAP_MEMORY_CACHE_SIZE);
+
 			this.memoryCache = memoryCache;
 			return this;
 		}
@@ -237,8 +257,11 @@ public final class ImageLoaderConfiguration {
 		 * implementation of {@link DiscCacheAware}
 		 */
 		public Builder discCacheSize(int maxCacheSize) {
-			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
-			this.discCache = new TotalSizeLimitedDiscCache(individualCacheDir, maxCacheSize);
+			if (maxCacheSize <= 0) throw new IllegalArgumentException("maxCacheSize must be a positive number");
+			if (discCache != null) Log.w(ImageLoader.TAG, WARNING_DISC_CACHE_ALREADY_SET);
+			if (discCacheFileCount > 0) Log.w(ImageLoader.TAG, WARNING_OVERLAP_DISC_CACHE_FILE_COUNT);
+
+			this.discCacheSize = maxCacheSize;
 			return this;
 		}
 
@@ -250,8 +273,22 @@ public final class ImageLoaderConfiguration {
 		 * implementation of {@link DiscCacheAware}
 		 */
 		public Builder discCacheFileCount(int maxFileCount) {
-			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
-			this.discCache = new FileCountLimitedDiscCache(individualCacheDir, maxFileCount);
+			if (maxFileCount <= 0) throw new IllegalArgumentException("maxFileCount must be a positive number");
+			if (discCache != null) Log.w(ImageLoader.TAG, WARNING_DISC_CACHE_ALREADY_SET);
+			if (discCacheSize > 0) Log.w(ImageLoader.TAG, WARNING_OVERLAP_DISC_CACHE_SIZE);
+
+			this.discCacheSize = 0;
+			this.discCacheFileCount = maxFileCount;
+			return this;
+		}
+
+		/**
+		 * Sets name generator for files cached in disc cache
+		 */
+		public Builder discCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
+			if (discCache != null) Log.w(ImageLoader.TAG, WARNING_DISC_CACHE_ALREADY_SET);
+
+			this.discCacheFileNameGenerator = fileNameGenerator;
 			return this;
 		}
 
@@ -263,6 +300,10 @@ public final class ImageLoaderConfiguration {
 		 * StorageUtils.getCacheDirectory(Context)}.<br />
 		 */
 		public Builder discCache(DiscCacheAware discCache) {
+			if (discCacheSize > 0) Log.w(ImageLoader.TAG, WARNING_OVERLAP_DISC_CACHE_SIZE);
+			if (discCacheFileCount > 0) Log.w(ImageLoader.TAG, WARNING_OVERLAP_DISC_CACHE_FILE_COUNT);
+			if (discCacheFileNameGenerator != null) Log.w(ImageLoader.TAG, WARNING_OVERLAP_DISC_CACHE_FILE_NAME_GENERATOR);
+
 			this.discCache = discCache;
 			return this;
 		}
@@ -286,11 +327,23 @@ public final class ImageLoaderConfiguration {
 
 		private void initEmptyFiledsWithDefaultValues() {
 			if (discCache == null) {
-				File cacheDir = StorageUtils.getCacheDirectory(context);
-				discCache = new UnlimitedDiscCache(cacheDir);
+				if (discCacheFileNameGenerator == null) {
+					discCacheFileNameGenerator = new HashCodeFileNameGenerator();
+				}
+
+				if (discCacheSize > 0) {
+					File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
+					discCache = new TotalSizeLimitedDiscCache(individualCacheDir, discCacheFileNameGenerator, discCacheSize);
+				} else if (discCacheFileCount > 0) {
+					File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
+					discCache = new FileCountLimitedDiscCache(individualCacheDir, discCacheFileNameGenerator, discCacheFileCount);
+				} else {
+					File cacheDir = StorageUtils.getIndividualCacheDirectory(context);
+					discCache = new UnlimitedDiscCache(cacheDir, discCacheFileNameGenerator);
+				}
 			}
 			if (memoryCache == null) {
-				memoryCache = new UsingFreqLimitedMemoryCache(DEFAULT_MEMORY_CACHE_SIZE);
+				memoryCache = new UsingFreqLimitedMemoryCache(memoryCacheSize);
 			}
 			if (!allowCacheImageMultipleSizesInMemory) {
 				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheKeyUtil.createFuzzyKeyComparator());

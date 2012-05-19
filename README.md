@@ -103,7 +103,7 @@ For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) y
 * [MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)
 * [Деловой Киров](https://play.google.com/store/apps/details?id=ru.normakirov.dknorma)
 * [Бизнес-завтрак](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch)
- 
+
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
 

@@ -7,7 +7,7 @@ import java.util.Comparator;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-class MemoryCacheKeyUtil {
+final class MemoryCacheKeyUtil {
 
 	private static final String URL_AND_SIZE_SEPARATOR = "_";
 	private static final String MEMORY_CACHE_KEY_FORMAT = "%s" + URL_AND_SIZE_SEPARATOR + "%sx%s";

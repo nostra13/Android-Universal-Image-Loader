@@ -6,10 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.nostra13.universalimageloader.cache.disc.BaseDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 
 /**
- * Cache which deletes files which were loaded more than defined time . Cache size is unlimited. Names file as cache key
- * {@linkplain String#hashCode() hashcode}.
+ * Cache which deletes files which were loaded more than defined time. Cache size is unlimited.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see BaseDiscCache
@@ -28,7 +29,20 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	 *            (and therefore be reloaded).
 	 */
 	public LimitedAgeDiscCache(File cacheDir, long maxAge) {
-		super(cacheDir);
+		this(cacheDir, new HashCodeFileNameGenerator(), maxAge);
+	}
+
+	/**
+	 * @param cacheDir
+	 *            Directory for file caching
+	 * @param fileNameGenerator
+	 *            Name generator for cached files
+	 * @param maxAge
+	 *            Max file age (in seconds). If file age will exceed this value then it'll be removed on next treatment
+	 *            (and therefore be reloaded).
+	 */
+	public LimitedAgeDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, long maxAge) {
+		super(cacheDir, fileNameGenerator);
 		this.maxFileAge = maxAge * 1000; // to milliseconds
 		readLoadingDates();
 	}
@@ -61,10 +75,5 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 			}
 		}
 		return file;
-	}
-
-	@Override
-	protected String keyToFileName(String key) {
-		return String.valueOf(key.hashCode());
 	}
 }
