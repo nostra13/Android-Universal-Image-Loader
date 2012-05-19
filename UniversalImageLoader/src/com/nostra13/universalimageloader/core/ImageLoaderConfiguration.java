@@ -11,8 +11,8 @@ import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.memory.FuzzyKeyMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
@@ -86,15 +86,15 @@ public final class ImageLoaderConfiguration {
 	 */
 	public static class Builder {
 
-		/** milliseconds */
+		/** {@value} milliseconds */
 		public static final int DEFAULT_HTTP_CONNECTION_TIMEOUT = 5000;
-		/** milliseconds */
+		/** {@value} milliseconds */
 		public static final int DEFAULT_HTTP_READ_TIMEOUT = 20000;
 		/** {@value} */
 		public static final int DEFAULT_THREAD_POOL_SIZE = 5;
 		/** {@value} */
 		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
-		/** bytes */
+		/** {@value} bytes */
 		public static final int DEFAULT_MEMORY_CACHE_SIZE = 2000000;
 
 		private Context context;

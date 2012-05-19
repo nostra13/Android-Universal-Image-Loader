@@ -33,8 +33,11 @@ public class ImagePagerActivity extends BaseActivity {
 		String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
 		int pagerPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
 
-		options = new DisplayImageOptions.Builder().showImageForEmptyUrl(R.drawable.image_for_empty_url).cacheOnDisc().decodingType(DecodingType.MEMORY_SAVING)
-				.build();
+		options = new DisplayImageOptions.Builder()
+			.showImageForEmptyUrl(R.drawable.image_for_empty_url)
+			.cacheOnDisc()
+			.decodingType(DecodingType.MEMORY_SAVING)
+			.build();
 
 		pager = (ViewPager) findViewById(R.id.pager);
 		pager.setAdapter(new ImagePagerAdapter(imageUrls));

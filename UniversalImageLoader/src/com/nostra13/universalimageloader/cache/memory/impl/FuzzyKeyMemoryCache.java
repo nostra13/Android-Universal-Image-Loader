@@ -1,20 +1,23 @@
-package com.nostra13.universalimageloader.cache.memory;
+package com.nostra13.universalimageloader.cache.memory.impl;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+
 /**
  * Decorator for {@link MemoryCacheAware}. Provides special feature for cache: some different keys are considered as
  * equals (using {@link Comparator comparator}). And when you try to put some value into cache by key so entries with
- * "equals" keys will be removed from cache before.
+ * "equals" keys will be removed from cache before.<br />
+ * <b>NOTE:</b> Used for internal needs. Normally you don't need to use this class.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class FuzzyKeyMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 
-	private MemoryCacheAware<K, V> cache;
-	private Comparator<K> keyComparator;
+	private final MemoryCacheAware<K, V> cache;
+	private final Comparator<K> keyComparator;
 
 	public FuzzyKeyMemoryCache(MemoryCacheAware<K, V> cache, Comparator<K> keyComparator) {
 		this.cache = cache;

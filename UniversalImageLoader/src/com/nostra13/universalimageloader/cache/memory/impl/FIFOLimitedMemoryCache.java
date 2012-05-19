@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.nostra13.universalimageloader.cache.memory.LimitedMemoryCache;
-
 import android.graphics.Bitmap;
+
+import com.nostra13.universalimageloader.cache.memory.LimitedMemoryCache;
 
 /**
  * Limited {@link Bitmap bitmap} cache. Provides {@link Bitmap bitmaps} storing. Size of all stored bitmaps will not to

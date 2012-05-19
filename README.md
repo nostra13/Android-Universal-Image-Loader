@@ -86,16 +86,18 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
 ## Useful info
 For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...)) you can use already prepared implementations:
 
- * UsingFreqLimitedCache (The least frequently used bitmap is deleted when cache size limit is exceeded) - Used by default
- * LRULimitedCache (Least recently used bitmap is deleted when cache size limit is exceeded)
- * FIFOLimitedCache (FIFO rule is used for deletion when cache size limit is exceeded)
- * LargestLimitedCache (The largest bitmap is deleted when cache size limit is exceeded)
- 
- For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) you can use already prepared implementations:
+ * UsingFreqLimitedMemoryCache (The least frequently used bitmap is deleted when cache size limit is exceeded) - Used by default
+ * LRULimitedMemoryCache (Least recently used bitmap is deleted when cache size limit is exceeded)
+ * FIFOLimitedMemoryCache (FIFO rule is used for deletion when cache size limit is exceeded)
+ * LargestLimitedMemoryCache (The largest bitmap is deleted when cache size limit is exceeded)
+ * LimitedAgeMemoryCache (Decorator. Cached object is deleted when its age exceeds defined value)
+
+For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) you can use already prepared implementations:
 
  * UnlimitedDiscCache (The fastest cache, doesn't limit cache size) - Used by default
  * TotalSizeLimitedDiscCache (Cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last usage date will be deleted)
  * FileCountLimitedDiscCache (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
+ * LimitedAgeDiscCache (Unlimited cache with limited files' lifetime. If age of cached file exceeds defined limit then it will be deleted from cache.)
 
 ## Applications using Universal Image Loader
 * [MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)
