@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
+
 /**
  * Provides retrieving of {@link InputStream} of image by URL.
  * 
@@ -55,6 +57,6 @@ class DefaultImageDownloader extends ImageDownloader {
 		URLConnection conn = imageUrl.openConnection();
 		conn.setConnectTimeout(connectTimeout);
 		conn.setReadTimeout(readTimeout);
-		return new BufferedInputStream(conn.getInputStream());
+		return new FlushedInputStream(new BufferedInputStream(conn.getInputStream()));
 	}
 }
