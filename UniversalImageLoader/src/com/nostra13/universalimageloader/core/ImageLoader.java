@@ -200,7 +200,8 @@ public class ImageLoader {
 
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, targetSize, options, listener);
 			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
-			if (displayImageTask.isImageCachedOnDisc()) {
+			boolean isImageCachedOnDisc = configuration.discCache.get(url).exists();
+			if (isImageCachedOnDisc) {
 				cachedImageLoadingExecutor.submit(displayImageTask);
 			} else {
 				imageLoadingExecutor.submit(displayImageTask);
@@ -253,6 +254,11 @@ public class ImageLoader {
 		}
 	}
 
+	/** Returns URL of image which is loading at this moment into passed {@link ImageView} */
+	public String getLoadingUrlForView(ImageView imageView) {
+		return cacheKeyForImageView.get(imageView);
+	}
+
 	/**
 	 * Cancel the task of loading and displaying image for passed {@link ImageView}.
 	 * 
@@ -271,10 +277,6 @@ public class ImageLoader {
 		if (cachedImageLoadingExecutor != null) {
 			cachedImageLoadingExecutor.shutdown();
 		}
-	}
-
-	String getLoadingUrlForView(ImageView imageView) {
-		return cacheKeyForImageView.get(imageView);
 	}
 
 	/**

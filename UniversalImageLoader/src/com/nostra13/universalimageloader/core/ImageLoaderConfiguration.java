@@ -35,8 +35,6 @@ public final class ImageLoaderConfiguration {
 
 	final int maxImageWidthForMemoryCache;
 	final int maxImageHeightForMemoryCache;
-	final int httpConnectTimeout;
-	final int httpReadTimeout;
 	final int threadPoolSize;
 	final boolean handleOutOfMemory;
 	final MemoryCacheAware<String, Bitmap> memoryCache;
@@ -44,18 +42,18 @@ public final class ImageLoaderConfiguration {
 	final DisplayImageOptions defaultDisplayImageOptions;
 	final ThreadFactory displayImageThreadFactory;
 	final boolean loggingEnabled;
+	final ImageDownloader downloader;
 
 	private ImageLoaderConfiguration(final Builder builder) {
 		maxImageWidthForMemoryCache = builder.maxImageWidthForMemoryCache;
 		maxImageHeightForMemoryCache = builder.maxImageHeightForMemoryCache;
-		httpConnectTimeout = builder.httpConnectTimeout;
-		httpReadTimeout = builder.httpReadTimeout;
 		threadPoolSize = builder.threadPoolSize;
 		handleOutOfMemory = builder.handleOutOfMemory;
 		discCache = builder.discCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
 		loggingEnabled = builder.loggingEnabled;
+		downloader = builder.downloader;
 		displayImageThreadFactory = new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {
@@ -72,7 +70,7 @@ public final class ImageLoaderConfiguration {
 	 * <ul>
 	 * <li>maxImageWidthForMemoryCache = {@link Builder#DEFAULT_MAX_IMAGE_WIDTH this}</li>
 	 * <li>maxImageHeightForMemoryCache = {@link Builder#DEFAULT_MAX_IMAGE_HEIGHT this}</li>
-	 * <li>httpConnectTimeout = {@link Builder#DEFAULT_HTTP_CONNECTION_TIMEOUT this}</li>
+	 * <li>httpConnectTimeout = {@link Builder#DEFAULT_HTTP_CONNECT_TIMEOUT this}</li>
 	 * <li>httpReadTimeout = {@link Builder#DEFAULT_HTTP_READ_TIMEOUT this}</li>
 	 * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
 	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
@@ -100,9 +98,12 @@ public final class ImageLoaderConfiguration {
 		private static final String WARNING_OVERLAP_DISC_CACHE_FILE_COUNT = "This method's call overlaps discCacheFileCount() method call";
 		private static final String WARNING_OVERLAP_DISC_CACHE_FILE_NAME_GENERATOR = "This method's call overlaps discCacheFileNameGenerator() method call";
 		private static final String WARNING_DISC_CACHE_ALREADY_SET = "You already have set disc cache. This method call will make no effect.";
+		private static final String WARNING_OVERLAP_CONNECT_TIMEOUT = "This method's call overlaps httpConnectTimeout() method call";
+		private static final String WARNING_OVERLAP_READ_TIMEOUT = "This method's call overlaps httpReadTimeout() method call";
+		private static final String WARNING_DOWNLOADER_ALREADY_SET = "You already have set image downloader. This method call will make no effect.";
 
 		/** {@value} milliseconds */
-		public static final int DEFAULT_HTTP_CONNECTION_TIMEOUT = 5000;
+		public static final int DEFAULT_HTTP_CONNECT_TIMEOUT = 5000;
 		/** {@value} milliseconds */
 		public static final int DEFAULT_HTTP_READ_TIMEOUT = 20000;
 		/** {@value} */
@@ -116,7 +117,7 @@ public final class ImageLoaderConfiguration {
 
 		private int maxImageWidthForMemoryCache = 0;
 		private int maxImageHeightForMemoryCache = 0;
-		private int httpConnectTimeout = DEFAULT_HTTP_CONNECTION_TIMEOUT;
+		private int httpConnectTimeout = DEFAULT_HTTP_CONNECT_TIMEOUT;
 		private int httpReadTimeout = DEFAULT_HTTP_READ_TIMEOUT;
 		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
 		private int threadPriority = DEFAULT_THREAD_PRIORITY;
@@ -127,6 +128,7 @@ public final class ImageLoaderConfiguration {
 		private int discCacheSize = 0;
 		private int discCacheFileCount = 0;
 		private FileNameGenerator discCacheFileNameGenerator = null;
+		private ImageDownloader downloader = null;
 		private DiscCacheAware discCache = null;
 		private boolean loggingEnabled = false;
 
@@ -158,9 +160,11 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets timeout for HTTP connection establishment (during image loading).<br />
-		 * Default value - {@link #DEFAULT_HTTP_CONNECTION_TIMEOUT this}
+		 * Default value - {@link #DEFAULT_HTTP_CONNECT_TIMEOUT this}
 		 * */
 		public Builder httpConnectTimeout(int timeout) {
+			if (downloader != null) Log.w(ImageLoader.TAG, WARNING_DOWNLOADER_ALREADY_SET);
+
 			httpConnectTimeout = timeout;
 			return this;
 		}
@@ -170,6 +174,8 @@ public final class ImageLoaderConfiguration {
 		 * Default value - {@link #DEFAULT_HTTP_READ_TIMEOUT this}
 		 * */
 		public Builder httpReadTimeout(int timeout) {
+			if (downloader != null) Log.w(ImageLoader.TAG, WARNING_DOWNLOADER_ALREADY_SET);
+
 			httpReadTimeout = timeout;
 			return this;
 		}
@@ -288,13 +294,20 @@ public final class ImageLoaderConfiguration {
 			return this;
 		}
 
-		/**
-		 * Sets name generator for files cached in disc cache
-		 */
+		/** Sets name generator for files cached in disc cache */
 		public Builder discCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
 			if (discCache != null) Log.w(ImageLoader.TAG, WARNING_DISC_CACHE_ALREADY_SET);
 
 			this.discCacheFileNameGenerator = fileNameGenerator;
+			return this;
+		}
+
+		/** Sets utility which will be responsible for downloading of image */
+		public Builder imageDownloader(ImageDownloader imageDownloader) {
+			if (httpConnectTimeout != DEFAULT_HTTP_CONNECT_TIMEOUT) Log.w(ImageLoader.TAG, WARNING_OVERLAP_CONNECT_TIMEOUT);
+			if (httpReadTimeout != DEFAULT_HTTP_READ_TIMEOUT) Log.w(ImageLoader.TAG, WARNING_OVERLAP_READ_TIMEOUT);
+
+			this.downloader = imageDownloader;
 			return this;
 		}
 
@@ -359,6 +372,9 @@ public final class ImageLoaderConfiguration {
 			}
 			if (!allowCacheImageMultipleSizesInMemory) {
 				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheKeyUtil.createFuzzyKeyComparator());
+			}
+			if (downloader == null) {
+				downloader = new DefaultImageDownloader(httpConnectTimeout, httpReadTimeout);
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();

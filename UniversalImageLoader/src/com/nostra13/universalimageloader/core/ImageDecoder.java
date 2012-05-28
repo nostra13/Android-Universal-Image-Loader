@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import com.nostra13.universalimageloader.core.assist.DecodingType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
+
+import com.nostra13.universalimageloader.core.assist.DecodingType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 /**
  * Decodes images to {@link Bitmap}
@@ -17,22 +17,26 @@ import android.graphics.BitmapFactory.Options;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see DecodingType
  */
-final class ImageDecoder {
+class ImageDecoder {
 
-	private URL imageUrl;
-	private ImageSize targetSize;
-	private DecodingType decodingType;
+	private final URL imageUrl;
+	private final ImageDownloader imageDownloader;
+	private final ImageSize targetSize;
+	private final DecodingType decodingType;
 
 	/**
 	 * @param imageUrl
 	 *            Image URL (<b>i.e.:</b> "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param imageDownloader
+	 *            Image downloader
 	 * @param targetImageSize
 	 *            Image size to scale to during decoding
 	 * @param decodingType
 	 *            {@link DecodingType Decoding type}
 	 */
-	ImageDecoder(URL imageUrl, ImageSize targetImageSize, DecodingType decodingType) {
+	ImageDecoder(URL imageUrl, ImageDownloader imageDownloader, ImageSize targetImageSize, DecodingType decodingType) {
 		this.imageUrl = imageUrl;
+		this.imageDownloader = imageDownloader;
 		this.targetSize = targetImageSize;
 		this.decodingType = decodingType;
 	}
@@ -44,39 +48,35 @@ final class ImageDecoder {
 	 * @return Decoded bitmap
 	 * @throws IOException
 	 */
-	public Bitmap decodeFile() throws IOException {
+	public Bitmap decode() throws IOException {
 		Options decodeOptions = getBitmapOptionsForImageDecoding();
-
-		Bitmap result;
-		InputStream is = imageUrl.openStream();
+		InputStream imageStream = imageDownloader.getStream(imageUrl);
 		try {
-			result = BitmapFactory.decodeStream(is, null, decodeOptions);
+			return BitmapFactory.decodeStream(imageStream, null, decodeOptions);
 		} finally {
-			is.close();
+			imageStream.close();
 		}
-
-		return result;
 	}
 
 	private Options getBitmapOptionsForImageDecoding() throws IOException {
 		Options options = new Options();
-		InputStream is = imageUrl.openStream();
-		try {
-			options.inSampleSize = computeImageScale(is);
-		} finally {
-			is.close();
-		}
+		options.inSampleSize = computeImageScale();
 		return options;
 	}
 
-	private int computeImageScale(InputStream imageStream) {
+	private int computeImageScale() throws IOException {
 		int width = targetSize.getWidth();
 		int height = targetSize.getHeight();
 
 		// decode image size
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
-		BitmapFactory.decodeStream(imageStream, null, options);
+		InputStream imageStream = imageDownloader.getStream(imageUrl);
+		try {
+			BitmapFactory.decodeStream(imageStream, null, options);
+		} finally {
+			imageStream.close();
+		}
 
 		int scale = 1;
 		switch (decodingType) {

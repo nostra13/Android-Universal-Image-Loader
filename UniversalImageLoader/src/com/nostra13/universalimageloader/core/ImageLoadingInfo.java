@@ -31,11 +31,4 @@ final class ImageLoadingInfo {
 		this.listener = listener;
 		memoryCacheKey = MemoryCacheKeyUtil.generateKey(url, targetSize);
 	}
-
-	/** Whether image URL of this task matches to URL which corresponds to current ImageView */
-	boolean isConsistent() {
-		String currentCacheKey = ImageLoader.getInstance().getLoadingUrlForView(imageView);
-		// Check whether memory cache key (image URL) for current ImageView is actual.
-		return memoryCacheKey.equals(currentCacheKey);
-	}
 }

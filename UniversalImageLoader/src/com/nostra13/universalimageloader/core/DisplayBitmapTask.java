@@ -1,35 +1,30 @@
 package com.nostra13.universalimageloader.core;
 
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.widget.ImageView;
 
 /**
- * Used to display bitmap in {@link ImageView}. Must be called on UI thread.
+ * Displays bitmap in {@link ImageView}. Must be called on UI thread.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @see ImageLoaderConfiguration
- * @see ImageLoadingInfo
+ * @see ImageLoadingListener
  */
 final class DisplayBitmapTask implements Runnable {
 
-	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
-
-	private final ImageLoaderConfiguration configuration;
 	private final Bitmap bitmap;
-	private final ImageLoadingInfo imageLoadingInfo;
+	private final ImageView imageView;
+	private final ImageLoadingListener listener;
 
-	public DisplayBitmapTask(ImageLoaderConfiguration configuration, ImageLoadingInfo imageLoadingInfo, Bitmap bitmap) {
-		this.configuration = configuration;
+	public DisplayBitmapTask(Bitmap bitmap, ImageView imageView, ImageLoadingListener listener) {
 		this.bitmap = bitmap;
-		this.imageLoadingInfo = imageLoadingInfo;
+		this.imageView = imageView;
+		this.listener = listener;
 	}
 
 	public void run() {
-		if (imageLoadingInfo.isConsistent()) {
-			if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, imageLoadingInfo.memoryCacheKey));
-			imageLoadingInfo.imageView.setImageBitmap(bitmap);
-			imageLoadingInfo.listener.onLoadingComplete();
-		}
+		imageView.setImageBitmap(bitmap);
+		listener.onLoadingComplete();
 	}
 }

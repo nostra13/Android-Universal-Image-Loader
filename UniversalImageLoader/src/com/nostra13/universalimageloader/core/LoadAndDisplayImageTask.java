@@ -1,13 +1,12 @@
 package com.nostra13.universalimageloader.core;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -32,6 +31,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final String LOG_LOAD_IMAGE_FROM_DISC_CACHE = "Load image from disc cache [%s]";
 	private static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
 	private static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
+	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
 
 	private static final int ATTEMPT_COUNT_TO_DECODE_BITMAP = 3;
 
@@ -48,36 +48,43 @@ final class LoadAndDisplayImageTask implements Runnable {
 	@Override
 	public void run() {
 		if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, imageLoadingInfo.memoryCacheKey));
-		if (!imageLoadingInfo.isConsistent()) {
-			return;
-		}
 
+		if (!isTaskActual()) return;
 		Bitmap bmp = loadBitmap();
-		if (bmp == null) {
-			return;
-		}
-		if (!imageLoadingInfo.isConsistent()) {
-			return;
-		}
+		if (bmp == null) return;
 
+		if (!isTaskActual()) return;
 		if (imageLoadingInfo.options.isCacheInMemory()) {
 			if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_IN_MEMORY, imageLoadingInfo.memoryCacheKey));
+
 			configuration.memoryCache.put(imageLoadingInfo.memoryCacheKey, bmp);
 		}
 
-		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(configuration, imageLoadingInfo, bmp);
-		handler.post(displayBitmapTask);
+		if (isTaskActual()) {
+			if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, imageLoadingInfo.memoryCacheKey));
+
+			DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo.imageView, imageLoadingInfo.listener);
+			handler.post(displayBitmapTask);
+		}
+	}
+
+	/** Whether the image URL of this task matches to image URL which is actual for current ImageView at this moment */
+	boolean isTaskActual() {
+		String currentCacheKey = ImageLoader.getInstance().getLoadingUrlForView(imageLoadingInfo.imageView);
+		// Check whether memory cache key (image URL) for current ImageView is actual.
+		return imageLoadingInfo.memoryCacheKey.equals(currentCacheKey);
 	}
 
 	private Bitmap loadBitmap() {
-		File f = configuration.discCache.get(imageLoadingInfo.url);
+		File imageFile = configuration.discCache.get(imageLoadingInfo.url);
 
 		Bitmap bitmap = null;
 		try {
 			// Try to load image from disc cache
-			if (f.exists()) {
+			if (imageFile.exists()) {
 				if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_LOAD_IMAGE_FROM_DISC_CACHE, imageLoadingInfo.memoryCacheKey));
-				Bitmap b = decodeImage(f.toURL());
+
+				Bitmap b = decodeImage(imageFile.toURL());
 				if (b != null) {
 					return b;
 				}
@@ -85,12 +92,14 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 			// Load image from Web
 			if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_LOAD_IMAGE_FROM_INTERNET, imageLoadingInfo.memoryCacheKey));
+
 			URL imageUrlForDecoding;
 			if (imageLoadingInfo.options.isCacheOnDisc()) {
 				if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_ON_DISC, imageLoadingInfo.memoryCacheKey));
-				saveImageOnDisc(f);
-				configuration.discCache.put(imageLoadingInfo.url, f);
-				imageUrlForDecoding = f.toURL();
+
+				saveImageOnDisc(imageFile);
+				configuration.discCache.put(imageLoadingInfo.url, imageFile);
+				imageUrlForDecoding = imageFile.toURL();
 			} else {
 				imageUrlForDecoding = new URL(imageLoadingInfo.url);
 			}
@@ -99,8 +108,8 @@ final class LoadAndDisplayImageTask implements Runnable {
 		} catch (IOException e) {
 			Log.e(ImageLoader.TAG, e.getMessage(), e);
 			fireImageLoadingFailedEvent(FailReason.IO_ERROR);
-			if (f.exists()) {
-				f.delete();
+			if (imageFile.exists()) {
+				imageFile.delete();
 			}
 		} catch (OutOfMemoryError e) {
 			Log.e(ImageLoader.TAG, e.getMessage(), e);
@@ -112,55 +121,52 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return bitmap;
 	}
 
-	boolean isImageCachedOnDisc() {
-		File f = configuration.discCache.get(imageLoadingInfo.url);
-		return f.exists();
-	}
-
 	private Bitmap decodeImage(URL imageUrl) throws IOException {
 		Bitmap bmp = null;
-		ImageDecoder decoder = new ImageDecoder(imageUrl, imageLoadingInfo.targetSize, imageLoadingInfo.options.getDecodingType());
+		ImageDecoder decoder = new ImageDecoder(imageUrl, configuration.downloader, imageLoadingInfo.targetSize, imageLoadingInfo.options.getDecodingType());
 
 		if (configuration.handleOutOfMemory) {
-			for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
-				try {
-					bmp = decoder.decodeFile();
-					break;
-				} catch (OutOfMemoryError e) {
-					Log.e(ImageLoader.TAG, e.getMessage(), e);
-
-					switch (attempt) {
-						case 1:
-							System.gc();
-							break;
-						case 2:
-							configuration.memoryCache.clear();
-							System.gc();
-							break;
-						case 3:
-							throw e;
-					}
-					// Wait some time while GC is working
-					try {
-						Thread.sleep(attempt * 1000);
-					} catch (InterruptedException ie) {
-						Log.e(ImageLoader.TAG, ie.getMessage(), ie);
-					}
-				}
-			}
+			bmp = decodeWithOOMHandling(decoder);
 		} else {
-			bmp = decoder.decodeFile();
+			bmp = decoder.decode();
 		}
 
 		decoder = null;
 		return bmp;
 	}
 
+	private Bitmap decodeWithOOMHandling(ImageDecoder decoder) throws IOException {
+		Bitmap result = null;
+		for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
+			try {
+				result = decoder.decode();
+			} catch (OutOfMemoryError e) {
+				Log.e(ImageLoader.TAG, e.getMessage(), e);
+
+				switch (attempt) {
+					case 1:
+						System.gc();
+						break;
+					case 2:
+						configuration.memoryCache.clear();
+						System.gc();
+						break;
+					case 3:
+						throw e;
+				}
+				// Wait some time while GC is working
+				try {
+					Thread.sleep(attempt * 1000);
+				} catch (InterruptedException ie) {
+					Log.e(ImageLoader.TAG, ie.getMessage(), ie);
+				}
+			}
+		}
+		return result;
+	}
+
 	private void saveImageOnDisc(File targetFile) throws MalformedURLException, IOException {
-		URLConnection conn = new URL(imageLoadingInfo.url).openConnection();
-		conn.setConnectTimeout(configuration.httpConnectTimeout);
-		conn.setReadTimeout(configuration.httpReadTimeout);
-		BufferedInputStream is = new BufferedInputStream(conn.getInputStream());
+		InputStream is = configuration.downloader.getStream(imageLoadingInfo.url);
 		try {
 			OutputStream os = new FileOutputStream(targetFile);
 			try {
