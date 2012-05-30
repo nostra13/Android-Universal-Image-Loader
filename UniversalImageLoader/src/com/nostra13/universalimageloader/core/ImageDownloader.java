@@ -4,9 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
-
-import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 
 /**
  * Provides retrieving of {@link InputStream} of image by URL.
@@ -33,25 +30,5 @@ public abstract class ImageDownloader {
 	/** Retrieves {@link InputStream} of image by URL (image is located on the local file system or SD card) */
 	protected InputStream getStreamFromFile(URL imageUrl) throws IOException {
 		return new BufferedInputStream(imageUrl.openStream());
-	}
-}
-
-/** Default implementation of ImageDownloader. Uses {@link URLConnection} for image stream retrieving. */
-class DefaultImageDownloader extends ImageDownloader {
-
-	private int connectTimeout;
-	private int readTimeout;
-
-	public DefaultImageDownloader(int connectTimeout, int readTimeout) {
-		this.connectTimeout = connectTimeout;
-		this.readTimeout = readTimeout;
-	}
-
-	@Override
-	public InputStream getStreamFromNetwork(URL imageUrl) throws IOException {
-		URLConnection conn = imageUrl.openConnection();
-		conn.setConnectTimeout(connectTimeout);
-		conn.setReadTimeout(readTimeout);
-		return new FlushedInputStream(new BufferedInputStream(conn.getInputStream()));
 	}
 }
