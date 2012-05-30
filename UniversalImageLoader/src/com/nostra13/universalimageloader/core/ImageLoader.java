@@ -16,10 +16,10 @@ import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
-import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 /**
  * Singletone for image loading and displaying at {@link ImageView ImageViews}<br />
@@ -75,7 +75,7 @@ public class ImageLoader {
 		}
 		if (this.configuration == null) {
 			this.configuration = configuration;
-			emptyListener = new EmptyListener();
+			emptyListener = new SimpleImageLoadingListener();
 		}
 	}
 
@@ -331,19 +331,5 @@ public class ImageLoader {
 			}
 		}
 		return new ImageSize(width, height);
-	}
-
-	private class EmptyListener implements ImageLoadingListener {
-		@Override
-		public void onLoadingStarted() { // Do nothing
-		}
-
-		@Override
-		public void onLoadingFailed(FailReason failReason) { // Do nothing
-		}
-
-		@Override
-		public void onLoadingComplete() { // Do nothing
-		}
 	}
 }

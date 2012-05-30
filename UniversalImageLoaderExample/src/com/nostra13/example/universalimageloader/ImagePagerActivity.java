@@ -110,6 +110,11 @@ public class ImagePagerActivity extends BaseActivity {
 				public void onLoadingComplete() {
 					spinner.setVisibility(View.GONE);
 				}
+
+				@Override
+				public void onLoadingCancelled() {
+					// Do nothing
+				}
 			});
 
 			((ViewPager) view).addView(imageLayout, 0);
@@ -133,6 +138,5 @@ public class ImagePagerActivity extends BaseActivity {
 		@Override
 		public void startUpdate(View container) {
 		}
-
 	}
 }

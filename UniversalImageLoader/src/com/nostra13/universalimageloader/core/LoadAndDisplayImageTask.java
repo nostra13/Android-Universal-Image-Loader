@@ -1,5 +1,6 @@
 package com.nostra13.universalimageloader.core;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
 /**
@@ -49,30 +51,42 @@ final class LoadAndDisplayImageTask implements Runnable {
 	public void run() {
 		if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, imageLoadingInfo.memoryCacheKey));
 
-		if (!isTaskActual()) return;
+		if (checkTaskIsNotActual()) return;
 		Bitmap bmp = loadBitmap();
 		if (bmp == null) return;
 
-		if (!isTaskActual()) return;
+		if (checkTaskIsNotActual()) return;
 		if (imageLoadingInfo.options.isCacheInMemory()) {
 			if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_IN_MEMORY, imageLoadingInfo.memoryCacheKey));
 
 			configuration.memoryCache.put(imageLoadingInfo.memoryCacheKey, bmp);
 		}
 
-		if (isTaskActual()) {
-			if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, imageLoadingInfo.memoryCacheKey));
+		if (checkTaskIsNotActual()) return;
+		if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, imageLoadingInfo.memoryCacheKey));
 
-			DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo.imageView, imageLoadingInfo.listener);
-			handler.post(displayBitmapTask);
-		}
+		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo.imageView, imageLoadingInfo.listener);
+		handler.post(displayBitmapTask);
 	}
 
-	/** Whether the image URL of this task matches to image URL which is actual for current ImageView at this moment */
-	boolean isTaskActual() {
+	/**
+	 * Check whether the image URL of this task matches to image URL which is actual for current ImageView at this
+	 * moment and fire {@link ImageLoadingListener#onLoadingCancelled()} event if it doesn't.
+	 */
+	boolean checkTaskIsNotActual() {
 		String currentCacheKey = ImageLoader.getInstance().getLoadingUrlForView(imageLoadingInfo.imageView);
-		// Check whether memory cache key (image URL) for current ImageView is actual.
-		return imageLoadingInfo.memoryCacheKey.equals(currentCacheKey);
+		// Check whether memory cache key (image URL) for current ImageView is actual. 
+		// If ImageView is reused for another task then current task should be cancelled.
+		boolean imageViewWasReused = !imageLoadingInfo.memoryCacheKey.equals(currentCacheKey);
+		if (imageViewWasReused) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					imageLoadingInfo.listener.onLoadingCancelled();
+				}
+			});
+		}
+		return imageViewWasReused;
 	}
 
 	private Bitmap loadBitmap() {
@@ -166,9 +180,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private void saveImageOnDisc(File targetFile) throws MalformedURLException, IOException {
-		InputStream is = configuration.downloader.getStream(imageLoadingInfo.url);
+		InputStream is = configuration.downloader.getStream(new URL(imageLoadingInfo.url));
 		try {
-			OutputStream os = new FileOutputStream(targetFile);
+			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
 			try {
 				FileUtils.copyStream(is, os);
 			} finally {

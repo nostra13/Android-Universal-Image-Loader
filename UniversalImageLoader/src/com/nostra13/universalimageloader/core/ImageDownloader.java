@@ -18,11 +18,6 @@ public abstract class ImageDownloader {
 	protected static final String PROTOCOL_FILE = "file";
 
 	/** Retrieves {@link InputStream} of image by URL. Image can be located as in the network and on local file system. */
-	protected InputStream getStream(String imageUrl) throws IOException {
-		return getStream(new URL(imageUrl));
-	}
-
-	/** Retrieves {@link InputStream} of image by URL. Image can be located as in the network and on local file system. */
 	protected InputStream getStream(URL imageUrl) throws IOException {
 		String protocol = imageUrl.getProtocol();
 		if (PROTOCOL_FILE.equals(protocol)) {
