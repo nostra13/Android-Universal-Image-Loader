@@ -41,24 +41,24 @@ File cacheDir = new File(Environment.getExternalStorageDirectory(), "UniversalIm
 
 // Get singletone instance of ImageLoader
 ImageLoader imageLoader = ImageLoader.getInstance();
-// Create configuration for ImageLoader
+// Create configuration for ImageLoader (all options are optional)
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-			.maxImageWidthForMemoryCache(800)
+			.maxImageWidthForMemoryCache(480)
 			.maxImageHeightForMemoryCache(800)
-			.httpConnectTimeout(5000)
-			.httpReadTimeout(30000)
 			.threadPoolSize(5)
 			.threadPriority(Thread.MIN_PRIORITY + 2)
 			.denyCacheImageMultipleSizesInMemory()
 			.offOutOfMemoryHandling()
 			.memoryCache(new UsingFreqLimitedCache(2000000)) // You can pass your own memory cache implementation
 			.discCache(new UnlimitedDiscCache(cacheDir)) // You can pass your own disc cache implementation
+			.discCacheFileNameGenerator(new HashCodeFileNameGenerator())
+			.imageDownloader(new DefaultImageDownloader(5000, 30000)) // connectTimeout (5 s), readTimeout (30 s)
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
 			.build();
 // Initialize ImageLoader with created configuration. Do it once.
 imageLoader.init(config);
 
-// Creates display image options for custom display task
+// Creates display image options for custom display task (all options are optional)
 DisplayImageOptions options = new DisplayImageOptions.Builder()
                                        .showStubImage(R.drawable.stub_image)
 									   .showImageForEmptyUrl(R.drawable.image_for_empty_url)
@@ -79,6 +79,10 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
     @Override
     public void onLoadingComplete() {
         spinner.hide();
+    }
+	@Override
+    public void onLoadingCancelled() {
+        // Do nothing
     }
 });
 ```
@@ -103,6 +107,8 @@ For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) y
 * [MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)
 * [Деловой Киров](https://play.google.com/store/apps/details?id=ru.normakirov.dknorma)
 * [Бизнес-завтрак](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch)
+* [Menu55](http://www.free-lance.ru/users/max475imus/viewproj.php?prjid=3152141)
+* [SpokenPic](http://spokenpic.com)
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
