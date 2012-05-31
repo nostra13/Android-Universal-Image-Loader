@@ -3,11 +3,11 @@ package com.nostra13.universalimageloader.utils;
 import java.io.File;
 import java.io.IOException;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Provides application storage paths
@@ -23,7 +23,7 @@ public final class StorageUtils {
 
 	/**
 	 * Returns application cache directory. Cache directory will be created on SD card
-	 * <i>("/Android/[app_package_name]/cache")</i> if card is mounted. Else - Android defines cache directory on
+	 * <i>("/Android/data/[app_package_name]/cache")</i> if card is mounted. Else - Android defines cache directory on
 	 * device's file system.
 	 * 
 	 * @param context
@@ -59,6 +59,27 @@ public final class StorageUtils {
 			}
 		}
 		return individualCacheDir;
+	}
+
+	/**
+	 * Returns specified application cache directory. Cache directory will be created on SD card by defined path if card
+	 * is mounted. Else - Android defines cache directory on device's file system.
+	 * 
+	 * @param context
+	 *            Application context
+	 * @param cacheDir
+	 *            Cache directory path (e.g.: "AppCacheDir", "AppDir/cache/images")
+	 * @return Cache {@link File directory}
+	 */
+	public static File getOwnCacheDirectory(Context context, String cacheDir) {
+		File appCacheDir = null;
+		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+			appCacheDir = new File(Environment.getExternalStorageDirectory(), cacheDir);
+		}
+		if (!appCacheDir.mkdirs()) {
+			appCacheDir = context.getCacheDir();
+		}
+		return appCacheDir;
 	}
 
 	private static File getExternalCacheDir(Context context) {
