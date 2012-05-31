@@ -130,6 +130,7 @@ public final class DisplayImageOptions {
 	 * <li>Stub image will <b>not</b> be displayed in {@link android.widget.ImageView ImageView} during image loading</li>
 	 * <li>Loaded image will <b>not</b> be cached in memory</li>
 	 * <li>Loaded image will <b>not</b> be cached on disc (application cache directory or on SD card)</li>
+	 * <li>{@link DecodingType#FAST FAST} decoding type will be used</li>
 	 * </ul>
 	 * 
 	 * These option are appropriate for simple single-use image (from drawables or from internet) displaying.
