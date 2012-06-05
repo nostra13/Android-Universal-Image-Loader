@@ -37,7 +37,7 @@ imageLoader.displayImage(imageUrl, imageView);
 ImageView imageView = ...
 String imageUrl = "http://site.com/image.png"; // or "file:///mnt/sdcard/images/image.jpg"
 ProgressBar spinner = ...
-File cacheDir = new File(Environment.getExternalStorageDirectory(), "UniversalImageLoader/Cache");
+File cacheDir = StorageUtils.getOwnCacheDirectory(getApplicationContext(), "UniversalImageLoader/Cache");
 
 // Get singletone instance of ImageLoader
 ImageLoader imageLoader = ImageLoader.getInstance();
@@ -109,6 +109,7 @@ For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) y
 * [Бизнес-завтрак](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch)
 * [Menu55](http://www.free-lance.ru/users/max475imus/viewproj.php?prjid=3152141)
 * [SpokenPic](http://spokenpic.com)
+* [Kumir](https://play.google.com/store/apps/details?id=ru.premiakumir.android)
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
