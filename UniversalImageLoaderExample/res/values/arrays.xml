@@ -2,52 +2,45 @@
 <resources>
 
     <string-array name="heavy_images">
-        <item>http://www.android.com/media/wallpaper/gif/android_logo.gif</item>
-        <item>http://www.android.com/media/wallpaper/gif/cupcake_2009.gif</item>
-        <item>http://cdn4.digitaltrends.com/wp-content/uploads/2011/04/Google-Android.png</item>
-        <item>http://2.bp.blogspot.com/_JSR8IC77Ub4/TATYokamR0I/AAAAAAAAAhc/O1KKFe5Fay0/s1600/richd-android1920.jpg</item>
-        <item>http://1.bp.blogspot.com/_0nd55rShouI/TPMx2PZMPEI/AAAAAAAAAC8/GSCW4W4fkcA/s1600/android.jpg</item>
-        <item>http://atlantistilemarble.com/wp-content/uploads/2011/02/android-wallpaper1_1024x768.png</item>
-        <item>http://www.android.com/media/wallpaper/gif/androids.gif</item>
-        <item>http://3.bp.blogspot.com/_Sd45ASngYHA/TVC78RORKoI/AAAAAAAAARk/y0GcNkTmb40/s1600/android+logo1.jpg</item>
-        <item>http://1.bp.blogspot.com/-mhrnwr-R_9k/TcwraA1SsWI/AAAAAAAAAjs/LIcWBaOOM88/s1600/Android%2540Home.jpg</item>
-        <item>http://www.android.com/goodies/wallpaper/android-wallpaper4_1024x768.png</item>
-        <item>http://4.bp.blogspot.com/__n_rRWNSWVs/TOyBihqZlVI/AAAAAAAAAms/z23vVZnAtUk/s1600/android_vulnerability.jpg</item>
-        <item>http://3.bp.blogspot.com/__n_rRWNSWVs/THRRtuq-1gI/AAAAAAAAAkc/REqEJwOky2U/s1600/good_looking_android_launcher_pro.png</item>
-        <item>http://4android-phone.com/wp-content/uploads/2011/08/How-to-Browse-Files-on-an-Android-Phone21.png</item>
-        <item>http://img2.etsystatic.com/il_fullxfull.253478178.jpg</item>
-        <item>http://3.bp.blogspot.com/-myXkCrTnCDs/TWmIJiLdWBI/AAAAAAAAmn4/-XRCxm1kCKc/s1600/pXUsV.jpg</item>
-        <item>http://all-free-download.com/downloadfiles/wallpapers/1280_1024/android_wallpaper_google_computers_wallpaper_1280_1024_2675.jpg</item>
-        <item>http://www.designerterminal.com/wp-content/uploads/2011/04/18_thumb.jpg</item>
-        <item>http://www.designerterminal.com/wp-content/uploads/2011/04/13_thumb.jpg</item>
-        <item>http://cdn.androidcentral.com/sites/androidcentral.com/files/postimages/9274/tz.com_3_0.jpg</item>
-        <item>http://2.bp.blogspot.com/-Q78WS_f1YP8/TiQBauodVpI/AAAAAAAAAm8/hmZnQw1g6m8/s1600/IMG_0223.jpg</item>
-        <item>http://2.bp.blogspot.com/_y9zuMy5_0aY/S974L2fvXXI/AAAAAAAACJ8/98KQl0gMAhc/s1600/IMG_0466.jpg</item>
-        <item>http://cache.gawkerassets.com/assets/images/17/2011/05/icecreamsandwich.jpg</item>
-        <item>http://disfi.com/wp-content/uploads/2011/11/panasonicToughpadA1andB11.jpg</item>
-        <item>http://fastcache.gawkerassets.com/assets/images/4/2010/08/decayedandroid2.jpg</item>
-        <item>http://i00.i.aliimg.com/img/pb/767/772/267/1284794302575_hz-myalibaba-temp13_2190.jpg</item>
-        <item>http://img.docstoccdn.com/thumb/orig/17435666.png</item>
-        <item>http://blog.cyberbofh.com/wp-content/uploads/2010/04/CIMG1461_thumb.jpg</item>
-        <item>http://www.tu.ro/i/cado/o/ceas-kerala-trance-white-led-1166.jpg</item>
-        <item>http://images.fineartamerica.com/images-medium-large/deep-trance-scott-piers.jpg</item>
-        <item>http://s58.radikal.ru/i160/1003/2d/ec1624a9dd6a.jpg</item>
-        <item>http://www.kirod.com/wp-content/uploads/mvbthumbs/img_32_free-trance-tracks-from-audioswap.jpg</item>
-        <item>http://www.dragonartz.net/wp-content/uploads/2009/03/vector-trance-background-01-by-dragonart.jpg</item>
-        <item>http://www.aplacetolovedogs.com/wp-content/uploads/in-a-trance.jpg</item>
-        <item>http://trancem.ru/img/va/trance_4ever_2011.jpg</item>
-        <item>http://www.arminvanbuuren.org/wp-content/gallery/trance-energy-2009-utrecht-galeria/trance_energy_34.jpg</item>
-        <item>http://i174.photobucket.com/albums/w96/DJ_Strike/Trance.jpg</item>
-        <item>http://weloveatrance.com/wp-content/uploads/2010/12/trancetop1000.jpg</item>
-        <item>http://cdn2.staztic.com/screenshots/trance-13-2.jpg</item>
-        <item>http://fc05.deviantart.net/fs70/f/2010/264/e/2/pink_cyber_trance_by_golden_x_darkness-d2z7iog.png</item>
-        <item>http://static.desktopnexus.com/thumbnails/99822-bigthumbnail.jpg</item>
-        <item>http://www.artistserver.com/m4/21824/16322/media/18993.jpg</item>
-        <item>http://1.bp.blogspot.com/_xDao__Bde_4/TRtBJmUV_KI/AAAAAAAANnw/ISzXGf9hArU/s400/1293618312_trance_maniacs_party__trancefer_wave_42.jpg</item>
-        <item>http://v1.studenten.net/graphics/content/pictures/7-4-2010-16-50-trance_crowd_450.jpg</item>
-        <item>http://www.feelworldevent.com/wp-content/uploads/2010/06/Trance-Energy-Apr-2010-1.jpg</item>
-        <item>http://www.dudziak.com/pictures/fractals/trance_500.jpg</item>
-        <item>http://www.mkirste.de/page/serien/trance-energy/trance_energy08_33.jpg</item>
+        <item>https://lh6.googleusercontent.com/-jZgveEqb6pg/T3R4kXScycI/AAAAAAAAAE0/xQ7CvpfXDzc/s1024/sample_image_01.jpg</item>
+        <item>https://lh4.googleusercontent.com/-K2FMuOozxU0/T3R4lRAiBTI/AAAAAAAAAE8/a3Eh9JvnnzI/s1024/sample_image_02.jpg</item>
+        <item>https://lh5.googleusercontent.com/-SCS5C646rxM/T3R4l7QB6xI/AAAAAAAAAFE/xLcuVv3CUyA/s1024/sample_image_03.jpg</item>
+        <item>https://lh6.googleusercontent.com/-f0NJR6-_Thg/T3R4mNex2wI/AAAAAAAAAFI/45oug4VE8MI/s1024/sample_image_04.jpg</item>
+        <item>https://lh3.googleusercontent.com/-n-xcJmiI0pg/T3R4mkSchHI/AAAAAAAAAFU/EoiNNb7kk3A/s1024/sample_image_05.jpg</item>
+        <item>https://lh3.googleusercontent.com/-X43vAudm7f4/T3R4nGSChJI/AAAAAAAAAFk/3bna6D-2EE8/s1024/sample_image_06.jpg</item>
+        <item>https://lh5.googleusercontent.com/-MpZneqIyjXU/T3R4nuGO1aI/AAAAAAAAAFg/r09OPjLx1ZY/s1024/sample_image_07.jpg</item>
+        <item>https://lh6.googleusercontent.com/-ql3YNfdClJo/T3XvW9apmFI/AAAAAAAAAL4/_6HFDzbahc4/s1024/sample_image_08.jpg</item>
+        <item>https://lh5.googleusercontent.com/-Pxa7eqF4cyc/T3R4oasvPEI/AAAAAAAAAF0/-uYDH92h8LA/s1024/sample_image_09.jpg</item>
+        <item>https://lh4.googleusercontent.com/-Li-rjhFEuaI/T3R4o-VUl4I/AAAAAAAAAF8/5E5XdMnP1oE/s1024/sample_image_10.jpg</item>
+        <item>https://lh5.googleusercontent.com/-_HU4fImgFhA/T3R4pPVIwWI/AAAAAAAAAGA/0RfK_Vkgth4/s1024/sample_image_11.jpg</item>
+        <item>https://lh6.googleusercontent.com/-0gnNrVjwa0Y/T3R4peGYJwI/AAAAAAAAAGU/uX_9wvRPM9I/s1024/sample_image_12.jpg</item>
+        <item>https://lh3.googleusercontent.com/-HBxuzALS_Zs/T3R4qERykaI/AAAAAAAAAGQ/_qQ16FaZ1q0/s1024/sample_image_13.jpg</item>
+        <item>https://lh4.googleusercontent.com/-cKojDrARNjQ/T3R4qfWSGPI/AAAAAAAAAGY/MR5dnbNaPyY/s1024/sample_image_14.jpg</item>
+        <item>https://lh3.googleusercontent.com/-WujkdYfcyZ8/T3R4qrIMGUI/AAAAAAAAAGk/277LIdgvnjg/s1024/sample_image_15.jpg</item>
+        <item>https://lh6.googleusercontent.com/-FMHR7Vy3PgI/T3R4rOXlEKI/AAAAAAAAAGs/VeXrDNDBkaw/s1024/sample_image_16.jpg</item>
+        <item>https://lh4.googleusercontent.com/-mrR0AJyNTH0/T3R4rZs6CuI/AAAAAAAAAG0/UE1wQqCOqLA/s1024/sample_image_17.jpg</item>
+        <item>https://lh6.googleusercontent.com/-z77w0eh3cow/T3R4rnLn05I/AAAAAAAAAG4/BaerfWoNucU/s1024/sample_image_18.jpg</item>
+        <item>https://lh5.googleusercontent.com/-aWVwh1OU5Bk/T3R4sAWw0yI/AAAAAAAAAHE/4_KAvJttFwA/s1024/sample_image_19.jpg</item>
+        <item>https://lh6.googleusercontent.com/-q-js52DMnWQ/T3R4tZhY2sI/AAAAAAAAAHM/A8kjp2Ivdqg/s1024/sample_image_20.jpg</item>
+        <item>https://lh5.googleusercontent.com/-_jIzvvzXKn4/T3R4t7xpdVI/AAAAAAAAAHU/7QC6eZ10jgs/s1024/sample_image_21.jpg</item>
+        <item>https://lh3.googleusercontent.com/-lnGi4IMLpwU/T3R4uCMa7vI/AAAAAAAAAHc/1zgzzz6qTpk/s1024/sample_image_22.jpg</item>
+        <item>https://lh5.googleusercontent.com/-fFCzKjFPsPc/T3R4u0SZPFI/AAAAAAAAAHk/sbgjzrktOK0/s1024/sample_image_23.jpg</item>
+        <item>https://lh4.googleusercontent.com/-8TqoW5gBE_Y/T3R4vBS3NPI/AAAAAAAAAHs/EZYvpNsaNXk/s1024/sample_image_24.jpg</item>
+        <item>https://lh6.googleusercontent.com/-gc4eQ3ySdzs/T3R4vafoA7I/AAAAAAAAAH4/yKii5P6tqDE/s1024/sample_image_25.jpg</item>
+        <item>https://lh5.googleusercontent.com/--NYOPCylU7Q/T3R4vjAiWkI/AAAAAAAAAH8/IPNx5q3ptRA/s1024/sample_image_26.jpg</item>
+        <item>https://lh6.googleusercontent.com/-9IJM8so4vCI/T3R4vwJO2yI/AAAAAAAAAIE/ljlr-cwuqZM/s1024/sample_image_27.jpg</item>
+        <item>https://lh4.googleusercontent.com/-KW6QwOHfhBs/T3R4w0RsQiI/AAAAAAAAAIM/uEFLVgHPFCk/s1024/sample_image_28.jpg</item>
+        <item>https://lh4.googleusercontent.com/-z2557Ec1ctY/T3R4x3QA2hI/AAAAAAAAAIk/9-GzPL1lTWE/s1024/sample_image_29.jpg</item>
+        <item>https://lh5.googleusercontent.com/-LaKXAn4Kr1c/T3R4yc5b4lI/AAAAAAAAAIY/fMgcOVQfmD0/s1024/sample_image_30.jpg</item>
+        <item>https://lh4.googleusercontent.com/-F9LRToJoQdo/T3R4yrLtyQI/AAAAAAAAAIg/ri9uUCWuRmo/s1024/sample_image_31.jpg</item>
+        <item>https://lh4.googleusercontent.com/-6X-xBwP-QpI/T3R4zGVboII/AAAAAAAAAIs/zYH4PjjngY0/s1024/sample_image_32.jpg</item>
+        <item>https://lh5.googleusercontent.com/-VdLRjbW4LAs/T3R4zXu3gUI/AAAAAAAAAIw/9aFp9t7mCPg/s1024/sample_image_33.jpg</item>
+        <item>https://lh6.googleusercontent.com/-gL6R17_fDJU/T3R4zpIXGjI/AAAAAAAAAI8/Q2Vjx-L9X20/s1024/sample_image_34.jpg</item>
+        <item>https://lh3.googleusercontent.com/-1fGH4YJXEzo/T3R40Y1B7KI/AAAAAAAAAJE/MnTsa77g-nk/s1024/sample_image_35.jpg</item>
+        <item>https://lh4.googleusercontent.com/-Ql0jHSrea-A/T3R403mUfFI/AAAAAAAAAJM/qzI4SkcH9tY/s1024/sample_image_36.jpg</item>
+        <item>https://lh5.googleusercontent.com/-BL5FIBR_tzI/T3R41DA0AKI/AAAAAAAAAJk/GZfeeb-SLM0/s1024/sample_image_37.jpg</item>
+        <item>https://lh4.googleusercontent.com/-wF2Vc9YDutw/T3R41fR2BCI/AAAAAAAAAJc/JdU1sHdMRAk/s1024/sample_image_38.jpg</item>
+        <item>https://lh6.googleusercontent.com/-ZWHiPehwjTI/T3R41zuaKCI/AAAAAAAAAJg/hR3QJ1v3REg/s1024/sample_image_39.jpg</item>
     </string-array>
     <string-array name="light_images">
         <item>http://tabletpcssource.com/wp-content/uploads/2011/05/android-logo.png</item>
@@ -61,8 +54,6 @@
         <item>http://t2.gstatic.com/images?q=tbn:ANd9GcTJixLIo_zlOPOILuxNWc5evK333pZCH8rugaTtv3SZSfiI39T0-3vWYQ</item>
         <item>http://www.idyllicmusic.com/index_files/get_apple-iphone.png</item>
         <item>http://www.frenchrevolutionfood.com/wp-content/uploads/2009/04/Twitter-Bird.png</item>
-        <item>http://images-3.findicons.com/files/icons/820/simply_google/128/google_earth.png</item>
-        <item>http://images-2.findicons.com/files/icons/820/simply_google/128/google_desktop.png</item>
         <item>http://3.bp.blogspot.com/-ka5MiRGJ_S4/TdD9OoF6bmI/AAAAAAAAE8k/7ydKtptUtSg/s1600/Google_Sky%2BMaps_Android.png</item>
         <item>http://www.desiredsoft.com/images/icon_webhosting.png</item>
         <item>http://goodereader.com/apps/wp-content/uploads/downloads/thumbnails/2012/01/hi-256-0-99dda8c730196ab93c67f0659d5b8489abdeb977.png</item>
@@ -75,13 +66,14 @@
         <item>http://1.bp.blogspot.com/-y-HQwQ4Kuu0/TdD9_iKIY7I/AAAAAAAAE88/3G4xiclDZD0/s1600/Twitter_Android.png</item>
         <item>http://3.bp.blogspot.com/-nAf4IMJGpc8/TdD9OGNUHHI/AAAAAAAAE8E/VM9yU_lIgZ4/s1600/Adobe%2BReader_Android.png</item>
         <item>http://cdn.geekwire.com/wp-content/uploads/2011/05/oovoo-android.png?7794fe</item>
-        <item>http://images-2.findicons.com/files/icons/1781/90_purple/256/android.png</item>
         <item>http://icons.iconarchive.com/icons/kocco/ndroid/128/android-market-2-icon.png</item>
-        <item>http://images-5.findicons.com/files/icons/1782/classic_blue/256/classic_blue_android.png</item>
         <item>http://thecustomizewindows.com/wp-content/uploads/2011/11/Nicest-Android-Live-Wallpapers.png</item>
         <item>http://c.wrzuta.pl/wm16596/a32f1a47002ab3a949afeb4f</item>
-        <item>http://www.itsquix.com/images/buttons/myspace_button.png</item>
         <item>http://macprovid.vo.llnwd.net/o43/hub/media/1090/6882/01_headline_Muse.jpg</item>
+        <!-- Special cases -->
+        <item>file:///mnt/sdcard/Temp/UniversalImageLoader.png</item> <!-- Local image -->
+        <item>http://www.htc-dev.net/wp-content/uploads/2012/05/màj-ICS-HTC-Sensation-XL.jpg</item> <!-- Link with special UTF-8 symbols -->
+        <item>https://www.iabti.org/images/M_images/Twitter_Image/follow_twitter_button_d.png</item> <!-- Image from HTTPS -->
         <item>http://bit.ly/soBiXr</item> <!-- Redirect link -->
         <item>http://bit.ly/corruptedLink</item> <!-- Wrong link -->
         <item></item> <!-- Empty link -->
