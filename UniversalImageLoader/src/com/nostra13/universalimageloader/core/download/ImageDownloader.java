@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader.core;
+package com.nostra13.universalimageloader.core.download;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -15,7 +15,7 @@ public abstract class ImageDownloader {
 	protected static final String PROTOCOL_FILE = "file";
 
 	/** Retrieves {@link InputStream} of image by URL. Image can be located as in the network and on local file system. */
-	protected InputStream getStream(URL imageUrl) throws IOException {
+	public InputStream getStream(URL imageUrl) throws IOException {
 		String protocol = imageUrl.getProtocol();
 		if (PROTOCOL_FILE.equals(protocol)) {
 			return getStreamFromFile(imageUrl);

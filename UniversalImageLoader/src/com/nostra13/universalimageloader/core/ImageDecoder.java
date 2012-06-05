@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory.Options;
 
 import com.nostra13.universalimageloader.core.assist.DecodingType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 /**
  * Decodes images to {@link Bitmap}

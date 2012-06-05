@@ -20,6 +20,8 @@ import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemor
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
+import com.nostra13.universalimageloader.core.download.ImageDownloader;
+import com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 /**
@@ -311,7 +313,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets utility which will be responsible for downloading of image.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.core.DefaultImageDownloader DefaultImageDownloader}
+		 * Default value - {@link com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader DefaultImageDownloader}
 		 * */
 		public Builder imageDownloader(ImageDownloader imageDownloader) {
 			if (httpConnectTimeout != DEFAULT_HTTP_CONNECT_TIMEOUT) Log.w(ImageLoader.TAG, WARNING_OVERLAP_CONNECT_TIMEOUT);
@@ -384,7 +386,7 @@ public final class ImageLoaderConfiguration {
 				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheKeyUtil.createFuzzyKeyComparator());
 			}
 			if (downloader == null) {
-				downloader = new DefaultImageDownloader(httpConnectTimeout, httpReadTimeout);
+				downloader = new URLConnectionImageDownloader(httpConnectTimeout, httpReadTimeout);
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();

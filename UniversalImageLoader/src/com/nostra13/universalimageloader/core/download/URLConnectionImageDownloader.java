@@ -1,4 +1,4 @@
-package com.nostra13.universalimageloader.core;
+package com.nostra13.universalimageloader.core.download;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -13,12 +13,12 @@ import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class DefaultImageDownloader extends ImageDownloader {
+public class URLConnectionImageDownloader extends ImageDownloader {
 
 	private int connectTimeout;
 	private int readTimeout;
 
-	public DefaultImageDownloader(int connectTimeout, int readTimeout) {
+	public URLConnectionImageDownloader(int connectTimeout, int readTimeout) {
 		this.connectTimeout = connectTimeout;
 		this.readTimeout = readTimeout;
 	}

@@ -4,9 +4,9 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import android.util.Log;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Names image file as MD5 hash of image URL
