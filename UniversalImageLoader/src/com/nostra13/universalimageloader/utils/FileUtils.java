@@ -11,14 +11,15 @@ import java.io.OutputStream;
  */
 public final class FileUtils {
 
+	private static final int BUFFER_SIZE = 8 * 1024; // 8 KB 
+
 	private FileUtils() {
 	}
 
 	public static void copyStream(InputStream is, OutputStream os) throws IOException {
-		final int buffer_size = 1024;
-		byte[] bytes = new byte[buffer_size];
+		byte[] bytes = new byte[BUFFER_SIZE];
 		while (true) {
-			int count = is.read(bytes, 0, buffer_size);
+			int count = is.read(bytes, 0, BUFFER_SIZE);
 			if (count == -1) {
 				break;
 			}
