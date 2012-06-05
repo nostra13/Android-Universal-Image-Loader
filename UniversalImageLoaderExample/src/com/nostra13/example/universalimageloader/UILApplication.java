@@ -2,6 +2,7 @@ package com.nostra13.example.universalimageloader;
 
 import android.app.Application;
 
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -24,6 +25,7 @@ public class UILApplication extends Application {
 			.memoryCacheSize(1500000) // 1.5 Mb
 			.httpReadTimeout(10000) // 10 s
 			.denyCacheImageMultipleSizesInMemory()
+			.discCacheFileNameGenerator(new Md5FileNameGenerator())
 			.enableLogging() // Not necessary in common
 			.build();
 		// Initialize ImageLoader with configuration.
