@@ -5,8 +5,8 @@
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="50dip"
-        android:layout_height="50dip"
+        android:layout_width="64dip"
+        android:layout_height="64dip"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop" />
 
