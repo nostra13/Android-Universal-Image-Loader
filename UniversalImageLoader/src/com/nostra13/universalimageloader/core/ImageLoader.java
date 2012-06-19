@@ -196,8 +196,16 @@ public class ImageLoader {
 			listener.onLoadingComplete();
 		} else {
 			listener.onLoadingStarted();
-			checkExecutors();
 
+			if (options.isShowStubImage()) {
+				imageView.setImageResource(options.getStubImage());
+			} else {
+				if (options.isResetViewBeforeLoading()) {
+					imageView.setImageBitmap(null);
+				}
+			}
+
+			checkExecutors();
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, targetSize, options, listener);
 			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
 			boolean isImageCachedOnDisc = configuration.discCache.get(url).exists();
@@ -205,12 +213,6 @@ public class ImageLoader {
 				cachedImageLoadingExecutor.submit(displayImageTask);
 			} else {
 				imageLoadingExecutor.submit(displayImageTask);
-			}
-
-			if (options.isShowStubImage()) {
-				imageView.setImageResource(options.getStubImage());
-			} else {
-				imageView.setImageBitmap(null);
 			}
 		}
 	}

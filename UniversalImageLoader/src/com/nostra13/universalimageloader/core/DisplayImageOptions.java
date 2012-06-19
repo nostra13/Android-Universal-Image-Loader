@@ -7,6 +7,7 @@ import com.nostra13.universalimageloader.core.assist.DecodingType;
  * <ul>
  * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading</li>
  * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} if empty URL is passed</li>
+ * <li>whether {@link android.widget.ImageView ImageView} should be reset before image loading start</li>
  * <li>whether loaded image will be cached in memory</li>
  * <li>whether loaded image will be cached on disc</li>
  * </ul>
@@ -16,7 +17,8 @@ import com.nostra13.universalimageloader.core.assist.DecodingType;
  * <li>with {@link Builder}:<br />
  * <b>i.e.</b> :
  * <code>new {@link DisplayImageOptions}.{@link Builder#Builder() Builder()}.{@link Builder#cacheInMemory() cacheInMemory()}.
- * {@link Builder#showStubImage(int) showStubImage()}.{@link Builder#build() build()}</sode><br /></li>
+ * {@link Builder#showStubImage(int) showStubImage()}.{@link Builder#build() build()}</code><br />
+ * </li>
  * <li>or by static method: {@link #createSimple()}</li> <br />
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -25,6 +27,7 @@ public final class DisplayImageOptions {
 
 	private final Integer stubImage;
 	private final Integer imageForEmptyUrl;
+	private final boolean resetViewBeforeLoading;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
 	private final DecodingType decodingType;
@@ -32,6 +35,7 @@ public final class DisplayImageOptions {
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
 		imageForEmptyUrl = builder.imageForEmptyUrl;
+		resetViewBeforeLoading = builder.resetViewBeforeLoading;
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
 		decodingType = builder.decodingType;
@@ -51,6 +55,10 @@ public final class DisplayImageOptions {
 
 	Integer getImageForEmptyUrl() {
 		return imageForEmptyUrl;
+	}
+
+	boolean isResetViewBeforeLoading() {
+		return resetViewBeforeLoading;
 	}
 
 	boolean isCacheInMemory() {
@@ -73,6 +81,7 @@ public final class DisplayImageOptions {
 	public static class Builder {
 		private Integer stubImage = null;
 		private Integer imageForEmptyUrl = null;
+		private boolean resetViewBeforeLoading = false;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
 		private DecodingType decodingType = DecodingType.FAST;
@@ -89,7 +98,7 @@ public final class DisplayImageOptions {
 		}
 
 		/**
-		 * Image will be displayed in {@link android.widget.ImageView ImageView} if empty Url (null or empty string)
+		 * Image will be displayed in {@link android.widget.ImageView ImageView} if empty URL (null or empty string)
 		 * will be passed to <b>ImageLoader.displayImage(...)</b> method.
 		 * 
 		 * @param imageRes
@@ -97,6 +106,12 @@ public final class DisplayImageOptions {
 		 */
 		public Builder showImageForEmptyUrl(int imageRes) {
 			imageForEmptyUrl = imageRes;
+			return this;
+		}
+
+		/** {@link android.widget.ImageView ImageView} will be reset (set <b>null</b>) before image loading start */
+		public Builder resetViewBeforeLoading() {
+			resetViewBeforeLoading = true;
 			return this;
 		}
 
