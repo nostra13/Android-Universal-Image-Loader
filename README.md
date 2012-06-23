@@ -43,17 +43,18 @@ File cacheDir = StorageUtils.getOwnCacheDirectory(getApplicationContext(), "Univ
 ImageLoader imageLoader = ImageLoader.getInstance();
 // Create configuration for ImageLoader (all options are optional)
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-			.maxImageWidthForMemoryCache(480)
-			.maxImageHeightForMemoryCache(800)
+			.memoryCacheExtraOptions(480, 800)
+			.discCacheExtraOptions(480, 800, CompressFormat.JPEG, 75) // Can slow ImageLoader, use it carefully (Better don't use it)
 			.threadPoolSize(5)
 			.threadPriority(Thread.MIN_PRIORITY + 2)
 			.denyCacheImageMultipleSizesInMemory()
 			.offOutOfMemoryHandling()
-			.memoryCache(new UsingFreqLimitedCache(2000000)) // You can pass your own memory cache implementation
+			.memoryCache(new UsingFreqLimitedMemoryCache(2 * 1024 * 1024)) // You can pass your own memory cache implementation
 			.discCache(new UnlimitedDiscCache(cacheDir)) // You can pass your own disc cache implementation
 			.discCacheFileNameGenerator(new HashCodeFileNameGenerator())
-			.imageDownloader(new DefaultImageDownloader(5000, 30000)) // connectTimeout (5 s), readTimeout (30 s)
+			.imageDownloader(new DefaultImageDownloader(5 * 1000, 30 * 1000)) // connectTimeout (5 s), readTimeout (30 s)
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
+			.enableLogging()
 			.build();
 // Initialize ImageLoader with created configuration. Do it once.
 imageLoader.init(config);
@@ -64,7 +65,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
 									   .showImageForEmptyUrl(R.drawable.image_for_empty_url)
                                        .cacheInMemory()
                                        .cacheOnDisc()
-									   .decodingType(DecodingType.MEMORY_SAVING)
+									   .imageScaleType(ImageScaleType.POWER_OF_2)
                                        .build();
 // Load and display image
 imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener() {
@@ -101,7 +102,9 @@ For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) y
  * UnlimitedDiscCache (The fastest cache, doesn't limit cache size) - Used by default
  * TotalSizeLimitedDiscCache (Cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last usage date will be deleted)
  * FileCountLimitedDiscCache (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
- * LimitedAgeDiscCache (Unlimited cache with limited files' lifetime. If age of cached file exceeds defined limit then it will be deleted from cache.)
+ * LimitedAgeDiscCache (Size-unlimited cache with limited files' lifetime. If age of cached file exceeds defined limit then it will be deleted from cache.)
+ 
+ **NOTE:** UnlimitedDiscCache is 30%-faster than other limited disc cache implementations.
 
 ## Applications using Universal Image Loader
 * [MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)
@@ -110,6 +113,8 @@ For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) y
 * [Menu55](http://www.free-lance.ru/users/max475imus/viewproj.php?prjid=3152141)
 * [SpokenPic](http://spokenpic.com)
 * [Kumir](https://play.google.com/store/apps/details?id=ru.premiakumir.android)
+* [EUKO 2012](https://play.google.com/store/apps/details?id=de.netlands.emsapp)
+* [TuuSo Image Search](https://play.google.com/store/apps/details?id=com.tuuso)
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
