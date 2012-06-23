@@ -5,6 +5,7 @@ import java.util.concurrent.ThreadFactory;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -39,6 +40,10 @@ public final class ImageLoaderConfiguration {
 
 	final int maxImageWidthForMemoryCache;
 	final int maxImageHeightForMemoryCache;
+	final int maxImageWidthForDiscCache;
+	final int maxImageHeightForDiscCache;
+	final CompressFormat imageCompressFormatForDiscCache;
+	final int imageQualityForDiscCache;
 	final int threadPoolSize;
 	final boolean handleOutOfMemory;
 	final MemoryCacheAware<String, Bitmap> memoryCache;
@@ -51,6 +56,10 @@ public final class ImageLoaderConfiguration {
 	private ImageLoaderConfiguration(final Builder builder) {
 		maxImageWidthForMemoryCache = builder.maxImageWidthForMemoryCache;
 		maxImageHeightForMemoryCache = builder.maxImageHeightForMemoryCache;
+		maxImageWidthForDiscCache = builder.maxImageWidthForDiscCache;
+		maxImageHeightForDiscCache = builder.maxImageHeightForDiscCache;
+		imageCompressFormatForDiscCache = builder.imageCompressFormatForDiscCache;
+		imageQualityForDiscCache = builder.imageQualityForDiscCache;
 		threadPoolSize = builder.threadPoolSize;
 		handleOutOfMemory = builder.handleOutOfMemory;
 		discCache = builder.discCache;
@@ -72,17 +81,23 @@ public final class ImageLoaderConfiguration {
 	 * Creates default configuration for {@link ImageLoader} <br />
 	 * <b>Default values:</b>
 	 * <ul>
-	 * <li>maxImageWidthForMemoryCache = {@link Builder#DEFAULT_MAX_IMAGE_WIDTH this}</li>
-	 * <li>maxImageHeightForMemoryCache = {@link Builder#DEFAULT_MAX_IMAGE_HEIGHT this}</li>
-	 * <li>httpConnectTimeout = {@link Builder#DEFAULT_HTTP_CONNECT_TIMEOUT this}</li>
-	 * <li>httpReadTimeout = {@link Builder#DEFAULT_HTTP_READ_TIMEOUT this}</li>
+	 * <li>maxImageWidthForMemoryCache = device's screen width</li>
+	 * <li>maxImageHeightForMemoryCache = device's screen height</li>
+	 * <li>maxImageWidthForDiscCache = unlimited</li>
+	 * <li>maxImageHeightForDiscCache = unlimited</li>
 	 * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
 	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
 	 * <li>allow to cache different sizes of image in memory</li>
 	 * <li>memoryCache = {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache
 	 * UsingFreqLimitedCache} with limited memory cache size ( {@link Builder#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
 	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache UnlimitedDiscCache}</li>
+	 * <li>imageDownloader = {@link com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader
+	 * URLConnectionImageDownloader}(httpConnectTimeout = {@link Builder#DEFAULT_HTTP_CONNECT_TIMEOUT this},
+	 * httpReadTimeout = {@link Builder#DEFAULT_HTTP_READ_TIMEOUT this})</li>
+	 * <li>discCacheFileNameGenerator =
+	 * {@link com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator HashCodeFileNameGenerator}</li>
 	 * <li>defaultDisplayImageOptions = {@link DisplayImageOptions#createSimple() Simple options}</li>
+	 * <li>detailed logging disabled</li>
 	 * </ul>
 	 * */
 	public static ImageLoaderConfiguration createDefault(Context context) {
@@ -102,85 +117,84 @@ public final class ImageLoaderConfiguration {
 		private static final String WARNING_OVERLAP_DISC_CACHE_FILE_COUNT = "This method's call overlaps discCacheFileCount() method call";
 		private static final String WARNING_OVERLAP_DISC_CACHE_FILE_NAME_GENERATOR = "This method's call overlaps discCacheFileNameGenerator() method call";
 		private static final String WARNING_DISC_CACHE_ALREADY_SET = "You already have set disc cache. This method call will make no effect.";
-		private static final String WARNING_OVERLAP_CONNECT_TIMEOUT = "This method's call overlaps httpConnectTimeout() method call";
-		private static final String WARNING_OVERLAP_READ_TIMEOUT = "This method's call overlaps httpReadTimeout() method call";
-		private static final String WARNING_DOWNLOADER_ALREADY_SET = "You already have set image downloader. This method call will make no effect.";
 
-		/** {@value} milliseconds */
-		public static final int DEFAULT_HTTP_CONNECT_TIMEOUT = 5000;
-		/** {@value} milliseconds */
-		public static final int DEFAULT_HTTP_READ_TIMEOUT = 20000;
 		/** {@value} */
-		public static final int DEFAULT_THREAD_POOL_SIZE = 5;
+		public static final int DEFAULT_HTTP_CONNECT_TIMEOUT = 5 * 1000; // milliseconds
+		/** {@value} */
+		public static final int DEFAULT_HTTP_READ_TIMEOUT = 20 * 1000; // milliseconds
+		/** {@value} */
+		public static final int DEFAULT_THREAD_POOL_SIZE = 3;
 		/** {@value} */
 		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
-		/** {@value} bytes */
-		public static final int DEFAULT_MEMORY_CACHE_SIZE = 2000000;
+		/** {@value} */
+		public static final int DEFAULT_MEMORY_CACHE_SIZE = 2 * 1024 * 1024; // bytes
 
 		private Context context;
 
 		private int maxImageWidthForMemoryCache = 0;
 		private int maxImageHeightForMemoryCache = 0;
-		private int httpConnectTimeout = DEFAULT_HTTP_CONNECT_TIMEOUT;
-		private int httpReadTimeout = DEFAULT_HTTP_READ_TIMEOUT;
+		private int maxImageWidthForDiscCache = 0;
+		private int maxImageHeightForDiscCache = 0;
+		private CompressFormat imageCompressFormatForDiscCache = null;
+		private int imageQualityForDiscCache = 0;
+
 		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
 		private int threadPriority = DEFAULT_THREAD_PRIORITY;
 		private boolean allowCacheImageMultipleSizesInMemory = true;
 		private boolean handleOutOfMemory = true;
+
 		private int memoryCacheSize = DEFAULT_MEMORY_CACHE_SIZE;
-		private MemoryCacheAware<String, Bitmap> memoryCache = null;
 		private int discCacheSize = 0;
 		private int discCacheFileCount = 0;
+
+		private MemoryCacheAware<String, Bitmap> memoryCache = null;
+		private DiscCacheAware discCache = null;
 		private FileNameGenerator discCacheFileNameGenerator = null;
 		private ImageDownloader downloader = null;
-		private DiscCacheAware discCache = null;
-		private boolean loggingEnabled = false;
-
 		private DisplayImageOptions defaultDisplayImageOptions = null;
+
+		private boolean loggingEnabled = false;
 
 		public Builder(Context context) {
 			this.context = context;
 		}
 
 		/**
-		 * Sets maximum image width which will be used for memory saving during decoding an image to
-		 * {@link android.graphics.Bitmap Bitmap}.<br />
-		 * Default value - device's screen width
-		 * */
-		public Builder maxImageWidthForMemoryCache(int maxImageWidthForMemoryCache) {
+		 * Sets options for memory cache
+		 * 
+		 * @param maxImageWidthForMemoryCache
+		 *            Maximum image width which will be used for memory saving during decoding an image to
+		 *            {@link android.graphics.Bitmap Bitmap}. <b>Default value - device's screen width</b>
+		 * @param maxImageHeightForMemoryCache
+		 *            Maximum image height which will be used for memory saving during decoding an image to
+		 *            {@link android.graphics.Bitmap Bitmap}. <b>Default value</b> - device's screen height
+		 */
+		public Builder memoryCacheExtraOptions(int maxImageWidthForMemoryCache, int maxImageHeightForMemoryCache) {
 			this.maxImageWidthForMemoryCache = maxImageWidthForMemoryCache;
-			return this;
-		}
-
-		/**
-		 * Sets maximum image height which will be used for memory saving during decoding an image to
-		 * {@link android.graphics.Bitmap Bitmap}.<br />
-		 * Default value - device's screen height
-		 * */
-		public Builder maxImageHeightForMemoryCache(int maxImageHeightForMemoryCache) {
 			this.maxImageHeightForMemoryCache = maxImageHeightForMemoryCache;
 			return this;
 		}
 
 		/**
-		 * Sets timeout for HTTP connection establishment (during image loading).<br />
-		 * Default value - {@link #DEFAULT_HTTP_CONNECT_TIMEOUT this}
-		 * */
-		public Builder httpConnectTimeout(int timeout) {
-			if (downloader != null) Log.w(ImageLoader.TAG, WARNING_DOWNLOADER_ALREADY_SET);
-
-			httpConnectTimeout = timeout;
-			return this;
-		}
-
-		/**
-		 * Sets timeout for HTTP reading (during image loading).<br />
-		 * Default value - {@link #DEFAULT_HTTP_READ_TIMEOUT this}
-		 * */
-		public Builder httpReadTimeout(int timeout) {
-			if (downloader != null) Log.w(ImageLoader.TAG, WARNING_DOWNLOADER_ALREADY_SET);
-
-			httpReadTimeout = timeout;
+		 * Sets options for resizing/compressing of downloaded images before saving to disc cache.<br />
+		 * <b>NOTE: Use this option only when you have appropriate needs. It can make ImageLoader slower.</b>
+		 * 
+		 * @param maxImageWidthForDiscCache
+		 *            Maximum width of downloaded images for saving at disc cache
+		 * @param maxImageHeightForDiscCache
+		 *            Maximum height of downloaded images for saving at disc cache
+		 * @param compressFormat
+		 *            {@link android.graphics.Bitmap.CompressFormat Compress format} downloaded images to save them at
+		 *            disc cache
+		 * @param compressQuality
+		 *            Hint to the compressor, 0-100. 0 meaning compress for small size, 100 meaning compress for max
+		 *            quality. Some formats, like PNG which is lossless, will ignore the quality setting
+		 */
+		public Builder discCacheExtraOptions(int maxImageWidthForDiscCache, int maxImageHeightForDiscCache, CompressFormat compressFormat, int compressQuality) {
+			this.maxImageWidthForDiscCache = maxImageWidthForDiscCache;
+			this.maxImageHeightForDiscCache = maxImageHeightForDiscCache;
+			this.imageCompressFormatForDiscCache = compressFormat;
+			this.imageQualityForDiscCache = compressQuality;
 			return this;
 		}
 
@@ -302,7 +316,8 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets name generator for files cached in disc cache.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator HashCodeFileNameGenerator}
+		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator
+		 * HashCodeFileNameGenerator}
 		 */
 		public Builder discCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
 			if (discCache != null) Log.w(ImageLoader.TAG, WARNING_DISC_CACHE_ALREADY_SET);
@@ -313,12 +328,11 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets utility which will be responsible for downloading of image.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader DefaultImageDownloader}
+		 * Default value - {@link com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader
+		 * URLConnectionImageDownloader}(httpConnectTimeout = {@link #DEFAULT_HTTP_CONNECT_TIMEOUT this},
+		 * httpReadTimeout = {@link #DEFAULT_HTTP_READ_TIMEOUT this})
 		 * */
 		public Builder imageDownloader(ImageDownloader imageDownloader) {
-			if (httpConnectTimeout != DEFAULT_HTTP_CONNECT_TIMEOUT) Log.w(ImageLoader.TAG, WARNING_OVERLAP_CONNECT_TIMEOUT);
-			if (httpReadTimeout != DEFAULT_HTTP_READ_TIMEOUT) Log.w(ImageLoader.TAG, WARNING_OVERLAP_READ_TIMEOUT);
-
 			this.downloader = imageDownloader;
 			return this;
 		}
@@ -386,7 +400,7 @@ public final class ImageLoaderConfiguration {
 				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheKeyUtil.createFuzzyKeyComparator());
 			}
 			if (downloader == null) {
-				downloader = new URLConnectionImageDownloader(httpConnectTimeout, httpReadTimeout);
+				downloader = new URLConnectionImageDownloader(DEFAULT_HTTP_CONNECT_TIMEOUT, DEFAULT_HTTP_READ_TIMEOUT);
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();

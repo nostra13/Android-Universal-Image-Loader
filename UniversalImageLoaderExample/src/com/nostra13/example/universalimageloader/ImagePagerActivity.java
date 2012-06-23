@@ -12,9 +12,9 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.DecodingType;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -36,7 +36,7 @@ public class ImagePagerActivity extends BaseActivity {
 		options = new DisplayImageOptions.Builder()
 			.showImageForEmptyUrl(R.drawable.image_for_empty_url)
 			.cacheOnDisc()
-			.decodingType(DecodingType.MEMORY_SAVING)
+			.imageScaleType(ImageScaleType.EXACT)
 			.build();
 
 		pager = (ViewPager) findViewById(R.id.pager);

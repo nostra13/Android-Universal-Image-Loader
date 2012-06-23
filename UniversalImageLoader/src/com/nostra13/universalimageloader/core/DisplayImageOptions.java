@@ -1,6 +1,6 @@
 package com.nostra13.universalimageloader.core;
 
-import com.nostra13.universalimageloader.core.assist.DecodingType;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 /**
  * Contains options for image display. Defines:
@@ -30,7 +30,7 @@ public final class DisplayImageOptions {
 	private final boolean resetViewBeforeLoading;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
-	private final DecodingType decodingType;
+	private final ImageScaleType decodingType;
 
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
@@ -38,7 +38,7 @@ public final class DisplayImageOptions {
 		resetViewBeforeLoading = builder.resetViewBeforeLoading;
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
-		decodingType = builder.decodingType;
+		decodingType = builder.imageScaleType;
 	}
 
 	boolean isShowStubImage() {
@@ -69,7 +69,7 @@ public final class DisplayImageOptions {
 		return cacheOnDisc;
 	}
 
-	DecodingType getDecodingType() {
+	ImageScaleType getDecodingType() {
 		return decodingType;
 	}
 
@@ -84,7 +84,7 @@ public final class DisplayImageOptions {
 		private boolean resetViewBeforeLoading = false;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
-		private DecodingType decodingType = DecodingType.FAST;
+		private ImageScaleType imageScaleType = ImageScaleType.POWER_OF_2;
 
 		/**
 		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
@@ -127,9 +127,9 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
-		/** Sets {@link DecodingType decoding type} for image loading task. Default value - {@link DecodingType#FAST} */
-		public Builder decodingType(DecodingType decodingType) {
-			this.decodingType = decodingType;
+		/** Sets {@link ImageScaleType decoding type} for image loading task. Default value - {@link ImageScaleType#POWER_OF_2} */
+		public Builder imageScaleType(ImageScaleType imageScaleType) {
+			this.imageScaleType = imageScaleType;
 			return this;
 		}
 
@@ -145,7 +145,7 @@ public final class DisplayImageOptions {
 	 * <li>Stub image will <b>not</b> be displayed in {@link android.widget.ImageView ImageView} during image loading</li>
 	 * <li>Loaded image will <b>not</b> be cached in memory</li>
 	 * <li>Loaded image will <b>not</b> be cached on disc (application cache directory or on SD card)</li>
-	 * <li>{@link DecodingType#FAST FAST} decoding type will be used</li>
+	 * <li>{@link ImageScaleType#POWER_OF_2 FAST} decoding type will be used</li>
 	 * </ul>
 	 * 
 	 * These option are appropriate for simple single-use image (from drawables or from internet) displaying.

@@ -23,7 +23,6 @@ public class UILApplication extends Application {
 			.threadPoolSize(3)
 			.threadPriority(Thread.NORM_PRIORITY - 2)
 			.memoryCacheSize(1500000) // 1.5 Mb
-			.httpReadTimeout(10000) // 10 s
 			.denyCacheImageMultipleSizesInMemory()
 			.discCacheFileNameGenerator(new Md5FileNameGenerator())
 			.enableLogging() // Not necessary in common

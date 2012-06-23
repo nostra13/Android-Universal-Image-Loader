@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 
-import com.nostra13.universalimageloader.core.assist.DecodingType;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
@@ -16,14 +16,14 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
  * Decodes images to {@link Bitmap}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @see DecodingType
+ * @see ImageScaleType
  */
 class ImageDecoder {
 
 	private final URL imageUrl;
 	private final ImageDownloader imageDownloader;
 	private final ImageSize targetSize;
-	private final DecodingType decodingType;
+	private final ImageScaleType scaleType;
 
 	/**
 	 * @param imageUrl
@@ -33,13 +33,13 @@ class ImageDecoder {
 	 * @param targetImageSize
 	 *            Image size to scale to during decoding
 	 * @param decodingType
-	 *            {@link DecodingType Decoding type}
+	 *            {@link ImageScaleType Image scale type}
 	 */
-	ImageDecoder(URL imageUrl, ImageDownloader imageDownloader, ImageSize targetImageSize, DecodingType decodingType) {
+	ImageDecoder(URL imageUrl, ImageDownloader imageDownloader, ImageSize targetImageSize, ImageScaleType decodingType) {
 		this.imageUrl = imageUrl;
 		this.imageDownloader = imageDownloader;
 		this.targetSize = targetImageSize;
-		this.decodingType = decodingType;
+		this.scaleType = decodingType;
 	}
 
 	/**
@@ -80,23 +80,22 @@ class ImageDecoder {
 		}
 
 		int scale = 1;
-		switch (decodingType) {
+		switch (scaleType) {
 			default:
-			case FAST:
+			case POWER_OF_2:
 				// Find the correct scale value. It should be the power of 2.
 				int width_tmp = options.outWidth;
 				int height_tmp = options.outHeight;
 
-				while (true) {
-					if (width_tmp / 2 < width || height_tmp / 2 < height) break;
+				while (width_tmp / 2 >= width && height_tmp / 2 >= height) {
 					width_tmp /= 2;
 					height_tmp /= 2;
 					scale *= 2;
 				}
 				break;
-			case MEMORY_SAVING:
-				int widthScale = (int) (Math.floor(((double) options.outWidth) / width));
-				int heightScale = (int) (Math.floor(((double) options.outHeight) / height));
+			case EXACT:
+				int widthScale = options.outWidth / width;
+				int heightScale = options.outHeight / height;
 				int minScale = Math.min(widthScale, heightScale);
 				if (minScale > 1) {
 					scale = minScale;

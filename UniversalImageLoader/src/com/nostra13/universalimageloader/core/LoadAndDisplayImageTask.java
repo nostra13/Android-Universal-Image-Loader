@@ -14,8 +14,10 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
 /**
@@ -180,6 +182,22 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private void saveImageOnDisc(File targetFile) throws MalformedURLException, IOException {
+		int width = configuration.maxImageWidthForDiscCache;
+		int height = configuration.maxImageHeightForDiscCache;
+		if (width > 0 || height > 0) {
+			// Download, decode, compress and save image
+			ImageSize targetImageSize = new ImageSize(width, height);
+			ImageDecoder decoder = new ImageDecoder(new URL(imageLoadingInfo.url), configuration.downloader, targetImageSize, ImageScaleType.EXACT);
+			Bitmap bmp = decoder.decode();
+			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
+			boolean compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+			if (compressedSuccessfully) {
+				bmp.recycle();
+				return;
+			}
+		}
+
+		// Download and save original image
 		InputStream is = configuration.downloader.getStream(new URL(imageLoadingInfo.url));
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
