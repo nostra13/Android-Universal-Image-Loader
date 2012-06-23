@@ -6,6 +6,8 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -109,6 +111,9 @@ public class ImagePagerActivity extends BaseActivity {
 				@Override
 				public void onLoadingComplete() {
 					spinner.setVisibility(View.GONE);
+					Animation anim = AnimationUtils.loadAnimation(ImagePagerActivity.this, R.anim.fade_in);
+					imageView.setAnimation(anim);
+					anim.start();
 				}
 
 				@Override

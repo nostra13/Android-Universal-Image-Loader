@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -11,6 +13,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -77,12 +80,21 @@ public class ImageGridActivity extends BaseActivity {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			ImageView imageView = (ImageView) convertView;
-			if (imageView == null) {
+			final ImageView imageView;
+			if (convertView == null) {
 				imageView = (ImageView) getLayoutInflater().inflate(R.layout.item_grid_image, parent, false);
+			} else {
+				imageView = (ImageView) convertView;
 			}
 
-			imageLoader.displayImage(imageUrls[position], imageView, options);
+			imageLoader.displayImage(imageUrls[position], imageView, options, new SimpleImageLoadingListener() {
+				@Override
+				public void onLoadingComplete() {
+					Animation anim = AnimationUtils.loadAnimation(ImageGridActivity.this, R.anim.fade_in);
+					imageView.setAnimation(anim);
+					anim.start();
+				}
+			});
 
 			return imageView;
 		}
