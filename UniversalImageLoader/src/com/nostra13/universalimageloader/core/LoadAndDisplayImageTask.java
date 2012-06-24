@@ -6,17 +6,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
@@ -72,12 +72,12 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	/**
-	 * Check whether the image URL of this task matches to image URL which is actual for current ImageView at this
+	 * Check whether the image URI of this task matches to image URI which is actual for current ImageView at this
 	 * moment and fire {@link ImageLoadingListener#onLoadingCancelled()} event if it doesn't.
 	 */
 	boolean checkTaskIsNotActual() {
-		String currentCacheKey = ImageLoader.getInstance().getLoadingUrlForView(imageLoadingInfo.imageView);
-		// Check whether memory cache key (image URL) for current ImageView is actual. 
+		String currentCacheKey = ImageLoader.getInstance().getLoadingUriForView(imageLoadingInfo.imageView);
+		// Check whether memory cache key (image URI) for current ImageView is actual. 
 		// If ImageView is reused for another task then current task should be cancelled.
 		boolean imageViewWasReused = !imageLoadingInfo.memoryCacheKey.equals(currentCacheKey);
 		if (imageViewWasReused) {
@@ -92,7 +92,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private Bitmap loadBitmap() {
-		File imageFile = configuration.discCache.get(imageLoadingInfo.url);
+		File imageFile = configuration.discCache.get(imageLoadingInfo.uri);
 
 		Bitmap bitmap = null;
 		try {
@@ -100,7 +100,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 			if (imageFile.exists()) {
 				if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_LOAD_IMAGE_FROM_DISC_CACHE, imageLoadingInfo.memoryCacheKey));
 
-				Bitmap b = decodeImage(imageFile.toURL());
+				Bitmap b = decodeImage(imageFile.toURI());
 				if (b != null) {
 					return b;
 				}
@@ -109,18 +109,18 @@ final class LoadAndDisplayImageTask implements Runnable {
 			// Load image from Web
 			if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_LOAD_IMAGE_FROM_INTERNET, imageLoadingInfo.memoryCacheKey));
 
-			URL imageUrlForDecoding;
+			URI imageUriForDecoding;
 			if (imageLoadingInfo.options.isCacheOnDisc()) {
 				if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_ON_DISC, imageLoadingInfo.memoryCacheKey));
 
 				saveImageOnDisc(imageFile);
-				configuration.discCache.put(imageLoadingInfo.url, imageFile);
-				imageUrlForDecoding = imageFile.toURL();
+				configuration.discCache.put(imageLoadingInfo.uri, imageFile);
+				imageUriForDecoding = imageFile.toURI();
 			} else {
-				imageUrlForDecoding = new URL(imageLoadingInfo.url);
+				imageUriForDecoding = new URI(imageLoadingInfo.uri);
 			}
 
-			bitmap = decodeImage(imageUrlForDecoding);
+			bitmap = decodeImage(imageUriForDecoding);
 		} catch (IOException e) {
 			Log.e(ImageLoader.TAG, e.getMessage(), e);
 			fireImageLoadingFailedEvent(FailReason.IO_ERROR);
@@ -137,9 +137,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return bitmap;
 	}
 
-	private Bitmap decodeImage(URL imageUrl) throws IOException {
+	private Bitmap decodeImage(URI imageUri) throws IOException {
 		Bitmap bmp = null;
-		ImageDecoder decoder = new ImageDecoder(imageUrl, configuration.downloader, imageLoadingInfo.targetSize, imageLoadingInfo.options.getDecodingType());
+		ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader, imageLoadingInfo.targetSize, imageLoadingInfo.options.getDecodingType());
 
 		if (configuration.handleOutOfMemory) {
 			bmp = decodeWithOOMHandling(decoder);
@@ -181,13 +181,13 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return result;
 	}
 
-	private void saveImageOnDisc(File targetFile) throws MalformedURLException, IOException {
+	private void saveImageOnDisc(File targetFile) throws IOException, URISyntaxException {
 		int width = configuration.maxImageWidthForDiscCache;
 		int height = configuration.maxImageHeightForDiscCache;
 		if (width > 0 || height > 0) {
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
-			ImageDecoder decoder = new ImageDecoder(new URL(imageLoadingInfo.url), configuration.downloader, targetImageSize, ImageScaleType.EXACT);
+			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), configuration.downloader, targetImageSize, ImageScaleType.EXACT);
 			Bitmap bmp = decoder.decode();
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
 			boolean compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
@@ -198,7 +198,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		}
 
 		// Download and save original image
-		InputStream is = configuration.downloader.getStream(new URL(imageLoadingInfo.url));
+		InputStream is = configuration.downloader.getStream(new URI(imageLoadingInfo.uri));
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
 			try {

@@ -227,7 +227,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * When you display an image in a small {@link android.widget.ImageView ImageView} and later you try to display
-		 * this image (from identical URL) in a larger {@link android.widget.ImageView ImageView} so decoded image of
+		 * this image (from identical URI) in a larger {@link android.widget.ImageView ImageView} so decoded image of
 		 * bigger size will be cached in memory as a previous decoded image of smaller size.<br />
 		 * So <b>the default behavior is to allow to cache multiple sizes of one image in memory</b>. You can
 		 * <b>deny</b> it by calling <b>this</b> method: so when some image will be cached in memory then previous

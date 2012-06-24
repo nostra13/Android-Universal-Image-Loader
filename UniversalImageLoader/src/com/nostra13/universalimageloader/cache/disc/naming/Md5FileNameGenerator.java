@@ -9,7 +9,7 @@ import android.util.Log;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
- * Names image file as MD5 hash of image URL
+ * Names image file as MD5 hash of image URI
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
@@ -19,8 +19,8 @@ public class Md5FileNameGenerator implements FileNameGenerator {
 	private static final int RADIX = 10 + 26; // 10 digits + 26 letters
 
 	@Override
-	public String generate(String imageUrl) {
-		byte[] md5 = getMD5(imageUrl.getBytes());
+	public String generate(String imageUri) {
+		byte[] md5 = getMD5(imageUri.getBytes());
 		BigInteger bi = new BigInteger(md5).abs();
 		return bi.toString(RADIX);
 	}

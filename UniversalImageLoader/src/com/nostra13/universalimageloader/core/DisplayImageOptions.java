@@ -6,7 +6,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
  * Contains options for image display. Defines:
  * <ul>
  * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading</li>
- * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} if empty URL is passed</li>
+ * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} if empty URI is passed</li>
  * <li>whether {@link android.widget.ImageView ImageView} should be reset before image loading start</li>
  * <li>whether loaded image will be cached in memory</li>
  * <li>whether loaded image will be cached on disc</li>
@@ -26,7 +26,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 public final class DisplayImageOptions {
 
 	private final Integer stubImage;
-	private final Integer imageForEmptyUrl;
+	private final Integer imageForEmptyUri;
 	private final boolean resetViewBeforeLoading;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
@@ -34,7 +34,7 @@ public final class DisplayImageOptions {
 
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
-		imageForEmptyUrl = builder.imageForEmptyUrl;
+		imageForEmptyUri = builder.imageForEmptyUri;
 		resetViewBeforeLoading = builder.resetViewBeforeLoading;
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
@@ -45,16 +45,16 @@ public final class DisplayImageOptions {
 		return stubImage != null;
 	}
 
-	boolean isShowImageForEmptyUrl() {
-		return imageForEmptyUrl != null;
+	boolean isShowImageForEmptyUri() {
+		return imageForEmptyUri != null;
 	}
 
 	Integer getStubImage() {
 		return stubImage;
 	}
 
-	Integer getImageForEmptyUrl() {
-		return imageForEmptyUrl;
+	Integer getImageForEmptyUri() {
+		return imageForEmptyUri;
 	}
 
 	boolean isResetViewBeforeLoading() {
@@ -80,7 +80,7 @@ public final class DisplayImageOptions {
 	 */
 	public static class Builder {
 		private Integer stubImage = null;
-		private Integer imageForEmptyUrl = null;
+		private Integer imageForEmptyUri = null;
 		private boolean resetViewBeforeLoading = false;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
@@ -98,14 +98,14 @@ public final class DisplayImageOptions {
 		}
 
 		/**
-		 * Image will be displayed in {@link android.widget.ImageView ImageView} if empty URL (null or empty string)
+		 * Image will be displayed in {@link android.widget.ImageView ImageView} if empty URI (null or empty string)
 		 * will be passed to <b>ImageLoader.displayImage(...)</b> method.
 		 * 
 		 * @param imageRes
 		 *            Image resource
 		 */
-		public Builder showImageForEmptyUrl(int imageRes) {
-			imageForEmptyUrl = imageRes;
+		public Builder showImageForEmptyUri(int imageRes) {
+			imageForEmptyUri = imageRes;
 			return this;
 		}
 
@@ -127,7 +127,10 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
-		/** Sets {@link ImageScaleType decoding type} for image loading task. Default value - {@link ImageScaleType#POWER_OF_2} */
+		/**
+		 * Sets {@link ImageScaleType decoding type} for image loading task. Default value -
+		 * {@link ImageScaleType#POWER_OF_2}
+		 */
 		public Builder imageScaleType(ImageScaleType imageScaleType) {
 			this.imageScaleType = imageScaleType;
 			return this;

@@ -2,7 +2,7 @@ package com.nostra13.universalimageloader.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,14 +20,14 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
  */
 class ImageDecoder {
 
-	private final URL imageUrl;
+	private final URI imageUri;
 	private final ImageDownloader imageDownloader;
 	private final ImageSize targetSize;
 	private final ImageScaleType scaleType;
 
 	/**
-	 * @param imageUrl
-	 *            Image URL (<b>i.e.:</b> "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param imageUri
+	 *            Image URI (<b>i.e.:</b> "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageDownloader
 	 *            Image downloader
 	 * @param targetImageSize
@@ -35,15 +35,15 @@ class ImageDecoder {
 	 * @param decodingType
 	 *            {@link ImageScaleType Image scale type}
 	 */
-	ImageDecoder(URL imageUrl, ImageDownloader imageDownloader, ImageSize targetImageSize, ImageScaleType decodingType) {
-		this.imageUrl = imageUrl;
+	ImageDecoder(URI imageUri, ImageDownloader imageDownloader, ImageSize targetImageSize, ImageScaleType decodingType) {
+		this.imageUri = imageUri;
 		this.imageDownloader = imageDownloader;
 		this.targetSize = targetImageSize;
 		this.scaleType = decodingType;
 	}
 
 	/**
-	 * Decodes image from URL into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
+	 * Decodes image from URI into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
 	 * decoding. Initial image size is reduced by the power of 2 (according Android recommendations)
 	 * 
 	 * @return Decoded bitmap
@@ -51,7 +51,7 @@ class ImageDecoder {
 	 */
 	public Bitmap decode() throws IOException {
 		Options decodeOptions = getBitmapOptionsForImageDecoding();
-		InputStream imageStream = imageDownloader.getStream(imageUrl);
+		InputStream imageStream = imageDownloader.getStream(imageUri);
 		try {
 			return BitmapFactory.decodeStream(imageStream, null, decodeOptions);
 		} finally {
@@ -72,7 +72,7 @@ class ImageDecoder {
 		// decode image size
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
-		InputStream imageStream = imageDownloader.getStream(imageUrl);
+		InputStream imageStream = imageDownloader.getStream(imageUri);
 		try {
 			BitmapFactory.decodeStream(imageStream, null, options);
 		} finally {

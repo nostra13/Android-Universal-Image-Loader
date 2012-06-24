@@ -34,7 +34,7 @@ public class ImageGridActivity extends BaseActivity {
 
 		options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.stub_image)
-			.showImageForEmptyUrl(R.drawable.image_for_empty_url)
+			.showImageForEmptyUri(R.drawable.image_for_empty_url)
 			.cacheInMemory()
 			.cacheOnDisc()
 			.build();

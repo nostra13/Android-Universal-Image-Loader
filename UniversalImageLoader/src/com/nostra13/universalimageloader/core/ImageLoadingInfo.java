@@ -16,19 +16,19 @@ import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
  */
 final class ImageLoadingInfo {
 
-	final String url;
+	final String uri;
 	final String memoryCacheKey;
 	final ImageView imageView;
 	final ImageSize targetSize;
 	final DisplayImageOptions options;
 	final ImageLoadingListener listener;
 
-	public ImageLoadingInfo(String url, ImageView imageView, ImageSize targetSize, DisplayImageOptions options, ImageLoadingListener listener) {
-		this.url = url;
+	public ImageLoadingInfo(String uri, ImageView imageView, ImageSize targetSize, DisplayImageOptions options, ImageLoadingListener listener) {
+		this.uri = uri;
 		this.imageView = imageView;
 		this.targetSize = targetSize;
 		this.options = options;
 		this.listener = listener;
-		memoryCacheKey = MemoryCacheKeyUtil.generateKey(url, targetSize);
+		memoryCacheKey = MemoryCacheKeyUtil.generateKey(uri, targetSize);
 	}
 }

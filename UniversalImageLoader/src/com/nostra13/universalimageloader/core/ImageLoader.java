@@ -85,23 +85,23 @@ public class ImageLoader {
 	 * configuration} will be used.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
-	 * @param url
-	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param uri
+	 *            Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @throws RuntimeException
 	 *             if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public void displayImage(String url, ImageView imageView) {
-		displayImage(url, imageView, null, null);
+	public void displayImage(String uri, ImageView imageView) {
+		displayImage(uri, imageView, null, null);
 	}
 
 	/**
 	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
-	 * @param url
-	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param uri
+	 *            Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param options
@@ -112,8 +112,8 @@ public class ImageLoader {
 	 * @throws RuntimeException
 	 *             if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public void displayImage(String url, ImageView imageView, DisplayImageOptions options) {
-		displayImage(url, imageView, options, null);
+	public void displayImage(String uri, ImageView imageView, DisplayImageOptions options) {
+		displayImage(uri, imageView, options, null);
 	}
 
 	/**
@@ -122,8 +122,8 @@ public class ImageLoader {
 	 * configuration} will be used.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
-	 * @param url
-	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param uri
+	 *            Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param listener
@@ -134,16 +134,16 @@ public class ImageLoader {
 	 * @throws RuntimeException
 	 *             if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public void displayImage(String url, ImageView imageView, ImageLoadingListener listener) {
-		displayImage(url, imageView, null, listener);
+	public void displayImage(String uri, ImageView imageView, ImageLoadingListener listener) {
+		displayImage(uri, imageView, null, listener);
 	}
 
 	/**
 	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
-	 * @param url
-	 *            Image URL (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param uri
+	 *            Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView
 	 *            {@link ImageView} which should display image
 	 * @param options
@@ -159,7 +159,7 @@ public class ImageLoader {
 	 * @throws RuntimeException
 	 *             if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public void displayImage(String url, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
+	public void displayImage(String uri, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
 		if (configuration == null) {
 			throw new RuntimeException(ERROR_NOT_INIT);
 		}
@@ -174,10 +174,10 @@ public class ImageLoader {
 			options = configuration.defaultDisplayImageOptions;
 		}
 
-		if (url == null || url.length() == 0) {
+		if (uri == null || uri.length() == 0) {
 			cacheKeyForImageView.remove(imageView);
-			if (options.isShowImageForEmptyUrl()) {
-				imageView.setImageResource(options.getImageForEmptyUrl());
+			if (options.isShowImageForEmptyUri()) {
+				imageView.setImageResource(options.getImageForEmptyUri());
 			} else {
 				imageView.setImageBitmap(null);
 			}
@@ -185,7 +185,7 @@ public class ImageLoader {
 		}
 
 		ImageSize targetSize = getImageSizeScaleTo(imageView);
-		String memoryCacheKey = MemoryCacheKeyUtil.generateKey(url, targetSize);
+		String memoryCacheKey = MemoryCacheKeyUtil.generateKey(uri, targetSize);
 		cacheKeyForImageView.put(imageView, memoryCacheKey);
 
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
@@ -206,9 +206,9 @@ public class ImageLoader {
 			}
 
 			checkExecutors();
-			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(url, imageView, targetSize, options, listener);
+			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener);
 			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
-			boolean isImageCachedOnDisc = configuration.discCache.get(url).exists();
+			boolean isImageCachedOnDisc = configuration.discCache.get(uri).exists();
 			if (isImageCachedOnDisc) {
 				cachedImageLoadingExecutor.submit(displayImageTask);
 			} else {
@@ -256,8 +256,8 @@ public class ImageLoader {
 		}
 	}
 
-	/** Returns URL of image which is loading at this moment into passed {@link ImageView} */
-	public String getLoadingUrlForView(ImageView imageView) {
+	/** Returns URI of image which is loading at this moment into passed {@link ImageView} */
+	public String getLoadingUriForView(ImageView imageView) {
 		return cacheKeyForImageView.get(imageView);
 	}
 

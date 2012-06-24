@@ -3,7 +3,7 @@ package com.nostra13.universalimageloader.core.download;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLConnection;
 
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
@@ -24,8 +24,8 @@ public class URLConnectionImageDownloader extends ImageDownloader {
 	}
 
 	@Override
-	public InputStream getStreamFromNetwork(URL imageUrl) throws IOException {
-		URLConnection conn = imageUrl.openConnection();
+	public InputStream getStreamFromNetwork(URI imageUri) throws IOException {
+		URLConnection conn = imageUri.toURL().openConnection();
 		conn.setConnectTimeout(connectTimeout);
 		conn.setReadTimeout(readTimeout);
 		return new FlushedInputStream(new BufferedInputStream(conn.getInputStream()));

@@ -2,7 +2,7 @@ package com.nostra13.universalimageloader.core.download;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,8 +19,8 @@ public class HttpClientImageDownloader extends ImageDownloader {
 	}
 
 	@Override
-	protected InputStream getStreamFromNetwork(URL imageUrl) throws IOException {
-		HttpGet httpRequest = new HttpGet(imageUrl.toString());
+	protected InputStream getStreamFromNetwork(URI imageUri) throws IOException {
+		HttpGet httpRequest = new HttpGet(imageUri.toString());
 		HttpResponse response = httpClient.execute(httpRequest);
 		HttpEntity entity = response.getEntity();
 		BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);

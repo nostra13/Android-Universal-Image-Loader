@@ -28,7 +28,7 @@ public class ImageGalleryActivity extends BaseActivity {
 		int galleryPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
 
 		options = new DisplayImageOptions.Builder()
-			.showImageForEmptyUrl(R.drawable.image_for_empty_url)
+			.showImageForEmptyUri(R.drawable.image_for_empty_url)
 			.showStubImage(R.drawable.stub_image)
 			.cacheInMemory()
 			.cacheOnDisc()
