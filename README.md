@@ -66,6 +66,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
                                        .cacheInMemory()
                                        .cacheOnDisc()
 									   .imageScaleType(ImageScaleType.POWER_OF_2)
+									   .transform(matrix)
                                        .build();
 // Load and display image
 imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener() {
