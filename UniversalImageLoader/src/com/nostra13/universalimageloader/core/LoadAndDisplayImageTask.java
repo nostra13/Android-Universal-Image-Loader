@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -54,7 +55,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, imageLoadingInfo.memoryCacheKey));
 
 		if (checkTaskIsNotActual()) return;
-		Bitmap bmp = loadBitmap();
+		Bitmap bmp = tryLoadBitmap();
 		if (bmp == null) return;
 
 		if (checkTaskIsNotActual()) return;
@@ -91,7 +92,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return imageViewWasReused;
 	}
 
-	private Bitmap loadBitmap() {
+	private Bitmap tryLoadBitmap() {
 		File imageFile = configuration.discCache.get(imageLoadingInfo.uri);
 
 		Bitmap bitmap = null;
@@ -121,6 +122,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 			}
 
 			bitmap = decodeImage(imageUriForDecoding);
+			if (bitmap == null) {
+				fireImageLoadingFailedEvent(FailReason.IO_ERROR);
+			}
 		} catch (IOException e) {
 			Log.e(ImageLoader.TAG, e.getMessage(), e);
 			fireImageLoadingFailedEvent(FailReason.IO_ERROR);
@@ -171,12 +175,10 @@ final class LoadAndDisplayImageTask implements Runnable {
 						throw e;
 				}
 				// Wait some time while GC is working
-				try {
-					Thread.sleep(attempt * 1000);
-				} catch (InterruptedException ie) {
-					Log.e(ImageLoader.TAG, ie.getMessage(), ie);
-				}
+				SystemClock.sleep(attempt * 1000);
+				continue;
 			}
+			break;
 		}
 		return result;
 	}
