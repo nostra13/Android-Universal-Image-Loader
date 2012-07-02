@@ -1,5 +1,6 @@
 package com.nostra13.example.universalimageloader;
 
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,11 +28,15 @@ public class ImageGalleryActivity extends BaseActivity {
 		String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
 		int galleryPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
 
+		Matrix matrix = new Matrix();
+		matrix.postSkew(-0.2f, -0.2f);
+		
 		options = new DisplayImageOptions.Builder()
 			.showImageForEmptyUri(R.drawable.image_for_empty_url)
 			.showStubImage(R.drawable.stub_image)
 			.cacheInMemory()
 			.cacheOnDisc()
+			.transform(matrix)
 			.build();
 
 		gallery = (Gallery) findViewById(R.id.gallery);
