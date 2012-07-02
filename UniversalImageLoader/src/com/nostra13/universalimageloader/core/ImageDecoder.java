@@ -7,6 +7,7 @@ import java.net.URI;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.Matrix;
 
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -24,6 +25,7 @@ class ImageDecoder {
 	private final ImageDownloader imageDownloader;
 	private final ImageSize targetSize;
 	private final ImageScaleType scaleType;
+	private final Matrix transformMatrix;
 
 	/**
 	 * @param imageUri
@@ -32,14 +34,17 @@ class ImageDecoder {
 	 *            Image downloader
 	 * @param targetImageSize
 	 *            Image size to scale to during decoding
-	 * @param decodingType
+	 * @param scaleType
 	 *            {@link ImageScaleType Image scale type}
+	 * @param transformMatrix
+	 *            Optional matrix to be applied to the decoded image pixels
 	 */
-	ImageDecoder(URI imageUri, ImageDownloader imageDownloader, ImageSize targetImageSize, ImageScaleType decodingType) {
+	ImageDecoder(URI imageUri, ImageDownloader imageDownloader, ImageSize targetImageSize, ImageScaleType scaleType, Matrix transformMatrix) {
 		this.imageUri = imageUri;
 		this.imageDownloader = imageDownloader;
 		this.targetSize = targetImageSize;
-		this.scaleType = decodingType;
+		this.scaleType = scaleType;
+		this.transformMatrix = transformMatrix;
 	}
 
 	/**
@@ -53,7 +58,13 @@ class ImageDecoder {
 		Options decodeOptions = getBitmapOptionsForImageDecoding();
 		InputStream imageStream = imageDownloader.getStream(imageUri);
 		try {
-			return BitmapFactory.decodeStream(imageStream, null, decodeOptions);
+			Bitmap bmp = BitmapFactory.decodeStream(imageStream, null, decodeOptions);
+			if (transformMatrix != null) {
+				Bitmap transformedBmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), transformMatrix, true);
+				bmp.recycle();
+				bmp = transformedBmp;
+			}
+			return bmp;
 		} finally {
 			imageStream.close();
 		}

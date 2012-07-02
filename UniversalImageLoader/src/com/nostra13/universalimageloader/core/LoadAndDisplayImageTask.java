@@ -143,7 +143,8 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	private Bitmap decodeImage(URI imageUri) throws IOException {
 		Bitmap bmp = null;
-		ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader, imageLoadingInfo.targetSize, imageLoadingInfo.options.getDecodingType());
+		ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader, imageLoadingInfo.targetSize, imageLoadingInfo.options.getImageScaleType(),
+				imageLoadingInfo.options.getTransformationMatrix());
 
 		if (configuration.handleOutOfMemory) {
 			bmp = decodeWithOOMHandling(decoder);
@@ -189,7 +190,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (width > 0 || height > 0) {
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
-			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), configuration.downloader, targetImageSize, ImageScaleType.EXACT);
+			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), configuration.downloader, targetImageSize, ImageScaleType.EXACT, null);
 			Bitmap bmp = decoder.decode();
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
 			boolean compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
