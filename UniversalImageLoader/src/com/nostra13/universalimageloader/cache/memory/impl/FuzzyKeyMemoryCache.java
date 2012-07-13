@@ -25,39 +25,37 @@ public class FuzzyKeyMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 	}
 
 	@Override
-	public boolean put(K key, V value) {
+	public synchronized boolean put(K key, V value) {
 		// Search equal key and remove this entry
 		K keyToRemove = null;
-		synchronized (cache) {
-			for (Iterator<K> it = cache.keys().iterator(); it.hasNext();) {
-				K cacheKey = it.next();
-				if (keyComparator.compare(key, cacheKey) == 0) {
-					keyToRemove = cacheKey;
-				}
+		for (Iterator<K> it = cache.keys().iterator(); it.hasNext();) {
+			K cacheKey = it.next();
+			if (keyComparator.compare(key, cacheKey) == 0) {
+				keyToRemove = cacheKey;
 			}
-			cache.remove(keyToRemove);
 		}
+		cache.remove(keyToRemove);
 
 		return cache.put(key, value);
 	}
 
 	@Override
-	public V get(K key) {
+	public synchronized V get(K key) {
 		return cache.get(key);
 	}
 
 	@Override
-	public void remove(K key) {
+	public synchronized void remove(K key) {
 		cache.remove(key);
 	}
 
 	@Override
-	public void clear() {
+	public synchronized void clear() {
 		cache.clear();
 	}
 
 	@Override
-	public Collection<K> keys() {
+	public synchronized Collection<K> keys() {
 		return cache.keys();
 	}
 }
