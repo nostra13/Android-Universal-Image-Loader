@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
+import android.widget.ImageView.ScaleType;
 
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -17,45 +18,79 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
  * Decodes images to {@link Bitmap}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * 
  * @see ImageScaleType
+ * @see ImageDownloader
  */
 class ImageDecoder {
 
 	private final URI imageUri;
 	private final ImageDownloader imageDownloader;
-	private final ImageSize targetSize;
-	private final ImageScaleType scaleType;
-	private final Matrix transformMatrix;
 
 	/**
 	 * @param imageUri
 	 *            Image URI (<b>i.e.:</b> "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageDownloader
 	 *            Image downloader
-	 * @param targetImageSize
-	 *            Image size to scale to during decoding
-	 * @param scaleType
-	 *            {@link ImageScaleType Image scale type}
-	 * @param transformMatrix
-	 *            Optional matrix to be applied to the decoded image pixels
+	 * 
 	 */
-	ImageDecoder(URI imageUri, ImageDownloader imageDownloader, ImageSize targetImageSize, ImageScaleType scaleType, Matrix transformMatrix) {
+	ImageDecoder(URI imageUri, ImageDownloader imageDownloader) {
 		this.imageUri = imageUri;
 		this.imageDownloader = imageDownloader;
-		this.targetSize = targetImageSize;
-		this.scaleType = scaleType;
-		this.transformMatrix = transformMatrix;
 	}
 
 	/**
 	 * Decodes image from URI into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
-	 * decoding. Initial image size is reduced by the power of 2 (according Android recommendations)
+	 * decoding (depend on incoming image scale type).
+	 * 
+	 * @param targetSize
+	 *            Image size to scale to during decoding
+	 * @param scaleType
+	 *            {@link ImageScaleType Image scale type}
 	 * 
 	 * @return Decoded bitmap
 	 * @throws IOException
 	 */
-	public Bitmap decode() throws IOException {
-		Options decodeOptions = getBitmapOptionsForImageDecoding();
+	public Bitmap decode(ImageSize targetSize, ImageScaleType scaleType) throws IOException {
+		return decode(targetSize, scaleType, ScaleType.CENTER_INSIDE, null);
+	}
+
+	/**
+	 * Decodes image from URI into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
+	 * decoding (depend on incoming image scale type).
+	 * 
+	 * @param targetSize
+	 *            Image size to scale to during decoding
+	 * @param scaleType
+	 *            {@link ImageScaleType Image scale type}
+	 * @param viewScaleType
+	 *            {@link ScaleType ImageView scale type}
+	 * 
+	 * @return Decoded bitmap
+	 * @throws IOException
+	 */
+	public Bitmap decode(ImageSize targetSize, ImageScaleType scaleType, ScaleType viewScaleType) throws IOException {
+		return decode(targetSize, scaleType, viewScaleType, null);
+	}
+
+	/**
+	 * Decodes image from URI into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
+	 * decoding (depend on incoming image scale type).
+	 * 
+	 * @param targetSize
+	 *            Image size to scale to during decoding
+	 * @param scaleType
+	 *            {@link ImageScaleType Image scale type}
+	 * @param viewScaleType
+	 *            {@link ScaleType ImageView scale type}
+	 * @param transformMatrix
+	 *            Optional matrix to be applied to the decoded image pixels
+	 * 
+	 * @return Decoded bitmap
+	 * @throws IOException
+	 */
+	public Bitmap decode(ImageSize targetSize, ImageScaleType scaleType, ScaleType viewScaleType, Matrix transformMatrix) throws IOException {
+		Options decodeOptions = getBitmapOptionsForImageDecoding(targetSize, scaleType, viewScaleType);
 		InputStream imageStream = imageDownloader.getStream(imageUri);
 		try {
 			Bitmap bmp = BitmapFactory.decodeStream(imageStream, null, decodeOptions);
@@ -70,15 +105,15 @@ class ImageDecoder {
 		}
 	}
 
-	private Options getBitmapOptionsForImageDecoding() throws IOException {
+	private Options getBitmapOptionsForImageDecoding(ImageSize targetSize, ImageScaleType scaleType, ScaleType viewScaleType) throws IOException {
 		Options options = new Options();
-		options.inSampleSize = computeImageScale();
+		options.inSampleSize = computeImageScale(targetSize, scaleType, viewScaleType);
 		return options;
 	}
 
-	private int computeImageScale() throws IOException {
-		int width = targetSize.getWidth();
-		int height = targetSize.getHeight();
+	private int computeImageScale(ImageSize targetSize, ImageScaleType scaleType, ScaleType viewScaleType) throws IOException {
+		int targetWidth = targetSize.getWidth();
+		int targetHeight = targetSize.getHeight();
 
 		// decode image size
 		Options options = new Options();
@@ -91,27 +126,50 @@ class ImageDecoder {
 		}
 
 		int scale = 1;
-		switch (scaleType) {
+		int imageWidth = options.outWidth;
+		int imageHeight = options.outHeight;
+		int widthScale = imageWidth / targetWidth;
+		int heightScale = imageWidth / targetHeight;
+		switch (viewScaleType) {
+			case FIT_XY:
+			case FIT_START:
+			case FIT_END:
+			case CENTER_INSIDE:
+				switch (scaleType) {
+					default:
+					case POWER_OF_2:
+						while (imageWidth / 2 >= targetWidth || imageHeight / 2 >= targetHeight) { // ||
+							imageWidth /= 2;
+							imageHeight /= 2;
+							scale *= 2;
+						}
+						break;
+					case EXACT:
+						scale = Math.max(widthScale, heightScale); // max
+						break;
+				}
+				break;
+			case MATRIX:
+			case CENTER:
+			case CENTER_CROP:
 			default:
-			case POWER_OF_2:
-				// Find the correct scale value. It should be the power of 2.
-				int width_tmp = options.outWidth;
-				int height_tmp = options.outHeight;
+				switch (scaleType) {
+					default:
+					case POWER_OF_2:
+						while (imageWidth / 2 >= targetWidth && imageHeight / 2 >= targetHeight) { // &&
+							imageWidth /= 2;
+							imageHeight /= 2;
+							scale *= 2;
+						}
+						break;
+					case EXACT:
+						scale = Math.min(widthScale, heightScale); // min
+						break;
+				}
+		}
 
-				while (width_tmp / 2 >= width && height_tmp / 2 >= height) {
-					width_tmp /= 2;
-					height_tmp /= 2;
-					scale *= 2;
-				}
-				break;
-			case EXACT:
-				int widthScale = options.outWidth / width;
-				int heightScale = options.outHeight / height;
-				int minScale = Math.min(widthScale, heightScale);
-				if (minScale > 1) {
-					scale = minScale;
-				}
-				break;
+		if (scale < 1) {
+			scale = 1;
 		}
 
 		return scale;
