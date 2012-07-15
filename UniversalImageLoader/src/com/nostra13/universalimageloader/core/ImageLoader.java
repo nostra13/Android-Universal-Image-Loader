@@ -311,14 +311,14 @@ public class ImageLoader {
 			Log.e(TAG, e.getMessage(), e);
 		}
 
-		if (width < 0 && height < 0) {
+		if (width <= 0 && height <= 0) {
 			// Get layout width and height parameters
 			LayoutParams params = imageView.getLayoutParams();
 			width = params.width;
 			height = params.height;
 		}
 
-		if (width < 0 && height < 0) {
+		if (width <= 0 && height <= 0) {
 			// Get device screen dimensions
 			width = configuration.maxImageWidthForMemoryCache;
 			height = configuration.maxImageHeightForMemoryCache;
