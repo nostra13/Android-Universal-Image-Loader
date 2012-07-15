@@ -79,7 +79,7 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
 		spinner.hide();
 	}
     @Override
-    public void onLoadingComplete() {
+    public void onLoadingComplete(Bitmap loadedImage) {
         spinner.hide();
     }
 	@Override
@@ -97,6 +97,7 @@ For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...
  * FIFOLimitedMemoryCache (FIFO rule is used for deletion when cache size limit is exceeded)
  * LargestLimitedMemoryCache (The largest bitmap is deleted when cache size limit is exceeded)
  * LimitedAgeMemoryCache (Decorator. Cached object is deleted when its age exceeds defined value)
+ * WeakMemoryCache (Memory cache with only weak references to bitmaps)
 
 For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) you can use already prepared implementations:
 
@@ -106,6 +107,18 @@ For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) y
  * LimitedAgeDiscCache (Size-unlimited cache with limited files' lifetime. If age of cached file exceeds defined limit then it will be deleted from cache.)
  
  **NOTE:** UnlimitedDiscCache is 30%-faster than other limited disc cache implementations.
+ 
+Set ```android:layout_width```|```android:layout_height``` or ```android:maxWidth```|```android:maxHeight``` parameters for ImageView if you know approximate maximum size of it. It will help correctly compute Bitmap size needed for this view and **save memory**.
+
+If you often got **OutOfMemoryError** in your app using Universal Image Loader then try set WeakMemoryCache into configuration:
+``` java
+ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+			...
+			.memoryCache(new WeakMemoryCache())
+			...
+			.build();
+```
+
 
 ## Applications using Universal Image Loader
 * [MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)
