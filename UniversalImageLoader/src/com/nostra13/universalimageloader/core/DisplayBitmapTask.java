@@ -25,6 +25,6 @@ final class DisplayBitmapTask implements Runnable {
 
 	public void run() {
 		imageView.setImageBitmap(bitmap);
-		listener.onLoadingComplete();
+		listener.onLoadingComplete(bitmap);
 	}
 }

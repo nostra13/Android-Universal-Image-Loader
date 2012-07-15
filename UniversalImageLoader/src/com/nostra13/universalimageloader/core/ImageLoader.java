@@ -193,7 +193,7 @@ public class ImageLoader {
 			if (configuration.loggingEnabled) Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey));
 			listener.onLoadingStarted();
 			imageView.setImageBitmap(bmp);
-			listener.onLoadingComplete();
+			listener.onLoadingComplete(bmp);
 		} else {
 			listener.onLoadingStarted();
 

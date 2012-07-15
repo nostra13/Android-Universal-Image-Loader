@@ -1,5 +1,6 @@
 package com.nostra13.universalimageloader.core.assist;
 
+import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 /**
@@ -19,7 +20,7 @@ public interface ImageLoadingListener {
 	void onLoadingFailed(FailReason failReason);
 
 	/** Is called when image is loaded successfully and displayed in {@link ImageView} */
-	void onLoadingComplete();
+	void onLoadingComplete(Bitmap loadedImage);
 
 	/** Is called when image loading task was cancelled because {@link ImageView} was reused in newer task */
 	void onLoadingCancelled();

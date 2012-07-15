@@ -1,5 +1,7 @@
 package com.nostra13.universalimageloader.core.assist;
 
+import android.graphics.Bitmap;
+
 /**
  * A convenience class to extend when you only want to listen for a subset of all the image loading events. This
  * implements all methods in the {@link ImageLoadingListener} but does nothing.
@@ -18,7 +20,7 @@ public class SimpleImageLoadingListener implements ImageLoadingListener {
 	}
 
 	@Override
-	public void onLoadingComplete() {
+	public void onLoadingComplete(Bitmap loadedImage) {
 		// Empty implementation
 	}
 
