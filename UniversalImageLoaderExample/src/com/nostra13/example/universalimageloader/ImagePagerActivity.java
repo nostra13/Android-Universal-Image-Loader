@@ -1,5 +1,6 @@
 package com.nostra13.example.universalimageloader;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
@@ -109,7 +110,7 @@ public class ImagePagerActivity extends BaseActivity {
 				}
 
 				@Override
-				public void onLoadingComplete() {
+				public void onLoadingComplete(Bitmap loadedImage) {
 					spinner.setVisibility(View.GONE);
 					Animation anim = AnimationUtils.loadAnimation(ImagePagerActivity.this, R.anim.fade_in);
 					imageView.setAnimation(anim);

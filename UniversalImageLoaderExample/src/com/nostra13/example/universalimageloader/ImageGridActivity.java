@@ -1,6 +1,7 @@
 package com.nostra13.example.universalimageloader;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,7 +90,7 @@ public class ImageGridActivity extends BaseActivity {
 
 			imageLoader.displayImage(imageUrls[position], imageView, options, new SimpleImageLoadingListener() {
 				@Override
-				public void onLoadingComplete() {
+				public void onLoadingComplete(Bitmap loadedImage) {
 					Animation anim = AnimationUtils.loadAnimation(ImageGridActivity.this, R.anim.fade_in);
 					imageView.setAnimation(anim);
 					anim.start();
