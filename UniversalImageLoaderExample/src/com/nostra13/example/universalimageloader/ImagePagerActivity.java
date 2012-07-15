@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -79,7 +78,7 @@ public class ImagePagerActivity extends BaseActivity {
 
 		@Override
 		public Object instantiateItem(View view, int position) {
-			final FrameLayout imageLayout = (FrameLayout) inflater.inflate(R.layout.item_pager_image, null);
+			final View imageLayout = inflater.inflate(R.layout.item_pager_image, null);
 			final ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
 			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 

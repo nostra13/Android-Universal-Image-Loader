@@ -15,5 +15,7 @@
     <string name="button_image_grid">Image Grid</string>
     <string name="button_image_pager">Image Pager</string>
     <string name="button_image_gallery">Image Gallery</string>
+    <!-- Content descriptions -->
+    <string name="descr_image">Image</string>
 
 </resources>

@@ -5,4 +5,5 @@
     android:layout_height="120dip"
     android:layout_gravity="center"
     android:adjustViewBounds="true"
+    android:contentDescription="@string/descr_image"
     android:scaleType="centerCrop" />

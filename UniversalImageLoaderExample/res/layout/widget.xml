@@ -3,13 +3,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_margin="8dip"
-    android:background="@android:color/white" >
+    android:orientation="horizontal" >
 
     <ImageView
         android:id="@+id/image_left"
         android:layout_width="0dip"
         android:layout_height="fill_parent"
         android:layout_weight="1"
+        android:contentDescription="@string/descr_image"
         android:paddingBottom="4dip"
         android:paddingLeft="8dip"
         android:paddingRight="4dip"
@@ -21,6 +22,7 @@
         android:layout_width="0dip"
         android:layout_height="fill_parent"
         android:layout_weight="1"
+        android:contentDescription="@string/descr_image"
         android:paddingBottom="4dip"
         android:paddingLeft="4dip"
         android:paddingRight="8dip"
