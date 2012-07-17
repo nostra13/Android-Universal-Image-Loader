@@ -132,6 +132,8 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [Kumir](https://play.google.com/store/apps/details?id=ru.premiakumir.android)
 * [EUKO 2012](https://play.google.com/store/apps/details?id=de.netlands.emsapp)
 * [TuuSo Image Search](https://play.google.com/store/apps/details?id=com.tuuso)
+* [Газета Стройка](https://play.google.com/store/apps/details?id=ru.normakirov.stroyka)
+* [Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
