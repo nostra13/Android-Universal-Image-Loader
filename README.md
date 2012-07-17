@@ -2,6 +2,8 @@
 
 This project aims to provide a reusable instrument for asynchronous image loading, caching and displaying. It is originally based on [Fedor Vlasov's project](https://github.com/thest1/LazyList) and has been vastly refactored and improved since then.
 
+**Download:** [JAR library](https://github.com/nostra13/Android-Universal-Image-Loader/downloads); [sources](https://github.com/nostra13/Android-Universal-Image-Loader/downloads) (you can attach it to project as _source attachment_ so you can see Java docs)
+
 ![Screenshot](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/UniversalImageLoader.png)
 
 ## Features
@@ -93,27 +95,14 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
 ```
 
 ## Useful info
-For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...)) you can use already prepared implementations:
+1. How UIL define Bitmap size needed for exact ImageView? Search defined parameters top-down:
+ * Get ```android:layout_width``` or ```android:layout_height``` parameters
+ * Get ```android:maxWidth``` and ```android:maxHeight``` parameters
+ * Get maximum size parameters from configuration (```memoryCacheExtraOptions(int, int)``` option)
 
- * UsingFreqLimitedMemoryCache (The least frequently used bitmap is deleted when cache size limit is exceeded) - Used by default
- * LRULimitedMemoryCache (Least recently used bitmap is deleted when cache size limit is exceeded)
- * FIFOLimitedMemoryCache (FIFO rule is used for deletion when cache size limit is exceeded)
- * LargestLimitedMemoryCache (The largest bitmap is deleted when cache size limit is exceeded)
- * LimitedAgeMemoryCache (Decorator. Cached object is deleted when its age exceeds defined value)
- * WeakMemoryCache (Memory cache with only weak references to bitmaps)
+ Set ```android:layout_width```|```android:layout_height``` or ```android:maxWidth```|```android:maxHeight``` parameters for ImageView if you know approximate maximum size of it. It will help correctly compute Bitmap size needed for this view and **save memory**.
 
-For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) you can use already prepared implementations:
-
- * UnlimitedDiscCache (The fastest cache, doesn't limit cache size) - Used by default
- * TotalSizeLimitedDiscCache (Cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last usage date will be deleted)
- * FileCountLimitedDiscCache (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
- * LimitedAgeDiscCache (Size-unlimited cache with limited files' lifetime. If age of cached file exceeds defined limit then it will be deleted from cache.)
- 
- **NOTE:** UnlimitedDiscCache is 30%-faster than other limited disc cache implementations.
- 
-Set ```android:layout_width```|```android:layout_height``` or ```android:maxWidth```|```android:maxHeight``` parameters for ImageView if you know approximate maximum size of it. It will help correctly compute Bitmap size needed for this view and **save memory**.
-
-If you often got **OutOfMemoryError** in your app using Universal Image Loader then try set WeakMemoryCache into configuration:
+2. If you often got **OutOfMemoryError** in your app using Universal Image Loader then try set WeakMemoryCache into configuration:
 ``` java
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
 			...
@@ -122,6 +111,21 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 			.build();
 ```
 
+3. For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...)) you can use already prepared implementations:
+ * UsingFreqLimitedMemoryCache (The least frequently used bitmap is deleted when cache size limit is exceeded) - Used by default
+ * LRULimitedMemoryCache (Least recently used bitmap is deleted when cache size limit is exceeded)
+ * FIFOLimitedMemoryCache (FIFO rule is used for deletion when cache size limit is exceeded)
+ * LargestLimitedMemoryCache (The largest bitmap is deleted when cache size limit is exceeded)
+ * LimitedAgeMemoryCache (Decorator. Cached object is deleted when its age exceeds defined value)
+ * WeakMemoryCache (Memory cache with only weak references to bitmaps)
+
+4. For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) you can use already prepared implementations:
+ * UnlimitedDiscCache (The fastest cache, doesn't limit cache size) - Used by default
+ * TotalSizeLimitedDiscCache (Cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last usage date will be deleted)
+ * FileCountLimitedDiscCache (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
+ * LimitedAgeDiscCache (Size-unlimited cache with limited files' lifetime. If age of cached file exceeds defined limit then it will be deleted from cache.)
+ 
+ **NOTE:** UnlimitedDiscCache is 30%-faster than other limited disc cache implementations.
 
 ## Applications using Universal Image Loader
 * [MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)
