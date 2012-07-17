@@ -284,54 +284,44 @@ public class ImageLoader {
 	/**
 	 * Defines image size for loading at memory (for memory economy) by {@link ImageView} parameters.<br />
 	 * Size computing algorithm:<br />
-	 * 1) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #2.<br />
-	 * 2) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step #3.</br>
+	 * 1) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step #2.</br>
+	 * 2) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #3.<br />
 	 * 3) Get device screen dimensions.
 	 */
 	private ImageSize getImageSizeScaleTo(ImageView imageView) {
-		int width = -1;
-		int height = -1;
+		LayoutParams params = imageView.getLayoutParams();
+		int width = params.width; // Get layout width parameter
+		if (width <= 0) width = getFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
+		if (width <= 0) width = configuration.maxImageWidthForMemoryCache;
 
-		// Check maxWidth and maxHeight parameters
+		int height = params.height; // Get layout height parameter
+		if (height <= 0) height = getFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
+		if (height <= 0) height = configuration.maxImageHeightForMemoryCache;
+
+		// Consider device screen orientation
+		int screenOrientation = imageView.getContext().getResources().getConfiguration().orientation;
+		if ((screenOrientation == Configuration.ORIENTATION_PORTRAIT && width > height)
+				|| (screenOrientation == Configuration.ORIENTATION_LANDSCAPE && width < height)) {
+			int tmp = width;
+			width = height;
+			height = tmp;
+		}
+
+		return new ImageSize(width, height);
+	}
+
+	private int getFieldValue(Object object, String fieldName) {
+		int value = 0;
 		try {
-			Field maxWidthField = ImageView.class.getDeclaredField("mMaxWidth");
-			Field maxHeightField = ImageView.class.getDeclaredField("mMaxHeight");
-			maxWidthField.setAccessible(true);
-			maxHeightField.setAccessible(true);
-			int maxWidth = (Integer) maxWidthField.get(imageView);
-			int maxHeight = (Integer) maxHeightField.get(imageView);
-
-			if (maxWidth >= 0 && maxWidth < Integer.MAX_VALUE) {
-				width = maxWidth;
-			}
-			if (maxHeight >= 0 && maxHeight < Integer.MAX_VALUE) {
-				height = maxHeight;
+			Field field = ImageView.class.getDeclaredField(fieldName);
+			field.setAccessible(true);
+			int fieldValue = (Integer) field.get(object);
+			if (fieldValue > 0 && fieldValue < Integer.MAX_VALUE) {
+				value = fieldValue;
 			}
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
-
-		if (width <= 0 && height <= 0) {
-			// Get layout width and height parameters
-			LayoutParams params = imageView.getLayoutParams();
-			width = params.width;
-			height = params.height;
-		}
-
-		if (width <= 0 && height <= 0) {
-			// Get device screen dimensions
-			width = configuration.maxImageWidthForMemoryCache;
-			height = configuration.maxImageHeightForMemoryCache;
-
-			// Consider device screen orientation
-			int screenOrientation = imageView.getContext().getResources().getConfiguration().orientation;
-			if ((screenOrientation == Configuration.ORIENTATION_PORTRAIT && width > height)
-					|| (screenOrientation == Configuration.ORIENTATION_LANDSCAPE && width < height)) {
-				int tmp = width;
-				width = height;
-				height = tmp;
-			}
-		}
-		return new ImageSize(width, height);
+		return value;
 	}
 }
