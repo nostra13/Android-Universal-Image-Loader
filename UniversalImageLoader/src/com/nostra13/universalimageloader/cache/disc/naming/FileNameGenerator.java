@@ -5,7 +5,13 @@ package com.nostra13.universalimageloader.cache.disc.naming;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public interface FileNameGenerator {
+public abstract class FileNameGenerator {
 
-	String generate(String imageUri);
+	/** Generates unique file name for image defined by URI */
+	public abstract String generate(String imageUri);
+
+	/** Create {@linkplain HashCodeFileNameGenerator default implementation} of FileNameGenerator */
+	public static FileNameGenerator createDefault() {
+		return new HashCodeFileNameGenerator();
+	}
 }

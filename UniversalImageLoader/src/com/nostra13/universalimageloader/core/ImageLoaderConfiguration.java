@@ -13,7 +13,6 @@ import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
@@ -22,7 +21,6 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
-import com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 /**
@@ -88,14 +86,11 @@ public final class ImageLoaderConfiguration {
 	 * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
 	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
 	 * <li>allow to cache different sizes of image in memory</li>
-	 * <li>memoryCache = {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache
-	 * UsingFreqLimitedCache} with limited memory cache size ( {@link Builder#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
-	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache UnlimitedDiscCache}</li>
-	 * <li>imageDownloader = {@link com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader
-	 * URLConnectionImageDownloader}(httpConnectTimeout = {@link Builder#DEFAULT_HTTP_CONNECT_TIMEOUT this},
-	 * httpReadTimeout = {@link Builder#DEFAULT_HTTP_READ_TIMEOUT this})</li>
-	 * <li>discCacheFileNameGenerator =
-	 * {@link com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator HashCodeFileNameGenerator}</li>
+	 * <li>memoryCache = {@link UsingFreqLimitedCache} with limited memory cache size (
+	 * {@link Builder#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
+	 * <li>discCache = {@link UnlimitedDiscCache}</li>
+	 * <li>imageDownloader = {@link ImageDownloader#createDefault()}</li>
+	 * <li>discCacheFileNameGenerator = {@link FileNameGenerator#createDefault()}</li>
 	 * <li>defaultDisplayImageOptions = {@link DisplayImageOptions#createSimple() Simple options}</li>
 	 * <li>detailed logging disabled</li>
 	 * </ul>
@@ -119,10 +114,6 @@ public final class ImageLoaderConfiguration {
 		private static final String WARNING_DISC_CACHE_ALREADY_SET = "You already have set disc cache. This method call will make no effect.";
 
 		/** {@value} */
-		public static final int DEFAULT_HTTP_CONNECT_TIMEOUT = 5 * 1000; // milliseconds
-		/** {@value} */
-		public static final int DEFAULT_HTTP_READ_TIMEOUT = 20 * 1000; // milliseconds
-		/** {@value} */
 		public static final int DEFAULT_THREAD_POOL_SIZE = 3;
 		/** {@value} */
 		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
@@ -140,7 +131,7 @@ public final class ImageLoaderConfiguration {
 
 		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
 		private int threadPriority = DEFAULT_THREAD_PRIORITY;
-		private boolean allowCacheImageMultipleSizesInMemory = true;
+		private boolean denyCacheImageMultipleSizesInMemory = false;
 		private boolean handleOutOfMemory = true;
 
 		private int memoryCacheSize = DEFAULT_MEMORY_CACHE_SIZE;
@@ -234,7 +225,7 @@ public final class ImageLoaderConfiguration {
 		 * cached size of this image (if it exists) will be removed from memory cache before.
 		 * */
 		public Builder denyCacheImageMultipleSizesInMemory() {
-			this.allowCacheImageMultipleSizesInMemory = false;
+			this.denyCacheImageMultipleSizesInMemory = true;
 			return this;
 		}
 
@@ -316,8 +307,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets name generator for files cached in disc cache.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator
-		 * HashCodeFileNameGenerator}
+		 * Default value - {@link FileNameGenerator#createDefault}
 		 */
 		public Builder discCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
 			if (discCache != null) Log.w(ImageLoader.TAG, WARNING_DISC_CACHE_ALREADY_SET);
@@ -328,9 +318,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets utility which will be responsible for downloading of image.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader
-		 * URLConnectionImageDownloader}(httpConnectTimeout = {@link #DEFAULT_HTTP_CONNECT_TIMEOUT this},
-		 * httpReadTimeout = {@link #DEFAULT_HTTP_READ_TIMEOUT this})
+		 * Default value - {@link com.nostra13.universalimageloader.core.download.ImageDownloader#createDefault()}
 		 * */
 		public Builder imageDownloader(ImageDownloader imageDownloader) {
 			this.downloader = imageDownloader;
@@ -379,7 +367,7 @@ public final class ImageLoaderConfiguration {
 		private void initEmptyFiledsWithDefaultValues() {
 			if (discCache == null) {
 				if (discCacheFileNameGenerator == null) {
-					discCacheFileNameGenerator = new HashCodeFileNameGenerator();
+					discCacheFileNameGenerator = FileNameGenerator.createDefault();
 				}
 
 				if (discCacheSize > 0) {
@@ -396,11 +384,11 @@ public final class ImageLoaderConfiguration {
 			if (memoryCache == null) {
 				memoryCache = new UsingFreqLimitedMemoryCache(memoryCacheSize);
 			}
-			if (!allowCacheImageMultipleSizesInMemory) {
+			if (denyCacheImageMultipleSizesInMemory) {
 				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheKeyUtil.createFuzzyKeyComparator());
 			}
 			if (downloader == null) {
-				downloader = new URLConnectionImageDownloader(DEFAULT_HTTP_CONNECT_TIMEOUT, DEFAULT_HTTP_READ_TIMEOUT);
+				downloader = ImageDownloader.createDefault();
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();

@@ -45,4 +45,9 @@ public abstract class ImageDownloader {
 	protected InputStream getStreamFromFile(URI imageUri) throws IOException {
 		return new BufferedInputStream(imageUri.toURL().openStream());
 	}
+
+	/** Creates {@linkplain URLConnectionImageDownloader default implementation} of ImageDownloader */
+	public static ImageDownloader createDefault() {
+		return new URLConnectionImageDownloader();
+	}
 }

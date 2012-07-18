@@ -15,8 +15,17 @@ import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
  */
 public class URLConnectionImageDownloader extends ImageDownloader {
 
+	/** {@value} */
+	public static final int DEFAULT_HTTP_CONNECT_TIMEOUT = 5 * 1000; // milliseconds
+	/** {@value} */
+	public static final int DEFAULT_HTTP_READ_TIMEOUT = 20 * 1000; // milliseconds
+
 	private int connectTimeout;
 	private int readTimeout;
+
+	public URLConnectionImageDownloader() {
+		this(DEFAULT_HTTP_CONNECT_TIMEOUT, DEFAULT_HTTP_READ_TIMEOUT);
+	}
 
 	public URLConnectionImageDownloader(int connectTimeout, int readTimeout) {
 		this.connectTimeout = connectTimeout;

@@ -3,7 +3,6 @@ package com.nostra13.universalimageloader.cache.disc;
 import java.io.File;
 
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 
 /**
  * Base disc cache. Implements common functionality for disc cache.
@@ -19,7 +18,7 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 	private FileNameGenerator fileNameGenerator;
 
 	public BaseDiscCache(File cacheDir) {
-		this(cacheDir, new HashCodeFileNameGenerator());
+		this(cacheDir, FileNameGenerator.createDefault());
 	}
 
 	public BaseDiscCache(File cacheDir, FileNameGenerator fileNameGenerator) {
