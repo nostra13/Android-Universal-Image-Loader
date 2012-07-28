@@ -176,11 +176,13 @@ public class ImageLoader {
 
 		if (uri == null || uri.length() == 0) {
 			cacheKeyForImageView.remove(imageView);
+			listener.onLoadingStarted();
 			if (options.isShowImageForEmptyUri()) {
 				imageView.setImageResource(options.getImageForEmptyUri());
 			} else {
 				imageView.setImageBitmap(null);
 			}
+			listener.onLoadingComplete(null);
 			return;
 		}
 
