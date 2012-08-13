@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
@@ -118,7 +119,8 @@ final class LoadAndDisplayImageTask implements Runnable {
 				configuration.discCache.put(imageLoadingInfo.uri, imageFile);
 				imageUriForDecoding = imageFile.toURI();
 			} else {
-				imageUriForDecoding = new URI(imageLoadingInfo.uri);
+				final String uri = Uri.encode(imageLoadingInfo.uri, ":/-|+");
+				imageUriForDecoding = new URI(uri);
 			}
 
 			bitmap = decodeImage(imageUriForDecoding);
