@@ -119,8 +119,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 				configuration.discCache.put(imageLoadingInfo.uri, imageFile);
 				imageUriForDecoding = imageFile.toURI();
 			} else {
-				final String uri = Uri.encode(imageLoadingInfo.uri, ":/-|+");
-				imageUriForDecoding = new URI(uri);
+				imageUriForDecoding = new URI(imageLoadingInfo.uri);
 			}
 
 			bitmap = decodeImage(imageUriForDecoding);
