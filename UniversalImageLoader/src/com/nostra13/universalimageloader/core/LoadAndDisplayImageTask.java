@@ -10,7 +10,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
