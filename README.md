@@ -136,7 +136,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [EUKO 2012](https://play.google.com/store/apps/details?id=de.netlands.emsapp)
 * [TuuSo Image Search](https://play.google.com/store/apps/details?id=com.tuuso)
 * [Газета Стройка](https://play.google.com/store/apps/details?id=ru.normakirov.stroyka)
-* [Prezzi Benzina] (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)
+* [Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)
 * [Quiz Guess The Guy] (https://play.google.com/store/apps/details?id=com.game.guesstheguy)
 * [Volksempfänger (alpha)](http://volksempfaenger.0x4a42.net)
 * [ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox) | [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro)
