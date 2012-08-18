@@ -46,18 +46,18 @@ File cacheDir = StorageUtils.getOwnCacheDirectory(getApplicationContext(), "Univ
 
 // Get singletone instance of ImageLoader
 ImageLoader imageLoader = ImageLoader.getInstance();
-// Create configuration for ImageLoader (all options are optional)
+// Create configuration for ImageLoader (all options are optional, use only those you really want to customize)
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-			.memoryCacheExtraOptions(480, 800)
+			.memoryCacheExtraOptions(480, 800) // max width, max height
 			.discCacheExtraOptions(480, 800, CompressFormat.JPEG, 75) // Can slow ImageLoader, use it carefully (Better don't use it)
-			.threadPoolSize(5)
-			.threadPriority(Thread.MIN_PRIORITY + 2)
+			.threadPoolSize(3)
+			.threadPriority(Thread.NORM_PRIORITY - 1)
 			.denyCacheImageMultipleSizesInMemory()
 			.offOutOfMemoryHandling()
 			.memoryCache(new UsingFreqLimitedMemoryCache(2 * 1024 * 1024)) // You can pass your own memory cache implementation
 			.discCache(new UnlimitedDiscCache(cacheDir)) // You can pass your own disc cache implementation
 			.discCacheFileNameGenerator(new HashCodeFileNameGenerator())
-			.imageDownloader(new DefaultImageDownloader(5 * 1000, 30 * 1000)) // connectTimeout (5 s), readTimeout (30 s)
+			.imageDownloader(new URLConnectionImageDownloader(5 * 1000, 20 * 1000)) // connectTimeout (5 s), readTimeout (20 s)
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
 			.enableLogging()
 			.build();
@@ -71,7 +71,6 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
                                        .cacheInMemory()
                                        .cacheOnDisc()
 									   .imageScaleType(ImageScaleType.POWER_OF_2)
-									   .transform(matrix)
                                        .build();
 // Load and display image
 imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener() {
@@ -137,7 +136,13 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [EUKO 2012](https://play.google.com/store/apps/details?id=de.netlands.emsapp)
 * [TuuSo Image Search](https://play.google.com/store/apps/details?id=com.tuuso)
 * [Газета Стройка](https://play.google.com/store/apps/details?id=ru.normakirov.stroyka)
-* [Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)
+* [Prezzi Benzina] (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)
+* [Quiz Guess The Guy] (https://play.google.com/store/apps/details?id=com.game.guesstheguy)
+* [Volksempfänger (alpha)](http://volksempfaenger.0x4a42.net)
+* [ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox) | [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro)
+* [London 2012 Games](https://play.google.com/store/apps/details?id=com.mbwasi.london)
+* [카톡 이미지 - 예쁜 프로필 이미지](https://play.google.com/store/apps/details?id=com.bydoori.firstbasea)
+* [dailyPen](https://play.google.com/store/apps/details?id=com.bydoori.dailypen)
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
