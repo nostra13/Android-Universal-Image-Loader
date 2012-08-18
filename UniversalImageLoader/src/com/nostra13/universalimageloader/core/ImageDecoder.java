@@ -7,7 +7,6 @@ import java.net.URI;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
-import android.graphics.Matrix;
 import android.widget.ImageView.ScaleType;
 
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -52,7 +51,7 @@ class ImageDecoder {
 	 * @throws IOException
 	 */
 	public Bitmap decode(ImageSize targetSize, ImageScaleType scaleType) throws IOException {
-		return decode(targetSize, scaleType, ScaleType.CENTER_INSIDE, null);
+		return decode(targetSize, scaleType, ScaleType.CENTER_INSIDE);
 	}
 
 	/**
@@ -70,36 +69,10 @@ class ImageDecoder {
 	 * @throws IOException
 	 */
 	public Bitmap decode(ImageSize targetSize, ImageScaleType scaleType, ScaleType viewScaleType) throws IOException {
-		return decode(targetSize, scaleType, viewScaleType, null);
-	}
-
-	/**
-	 * Decodes image from URI into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
-	 * decoding (depend on incoming image scale type).
-	 * 
-	 * @param targetSize
-	 *            Image size to scale to during decoding
-	 * @param scaleType
-	 *            {@link ImageScaleType Image scale type}
-	 * @param viewScaleType
-	 *            {@link ScaleType ImageView scale type}
-	 * @param transformMatrix
-	 *            Optional matrix to be applied to the decoded image pixels
-	 * 
-	 * @return Decoded bitmap
-	 * @throws IOException
-	 */
-	public Bitmap decode(ImageSize targetSize, ImageScaleType scaleType, ScaleType viewScaleType, Matrix transformMatrix) throws IOException {
 		Options decodeOptions = getBitmapOptionsForImageDecoding(targetSize, scaleType, viewScaleType);
 		InputStream imageStream = imageDownloader.getStream(imageUri);
 		try {
-			Bitmap bmp = BitmapFactory.decodeStream(imageStream, null, decodeOptions);
-			if (transformMatrix != null) {
-				Bitmap transformedBmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), transformMatrix, true);
-				bmp.recycle();
-				bmp = transformedBmp;
-			}
-			return bmp;
+			return BitmapFactory.decodeStream(imageStream, null, decodeOptions);
 		} finally {
 			imageStream.close();
 		}

@@ -1,7 +1,5 @@
 package com.nostra13.universalimageloader.core;
 
-import android.graphics.Matrix;
-
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 /**
@@ -35,7 +33,6 @@ public final class DisplayImageOptions {
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
 	private final ImageScaleType imageScaleType;
-	private final Matrix transformationMatrix;
 
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
@@ -44,7 +41,6 @@ public final class DisplayImageOptions {
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
 		imageScaleType = builder.imageScaleType;
-		transformationMatrix = builder.transformationMatrix;
 	}
 
 	boolean isShowStubImage() {
@@ -79,10 +75,6 @@ public final class DisplayImageOptions {
 		return imageScaleType;
 	}
 
-	Matrix getTransformationMatrix() {
-		return transformationMatrix;
-	}
-
 	/**
 	 * Builder for {@link DisplayImageOptions}
 	 * 
@@ -95,7 +87,6 @@ public final class DisplayImageOptions {
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
 		private ImageScaleType imageScaleType = ImageScaleType.POWER_OF_2;
-		private Matrix transformationMatrix = null;
 
 		/**
 		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
@@ -144,14 +135,6 @@ public final class DisplayImageOptions {
 		 */
 		public Builder imageScaleType(ImageScaleType imageScaleType) {
 			this.imageScaleType = imageScaleType;
-			return this;
-		}
-
-		/**
-		 * Sets transformation {@link android.graphics.Matrix} which will be applied to the decoded image before display
-		 */
-		public Builder transform(Matrix transformationMatrix) {
-			this.transformationMatrix = transformationMatrix;
 			return this;
 		}
 
