@@ -143,6 +143,11 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [London 2012 Games](https://play.google.com/store/apps/details?id=com.mbwasi.london)
 * [카톡 이미지 - 예쁜 프로필 이미지](https://play.google.com/store/apps/details?id=com.bydoori.firstbasea)
 * [dailyPen](https://play.google.com/store/apps/details?id=com.bydoori.dailypen)
+* [TK App](https://play.google.com/store/apps/details?id=com.opendream.tkapp)
+* [Mania!](https://play.google.com/store/apps/details?id=com.astro.mania.activities)
+* [Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities)
+* [Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test)
+* [Lafemme Fashion Finder](https://play.google.com/store/apps/details?id=me.getlafem.lafemme2)
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
