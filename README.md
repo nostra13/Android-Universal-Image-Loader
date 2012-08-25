@@ -21,7 +21,9 @@ This project aims to provide a reusable instrument for asynchronous image loadin
 
 ### [Support](http://stackoverflow.com/questions/tagged/universal-image-loader)
 First look at [Useful info](https://github.com/nostra13/Android-Universal-Image-Loader#useful-info).
+
 If you have some question about Universal Image Loader you can ask it on [StackOverFlow](http://stackoverflow.com) with **[universal-image-loader]** tag. Also add **[java]** and **[android]** tags.
+
 Bugs and feature requests place **[here](https://github.com/nostra13/Android-Universal-Image-Loader/issues/new)**.
 
 ### [Changelog](https://github.com/nostra13/Android-Universal-Image-Loader/commits/master)
@@ -100,7 +102,6 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
 
 ## Useful info
 1. **Caching is NOT enabled by default.** If you want loaded images will be cached in memory and/or on disc then you should enable caching in DisplayImageOptions this way:
-
 ``` java
 // Create default options which will be used for every 
 //  displayImage(...) call if no options will be passed to this method
@@ -117,13 +118,11 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
             .build();
 ImageLoader.getInstance().init(config); // Do it on Application start
 ```
-
 ``` java
 // Then later, when you want to display image
 ImageLoader.getInstance().displayImage(imageUrl, imageView); // Default options will be used
 ```
 or this way:
-
 ``` java
 DisplayImageOptions options = new DisplayImageOptions.Builder()
 			...
