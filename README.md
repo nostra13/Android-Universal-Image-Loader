@@ -19,8 +19,13 @@ This project aims to provide a reusable instrument for asynchronous image loadin
  * Universal Image Loader. Part 2 - Configuration [[RU](http://nostra13android.blogspot.com/2012/03/5-universal-image-loader-part-2.html) | [EN](http://www.intexsoft.com/blog/item/72-universal-image-loader-part-2.html)]
  * Universal Image Loader. Part 3 - Usage [[RU](http://nostra13android.blogspot.com/2012/03/6-universal-image-loader-part-3-usage.html) | [EN](http://www.intexsoft.com/blog/item/74-universal-image-loader-part-3.html)]
 
+### [Support](http://stackoverflow.com/questions/tagged/universal-image-loader)
+First look at [Useful info](https://github.com/nostra13/Android-Universal-Image-Loader#useful-info).
+If you have some question about Universal Image Loader you can ask it on [StackOverFlow](http://stackoverflow.com) with **[universal-image-loader]** tag. Also add **[java]** and **[android]** tags.
+Bugs and feature requests place **[here](https://github.com/nostra13/Android-Universal-Image-Loader/issues/new)**.
+
 ### [Changelog](https://github.com/nostra13/Android-Universal-Image-Loader/commits/master)
- 
+
 ## Usage
 
 ### Simple
@@ -61,17 +66,17 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
 			.enableLogging()
 			.build();
-// Initialize ImageLoader with created configuration. Do it once.
+// Initialize ImageLoader with created configuration. Do it once on Application start.
 imageLoader.init(config);
 
 // Creates display image options for custom display task (all options are optional)
 DisplayImageOptions options = new DisplayImageOptions.Builder()
-                                       .showStubImage(R.drawable.stub_image)
-									   .showImageForEmptyUri(R.drawable.image_for_empty_url)
-                                       .cacheInMemory()
-                                       .cacheOnDisc()
-									   .imageScaleType(ImageScaleType.POWER_OF_2)
-                                       .build();
+           .showStubImage(R.drawable.stub_image)
+		   .showImageForEmptyUri(R.drawable.image_for_empty_url)
+           .cacheInMemory()
+           .cacheOnDisc()
+		   .imageScaleType(ImageScaleType.POWER_OF_2)
+           .build();
 // Load and display image
 imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener() {
     @Override
@@ -94,14 +99,49 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
 ```
 
 ## Useful info
-1. How UIL define Bitmap size needed for exact ImageView? Search defined parameters top-down:
+1. **Caching is NOT enabled by default.** If you want loaded images will be cached in memory and/or on disc then you should enable caching in DisplayImageOptions this way:
+
+``` java
+// Create default options which will be used for every 
+//  displayImage(...) call if no options will be passed to this method
+DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+			...
+            .cacheInMemory()
+            .cacheOnDisc()
+            ...
+            .build();
+ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+            ...
+            .defaultDisplayImageOptions(defaultOptions)
+            ...
+            .build();
+ImageLoader.getInstance().init(config); // Do it on Application start
+```
+
+``` java
+// Then later, when you want to display image
+ImageLoader.getInstance().displayImage(imageUrl, imageView); // Default options will be used
+```
+or this way:
+
+``` java
+DisplayImageOptions options = new DisplayImageOptions.Builder()
+			...
+            .cacheInMemory()
+            .cacheOnDisc()
+            ...
+            .build();
+ImageLoader.getInstance().displayImage(imageUrl, imageView, options); // Incoming options will be used
+```
+
+2. How UIL define Bitmap size needed for exact ImageView? Search defined parameters top-down:
  * Get ```android:layout_width``` or ```android:layout_height``` parameters
  * Get ```android:maxWidth``` and ```android:maxHeight``` parameters
  * Get maximum size parameters from configuration (```memoryCacheExtraOptions(int, int)``` option)
 
  Set ```android:layout_width```|```android:layout_height``` or ```android:maxWidth```|```android:maxHeight``` parameters for ImageView if you know approximate maximum size of it. It will help correctly compute Bitmap size needed for this view and **save memory**.
 
-2. If you often got **OutOfMemoryError** in your app using Universal Image Loader then try set WeakMemoryCache into configuration:
+3. If you often got **OutOfMemoryError** in your app using Universal Image Loader then try set WeakMemoryCache into configuration:
 ``` java
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
 			...
@@ -110,7 +150,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 			.build();
 ```
 
-3. For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...)) you can use already prepared implementations:
+4. For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...)) you can use already prepared implementations:
  * UsingFreqLimitedMemoryCache (The least frequently used bitmap is deleted when cache size limit is exceeded) - Used by default
  * LRULimitedMemoryCache (Least recently used bitmap is deleted when cache size limit is exceeded)
  * FIFOLimitedMemoryCache (FIFO rule is used for deletion when cache size limit is exceeded)
@@ -118,7 +158,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
  * LimitedAgeMemoryCache (Decorator. Cached object is deleted when its age exceeds defined value)
  * WeakMemoryCache (Memory cache with only weak references to bitmaps)
 
-4. For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) you can use already prepared implementations:
+5. For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) you can use already prepared implementations:
  * UnlimitedDiscCache (The fastest cache, doesn't limit cache size) - Used by default
  * TotalSizeLimitedDiscCache (Cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last usage date will be deleted)
  * FileCountLimitedDiscCache (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
@@ -148,10 +188,15 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities)
 * [Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test)
 * [Lafemme Fashion Finder](https://play.google.com/store/apps/details?id=me.getlafem.lafemme2)
+* [FastPaleo](https://play.google.com/store/apps/details?id=com.mqmobile.droid.fastpaleo)
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
 
-If you use Universal Image Loader code in your application you have to inform the author about it (*email: nostra13[at]gmail[dot]com*). Also you should (but you don't have to) mention it in application UI with string **"Used Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"** (e.g. in some "About" section).
+If you use Universal Image Loader code in your application you have to inform the author about it (*email: nostra13[at]gmail[dot]com*) like this:
+> I use Universal Image Loader in MyAndroidApp (http://link_to_google_play).
+> I allow/don't allow to mention my app in "Applications using Universal Image Loader" on GitHub.
+
+Also you should (but you don't have to) mention it in application UI with string **"Used Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"** (e.g. in some "About" section).
 
 Licensed under the [BSD 3-clause](http://www.opensource.org/licenses/BSD-3-Clause)
