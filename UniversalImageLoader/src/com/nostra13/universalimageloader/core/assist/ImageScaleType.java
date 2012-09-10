@@ -7,14 +7,19 @@ package com.nostra13.universalimageloader.core.assist;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public enum ImageScaleType {
-	/**
-	 * Image will be reduces 2-fold until next reduce step make image smaller target size.<br />
-	 * It's <b>fast</b> type and it's preferable for usage.
-	 */
-	POWER_OF_2,
-	/**
-	 * Image will scaled exactly to target size.<br />
-	 * Use it if memory economy is critically important.
-	 */
-	EXACT
+    /**
+     * Image will be reduces 2-fold until next reduce step make image smaller target size.<br />
+     * It's <b>fast</b> type and it's preferable for usage.
+     */
+    POWER_OF_2,
+    /**
+     * Image will scaled exactly to target size.<br />
+     * Use it if memory economy is critically important.
+     */
+    EXACT,
+    /**
+     * Image will be stretched to match the full width of the target and the height will adjust proportionately.
+     */
+    STRETCH_TO_FULL_WIDTH_OF_TARGET
+
 }

@@ -72,7 +72,18 @@ class ImageDecoder {
 		Options decodeOptions = getBitmapOptionsForImageDecoding(targetSize, scaleType, viewScaleType);
 		InputStream imageStream = imageDownloader.getStream(imageUri);
 		try {
-			return BitmapFactory.decodeStream(imageStream, null, decodeOptions);
+			Bitmap bitmap = BitmapFactory.decodeStream(imageStream, null, decodeOptions);
+
+            // if we are in stretch to full width of target mode, check if the image is narrower than the target
+            if (bitmap != null && scaleType == ImageScaleType.STRETCH_TO_FULL_WIDTH_OF_TARGET) {
+                if (targetSize.getWidth() > bitmap.getWidth()) {
+                    // calculate the proper height based on the width
+                    int newImageHeight = targetSize.getWidth() * bitmap.getHeight() / bitmap.getWidth();
+                    // stretch the image to the full target width and appropriate height
+                    bitmap = Bitmap.createScaledBitmap(bitmap, targetSize.getWidth(), newImageHeight, true);
+                }
+            }
+            return bitmap;
 		} finally {
 			imageStream.close();
 		}
@@ -102,7 +113,7 @@ class ImageDecoder {
 		int imageWidth = options.outWidth;
 		int imageHeight = options.outHeight;
 		int widthScale = imageWidth / targetWidth;
-		int heightScale = imageWidth / targetHeight;
+		int heightScale = imageHeight / targetHeight;
 		switch (viewScaleType) {
 			case FIT_XY:
 			case FIT_START:
