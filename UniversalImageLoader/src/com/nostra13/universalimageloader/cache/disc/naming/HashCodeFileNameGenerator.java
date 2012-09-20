@@ -5,7 +5,7 @@ package com.nostra13.universalimageloader.cache.disc.naming;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class HashCodeFileNameGenerator extends FileNameGenerator {
+public class HashCodeFileNameGenerator implements FileNameGenerator {
 	@Override
 	public String generate(String imageUri) {
 		return String.valueOf(imageUri.hashCode());

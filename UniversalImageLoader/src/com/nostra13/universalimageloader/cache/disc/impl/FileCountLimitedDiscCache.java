@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.nostra13.universalimageloader.cache.disc.LimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
+import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 
 /**
  * Disc cache limited by file count. If file count in cache directory exceeds specified limit then file with the most
@@ -23,7 +24,7 @@ public class FileCountLimitedDiscCache extends LimitedDiscCache {
 	 *            most oldest last usage date will be deleted.
 	 */
 	public FileCountLimitedDiscCache(File cacheDir, int maxFileCount) {
-		this(cacheDir, FileNameGenerator.createDefault(), maxFileCount);
+		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxFileCount);
 	}
 
 	/**

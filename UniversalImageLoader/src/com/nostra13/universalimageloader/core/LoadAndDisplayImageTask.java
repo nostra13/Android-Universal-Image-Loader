@@ -68,7 +68,8 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (checkTaskIsNotActual()) return;
 		if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, imageLoadingInfo.memoryCacheKey));
 
-		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo.imageView, imageLoadingInfo.listener);
+		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo.imageView, imageLoadingInfo.options.getDisplayer(),
+				imageLoadingInfo.listener);
 		handler.post(displayBitmapTask);
 	}
 

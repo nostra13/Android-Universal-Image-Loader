@@ -13,7 +13,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class Md5FileNameGenerator extends FileNameGenerator {
+public class Md5FileNameGenerator implements FileNameGenerator {
 
 	private static final String HASH_ALGORITHM = "MD5";
 	private static final int RADIX = 10 + 26; // 10 digits + 26 letters

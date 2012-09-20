@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.nostra13.universalimageloader.cache.disc.BaseDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
+import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 
 /**
  * Cache which deletes files which were loaded more than defined time. Cache size is unlimited.
@@ -28,7 +29,7 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	 *            (and therefore be reloaded).
 	 */
 	public LimitedAgeDiscCache(File cacheDir, long maxAge) {
-		this(cacheDir, FileNameGenerator.createDefault(), maxAge);
+		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxAge);
 	}
 
 	/**

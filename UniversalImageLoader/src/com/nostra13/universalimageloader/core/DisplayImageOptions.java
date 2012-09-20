@@ -1,6 +1,7 @@
 package com.nostra13.universalimageloader.core;
 
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 
 /**
  * Contains options for image display. Defines:
@@ -33,6 +34,7 @@ public final class DisplayImageOptions {
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
 	private final ImageScaleType imageScaleType;
+	private final BitmapDisplayer displayer;
 
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
@@ -41,6 +43,7 @@ public final class DisplayImageOptions {
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
 		imageScaleType = builder.imageScaleType;
+		displayer = builder.displayer;
 	}
 
 	boolean isShowStubImage() {
@@ -75,6 +78,10 @@ public final class DisplayImageOptions {
 		return imageScaleType;
 	}
 
+	BitmapDisplayer getDisplayer() {
+		return displayer;
+	}
+
 	/**
 	 * Builder for {@link DisplayImageOptions}
 	 * 
@@ -87,6 +94,7 @@ public final class DisplayImageOptions {
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
 		private ImageScaleType imageScaleType = ImageScaleType.POWER_OF_2;
+		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 
 		/**
 		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
@@ -135,6 +143,15 @@ public final class DisplayImageOptions {
 		 */
 		public Builder imageScaleType(ImageScaleType imageScaleType) {
 			this.imageScaleType = imageScaleType;
+			return this;
+		}
+
+		/**
+		 * Sets custom {@link BitmapDisplayer displayer} for image loading task. Default value -
+		 * {@link DefaultConfigurationFactory#createBitmapDisplayer()}
+		 */
+		public Builder displayer(BitmapDisplayer displayer) {
+			this.displayer = displayer;
 			return this;
 		}
 

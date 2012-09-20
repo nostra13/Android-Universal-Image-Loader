@@ -1,6 +1,5 @@
 package com.nostra13.universalimageloader.core;
 
-import java.io.File;
 import java.util.concurrent.ThreadFactory;
 
 import android.content.Context;
@@ -10,18 +9,12 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache;
-import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
-import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
-import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
-import com.nostra13.universalimageloader.utils.StorageUtils;
 
 /**
  * Presents configuration for {@link ImageLoader}
@@ -307,7 +300,9 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets name generator for files cached in disc cache.<br />
-		 * Default value - {@link FileNameGenerator#createDefault}
+		 * Default value -
+		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createFileNameGenerator()
+		 * DefaultConfigurationFactory.createFileNameGenerator()}
 		 */
 		public Builder discCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
 			if (discCache != null) Log.w(ImageLoader.TAG, WARNING_DISC_CACHE_ALREADY_SET);
@@ -318,7 +313,9 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets utility which will be responsible for downloading of image.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.core.download.ImageDownloader#createDefault()}
+		 * Default value -
+		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createImageDownloader()
+		 * DefaultConfigurationFactory.createImageDownloader()}
 		 * */
 		public Builder imageDownloader(ImageDownloader imageDownloader) {
 			this.downloader = imageDownloader;
@@ -367,28 +364,15 @@ public final class ImageLoaderConfiguration {
 		private void initEmptyFiledsWithDefaultValues() {
 			if (discCache == null) {
 				if (discCacheFileNameGenerator == null) {
-					discCacheFileNameGenerator = FileNameGenerator.createDefault();
+					discCacheFileNameGenerator = DefaultConfigurationFactory.createFileNameGenerator();
 				}
-
-				if (discCacheSize > 0) {
-					File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
-					discCache = new TotalSizeLimitedDiscCache(individualCacheDir, discCacheFileNameGenerator, discCacheSize);
-				} else if (discCacheFileCount > 0) {
-					File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
-					discCache = new FileCountLimitedDiscCache(individualCacheDir, discCacheFileNameGenerator, discCacheFileCount);
-				} else {
-					File cacheDir = StorageUtils.getCacheDirectory(context);
-					discCache = new UnlimitedDiscCache(cacheDir, discCacheFileNameGenerator);
-				}
+				discCache = DefaultConfigurationFactory.createDiscCache(context, discCacheFileNameGenerator, discCacheSize, discCacheFileCount);
 			}
 			if (memoryCache == null) {
-				memoryCache = new UsingFreqLimitedMemoryCache(memoryCacheSize);
-			}
-			if (denyCacheImageMultipleSizesInMemory) {
-				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheKeyUtil.createFuzzyKeyComparator());
+				memoryCache = DefaultConfigurationFactory.createMemoryCache(memoryCacheSize, denyCacheImageMultipleSizesInMemory);
 			}
 			if (downloader == null) {
-				downloader = ImageDownloader.createDefault();
+				downloader = DefaultConfigurationFactory.createImageDownloader();
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();

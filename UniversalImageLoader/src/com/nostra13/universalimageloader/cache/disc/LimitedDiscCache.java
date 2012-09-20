@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
+import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 
 /**
  * Abstract disc cache limited by some parameter. If cache exceeds specified limit then file with the most oldest last
@@ -34,7 +35,7 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	 *            deleted.
 	 */
 	public LimitedDiscCache(File cacheDir, int sizeLimit) {
-		this(cacheDir, FileNameGenerator.createDefault(), sizeLimit);
+		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), sizeLimit);
 	}
 
 	/**
