@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -34,6 +35,7 @@ public class ImageListActivity extends BaseActivity {
 			.showStubImage(R.drawable.stub_image)
 			.cacheInMemory()
 			.cacheOnDisc()
+			.displayer(new RoundedBitmapDisplayer(0xff424242, 30))
 			.build();
 
 		ListView listView = (ListView) findViewById(android.R.id.list);
