@@ -78,6 +78,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
            .cacheInMemory()
            .cacheOnDisc()
 		   .imageScaleType(ImageScaleType.POWER_OF_2)
+		   .displayer(new RoundedBitmapDisplayer())
            .build();
 // Load and display image
 imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener() {
@@ -188,6 +189,11 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test)
 * [Lafemme Fashion Finder](https://play.google.com/store/apps/details?id=me.getlafem.lafemme2)
 * [FastPaleo](https://play.google.com/store/apps/details?id=com.mqmobile.droid.fastpaleo)
+* [Live Soccer Scores](https://play.google.com/store/apps/details?id=com.sporee.android)
+* [friendizer](https://play.google.com/store/apps/details?id=com.teamagly.friendizer)
+* [LowPrice lowest book price](https://play.google.com/store/apps/details?id=com.binarybricks.lowprice)
+* [bluebee](https://play.google.com/store/apps/details?id=mobi.bluebee.android.app)
+* [Game PromoBox](https://play.google.com/store/apps/details?id=com.gamepromobox)
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
