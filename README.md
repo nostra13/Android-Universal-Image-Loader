@@ -78,7 +78,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
            .cacheInMemory()
            .cacheOnDisc()
 		   .imageScaleType(ImageScaleType.POWER_OF_2)
-		   .displayer(new RoundedBitmapDisplayer())
+		   .displayer(new RoundedBitmapDisplayer(20, 20))
            .build();
 // Load and display image
 imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener() {
