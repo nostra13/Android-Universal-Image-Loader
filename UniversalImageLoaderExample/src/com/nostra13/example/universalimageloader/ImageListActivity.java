@@ -35,7 +35,7 @@ public class ImageListActivity extends BaseActivity {
 			.showStubImage(R.drawable.stub_image)
 			.cacheInMemory()
 			.cacheOnDisc()
-			.displayer(new RoundedBitmapDisplayer(0xff424242, 30))
+			.displayer(new RoundedBitmapDisplayer(30))
 			.build();
 
 		ListView listView = (ListView) findViewById(android.R.id.list);

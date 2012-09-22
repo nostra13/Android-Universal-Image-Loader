@@ -13,15 +13,13 @@ import android.widget.ImageView;
 /**
  * Displays bitmap with rounded corners
  * 
- * @author Sergey Tarasevich
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class RoundedBitmapDisplayer implements BitmapDisplayer {
 
-	private int color;
 	private int roundPixels;
 
-	public RoundedBitmapDisplayer(int color, int roundPixels) {
-		this.color = color;
+	public RoundedBitmapDisplayer(int roundPixels) {
 		this.roundPixels = roundPixels;
 	}
 
@@ -42,7 +40,7 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 
 		paint.setAntiAlias(true);
 		canvas.drawARGB(0, 0, 0, 0);
-		paint.setColor(color);
+		paint.setColor(0xFFFFFFFF);
 		canvas.drawRoundRect(rectF, roundPixels, roundPixels, paint);
 
 		paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
