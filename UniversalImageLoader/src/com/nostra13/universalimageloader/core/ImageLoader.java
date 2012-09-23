@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -42,6 +43,7 @@ public class ImageLoader {
 	private ImageLoadingListener emptyListener;
 
 	private Map<ImageView, String> cacheKeyForImageView = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+	private Map<String, ReentrantLock> uriLocks = Collections.synchronizedMap(new WeakHashMap<String, ReentrantLock>());
 
 	private volatile static ImageLoader instance;
 
@@ -209,7 +211,7 @@ public class ImageLoader {
 			}
 
 			checkExecutors();
-			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener);
+			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener, getLockForUri(uri));
 			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
 			boolean isImageCachedOnDisc = configuration.discCache.get(uri).exists();
 			if (isImageCachedOnDisc) {
@@ -326,5 +328,16 @@ public class ImageLoader {
 			Log.e(TAG, e.getMessage(), e);
 		}
 		return value;
+	}
+
+	private ReentrantLock getLockForUri(String uri) {
+		synchronized (uriLocks) {
+			ReentrantLock lock = uriLocks.get(uri);
+			if (lock == null) {
+				lock = new ReentrantLock();
+				uriLocks.put(uri, lock);
+			}
+			return lock;
+		}
 	}
 }

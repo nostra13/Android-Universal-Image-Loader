@@ -32,6 +32,8 @@ import com.nostra13.universalimageloader.utils.FileUtils;
 final class LoadAndDisplayImageTask implements Runnable {
 
 	private static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
+	private static final String LOG_WAITING = "Image already is loading. Waiting... [%s]";
+	private static final String LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING = "...Get cached bitmap from memory after waiting. [%s]";
 	private static final String LOG_LOAD_IMAGE_FROM_INTERNET = "Load image from Internet [%s]";
 	private static final String LOG_LOAD_IMAGE_FROM_DISC_CACHE = "Load image from disc cache [%s]";
 	private static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
@@ -52,17 +54,35 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	@Override
 	public void run() {
-		if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, imageLoadingInfo.memoryCacheKey));
+		if (configuration.loggingEnabled) {
+			Log.i(ImageLoader.TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, imageLoadingInfo.memoryCacheKey));
+			if (imageLoadingInfo.loadFromUriLock.isLocked()) {
+				Log.i(ImageLoader.TAG, String.format(LOG_WAITING, imageLoadingInfo.memoryCacheKey));
+			}
+		}
 
-		if (checkTaskIsNotActual()) return;
-		Bitmap bmp = tryLoadBitmap();
-		if (bmp == null) return;
+		imageLoadingInfo.loadFromUriLock.lock();
+		Bitmap bmp;
+		try {
+			if (checkTaskIsNotActual()) return;
 
-		if (checkTaskIsNotActual()) return;
-		if (imageLoadingInfo.options.isCacheInMemory()) {
-			if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_IN_MEMORY, imageLoadingInfo.memoryCacheKey));
+			bmp = ImageLoader.getInstance().getMemoryCache().get(imageLoadingInfo.memoryCacheKey);
+			if (bmp == null) {
+				bmp = tryLoadBitmap();
+				if (bmp == null) return;
 
-			configuration.memoryCache.put(imageLoadingInfo.memoryCacheKey, bmp);
+				if (checkTaskIsNotActual()) return;
+				if (imageLoadingInfo.options.isCacheInMemory()) {
+					if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_IN_MEMORY, imageLoadingInfo.memoryCacheKey));
+
+					configuration.memoryCache.put(imageLoadingInfo.memoryCacheKey, bmp);
+				}
+			} else {
+				if (configuration.loggingEnabled)
+					Log.i(ImageLoader.TAG, String.format(LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING, imageLoadingInfo.memoryCacheKey));
+			}
+		} finally {
+			imageLoadingInfo.loadFromUriLock.unlock();
 		}
 
 		if (checkTaskIsNotActual()) return;
