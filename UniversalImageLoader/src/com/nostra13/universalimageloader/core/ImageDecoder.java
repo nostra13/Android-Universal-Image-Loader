@@ -104,6 +104,7 @@ class ImageDecoder {
 		int widthScale = imageWidth / targetWidth;
 		int heightScale = imageWidth / targetHeight;
 		switch (viewScaleType) {
+			case FIT_CENTER:
 			case FIT_XY:
 			case FIT_START:
 			case FIT_END:
