@@ -70,7 +70,8 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 			.build();
 // Initialize ImageLoader with created configuration. Do it once on Application start.
 imageLoader.init(config);
-
+```
+``` java
 // Creates display image options for custom display task (all options are optional)
 DisplayImageOptions options = new DisplayImageOptions.Builder()
            .showStubImage(R.drawable.stub_image)
@@ -78,7 +79,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
            .cacheInMemory()
            .cacheOnDisc()
 		   .imageScaleType(ImageScaleType.POWER_OF_2)
-		   .displayer(new RoundedBitmapDisplayer(0xff424242, 20))
+		   .displayer(new RoundedBitmapDisplayer(20))
            .build();
 // Load and display image
 imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener() {
@@ -98,6 +99,23 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
     public void onLoadingCancelled() {
         // Do nothing
     }
+});
+```
+``` java
+// Just load image
+// Creates display image options
+DisplayImageOptions options = new DisplayImageOptions.Builder()
+           .cacheInMemory()
+           .cacheOnDisc()
+		   .imageScaleType(ImageScaleType.EXACT)
+		   .displayer(new FakeBitmapDisplayer())
+           .build();
+ImageSize minImageSize = new ImageSize(120, 80);
+ImageLoader.getInstance().loadImage(context, imageUrl, minImageSize, options, new SimpleImageLoadingListener() {
+	@Override
+	public void onLoadingComplete(Bitmap loadedImage) {
+		// Do whatever you want with loaded Bitmap
+	}
 });
 ```
 
@@ -167,7 +185,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
  **NOTE:** UnlimitedDiscCache is 30%-faster than other limited disc cache implementations.
 
 ## Applications using Universal Image Loader
-* [MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)
+* **[MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)**
 * [Деловой Киров](https://play.google.com/store/apps/details?id=ru.normakirov.dknorma)
 * [Бизнес-завтрак](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch)
 * [Menu55](http://www.free-lance.ru/users/max475imus/viewproj.php?prjid=3152141)
@@ -176,16 +194,16 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [EUKO 2012](https://play.google.com/store/apps/details?id=de.netlands.emsapp)
 * [TuuSo Image Search](https://play.google.com/store/apps/details?id=com.tuuso)
 * [Газета Стройка](https://play.google.com/store/apps/details?id=ru.normakirov.stroyka)
-* [Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)
+* **[Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)**
 * [Quiz Guess The Guy] (https://play.google.com/store/apps/details?id=com.game.guesstheguy)
 * [Volksempfänger (alpha)](http://volksempfaenger.0x4a42.net)
-* [ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox) | [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro)
+* **[ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox) | [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro)**
 * [London 2012 Games](https://play.google.com/store/apps/details?id=com.mbwasi.london)
 * [카톡 이미지 - 예쁜 프로필 이미지](https://play.google.com/store/apps/details?id=com.bydoori.firstbasea)
 * [dailyPen](https://play.google.com/store/apps/details?id=com.bydoori.dailypen)
 * [TK App](https://play.google.com/store/apps/details?id=com.opendream.tkapp)
 * [Mania!](https://play.google.com/store/apps/details?id=com.astro.mania.activities)
-* [Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities)
+* **[Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities)**
 * [Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test)
 * [Lafemme Fashion Finder](https://play.google.com/store/apps/details?id=me.getlafem.lafemme2)
 * [FastPaleo](https://play.google.com/store/apps/details?id=com.mqmobile.droid.fastpaleo)
@@ -194,6 +212,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [LowPrice lowest book price](https://play.google.com/store/apps/details?id=com.binarybricks.lowprice)
 * [bluebee](https://play.google.com/store/apps/details?id=mobi.bluebee.android.app)
 * [Game PromoBox](https://play.google.com/store/apps/details?id=com.gamepromobox)
+* **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)**
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
