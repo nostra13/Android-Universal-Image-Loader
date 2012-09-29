@@ -4,15 +4,16 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.ImageView;
 import android.widget.RemoteViews;
 
 import com.nostra13.example.universalimageloader.R;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
 
 /**
  * Example widget provider
@@ -20,6 +21,15 @@ import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class UILWidgetProvider extends AppWidgetProvider {
+
+	private static DisplayImageOptions optionsWithFakeDisplayer;
+
+	static {
+		optionsWithFakeDisplayer = new DisplayImageOptions.Builder()
+				.displayer(new FakeBitmapDisplayer())
+				.build();
+	}
+
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		// Initialize ImageLoader with configuration.
@@ -44,19 +54,16 @@ public class UILWidgetProvider extends AppWidgetProvider {
 		final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
 
 		String[] imageUrls = context.getResources().getStringArray(R.array.heavy_images);
-		ImageView tempImageView1 = new ImageView(context);
-		ImageView tempImageView2 = new ImageView(context);
-		tempImageView1.setLayoutParams(new LayoutParams(70, 70)); // 70 - approximate size of ImageView in widget
-		tempImageView2.setLayoutParams(new LayoutParams(70, 70)); // 70 - approximate size of ImageView in widget
 
-		ImageLoader.getInstance().displayImage(imageUrls[0], tempImageView1, new SimpleImageLoadingListener() {
+		ImageSize minImageSize = new ImageSize(70, 70); // 70 - approximate size of ImageView in widget
+		ImageLoader.getInstance().loadImage(context, imageUrls[0], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
 			@Override
 			public void onLoadingComplete(Bitmap loadedImage) {
 				views.setImageViewBitmap(R.id.image_left, loadedImage);
 				appWidgetManager.updateAppWidget(appWidgetId, views);
 			}
 		});
-		ImageLoader.getInstance().displayImage(imageUrls[1], tempImageView2, new SimpleImageLoadingListener() {
+		ImageLoader.getInstance().loadImage(context, imageUrls[1], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
 			@Override
 			public void onLoadingComplete(Bitmap loadedImage) {
 				views.setImageViewBitmap(R.id.image_right, loadedImage);
