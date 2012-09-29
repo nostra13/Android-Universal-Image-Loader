@@ -8,7 +8,7 @@ import android.widget.ImageView;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class SimpleBitmapDisplayer implements BitmapDisplayer {
+public final class SimpleBitmapDisplayer implements BitmapDisplayer {
 	@Override
 	public Bitmap display(Bitmap bitmap, ImageView imageView) {
 		imageView.setImageBitmap(bitmap);
