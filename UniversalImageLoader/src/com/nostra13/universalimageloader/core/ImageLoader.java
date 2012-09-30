@@ -397,10 +397,10 @@ public class ImageLoader {
 	/** Stops all running display image tasks, discards all other scheduled tasks */
 	public void stop() {
 		if (imageLoadingExecutor != null) {
-			imageLoadingExecutor.shutdown();
+			imageLoadingExecutor.shutdownNow();
 		}
 		if (cachedImageLoadingExecutor != null) {
-			cachedImageLoadingExecutor.shutdown();
+			cachedImageLoadingExecutor.shutdownNow();
 		}
 	}
 
