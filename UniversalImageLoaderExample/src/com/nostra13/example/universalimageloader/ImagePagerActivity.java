@@ -38,7 +38,7 @@ public class ImagePagerActivity extends BaseActivity {
 		options = new DisplayImageOptions.Builder()
 			.showImageForEmptyUri(R.drawable.image_for_empty_url)
 			.cacheOnDisc()
-			.imageScaleType(ImageScaleType.EXACT)
+			.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
 			.build();
 
 		pager = (ViewPager) findViewById(R.id.pager);
