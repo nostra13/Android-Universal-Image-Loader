@@ -78,7 +78,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
 		   .showImageForEmptyUri(R.drawable.image_for_empty_url)
            .cacheInMemory()
            .cacheOnDisc()
-		   .imageScaleType(ImageScaleType.POWER_OF_2)
+		   .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
 		   .displayer(new RoundedBitmapDisplayer(20))
            .build();
 // Load and display image
@@ -103,15 +103,14 @@ imageLoader.displayImage(imageUrl, imageView, options, new ImageLoadingListener(
 ```
 ``` java
 // Just load image
-// Creates display image options
 DisplayImageOptions options = new DisplayImageOptions.Builder()
            .cacheInMemory()
            .cacheOnDisc()
-		   .imageScaleType(ImageScaleType.EXACT)
+		   .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
 		   .displayer(new FakeBitmapDisplayer())
            .build();
 ImageSize minImageSize = new ImageSize(120, 80);
-ImageLoader.getInstance().loadImage(context, imageUrl, minImageSize, options, new SimpleImageLoadingListener() {
+imageLoader.loadImage(context, imageUrl, minImageSize, options, new SimpleImageLoadingListener() {
 	@Override
 	public void onLoadingComplete(Bitmap loadedImage) {
 		// Do whatever you want with loaded Bitmap
@@ -217,10 +216,10 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
 
-If you use Universal Image Loader code in your application you have to inform the author about it (*email: nostra13[at]gmail[dot]com*) like this:
+If you use Universal Image Loader code in your application you must inform the author about it (*email: nostra13[at]gmail[dot]com*) like this:
 > I use Universal Image Loader in MyAndroidApp (http://link_to_google_play).
 > I allow/don't allow to mention my app in "Applications using Universal Image Loader" on GitHub.
 
-Also you should (but you don't have to) mention it in application UI with string **"Used Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"** (e.g. in some "About" section).
+Also you should mention it (but it is not required) in application UI with string **"Used Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"** (e.g. in some "About" section).
 
 Licensed under the [BSD 3-clause](http://www.opensource.org/licenses/BSD-3-Clause)
