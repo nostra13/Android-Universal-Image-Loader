@@ -1,5 +1,7 @@
 package com.nostra13.universalimageloader.core;
 
+import android.graphics.Bitmap;
+
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 
@@ -12,7 +14,7 @@ import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
  * <li>whether loaded image will be cached in memory</li>
  * <li>whether loaded image will be cached on disc</li>
  * <li>image scale type</li>
- * <li>transformation matrix</li>
+ * <li>how decoded {@link Bitmap} will be displayed</li>
  * </ul>
  * 
  * You can create instance:
@@ -93,7 +95,7 @@ public final class DisplayImageOptions {
 		private boolean resetViewBeforeLoading = false;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
-		private ImageScaleType imageScaleType = ImageScaleType.POWER_OF_2;
+		private ImageScaleType imageScaleType = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 
 		/**

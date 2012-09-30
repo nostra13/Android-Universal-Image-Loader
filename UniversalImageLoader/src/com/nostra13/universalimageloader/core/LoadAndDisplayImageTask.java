@@ -19,6 +19,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
 /**
@@ -169,7 +170,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 			bmp = decodeWithOOMHandling(imageUri);
 		} else {
 			ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader);
-			bmp = decoder.decode(imageLoadingInfo.targetSize, imageLoadingInfo.options.getImageScaleType(), imageLoadingInfo.imageView.getScaleType());
+			decoder.setLoggingEnabled(configuration.loggingEnabled);
+			ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageLoadingInfo.imageView);
+			bmp = decoder.decode(imageLoadingInfo.targetSize, imageLoadingInfo.options.getImageScaleType(), viewScaleType);
 		}
 		return bmp;
 	}
@@ -177,9 +180,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private Bitmap decodeWithOOMHandling(URI imageUri) throws IOException {
 		Bitmap result = null;
 		ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader);
+		decoder.setLoggingEnabled(configuration.loggingEnabled);
 		for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
 			try {
-				result = decoder.decode(imageLoadingInfo.targetSize, imageLoadingInfo.options.getImageScaleType(), imageLoadingInfo.imageView.getScaleType());
+				ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageLoadingInfo.imageView);
+				result = decoder.decode(imageLoadingInfo.targetSize, imageLoadingInfo.options.getImageScaleType(), viewScaleType);
 			} catch (OutOfMemoryError e) {
 				Log.e(ImageLoader.TAG, e.getMessage(), e);
 
@@ -210,7 +215,8 @@ final class LoadAndDisplayImageTask implements Runnable {
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
 			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), configuration.downloader);
-			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.EXACT);
+			decoder.setLoggingEnabled(configuration.loggingEnabled);
+			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.IN_SAMPLE_INT, ViewScaleType.FIT_INSIDE);
 
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
 			boolean compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
