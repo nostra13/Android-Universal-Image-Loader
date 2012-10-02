@@ -212,6 +212,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [bluebee](https://play.google.com/store/apps/details?id=mobi.bluebee.android.app)
 * [Game PromoBox](https://play.google.com/store/apps/details?id=com.gamepromobox)
 * **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)**
+* [Festival Wallpaper](https://play.google.com/store/apps/details?id=com.cs.fwallpaper)
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
