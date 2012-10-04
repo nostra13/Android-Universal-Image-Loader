@@ -215,6 +215,11 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [Festival Wallpaper](https://play.google.com/store/apps/details?id=com.cs.fwallpaper)
 * [Gaudi Hall](https://play.google.com/store/apps/details?id=ru.normakirov.gaudihall)
 
+## Donation
+You can support the project and thank the author for his hard work :)
+* **[GitTip](https://www.gittip.com/nostra13/)**
+* **[WebMoney](http://www.webmoney.ru/)** (Z417203268219)
+
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
 
