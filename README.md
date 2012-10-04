@@ -213,6 +213,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * [Game PromoBox](https://play.google.com/store/apps/details?id=com.gamepromobox)
 * **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)**
 * [Festival Wallpaper](https://play.google.com/store/apps/details?id=com.cs.fwallpaper)
+* [Gaudi Hall](https://play.google.com/store/apps/details?id=ru.normakirov.gaudihall)
 
 ## License
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
