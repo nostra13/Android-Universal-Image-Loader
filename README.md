@@ -214,6 +214,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 * **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)**
 * [Festival Wallpaper](https://play.google.com/store/apps/details?id=com.cs.fwallpaper)
 * [Gaudi Hall](https://play.google.com/store/apps/details?id=ru.normakirov.gaudihall)
+* [Spocal](https://play.google.com/store/apps/details?id=net.spocal.android)
 
 ## Donation
 You can support the project and thank the author for his hard work :)
