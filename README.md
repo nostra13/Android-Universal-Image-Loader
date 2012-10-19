@@ -225,6 +225,7 @@ or disable caching in memory at all (in DisplayImageOptions).
 * [Gaudi Hall](https://play.google.com/store/apps/details?id=ru.normakirov.gaudihall)
 * [Spocal](https://play.google.com/store/apps/details?id=net.spocal.android)
 * [PhotoDownloader for Facebook](https://play.google.com/store/apps/details?id=com.giannz.photodownloader)
+* [Вкладыши](https://play.google.com/store/apps/details?id=com.banjen.app.gumimages)
 
 ## Donation
 You can support the project and thank the author for his hard work :)
