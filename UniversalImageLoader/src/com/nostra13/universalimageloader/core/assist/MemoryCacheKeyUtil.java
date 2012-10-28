@@ -10,7 +10,7 @@ import java.util.Comparator;
 public final class MemoryCacheKeyUtil {
 
 	private static final String URI_AND_SIZE_SEPARATOR = "_";
-	private static final String MEMORY_CACHE_KEY_FORMAT = "%s" + URI_AND_SIZE_SEPARATOR + "%sx%s";
+	private static final String MEMORY_CACHE_KEY_FORMAT = "%1$s" + URI_AND_SIZE_SEPARATOR + "%2$dx%3$d";
 
 	public static String generateKey(String imageUri, ImageSize targetSize) {
 		return String.format(MEMORY_CACHE_KEY_FORMAT, imageUri, targetSize.getWidth(), targetSize.getHeight());
