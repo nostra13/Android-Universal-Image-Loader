@@ -198,8 +198,7 @@ public class ImageLoader {
 		if (bmp != null && !bmp.isRecycled()) {
 			if (configuration.loggingEnabled) Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey));
 			listener.onLoadingStarted();
-			Bitmap displayedBitmap = options.getDisplayer().display(bmp, imageView);
-			imageView.setImageBitmap(displayedBitmap);
+			options.getDisplayer().display(bmp, imageView);
 			listener.onLoadingComplete(bmp);
 		} else {
 			listener.onLoadingStarted();
