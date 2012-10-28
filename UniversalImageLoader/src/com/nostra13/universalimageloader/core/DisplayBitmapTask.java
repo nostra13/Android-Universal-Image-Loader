@@ -18,16 +18,23 @@ final class DisplayBitmapTask implements Runnable {
 	private final ImageView imageView;
 	private final BitmapDisplayer bitmapDisplayer;
 	private final ImageLoadingListener listener;
+	private final String memoryCacheKey;
 
-	public DisplayBitmapTask(Bitmap bitmap, ImageView imageView, BitmapDisplayer bitmapDisplayer, ImageLoadingListener listener) {
+	public DisplayBitmapTask(Bitmap bitmap, ImageView imageView, BitmapDisplayer bitmapDisplayer, ImageLoadingListener listener, String memoryCacheKey) {
 		this.bitmap = bitmap;
 		this.imageView = imageView;
 		this.bitmapDisplayer = bitmapDisplayer;
 		this.listener = listener;
+		this.memoryCacheKey = memoryCacheKey;
 	}
 
 	public void run() {
-		Bitmap displayedBitmap = bitmapDisplayer.display(bitmap, imageView);
-		listener.onLoadingComplete(displayedBitmap);
+		String currentCacheKey = ImageLoader.getInstance().getLoadingUriForView(imageView);
+		if (memoryCacheKey.equals(currentCacheKey)) {
+			Bitmap displayedBitmap = bitmapDisplayer.display(bitmap, imageView);
+			listener.onLoadingComplete(displayedBitmap);
+		} else {
+			listener.onLoadingCancelled();
+		}
 	}
 }
