@@ -11,30 +11,36 @@ import android.widget.ImageView;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see ImageLoadingListener
+ * @see BitmapDisplayer
  */
 final class DisplayBitmapTask implements Runnable {
 
 	private final Bitmap bitmap;
 	private final ImageView imageView;
+	private final String memoryCacheKey;
 	private final BitmapDisplayer bitmapDisplayer;
 	private final ImageLoadingListener listener;
-	private final String memoryCacheKey;
 
-	public DisplayBitmapTask(Bitmap bitmap, ImageView imageView, BitmapDisplayer bitmapDisplayer, ImageLoadingListener listener, String memoryCacheKey) {
+	public DisplayBitmapTask(Bitmap bitmap, ImageLoadingInfo imageLoadingInfo) {
 		this.bitmap = bitmap;
-		this.imageView = imageView;
-		this.bitmapDisplayer = bitmapDisplayer;
-		this.listener = listener;
-		this.memoryCacheKey = memoryCacheKey;
+		imageView = imageLoadingInfo.imageView;
+		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
+		bitmapDisplayer = imageLoadingInfo.options.getDisplayer();
+		listener = imageLoadingInfo.listener;
 	}
 
 	public void run() {
-		String currentCacheKey = ImageLoader.getInstance().getLoadingUriForView(imageView);
-		if (memoryCacheKey.equals(currentCacheKey)) {
+		if (isViewWasReused()) {
+			listener.onLoadingCancelled();
+		} else {
 			Bitmap displayedBitmap = bitmapDisplayer.display(bitmap, imageView);
 			listener.onLoadingComplete(displayedBitmap);
-		} else {
-			listener.onLoadingCancelled();
 		}
+	}
+
+	/** Checks whether memory cache key (image URI) for current ImageView is actual */
+	private boolean isViewWasReused() {
+		String currentCacheKey = ImageLoader.getInstance().getLoadingUriForView(imageView);
+		return !memoryCacheKey.equals(currentCacheKey);
 	}
 }
