@@ -72,6 +72,7 @@
         <item>http://macprovid.vo.llnwd.net/o43/hub/media/1090/6882/01_headline_Muse.jpg</item>
         <!-- Special cases -->
         <item>file:///mnt/sdcard/Temp/UniversalImageLoader.png</item> <!-- Local image -->
+        <item>assets://LivingThings.jpg</item> <!-- Image from assets -->
         <item>http://upload.wikimedia.org/wikipedia/ru/b/b6/Как_кот_с_мышами_воевал.png</item> <!-- Link with special UTF-8 symbols -->
         <item>https://www.iabti.org/images/M_images/Twitter_Image/follow_twitter_button_d.png</item> <!-- Image from HTTPS -->
         <item>http://bit.ly/soBiXr</item> <!-- Redirect link -->
