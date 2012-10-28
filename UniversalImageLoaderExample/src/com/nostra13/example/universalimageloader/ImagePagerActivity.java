@@ -29,8 +29,8 @@ public class ImagePagerActivity extends BaseActivity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.ac_image_pager);
+
 		Bundle bundle = getIntent().getExtras();
 		String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
 		int pagerPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
@@ -44,12 +44,6 @@ public class ImagePagerActivity extends BaseActivity {
 		pager = (ViewPager) findViewById(R.id.pager);
 		pager.setAdapter(new ImagePagerAdapter(imageUrls));
 		pager.setCurrentItem(pagerPosition);
-	}
-
-	@Override
-	protected void onStop() {
-		imageLoader.stop();
-		super.onStop();
 	}
 
 	private class ImagePagerAdapter extends PagerAdapter {

@@ -21,8 +21,8 @@ public class ImageGalleryActivity extends BaseActivity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.ac_image_gallery);
+
 		Bundle bundle = getIntent().getExtras();
 		String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
 		int galleryPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
@@ -37,12 +37,6 @@ public class ImageGalleryActivity extends BaseActivity {
 		gallery = (Gallery) findViewById(R.id.gallery);
 		gallery.setAdapter(new ImagePagerAdapter(imageUrls));
 		gallery.setSelection(galleryPosition);
-	}
-
-	@Override
-	protected void onStop() {
-		imageLoader.stop();
-		super.onStop();
 	}
 
 	private class ImagePagerAdapter extends BaseAdapter {

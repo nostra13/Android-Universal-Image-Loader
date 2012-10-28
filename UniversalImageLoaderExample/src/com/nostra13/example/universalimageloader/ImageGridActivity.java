@@ -50,12 +50,6 @@ public class ImageGridActivity extends BaseActivity {
 		});
 	}
 
-	@Override
-	protected void onStop() {
-		imageLoader.stop();
-		super.onStop();
-	}
-
 	private void startImageGalleryActivity(int position) {
 		Intent intent = new Intent(this, ImagePagerActivity.class);
 		intent.putExtra(Extra.IMAGES, imageUrls);
