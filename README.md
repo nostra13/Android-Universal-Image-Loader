@@ -228,6 +228,7 @@ or disable caching in memory at all (in DisplayImageOptions).
 * [Вкладыши](https://play.google.com/store/apps/details?id=com.banjen.app.gumimages)
 * [mofferin](https://play.google.com/store/apps/details?id=com.mmobile.mofferin)
 * [WordBoxer](http://www.wordboxer.com/)
+* [EZ Imgur](https://play.google.com/store/apps/details?id=com.ezimgur)
 
 ## Donation
 You can support the project and thank the author for his hard work :)
