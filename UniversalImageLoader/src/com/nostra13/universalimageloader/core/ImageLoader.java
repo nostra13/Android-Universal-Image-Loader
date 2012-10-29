@@ -19,6 +19,7 @@ import android.widget.ImageView.ScaleType;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
@@ -218,7 +219,11 @@ public class ImageLoader {
 			if (isImageCachedOnDisc) {
 				cachedImageLoadingExecutor.submit(displayImageTask);
 			} else {
-				imageLoadingExecutor.submit(displayImageTask);
+				if (configuration.networkDisabled && !uri.startsWith("file://")) {
+					listener.onLoadingFailed(FailReason.NETWORK_DISABLED);
+				} else {
+					imageLoadingExecutor.submit(displayImageTask);
+				}
 			}
 		}
 	}
