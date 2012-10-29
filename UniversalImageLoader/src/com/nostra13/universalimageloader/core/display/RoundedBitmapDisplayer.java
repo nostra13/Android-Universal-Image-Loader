@@ -14,7 +14,9 @@ import android.util.Log;
 import android.widget.ImageView;
 
 /**
- * Displays bitmap with rounded corners
+ * Displays bitmap with rounded corners. <br />
+ * <b>NOTE:</b> New {@link Bitmap} object is created for displaying. So this class needs more memory and can cause
+ * {@link OutOfMemoryError}.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
