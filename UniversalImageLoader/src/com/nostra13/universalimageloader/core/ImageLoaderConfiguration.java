@@ -42,6 +42,7 @@ public final class ImageLoaderConfiguration {
 	final DisplayImageOptions defaultDisplayImageOptions;
 	final ThreadFactory displayImageThreadFactory;
 	final boolean loggingEnabled;
+	final boolean networkDisabled;
 	final ImageDownloader downloader;
 
 	private ImageLoaderConfiguration(final Builder builder) {
@@ -57,6 +58,7 @@ public final class ImageLoaderConfiguration {
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
 		loggingEnabled = builder.loggingEnabled;
+		networkDisabled = builder.networkDisabled;
 		downloader = builder.downloader;
 		displayImageThreadFactory = new ThreadFactory() {
 			@Override
@@ -138,6 +140,7 @@ public final class ImageLoaderConfiguration {
 		private DisplayImageOptions defaultDisplayImageOptions = null;
 
 		private boolean loggingEnabled = false;
+		private boolean networkDisabled = false;
 
 		public Builder(Context context) {
 			this.context = context;
@@ -352,6 +355,12 @@ public final class ImageLoaderConfiguration {
 		/** Enabled detail logging of {@link ImageLoader} work */
 		public Builder enableLogging() {
 			this.loggingEnabled = true;
+			return this;
+		}
+		
+		/** Disable network requests */
+		public Builder disableNetwork() {
+			this.networkDisabled = true;
 			return this;
 		}
 
