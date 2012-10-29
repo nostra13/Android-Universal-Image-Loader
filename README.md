@@ -226,6 +226,7 @@ or disable caching in memory at all (in DisplayImageOptions).
 * [Spocal](https://play.google.com/store/apps/details?id=net.spocal.android)
 * [PhotoDownloader for Facebook](https://play.google.com/store/apps/details?id=com.giannz.photodownloader)
 * [Вкладыши](https://play.google.com/store/apps/details?id=com.banjen.app.gumimages)
+* [Dressdrobe](https://play.google.com/store/apps/details?id=com.dressdrobe.mario)
 * [mofferin](https://play.google.com/store/apps/details?id=com.mmobile.mofferin)
 * [WordBoxer](http://www.wordboxer.com/)
 * [EZ Imgur](https://play.google.com/store/apps/details?id=com.ezimgur)
