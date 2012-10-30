@@ -230,6 +230,8 @@ or disable caching in memory at all (in DisplayImageOptions).
 * [mofferin](https://play.google.com/store/apps/details?id=com.mmobile.mofferin)
 * [WordBoxer](http://www.wordboxer.com/)
 * [EZ Imgur](https://play.google.com/store/apps/details?id=com.ezimgur)
+* [Ciudad en línea](https://play.google.com/store/apps/details?id=com.aliadosweb.android.cel)
+* [Urbanismo en línea](https://play.google.com/store/apps/details?id=com.aliadosweb.android.opel)
 
 ## Donation
 You can support the project and thank the author for his hard work :)
