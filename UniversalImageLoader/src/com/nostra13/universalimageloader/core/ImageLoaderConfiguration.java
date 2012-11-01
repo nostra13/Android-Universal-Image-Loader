@@ -14,6 +14,7 @@ import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 /**
@@ -35,14 +36,17 @@ public final class ImageLoaderConfiguration {
 	final int maxImageHeightForDiscCache;
 	final CompressFormat imageCompressFormatForDiscCache;
 	final int imageQualityForDiscCache;
+
 	final int threadPoolSize;
 	final boolean handleOutOfMemory;
+	final QueueProcessingType tasksProcessingType;
+
 	final MemoryCacheAware<String, Bitmap> memoryCache;
 	final DiscCacheAware discCache;
+	final ImageDownloader downloader;
 	final DisplayImageOptions defaultDisplayImageOptions;
 	final ThreadFactory displayImageThreadFactory;
 	final boolean loggingEnabled;
-	final ImageDownloader downloader;
 
 	private ImageLoaderConfiguration(final Builder builder) {
 		maxImageWidthForMemoryCache = builder.maxImageWidthForMemoryCache;
@@ -58,6 +62,7 @@ public final class ImageLoaderConfiguration {
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
 		loggingEnabled = builder.loggingEnabled;
 		downloader = builder.downloader;
+		tasksProcessingType = builder.tasksProcessingType;
 		displayImageThreadFactory = new ThreadFactory() {
 			@Override
 			public Thread newThread(Runnable r) {
@@ -85,6 +90,7 @@ public final class ImageLoaderConfiguration {
 	 * <li>imageDownloader = {@link ImageDownloader#createDefault()}</li>
 	 * <li>discCacheFileNameGenerator = {@link FileNameGenerator#createDefault()}</li>
 	 * <li>defaultDisplayImageOptions = {@link DisplayImageOptions#createSimple() Simple options}</li>
+	 * <li>tasksProcessingOrder = {@link QueueProcessingType#FIFO}</li>
 	 * <li>detailed logging disabled</li>
 	 * </ul>
 	 * */
@@ -126,6 +132,7 @@ public final class ImageLoaderConfiguration {
 		private int threadPriority = DEFAULT_THREAD_PRIORITY;
 		private boolean denyCacheImageMultipleSizesInMemory = false;
 		private boolean handleOutOfMemory = true;
+		private QueueProcessingType tasksProcessingType = QueueProcessingType.FIFO;
 
 		private int memoryCacheSize = DEFAULT_MEMORY_CACHE_SIZE;
 		private int discCacheSize = 0;
@@ -230,6 +237,15 @@ public final class ImageLoaderConfiguration {
 		 */
 		public Builder offOutOfMemoryHandling() {
 			this.handleOutOfMemory = false;
+			return this;
+		}
+
+		/**
+		 * Sets type of queue processing for tasks for loading and displaying images.<br />
+		 * Default value - {@link QueueProcessingType#FIFO}
+		 */
+		public Builder tasksProcessingOrder(QueueProcessingType tasksProcessingType) {
+			this.tasksProcessingType = tasksProcessingType;
 			return this;
 		}
 
