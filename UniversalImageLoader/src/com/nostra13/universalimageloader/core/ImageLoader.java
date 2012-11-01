@@ -69,7 +69,7 @@ public class ImageLoader {
 		return instance;
 	}
 
-	private ImageLoader() {
+	protected ImageLoader() {
 	}
 
 	/**
