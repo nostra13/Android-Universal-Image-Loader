@@ -12,9 +12,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
@@ -25,8 +25,8 @@ import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
@@ -420,26 +420,22 @@ public class ImageLoader {
 	 * Size computing algorithm:<br />
 	 * 1) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step #2.</br>
 	 * 2) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #3.<br />
-	 * 3) Get device screen dimensions.
+	 * 3) Get <b>maxImageWidthForMemoryCache</b> and <b>maxImageHeightForMemoryCache</b> from configuration. If both of them are not set then go to step #3.<br />
+	 * 4) Get device screen dimensions.
 	 */
 	private ImageSize getImageSizeScaleTo(ImageView imageView) {
+		DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
+
 		LayoutParams params = imageView.getLayoutParams();
 		int width = params.width; // Get layout width parameter
 		if (width <= 0) width = getFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
 		if (width <= 0) width = configuration.maxImageWidthForMemoryCache;
+		if (width <= 0) width = displayMetrics.widthPixels;
 
 		int height = params.height; // Get layout height parameter
 		if (height <= 0) height = getFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
 		if (height <= 0) height = configuration.maxImageHeightForMemoryCache;
-
-		// Consider device screen orientation
-		int screenOrientation = imageView.getContext().getResources().getConfiguration().orientation;
-		if ((screenOrientation == Configuration.ORIENTATION_PORTRAIT && width > height)
-				|| (screenOrientation == Configuration.ORIENTATION_LANDSCAPE && width < height)) {
-			int tmp = width;
-			width = height;
-			height = tmp;
-		}
+		if (height <= 0) height = displayMetrics.heightPixels;
 
 		return new ImageSize(width, height);
 	}

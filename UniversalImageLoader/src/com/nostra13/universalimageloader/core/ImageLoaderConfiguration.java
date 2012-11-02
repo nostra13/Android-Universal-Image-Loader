@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadFactory;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
@@ -392,13 +391,6 @@ public final class ImageLoaderConfiguration {
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();
-			}
-			DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-			if (maxImageWidthForMemoryCache == 0) {
-				maxImageWidthForMemoryCache = displayMetrics.widthPixels;
-			}
-			if (maxImageHeightForMemoryCache == 0) {
-				maxImageHeightForMemoryCache = displayMetrics.heightPixels;
 			}
 		}
 	}
