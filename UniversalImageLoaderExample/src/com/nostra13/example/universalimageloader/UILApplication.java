@@ -6,6 +6,7 @@ import com.nostra13.example.universalimageloader.downloader.AssetsImageDownloade
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -26,6 +27,7 @@ public class UILApplication extends Application {
 			.denyCacheImageMultipleSizesInMemory()
 			.discCacheFileNameGenerator(new Md5FileNameGenerator())
 			.imageDownloader(new AssetsImageDownloader(getApplicationContext()))
+			.tasksProcessingOrder(QueueProcessingType.LIFO)
 			.enableLogging() // Not necessary in common
 			.build();
 		// Initialize ImageLoader with configuration.

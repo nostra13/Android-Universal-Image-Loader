@@ -1,11 +1,11 @@
 ﻿package com.nostra13.example.universalimageloader;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
