@@ -21,7 +21,6 @@ public class UILApplication extends Application {
 		//  ImageLoaderConfiguration.createDefault(this);
 		// method.
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-			.threadPoolSize(3)
 			.threadPriority(Thread.NORM_PRIORITY - 2)
 			.memoryCacheSize(2 * 1024 * 1024) // 2 Mb
 			.denyCacheImageMultipleSizesInMemory()
