@@ -7,13 +7,13 @@ import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
+import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
 
 /**
  * Information for load'n'display image task
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @see MemoryCacheKeyUtil
+ * @see MemoryCacheUtil
  * @see DisplayImageOptions
  * @see ImageLoadingListener
  */
@@ -34,6 +34,6 @@ final class ImageLoadingInfo {
 		this.options = options;
 		this.listener = listener;
 		this.loadFromUriLock = loadFromUriLock;
-		memoryCacheKey = MemoryCacheKeyUtil.generateKey(uri, targetSize);
+		memoryCacheKey = MemoryCacheUtil.generateKey(uri, targetSize);
 	}
 }

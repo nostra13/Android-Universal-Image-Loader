@@ -24,7 +24,7 @@ import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
+import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
@@ -196,7 +196,7 @@ public class ImageLoader {
 		}
 
 		ImageSize targetSize = getImageSizeScaleTo(imageView);
-		String memoryCacheKey = MemoryCacheKeyUtil.generateKey(uri, targetSize);
+		String memoryCacheKey = MemoryCacheUtil.generateKey(uri, targetSize);
 		cacheKeysForImageViews.put(imageView, memoryCacheKey);
 
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
