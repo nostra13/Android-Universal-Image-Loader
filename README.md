@@ -56,6 +56,7 @@ File cacheDir = StorageUtils.getOwnCacheDirectory(getApplicationContext(), "Univ
 // Get singletone instance of ImageLoader
 ImageLoader imageLoader = ImageLoader.getInstance();
 // Create configuration for ImageLoader (all options are optional, use only those you really want to customize)
+// DON'T COPY THIS CODE TO YOUR PROJECT! This is just example of using ALL options. Most of them have default values.
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
 			.memoryCacheExtraOptions(480, 800) // max width, max height
 			.discCacheExtraOptions(480, 800, CompressFormat.JPEG, 75) // Can slow ImageLoader, use it carefully (Better don't use it)
@@ -67,6 +68,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
 			.discCache(new UnlimitedDiscCache(cacheDir)) // You can pass your own disc cache implementation
 			.discCacheFileNameGenerator(new HashCodeFileNameGenerator())
 			.imageDownloader(new URLConnectionImageDownloader(5 * 1000, 20 * 1000)) // connectTimeout (5 s), readTimeout (20 s)
+			.tasksProcessingOrder(QueueProcessingType.FIFO)
 			.defaultDisplayImageOptions(DisplayImageOptions.createSimple())
 			.enableLogging()
 			.build();
@@ -193,43 +195,7 @@ or disable caching in memory at all (in DisplayImageOptions).
  **NOTE:** UnlimitedDiscCache is 30%-faster than other limited disc cache implementations.
 
 ## Applications using Universal Image Loader
-* **[MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)**
-* [Деловой Киров](https://play.google.com/store/apps/details?id=ru.normakirov.dknorma)
-* [Бизнес-завтрак](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch)
-* [Menu55](http://www.free-lance.ru/users/max475imus/viewproj.php?prjid=3152141)
-* [SpokenPic](http://spokenpic.com)
-* [Kumir](https://play.google.com/store/apps/details?id=ru.premiakumir.android)
-* [EUKO 2012](https://play.google.com/store/apps/details?id=de.netlands.emsapp)
-* [TuuSo Image Search](https://play.google.com/store/apps/details?id=com.tuuso)
-* [Газета Стройка](https://play.google.com/store/apps/details?id=ru.normakirov.stroyka)
-* **[Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)**
-* [Quiz Guess The Guy] (https://play.google.com/store/apps/details?id=com.game.guesstheguy)
-* [Volksempfänger (alpha)](http://volksempfaenger.0x4a42.net)
-* **[ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox) | [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro)**
-* [London 2012 Games](https://play.google.com/store/apps/details?id=com.mbwasi.london)
-* [카톡 이미지 - 예쁜 프로필 이미지](https://play.google.com/store/apps/details?id=com.bydoori.firstbasea)
-* [dailyPen](https://play.google.com/store/apps/details?id=com.bydoori.dailypen)
-* [TK App](https://play.google.com/store/apps/details?id=com.opendream.tkapp)
-* [Mania!](https://play.google.com/store/apps/details?id=com.astro.mania.activities)
-* **[Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities)**
-* [Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test)
-* [Lafemme Fashion Finder](https://play.google.com/store/apps/details?id=me.getlafem.lafemme2)
-* [FastPaleo](https://play.google.com/store/apps/details?id=com.mqmobile.droid.fastpaleo)
-* [Live Soccer Scores](https://play.google.com/store/apps/details?id=com.sporee.android)
-* [friendizer](https://play.google.com/store/apps/details?id=com.teamagly.friendizer)
-* [LowPrice lowest book price](https://play.google.com/store/apps/details?id=com.binarybricks.lowprice)
-* [bluebee](https://play.google.com/store/apps/details?id=mobi.bluebee.android.app)
-* [Game PromoBox](https://play.google.com/store/apps/details?id=com.gamepromobox)
-* **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)**
-* [Festival Wallpaper](https://play.google.com/store/apps/details?id=com.cs.fwallpaper)
-* [Gaudi Hall](https://play.google.com/store/apps/details?id=ru.normakirov.gaudihall)
-* [Spocal](https://play.google.com/store/apps/details?id=net.spocal.android)
-* [PhotoDownloader for Facebook](https://play.google.com/store/apps/details?id=com.giannz.photodownloader)
-* [Вкладыши](https://play.google.com/store/apps/details?id=com.banjen.app.gumimages)
-* [Dressdrobe](https://play.google.com/store/apps/details?id=com.dressdrobe.mario)
-* [mofferin](https://play.google.com/store/apps/details?id=com.mmobile.mofferin)
-* [WordBoxer](http://www.wordboxer.com/)
-* [EZ Imgur](https://play.google.com/store/apps/details?id=com.ezimgur)
+**[MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)** | [Деловой Киров](https://play.google.com/store/apps/details?id=ru.normakirov.dknorma) | [Бизнес-завтрак](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch) | [Menu55](http://www.free-lance.ru/users/max475imus/viewproj.php?prjid=3152141) | [SpokenPic](http://spokenpic.com) | [Kumir](https://play.google.com/store/apps/details?id=ru.premiakumir.android) | [EUKO 2012](https://play.google.com/store/apps/details?id=de.netlands.emsapp) | [TuuSo Image Search](https://play.google.com/store/apps/details?id=com.tuuso) | [Газета Стройка](https://play.google.com/store/apps/details?id=ru.normakirov.stroyka) | **[Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)** | [Quiz Guess The Guy] (https://play.google.com/store/apps/details?id=com.game.guesstheguy) | [Volksempfänger (alpha)](http://volksempfaenger.0x4a42.net) | **[ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox), [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro)** | [London 2012 Games](https://play.google.com/store/apps/details?id=com.mbwasi.london) | [카톡 이미지 - 예쁜 프로필 이미지](https://play.google.com/store/apps/details?id=com.bydoori.firstbasea) | [dailyPen](https://play.google.com/store/apps/details?id=com.bydoori.dailypen) | [TK App](https://play.google.com/store/apps/details?id=com.opendream.tkapp) | [Mania!](https://play.google.com/store/apps/details?id=com.astro.mania.activities) | **[Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities)** | [Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test) | [Lafemme Fashion Finder](https://play.google.com/store/apps/details?id=me.getlafem.lafemme2) | [FastPaleo](https://play.google.com/store/apps/details?id=com.mqmobile.droid.fastpaleo) | [Live Soccer Scores](https://play.google.com/store/apps/details?id=com.sporee.android) | [friendizer](https://play.google.com/store/apps/details?id=com.teamagly.friendizer) | [LowPrice lowest book price](https://play.google.com/store/apps/details?id=com.binarybricks.lowprice) | [bluebee](https://play.google.com/store/apps/details?id=mobi.bluebee.android.app) | [Game PromoBox](https://play.google.com/store/apps/details?id=com.gamepromobox) | **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)** | [Festival Wallpaper](https://play.google.com/store/apps/details?id=com.cs.fwallpaper) | [Gaudi Hall](https://play.google.com/store/apps/details?id=ru.normakirov.gaudihall) | [Spocal](https://play.google.com/store/apps/details?id=net.spocal.android) | [PhotoDownloader for Facebook](https://play.google.com/store/apps/details?id=com.giannz.photodownloader) | [Вкладыши](https://play.google.com/store/apps/details?id=com.banjen.app.gumimages) | [Dressdrobe](https://play.google.com/store/apps/details?id=com.dressdrobe.mario) | [mofferin](https://play.google.com/store/apps/details?id=com.mmobile.mofferin) | [WordBoxer](http://www.wordboxer.com/) | [EZ Imgur](https://play.google.com/store/apps/details?id=com.ezimgur) | [Waypost](https://play.google.com/store/apps/details?id=com.brushfire.waypost) | [Moonrise Kingdom Wallpapers HD](https://play.google.com/store/apps/details?id=net.dnlk.moonrisekingdom.gallery)
 
 ## Donation
 You can support the project and thank the author for his hard work :)
