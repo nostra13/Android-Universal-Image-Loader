@@ -162,9 +162,10 @@ To provide caching on external storage (SD card) add following permission to And
 ```
 
 3. How UIL define Bitmap size needed for exact ImageView? It searches defined parameters:
- * Get ```android:layout_width``` or ```android:layout_height``` parameters
- * Get ```android:maxWidth``` and ```android:maxHeight``` parameters
- * Get maximum size parameters from configuration (```memoryCacheExtraOptions(int, int)``` option)
+ * Get ```android:layout_width``` and ```android:layout_height``` parameters
+ * Get ```android:maxWidth``` and/or ```android:maxHeight``` parameters
+ * Get maximum width and/or height parameters from configuration (```memoryCacheExtraOptions(int, int)``` option)
+ * Get width and/or height of device screen
 
  So **try to set** ```android:layout_width```|```android:layout_height``` or ```android:maxWidth```|```android:maxHeight``` parameters for ImageView if you know approximate maximum size of it. It will help correctly compute Bitmap size needed for this view and **save memory**.
 
