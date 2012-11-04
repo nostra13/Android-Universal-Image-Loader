@@ -33,9 +33,10 @@ public class ImageListActivity extends BaseActivity {
 
 		options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.stub_image)
+			.showImageForEmptyUri(R.drawable.image_for_empty_url)
 			.cacheInMemory()
 			.cacheOnDisc()
-			.displayer(new RoundedBitmapDisplayer(30))
+			.displayer(new RoundedBitmapDisplayer(20))
 			.build();
 
 		ListView listView = (ListView) findViewById(android.R.id.list);
