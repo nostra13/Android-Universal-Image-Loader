@@ -1,5 +1,6 @@
 package com.nostra13.example.universalimageloader.widget;
 
+import static com.nostra13.example.universalimageloader.Constants.IMAGES;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
@@ -25,21 +26,15 @@ public class UILWidgetProvider extends AppWidgetProvider {
 	private static DisplayImageOptions optionsWithFakeDisplayer;
 
 	static {
-		optionsWithFakeDisplayer = new DisplayImageOptions.Builder()
-				.displayer(new FakeBitmapDisplayer())
-				.build();
+		optionsWithFakeDisplayer = new DisplayImageOptions.Builder().displayer(new FakeBitmapDisplayer()).build();
 	}
 
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		// Initialize ImageLoader with configuration.
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-				.threadPoolSize(3)
-				.threadPriority(Thread.NORM_PRIORITY - 2)
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context).threadPoolSize(3).threadPriority(Thread.NORM_PRIORITY - 2)
 				.memoryCacheSize(1500000) // 1.5 Mb
-				.denyCacheImageMultipleSizesInMemory()
-				.discCacheFileNameGenerator(new Md5FileNameGenerator())
-				.enableLogging() // Not necessary in common
+				.denyCacheImageMultipleSizesInMemory().discCacheFileNameGenerator(new Md5FileNameGenerator()).enableLogging() // Not necessary in common
 				.build();
 		ImageLoader.getInstance().init(config);
 
@@ -53,17 +48,15 @@ public class UILWidgetProvider extends AppWidgetProvider {
 	static void updateAppWidget(Context context, final AppWidgetManager appWidgetManager, final int appWidgetId) {
 		final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
 
-		String[] imageUrls = context.getResources().getStringArray(R.array.heavy_images);
-
 		ImageSize minImageSize = new ImageSize(70, 70); // 70 - approximate size of ImageView in widget
-		ImageLoader.getInstance().loadImage(context, imageUrls[0], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
+		ImageLoader.getInstance().loadImage(context, IMAGES[0], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
 			@Override
 			public void onLoadingComplete(Bitmap loadedImage) {
 				views.setImageViewBitmap(R.id.image_left, loadedImage);
 				appWidgetManager.updateAppWidget(appWidgetId, views);
 			}
 		});
-		ImageLoader.getInstance().loadImage(context, imageUrls[1], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
+		ImageLoader.getInstance().loadImage(context, IMAGES[1], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
 			@Override
 			public void onLoadingComplete(Bitmap loadedImage) {
 				views.setImageViewBitmap(R.id.image_right, loadedImage);
