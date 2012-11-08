@@ -214,7 +214,7 @@ You can support the project and thank the author for his hard work :)
 Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
 
 If you use Universal Image Loader code in your application you must inform the author about it ( *email: nostra13[at]gmail[dot]com* ) like this:
-> I use Universal Image Loader in [ApplicationName] (http://link_to_google_play).
+> I use Universal Image Loader in [ApplicationName] - http://link_to_google_play.
 > I [allow|don't allow] to mention my app in "Applications using Universal Image Loader" on GitHub.
 
 Also you should mention it (but it is not required) in application UI with string **"Used Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich"** (e.g. in some "About" section).
