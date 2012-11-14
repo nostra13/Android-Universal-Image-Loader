@@ -174,7 +174,9 @@ class ImageDecoder {
 		if ((scaleType == ImageScaleType.EXACTLY && destWidth < srcWidth && destHeight < srcHeight)
 				|| (scaleType == ImageScaleType.EXACTLY_STRETCHED && destWidth != srcWidth && destHeight != srcHeight)) {
 			scaledBitmap = Bitmap.createScaledBitmap(subsampledBitmap, destWidth, destHeight, true);
-			subsampledBitmap.recycle();
+			if (scaledBitmap != subsampledBitmap) {
+				subsampledBitmap.recycle();
+			}
 			if (loggingEnabled) Log.d(ImageLoader.TAG, String.format(LOG_IMAGE_SCALED, (int) srcWidth, (int) srcHeight, destWidth, destHeight));
 		} else {
 			scaledBitmap = subsampledBitmap;
