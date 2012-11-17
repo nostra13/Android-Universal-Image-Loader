@@ -4,7 +4,8 @@ import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 /**
- * Displays {@link Bitmap} in {@link ImageView}. Successors can apply some changes to Bitmap before displaying.
+ * Displays {@link Bitmap} in {@link ImageView}. Successors can apply some changes to Bitmap before displaying or apply
+ * animation.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
