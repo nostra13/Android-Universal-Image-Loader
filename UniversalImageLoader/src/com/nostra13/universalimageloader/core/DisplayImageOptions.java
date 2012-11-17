@@ -14,6 +14,7 @@ import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
  * <li>whether loaded image will be cached in memory</li>
  * <li>whether loaded image will be cached on disc</li>
  * <li>image scale type</li>
+ * <li>bitmap decoding configuration</li>
  * <li>how decoded {@link Bitmap} will be displayed</li>
  * </ul>
  * 
@@ -36,6 +37,7 @@ public final class DisplayImageOptions {
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
 	private final ImageScaleType imageScaleType;
+	private final Bitmap.Config bitmapConfig;
 	private final BitmapDisplayer displayer;
 
 	private DisplayImageOptions(Builder builder) {
@@ -45,6 +47,7 @@ public final class DisplayImageOptions {
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
 		imageScaleType = builder.imageScaleType;
+		bitmapConfig = builder.bitmapConfig;
 		displayer = builder.displayer;
 	}
 
@@ -80,6 +83,10 @@ public final class DisplayImageOptions {
 		return imageScaleType;
 	}
 
+	Bitmap.Config getBitmapConfig() {
+		return bitmapConfig;
+	}
+
 	BitmapDisplayer getDisplayer() {
 		return displayer;
 	}
@@ -96,6 +103,7 @@ public final class DisplayImageOptions {
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
 		private ImageScaleType imageScaleType = ImageScaleType.IN_SAMPLE_POWER_OF_2;
+		private Bitmap.Config bitmapConfig = Bitmap.Config.ARGB_8888;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 
 		/**
@@ -145,6 +153,12 @@ public final class DisplayImageOptions {
 		 */
 		public Builder imageScaleType(ImageScaleType imageScaleType) {
 			this.imageScaleType = imageScaleType;
+			return this;
+		}
+
+		/** Sets {@link Bitmap.Config bitmap config} for image decoding. Default value - {@link Bitmap.Config#ARGB_8888} */
+		public Builder bitmapConfig(Bitmap.Config bitmapConfig) {
+			this.bitmapConfig = bitmapConfig;
 			return this;
 		}
 

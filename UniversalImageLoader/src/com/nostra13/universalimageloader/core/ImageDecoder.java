@@ -22,6 +22,7 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
  * @see ImageScaleType
  * @see ViewScaleType
  * @see ImageDownloader
+ * @see DisplayImageOptions
  */
 class ImageDecoder {
 
@@ -30,6 +31,7 @@ class ImageDecoder {
 
 	private final URI imageUri;
 	private final ImageDownloader imageDownloader;
+	private final DisplayImageOptions displayOptions;
 
 	private boolean loggingEnabled;
 
@@ -40,9 +42,10 @@ class ImageDecoder {
 	 *            Image downloader
 	 * 
 	 */
-	ImageDecoder(URI imageUri, ImageDownloader imageDownloader) {
+	ImageDecoder(URI imageUri, ImageDownloader imageDownloader, DisplayImageOptions options) {
 		this.imageUri = imageUri;
 		this.imageDownloader = imageDownloader;
+		this.displayOptions = options;
 	}
 
 	/**
@@ -97,9 +100,10 @@ class ImageDecoder {
 	}
 
 	private Options getBitmapOptionsForImageDecoding(ImageSize targetSize, ImageScaleType scaleType, ViewScaleType viewScaleType) throws IOException {
-		Options options = new Options();
-		options.inSampleSize = computeImageScale(targetSize, scaleType, viewScaleType);
-		return options;
+		Options decodeOptions = new Options();
+		decodeOptions.inSampleSize = computeImageScale(targetSize, scaleType, viewScaleType);
+		decodeOptions.inPreferredConfig = displayOptions.getBitmapConfig();
+		return decodeOptions;
 	}
 
 	@SuppressWarnings("deprecation")

@@ -168,7 +168,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (configuration.handleOutOfMemory) {
 			bmp = decodeWithOOMHandling(imageUri);
 		} else {
-			ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader);
+			ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader, imageLoadingInfo.options);
 			decoder.setLoggingEnabled(configuration.loggingEnabled);
 			ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageLoadingInfo.imageView);
 			bmp = decoder.decode(imageLoadingInfo.targetSize, imageLoadingInfo.options.getImageScaleType(), viewScaleType);
@@ -178,7 +178,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	private Bitmap decodeWithOOMHandling(URI imageUri) throws IOException {
 		Bitmap result = null;
-		ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader);
+		ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader, imageLoadingInfo.options);
 		decoder.setLoggingEnabled(configuration.loggingEnabled);
 		for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
 			try {
@@ -213,7 +213,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (width > 0 || height > 0) {
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
-			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), configuration.downloader);
+			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), configuration.downloader, imageLoadingInfo.options);
 			decoder.setLoggingEnabled(configuration.loggingEnabled);
 			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.IN_SAMPLE_INT, ViewScaleType.FIT_INSIDE);
 
