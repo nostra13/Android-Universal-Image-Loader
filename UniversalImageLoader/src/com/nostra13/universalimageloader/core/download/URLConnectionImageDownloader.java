@@ -37,6 +37,6 @@ public class URLConnectionImageDownloader extends ImageDownloader {
 		URLConnection conn = imageUri.toURL().openConnection();
 		conn.setConnectTimeout(connectTimeout);
 		conn.setReadTimeout(readTimeout);
-		return new FlushedInputStream(new BufferedInputStream(conn.getInputStream()));
+		return new FlushedInputStream(new BufferedInputStream(conn.getInputStream(), BUFFER_SIZE));
 	}
 }

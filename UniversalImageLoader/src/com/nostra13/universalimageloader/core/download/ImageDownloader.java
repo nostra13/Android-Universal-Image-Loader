@@ -18,6 +18,8 @@ public abstract class ImageDownloader {
 	protected static final String PROTOCOL_HTTPS = "https";
 	protected static final String PROTOCOL_FTP = "ftp";
 
+	protected static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
+
 	/** Retrieves {@link InputStream} of image by URI. Image can be located as in the network and on local file system. */
 	public InputStream getStream(URI imageUri) throws IOException {
 		String scheme = imageUri.getScheme();
@@ -43,6 +45,6 @@ public abstract class ImageDownloader {
 
 	/** Retrieves {@link InputStream} of image by URI (image is located on the local file system or SD card) */
 	protected InputStream getStreamFromFile(URI imageUri) throws IOException {
-		return new BufferedInputStream(imageUri.toURL().openStream());
+		return new BufferedInputStream(imageUri.toURL().openStream(), BUFFER_SIZE);
 	}
 }
