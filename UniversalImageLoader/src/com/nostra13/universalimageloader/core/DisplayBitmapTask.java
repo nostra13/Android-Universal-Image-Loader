@@ -2,6 +2,7 @@ package com.nostra13.universalimageloader.core;
 
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
+import com.nostra13.universalimageloader.utils.L;
 
 import android.graphics.Bitmap;
 import android.widget.ImageView;
@@ -15,11 +16,15 @@ import android.widget.ImageView;
  */
 final class DisplayBitmapTask implements Runnable {
 
+	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
+
 	private final Bitmap bitmap;
 	private final ImageView imageView;
 	private final String memoryCacheKey;
 	private final BitmapDisplayer bitmapDisplayer;
 	private final ImageLoadingListener listener;
+
+	private boolean loggingEnabled;
 
 	public DisplayBitmapTask(Bitmap bitmap, ImageLoadingInfo imageLoadingInfo) {
 		this.bitmap = bitmap;
@@ -33,6 +38,7 @@ final class DisplayBitmapTask implements Runnable {
 		if (isViewWasReused()) {
 			listener.onLoadingCancelled();
 		} else {
+			if (loggingEnabled) L.i(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, memoryCacheKey);
 			Bitmap displayedBitmap = bitmapDisplayer.display(bitmap, imageView);
 			listener.onLoadingComplete(displayedBitmap);
 		}
@@ -42,5 +48,9 @@ final class DisplayBitmapTask implements Runnable {
 	private boolean isViewWasReused() {
 		String currentCacheKey = ImageLoader.getInstance().getLoadingUriForView(imageView);
 		return !memoryCacheKey.equals(currentCacheKey);
+	}
+
+	void setLoggingEnabled(boolean loggingEnabled) {
+		this.loggingEnabled = loggingEnabled;
 	}
 }

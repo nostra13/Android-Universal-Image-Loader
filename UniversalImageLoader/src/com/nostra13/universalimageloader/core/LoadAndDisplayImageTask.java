@@ -13,7 +13,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
@@ -24,6 +23,7 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.utils.FileUtils;
+import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Presents load'n'display image task. Used to load image from Internet or file system, decode it to {@link Bitmap}, and
@@ -35,6 +35,7 @@ import com.nostra13.universalimageloader.utils.FileUtils;
  */
 final class LoadAndDisplayImageTask implements Runnable {
 
+	private static final String LOG_DELAY_BEFORE_LOADING = "Delay %d ms before loading...  [%s]";
 	private static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
 	private static final String LOG_WAITING = "Image already is loading. Waiting... [%s]";
 	private static final String LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING = "...Get cached bitmap from memory after waiting. [%s]";
@@ -42,7 +43,6 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final String LOG_LOAD_IMAGE_FROM_DISC_CACHE = "Load image from disc cache [%s]";
 	private static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
 	private static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
-	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
 
 	private static final int ATTEMPT_COUNT_TO_DECODE_BITMAP = 3;
 	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
@@ -80,16 +80,16 @@ final class LoadAndDisplayImageTask implements Runnable {
 	public void run() {
 		if (checkTaskIsNotActual()) return;
 		if (options.isDelayBeforeLoading()) {
-			if (loggingEnabled) Log.i(ImageLoader.TAG, String.format("Delay %d ms before loading...", options.getDelayBeforeLoading()));
+			if (loggingEnabled) L.i(LOG_DELAY_BEFORE_LOADING, options.getDelayBeforeLoading(), memoryCacheKey);
 			SystemClock.sleep(options.getDelayBeforeLoading());
 			if (checkTaskIsNotActual()) return;
 		}
 
 		ReentrantLock loadFromUriLock = imageLoadingInfo.loadFromUriLock;
 		if (loggingEnabled) {
-			Log.i(ImageLoader.TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, memoryCacheKey));
+			L.i(LOG_START_DISPLAY_IMAGE_TASK, memoryCacheKey);
 			if (loadFromUriLock.isLocked()) {
-				Log.i(ImageLoader.TAG, String.format(LOG_WAITING, memoryCacheKey));
+				L.i(LOG_WAITING, memoryCacheKey);
 			}
 		}
 
@@ -105,21 +105,21 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 				if (checkTaskIsNotActual()) return;
 				if (options.isCacheInMemory()) {
-					if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_IN_MEMORY, memoryCacheKey));
+					if (loggingEnabled) L.i(LOG_CACHE_IMAGE_IN_MEMORY, memoryCacheKey);
 
 					configuration.memoryCache.put(memoryCacheKey, bmp);
 				}
 			} else {
-				if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING, memoryCacheKey));
+				if (loggingEnabled) L.i(LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING, memoryCacheKey);
 			}
 		} finally {
 			loadFromUriLock.unlock();
 		}
 
 		if (Thread.interrupted() || checkTaskIsNotActual()) return;
-		if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, memoryCacheKey));
 
 		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo);
+		displayBitmapTask.setLoggingEnabled(loggingEnabled);
 		handler.post(displayBitmapTask);
 	}
 
@@ -151,7 +151,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		try {
 			// Try to load image from disc cache
 			if (imageFile.exists()) {
-				if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_LOAD_IMAGE_FROM_DISC_CACHE, memoryCacheKey));
+				if (loggingEnabled) L.i(LOG_LOAD_IMAGE_FROM_DISC_CACHE, memoryCacheKey);
 
 				Bitmap b = decodeImage(imageFile.toURI());
 				if (b != null) {
@@ -160,11 +160,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 			}
 
 			// Load image from Web
-			if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_LOAD_IMAGE_FROM_INTERNET, memoryCacheKey));
+			if (loggingEnabled) L.i(LOG_LOAD_IMAGE_FROM_INTERNET, memoryCacheKey);
 
 			URI imageUriForDecoding;
 			if (options.isCacheOnDisc()) {
-				if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_ON_DISC, memoryCacheKey));
+				if (loggingEnabled) L.i(LOG_CACHE_IMAGE_ON_DISC, memoryCacheKey);
 
 				saveImageOnDisc(imageFile);
 				discCache.put(uri, imageFile);
@@ -178,16 +178,16 @@ final class LoadAndDisplayImageTask implements Runnable {
 				fireImageLoadingFailedEvent(FailReason.IO_ERROR);
 			}
 		} catch (IOException e) {
-			Log.e(ImageLoader.TAG, e.getMessage(), e);
+			L.e(e);
 			fireImageLoadingFailedEvent(FailReason.IO_ERROR);
 			if (imageFile.exists()) {
 				imageFile.delete();
 			}
 		} catch (OutOfMemoryError e) {
-			Log.e(ImageLoader.TAG, e.getMessage(), e);
+			L.e(e);
 			fireImageLoadingFailedEvent(FailReason.OUT_OF_MEMORY);
 		} catch (Throwable e) {
-			Log.e(ImageLoader.TAG, e.getMessage(), e);
+			L.e(e);
 			fireImageLoadingFailedEvent(FailReason.UNKNOWN);
 		}
 		return bitmap;
@@ -216,7 +216,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 				ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageView);
 				result = decoder.decode(targetSize, options.getImageScaleType(), viewScaleType);
 			} catch (OutOfMemoryError e) {
-				Log.e(ImageLoader.TAG, e.getMessage(), e);
+				L.e(e);
 
 				switch (attempt) {
 					case 1:

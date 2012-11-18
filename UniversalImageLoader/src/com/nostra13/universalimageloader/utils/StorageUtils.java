@@ -5,9 +5,6 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
-
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Provides application storage paths
@@ -89,10 +86,10 @@ public final class StorageUtils {
 			try {
 				new File(dataDir, ".nomedia").createNewFile();
 			} catch (IOException e) {
-				Log.w(ImageLoader.TAG, "Can't create \".nomedia\" file in application external cache directory", e);
+				L.e(e, "Can't create \".nomedia\" file in application external cache directory");
 			}
 			if (!appCacheDir.mkdirs()) {
-				Log.w(ImageLoader.TAG, "Unable to create external cache directory");
+				L.w("Unable to create external cache directory");
 				return null;
 			}
 		}

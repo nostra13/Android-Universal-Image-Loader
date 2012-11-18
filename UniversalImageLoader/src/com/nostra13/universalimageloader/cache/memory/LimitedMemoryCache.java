@@ -4,9 +4,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import android.util.Log;
-
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Limited cache. Provides object storing. Size of all stored bitmaps will not to exceed size limit (
@@ -38,7 +36,7 @@ public abstract class LimitedMemoryCache<K, V> extends BaseMemoryCache<K, V> {
 	public LimitedMemoryCache(int sizeLimit) {
 		this.sizeLimit = sizeLimit;
 		if (sizeLimit > MAX_NORMAL_CACHE_SIZE) {
-			Log.w(ImageLoader.TAG, String.format("You set too large memory cache size (more than %1$d Mb)", MAX_NORMAL_CACHE_SIZE_IN_MB));
+			L.w("You set too large memory cache size (more than %1$d Mb)", MAX_NORMAL_CACHE_SIZE_IN_MB);
 		}
 	}
 

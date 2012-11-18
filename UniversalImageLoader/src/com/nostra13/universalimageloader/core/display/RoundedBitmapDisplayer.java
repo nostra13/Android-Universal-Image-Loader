@@ -1,7 +1,5 @@
 package com.nostra13.universalimageloader.core.display;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -10,8 +8,9 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.Log;
 import android.widget.ImageView;
+
+import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Displays bitmap with rounded corners. <br />
@@ -34,7 +33,7 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		try {
 			roundBitmap = getRoundedCornerBitmap(bitmap);
 		} catch (OutOfMemoryError e) {
-			Log.e(ImageLoader.TAG, "Can't create bitmap with rounded corners. Not enough memory.", e);
+			L.e(e, "Can't create bitmap with rounded corners. Not enough memory.");
 			roundBitmap = bitmap;
 		}
 		imageView.setImageBitmap(roundBitmap);

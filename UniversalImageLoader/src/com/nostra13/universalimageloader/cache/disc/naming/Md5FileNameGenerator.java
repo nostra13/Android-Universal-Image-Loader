@@ -4,9 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import android.util.Log;
-
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Names image file as MD5 hash of image URI
@@ -32,7 +30,7 @@ public class Md5FileNameGenerator implements FileNameGenerator {
 			digest.update(data);
 			hash = digest.digest();
 		} catch (NoSuchAlgorithmException e) {
-			Log.e(ImageLoader.TAG, e.getMessage(), e);
+			L.e(e);
 		}
 		return hash;
 	}

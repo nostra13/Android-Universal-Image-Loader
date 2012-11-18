@@ -15,7 +15,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -30,6 +29,7 @@ import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
+import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Singletone for image loading and displaying at {@link ImageView ImageViews}<br />
@@ -173,7 +173,7 @@ public class ImageLoader {
 			throw new RuntimeException(ERROR_NOT_INIT);
 		}
 		if (imageView == null) {
-			Log.w(TAG, ERROR_WRONG_ARGUMENTS);
+			L.w(TAG, ERROR_WRONG_ARGUMENTS);
 			return;
 		}
 		if (listener == null) {
@@ -201,7 +201,7 @@ public class ImageLoader {
 
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
-			if (configuration.loggingEnabled) Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey));
+			if (configuration.loggingEnabled) L.i(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey);
 			listener.onLoadingStarted();
 			options.getDisplayer().display(bmp, imageView);
 			listener.onLoadingComplete(bmp);
@@ -445,7 +445,7 @@ public class ImageLoader {
 				value = fieldValue;
 			}
 		} catch (Exception e) {
-			Log.e(TAG, e.getMessage(), e);
+			L.e(e);
 		}
 		return value;
 	}

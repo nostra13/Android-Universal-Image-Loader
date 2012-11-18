@@ -2,12 +2,10 @@ package com.nostra13.universalimageloader.cache.disc.impl;
 
 import java.io.File;
 
-import android.util.Log;
-
 import com.nostra13.universalimageloader.cache.disc.LimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Disc cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last
@@ -46,7 +44,7 @@ public class TotalSizeLimitedDiscCache extends LimitedDiscCache {
 	public TotalSizeLimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int maxCacheSize) {
 		super(cacheDir, fileNameGenerator, maxCacheSize);
 		if (maxCacheSize < MIN_NORMAL_CACHE_SIZE) {
-			Log.w(ImageLoader.TAG, String.format("You set too small disc cache size (less than %1$d Mb)", MIN_NORMAL_CACHE_SIZE_IN_MB));
+			L.w("You set too small disc cache size (less than %1$d Mb)", MIN_NORMAL_CACHE_SIZE_IN_MB);
 		}
 	}
 

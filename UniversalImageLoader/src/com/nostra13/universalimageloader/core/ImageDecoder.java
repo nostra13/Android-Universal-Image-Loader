@@ -7,12 +7,12 @@ import java.net.URI;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
-import android.util.Log;
 
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
+import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Decodes images to {@link Bitmap}, scales them to needed size
@@ -153,7 +153,7 @@ class ImageDecoder {
 			scale = 1;
 		}
 
-		if (loggingEnabled) Log.d(ImageLoader.TAG, String.format(LOG_IMAGE_SUBSAMPLED, imageWidth, imageHeight, targetWidth, targetHeight, scale));
+		if (loggingEnabled) L.d(LOG_IMAGE_SUBSAMPLED, imageWidth, imageHeight, targetWidth, targetHeight, scale);
 		return scale;
 	}
 
@@ -181,7 +181,7 @@ class ImageDecoder {
 			if (scaledBitmap != subsampledBitmap) {
 				subsampledBitmap.recycle();
 			}
-			if (loggingEnabled) Log.d(ImageLoader.TAG, String.format(LOG_IMAGE_SCALED, (int) srcWidth, (int) srcHeight, destWidth, destHeight));
+			if (loggingEnabled) L.d(LOG_IMAGE_SCALED, (int) srcWidth, (int) srcHeight, destWidth, destHeight);
 		} else {
 			scaledBitmap = subsampledBitmap;
 		}

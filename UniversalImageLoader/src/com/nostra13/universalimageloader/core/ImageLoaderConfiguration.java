@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadFactory;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.util.Log;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
@@ -15,6 +14,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
+import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Presents configuration for {@link ImageLoader}
@@ -258,7 +258,7 @@ public final class ImageLoaderConfiguration {
 		 */
 		public Builder memoryCacheSize(int memoryCacheSize) {
 			if (memoryCacheSize <= 0) throw new IllegalArgumentException("memoryCacheSize must be a positive number");
-			if (memoryCache != null) Log.w(ImageLoader.TAG, WARNING_MEMORY_CACHE_ALREADY_SET);
+			if (memoryCache != null) L.w(WARNING_MEMORY_CACHE_ALREADY_SET);
 
 			this.memoryCacheSize = memoryCacheSize;
 			return this;
@@ -272,7 +272,7 @@ public final class ImageLoaderConfiguration {
 		 * tuning.
 		 */
 		public Builder memoryCache(MemoryCacheAware<String, Bitmap> memoryCache) {
-			if (memoryCacheSize != DEFAULT_MEMORY_CACHE_SIZE) Log.w(ImageLoader.TAG, WARNING_OVERLAP_MEMORY_CACHE_SIZE);
+			if (memoryCacheSize != DEFAULT_MEMORY_CACHE_SIZE) L.w(WARNING_OVERLAP_MEMORY_CACHE_SIZE);
 
 			this.memoryCache = memoryCache;
 			return this;
@@ -288,8 +288,8 @@ public final class ImageLoaderConfiguration {
 		 */
 		public Builder discCacheSize(int maxCacheSize) {
 			if (maxCacheSize <= 0) throw new IllegalArgumentException("maxCacheSize must be a positive number");
-			if (discCache != null) Log.w(ImageLoader.TAG, WARNING_DISC_CACHE_ALREADY_SET);
-			if (discCacheFileCount > 0) Log.w(ImageLoader.TAG, WARNING_OVERLAP_DISC_CACHE_FILE_COUNT);
+			if (discCache != null) L.w(WARNING_DISC_CACHE_ALREADY_SET);
+			if (discCacheFileCount > 0) L.w(WARNING_OVERLAP_DISC_CACHE_FILE_COUNT);
 
 			this.discCacheSize = maxCacheSize;
 			return this;
@@ -305,8 +305,8 @@ public final class ImageLoaderConfiguration {
 		 */
 		public Builder discCacheFileCount(int maxFileCount) {
 			if (maxFileCount <= 0) throw new IllegalArgumentException("maxFileCount must be a positive number");
-			if (discCache != null) Log.w(ImageLoader.TAG, WARNING_DISC_CACHE_ALREADY_SET);
-			if (discCacheSize > 0) Log.w(ImageLoader.TAG, WARNING_OVERLAP_DISC_CACHE_SIZE);
+			if (discCache != null) L.w(WARNING_DISC_CACHE_ALREADY_SET);
+			if (discCacheSize > 0) L.w(WARNING_OVERLAP_DISC_CACHE_SIZE);
 
 			this.discCacheSize = 0;
 			this.discCacheFileCount = maxFileCount;
@@ -320,7 +320,7 @@ public final class ImageLoaderConfiguration {
 		 * DefaultConfigurationFactory.createFileNameGenerator()}
 		 */
 		public Builder discCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
-			if (discCache != null) Log.w(ImageLoader.TAG, WARNING_DISC_CACHE_ALREADY_SET);
+			if (discCache != null) L.w(WARNING_DISC_CACHE_ALREADY_SET);
 
 			this.discCacheFileNameGenerator = fileNameGenerator;
 			return this;
@@ -345,9 +345,9 @@ public final class ImageLoaderConfiguration {
 		 * StorageUtils.getCacheDirectory(Context)}.<br />
 		 */
 		public Builder discCache(DiscCacheAware discCache) {
-			if (discCacheSize > 0) Log.w(ImageLoader.TAG, WARNING_OVERLAP_DISC_CACHE_SIZE);
-			if (discCacheFileCount > 0) Log.w(ImageLoader.TAG, WARNING_OVERLAP_DISC_CACHE_FILE_COUNT);
-			if (discCacheFileNameGenerator != null) Log.w(ImageLoader.TAG, WARNING_OVERLAP_DISC_CACHE_FILE_NAME_GENERATOR);
+			if (discCacheSize > 0) L.w(WARNING_OVERLAP_DISC_CACHE_SIZE);
+			if (discCacheFileCount > 0) L.w(WARNING_OVERLAP_DISC_CACHE_FILE_COUNT);
+			if (discCacheFileNameGenerator != null) L.w(WARNING_OVERLAP_DISC_CACHE_FILE_NAME_GENERATOR);
 
 			this.discCache = discCache;
 			return this;
