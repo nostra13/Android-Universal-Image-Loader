@@ -326,15 +326,10 @@ public class ImageLoader {
 		if (options.getDisplayer() instanceof FakeBitmapDisplayer) {
 			optionsWithFakeDisplayer = options;
 		} else {
-			DisplayImageOptions.Builder newOptionsBuilder = new DisplayImageOptions.Builder();
-			if (options.isCacheInMemory()) newOptionsBuilder.cacheInMemory();
-			if (options.isCacheOnDisc()) newOptionsBuilder.cacheOnDisc();
-			if (options.isResetViewBeforeLoading()) newOptionsBuilder.resetViewBeforeLoading();
-			if (options.isShowImageForEmptyUri()) newOptionsBuilder.showImageForEmptyUri(options.getImageForEmptyUri());
-			if (options.isShowStubImage()) newOptionsBuilder.showStubImage(options.getStubImage());
-			newOptionsBuilder.imageScaleType(options.getImageScaleType());
-			newOptionsBuilder.displayer(fakeBitmapDisplayer);
-			optionsWithFakeDisplayer = newOptionsBuilder.build();
+			optionsWithFakeDisplayer = new DisplayImageOptions.Builder()
+				.cloneFrom(options)
+				.displayer(fakeBitmapDisplayer)
+				.build();
 		}
 
 		ImageView fakeImage = new ImageView(context);

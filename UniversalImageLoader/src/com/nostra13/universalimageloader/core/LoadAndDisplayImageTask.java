@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.locks.ReentrantLock;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -15,11 +16,13 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
+import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
 /**
@@ -42,52 +45,79 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
 
 	private static final int ATTEMPT_COUNT_TO_DECODE_BITMAP = 3;
+	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
 	private final ImageLoaderConfiguration configuration;
 	private final ImageLoadingInfo imageLoadingInfo;
 	private final Handler handler;
 
+	// Helper references
+	private final ImageDownloader downloader;
+	private final boolean loggingEnabled;
+	private final String uri;
+	private final String memoryCacheKey;
+	private final ImageView imageView;
+	private final ImageSize targetSize;
+	private final DisplayImageOptions options;
+	private final ImageLoadingListener listener;
+
 	public LoadAndDisplayImageTask(ImageLoaderConfiguration configuration, ImageLoadingInfo imageLoadingInfo, Handler handler) {
 		this.configuration = configuration;
 		this.imageLoadingInfo = imageLoadingInfo;
 		this.handler = handler;
+
+		downloader = configuration.downloader;
+		loggingEnabled = configuration.loggingEnabled;
+		uri = imageLoadingInfo.uri;
+		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
+		imageView = imageLoadingInfo.imageView;
+		targetSize = imageLoadingInfo.targetSize;
+		options = imageLoadingInfo.options;
+		listener = imageLoadingInfo.listener;
 	}
 
 	@Override
 	public void run() {
-		if (configuration.loggingEnabled) {
-			Log.i(ImageLoader.TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, imageLoadingInfo.memoryCacheKey));
-			if (imageLoadingInfo.loadFromUriLock.isLocked()) {
-				Log.i(ImageLoader.TAG, String.format(LOG_WAITING, imageLoadingInfo.memoryCacheKey));
+		if (checkTaskIsNotActual()) return;
+		if (options.isDelayBeforeLoading()) {
+			if (loggingEnabled) Log.i(ImageLoader.TAG, String.format("Delay %d ms before loading...", options.getDelayBeforeLoading()));
+			SystemClock.sleep(options.getDelayBeforeLoading());
+			if (checkTaskIsNotActual()) return;
+		}
+
+		ReentrantLock loadFromUriLock = imageLoadingInfo.loadFromUriLock;
+		if (loggingEnabled) {
+			Log.i(ImageLoader.TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, memoryCacheKey));
+			if (loadFromUriLock.isLocked()) {
+				Log.i(ImageLoader.TAG, String.format(LOG_WAITING, memoryCacheKey));
 			}
 		}
 
-		imageLoadingInfo.loadFromUriLock.lock();
+		loadFromUriLock.lock();
 		Bitmap bmp;
 		try {
 			if (checkTaskIsNotActual()) return;
 
-			bmp = ImageLoader.getInstance().getMemoryCache().get(imageLoadingInfo.memoryCacheKey);
+			bmp = ImageLoader.getInstance().getMemoryCache().get(memoryCacheKey);
 			if (bmp == null) {
 				bmp = tryLoadBitmap();
 				if (bmp == null) return;
 
 				if (checkTaskIsNotActual()) return;
-				if (imageLoadingInfo.options.isCacheInMemory()) {
-					if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_IN_MEMORY, imageLoadingInfo.memoryCacheKey));
+				if (options.isCacheInMemory()) {
+					if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_IN_MEMORY, memoryCacheKey));
 
-					configuration.memoryCache.put(imageLoadingInfo.memoryCacheKey, bmp);
+					configuration.memoryCache.put(memoryCacheKey, bmp);
 				}
 			} else {
-				if (configuration.loggingEnabled)
-					Log.i(ImageLoader.TAG, String.format(LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING, imageLoadingInfo.memoryCacheKey));
+				if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING, memoryCacheKey));
 			}
 		} finally {
-			imageLoadingInfo.loadFromUriLock.unlock();
+			loadFromUriLock.unlock();
 		}
 
 		if (Thread.interrupted() || checkTaskIsNotActual()) return;
-		if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, imageLoadingInfo.memoryCacheKey));
+		if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, memoryCacheKey));
 
 		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo);
 		handler.post(displayBitmapTask);
@@ -98,15 +128,15 @@ final class LoadAndDisplayImageTask implements Runnable {
 	 * moment and fire {@link ImageLoadingListener#onLoadingCancelled()} event if it doesn't.
 	 */
 	boolean checkTaskIsNotActual() {
-		String currentCacheKey = ImageLoader.getInstance().getLoadingUriForView(imageLoadingInfo.imageView);
+		String currentCacheKey = ImageLoader.getInstance().getLoadingUriForView(imageView);
 		// Check whether memory cache key (image URI) for current ImageView is actual. 
 		// If ImageView is reused for another task then current task should be cancelled.
-		boolean imageViewWasReused = !imageLoadingInfo.memoryCacheKey.equals(currentCacheKey);
+		boolean imageViewWasReused = !memoryCacheKey.equals(currentCacheKey);
 		if (imageViewWasReused) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					imageLoadingInfo.listener.onLoadingCancelled();
+					listener.onLoadingCancelled();
 				}
 			});
 		}
@@ -114,13 +144,14 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private Bitmap tryLoadBitmap() {
-		File imageFile = configuration.discCache.get(imageLoadingInfo.uri);
+		DiscCacheAware discCache = configuration.discCache;
+		File imageFile = discCache.get(uri);
 
 		Bitmap bitmap = null;
 		try {
 			// Try to load image from disc cache
 			if (imageFile.exists()) {
-				if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_LOAD_IMAGE_FROM_DISC_CACHE, imageLoadingInfo.memoryCacheKey));
+				if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_LOAD_IMAGE_FROM_DISC_CACHE, memoryCacheKey));
 
 				Bitmap b = decodeImage(imageFile.toURI());
 				if (b != null) {
@@ -129,17 +160,17 @@ final class LoadAndDisplayImageTask implements Runnable {
 			}
 
 			// Load image from Web
-			if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_LOAD_IMAGE_FROM_INTERNET, imageLoadingInfo.memoryCacheKey));
+			if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_LOAD_IMAGE_FROM_INTERNET, memoryCacheKey));
 
 			URI imageUriForDecoding;
-			if (imageLoadingInfo.options.isCacheOnDisc()) {
-				if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_ON_DISC, imageLoadingInfo.memoryCacheKey));
+			if (options.isCacheOnDisc()) {
+				if (loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_ON_DISC, memoryCacheKey));
 
 				saveImageOnDisc(imageFile);
-				configuration.discCache.put(imageLoadingInfo.uri, imageFile);
+				discCache.put(uri, imageFile);
 				imageUriForDecoding = imageFile.toURI();
 			} else {
-				imageUriForDecoding = new URI(imageLoadingInfo.uri);
+				imageUriForDecoding = new URI(uri);
 			}
 
 			bitmap = decodeImage(imageUriForDecoding);
@@ -168,22 +199,22 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (configuration.handleOutOfMemory) {
 			bmp = decodeWithOOMHandling(imageUri);
 		} else {
-			ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader, imageLoadingInfo.options);
-			decoder.setLoggingEnabled(configuration.loggingEnabled);
-			ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageLoadingInfo.imageView);
-			bmp = decoder.decode(imageLoadingInfo.targetSize, imageLoadingInfo.options.getImageScaleType(), viewScaleType);
+			ImageDecoder decoder = new ImageDecoder(imageUri, downloader, options);
+			decoder.setLoggingEnabled(loggingEnabled);
+			ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageView);
+			bmp = decoder.decode(targetSize, options.getImageScaleType(), viewScaleType);
 		}
 		return bmp;
 	}
 
 	private Bitmap decodeWithOOMHandling(URI imageUri) throws IOException {
 		Bitmap result = null;
-		ImageDecoder decoder = new ImageDecoder(imageUri, configuration.downloader, imageLoadingInfo.options);
-		decoder.setLoggingEnabled(configuration.loggingEnabled);
+		ImageDecoder decoder = new ImageDecoder(imageUri, downloader, options);
+		decoder.setLoggingEnabled(loggingEnabled);
 		for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
 			try {
-				ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageLoadingInfo.imageView);
-				result = decoder.decode(imageLoadingInfo.targetSize, imageLoadingInfo.options.getImageScaleType(), viewScaleType);
+				ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageView);
+				result = decoder.decode(targetSize, options.getImageScaleType(), viewScaleType);
 			} catch (OutOfMemoryError e) {
 				Log.e(ImageLoader.TAG, e.getMessage(), e);
 
@@ -213,11 +244,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (width > 0 || height > 0) {
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
-			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), configuration.downloader, imageLoadingInfo.options);
-			decoder.setLoggingEnabled(configuration.loggingEnabled);
+			ImageDecoder decoder = new ImageDecoder(new URI(uri), downloader, options);
+			decoder.setLoggingEnabled(loggingEnabled);
 			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.IN_SAMPLE_INT, ViewScaleType.FIT_INSIDE);
 
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
+			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 			boolean compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
 			if (compressedSuccessfully) {
 				bmp.recycle();
@@ -227,9 +258,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 		// If previous compression wasn't needed or failed
 		// Download and save original image
-		InputStream is = configuration.downloader.getStream(new URI(imageLoadingInfo.uri));
+		InputStream is = downloader.getStream(new URI(uri));
 		try {
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
+			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 			try {
 				FileUtils.copyStream(is, os);
 			} finally {
@@ -245,7 +276,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					imageLoadingInfo.listener.onLoadingFailed(failReason);
+					listener.onLoadingFailed(failReason);
 				}
 			});
 		}

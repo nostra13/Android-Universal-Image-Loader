@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 /**
  * Contains options for image display. Defines:
@@ -15,6 +16,7 @@ import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
  * <li>whether loaded image will be cached on disc</li>
  * <li>image scale type</li>
  * <li>bitmap decoding configuration</li>
+ * <li>delay before loading of image</li>
  * <li>how decoded {@link Bitmap} will be displayed</li>
  * </ul>
  * 
@@ -31,13 +33,14 @@ import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
  */
 public final class DisplayImageOptions {
 
-	private final Integer stubImage;
-	private final Integer imageForEmptyUri;
+	private final int stubImage;
+	private final int imageForEmptyUri;
 	private final boolean resetViewBeforeLoading;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
 	private final ImageScaleType imageScaleType;
 	private final Bitmap.Config bitmapConfig;
+	private final int delayBeforeLoading;
 	private final BitmapDisplayer displayer;
 
 	private DisplayImageOptions(Builder builder) {
@@ -48,15 +51,16 @@ public final class DisplayImageOptions {
 		cacheOnDisc = builder.cacheOnDisc;
 		imageScaleType = builder.imageScaleType;
 		bitmapConfig = builder.bitmapConfig;
+		delayBeforeLoading = builder.delayBeforeLoading;
 		displayer = builder.displayer;
 	}
 
 	boolean isShowStubImage() {
-		return stubImage != null;
+		return stubImage != 0;
 	}
 
 	boolean isShowImageForEmptyUri() {
-		return imageForEmptyUri != null;
+		return imageForEmptyUri != 0;
 	}
 
 	Integer getStubImage() {
@@ -87,6 +91,14 @@ public final class DisplayImageOptions {
 		return bitmapConfig;
 	}
 
+	boolean isDelayBeforeLoading() {
+		return delayBeforeLoading > 0;
+	}
+
+	int getDelayBeforeLoading() {
+		return delayBeforeLoading;
+	}
+
 	BitmapDisplayer getDisplayer() {
 		return displayer;
 	}
@@ -97,13 +109,14 @@ public final class DisplayImageOptions {
 	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
 	 */
 	public static class Builder {
-		private Integer stubImage = null;
-		private Integer imageForEmptyUri = null;
+		private int stubImage = 0;
+		private int imageForEmptyUri = 0;
 		private boolean resetViewBeforeLoading = false;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
 		private ImageScaleType imageScaleType = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		private Bitmap.Config bitmapConfig = Bitmap.Config.ARGB_8888;
+		private int delayBeforeLoading = 0;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 
 		/**
@@ -162,12 +175,32 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
+		/** Sets delay time before starting loading task. Default - no delay. */
+		public Builder delayBeforeLoading(int delayInMillis) {
+			this.delayBeforeLoading = delayInMillis;
+			return this;
+		}
+
 		/**
 		 * Sets custom {@link BitmapDisplayer displayer} for image loading task. Default value -
 		 * {@link DefaultConfigurationFactory#createBitmapDisplayer()}
 		 */
 		public Builder displayer(BitmapDisplayer displayer) {
 			this.displayer = displayer;
+			return this;
+		}
+
+		/** Sets all options equal to incoming options */
+		public Builder cloneFrom(DisplayImageOptions options) {
+			stubImage = options.stubImage;
+			imageForEmptyUri = options.imageForEmptyUri;
+			resetViewBeforeLoading = options.resetViewBeforeLoading;
+			cacheInMemory = options.cacheInMemory;
+			cacheOnDisc = options.cacheOnDisc;
+			imageScaleType = options.imageScaleType;
+			bitmapConfig = options.bitmapConfig;
+			delayBeforeLoading = options.delayBeforeLoading;
+			displayer = options.displayer;
 			return this;
 		}
 
@@ -180,13 +213,15 @@ public final class DisplayImageOptions {
 	/**
 	 * Creates options appropriate for single displaying:
 	 * <ul>
-	 * <li>Stub image will <b>not</b> be displayed in {@link android.widget.ImageView ImageView} during image loading</li>
+	 * <li>View will <b>not</b> be reset before loading</li>
 	 * <li>Loaded image will <b>not</b> be cached in memory</li>
-	 * <li>Loaded image will <b>not</b> be cached on disc (application cache directory or on SD card)</li>
-	 * <li>{@link ImageScaleType#POWER_OF_2 FAST} decoding type will be used</li>
+	 * <li>Loaded image will <b>not</b> be cached on disc</li>
+	 * <li>{@link ImageScaleType#IN_SAMPLE_POWER_OF_2} decoding type will be used</li>
+	 * <li>{@link Bitmap.Config#ARGB_8888} bitmap config will be used for image decoding</li>
+	 * <li>{@link SimpleBitmapDisplayer} will be used for image displaying</li>
 	 * </ul>
 	 * 
-	 * These option are appropriate for simple single-use image (from drawables or from internet) displaying.
+	 * These option are appropriate for simple single-use image (from drawables or from Internet) displaying.
 	 */
 	public static DisplayImageOptions createSimple() {
 		return new Builder().build();
