@@ -6,8 +6,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -15,17 +13,16 @@ import android.widget.Toast;
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class ImagePagerActivity extends BaseActivity {
 
-	private ViewPager pager;
-
-	private DisplayImageOptions options;
+	DisplayImageOptions options;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,9 +36,11 @@ public class ImagePagerActivity extends BaseActivity {
 			.showImageForEmptyUri(R.drawable.image_for_empty_url)
 			.cacheOnDisc()
 			.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+			.bitmapConfig(Bitmap.Config.RGB_565)
+			.displayer(new FadeInBitmapDisplayer(300))
 			.build();
 
-		pager = (ViewPager) findViewById(R.id.pager);
+		ViewPager pager = (ViewPager) findViewById(R.id.pager);
 		pager.setAdapter(new ImagePagerAdapter(imageUrls));
 		pager.setCurrentItem(pagerPosition);
 	}
@@ -76,7 +75,7 @@ public class ImagePagerActivity extends BaseActivity {
 			final ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
 			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 
-			imageLoader.displayImage(images[position], imageView, options, new ImageLoadingListener() {
+			imageLoader.displayImage(images[position], imageView, options, new SimpleImageLoadingListener() {
 				@Override
 				public void onLoadingStarted() {
 					spinner.setVisibility(View.VISIBLE);
@@ -105,14 +104,6 @@ public class ImagePagerActivity extends BaseActivity {
 				@Override
 				public void onLoadingComplete(Bitmap loadedImage) {
 					spinner.setVisibility(View.GONE);
-					Animation anim = AnimationUtils.loadAnimation(ImagePagerActivity.this, R.anim.fade_in);
-					imageView.setAnimation(anim);
-					anim.start();
-				}
-
-				@Override
-				public void onLoadingCancelled() {
-					// Do nothing
 				}
 			});
 

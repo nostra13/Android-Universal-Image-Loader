@@ -1,5 +1,6 @@
 package com.nostra13.example.universalimageloader;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
  */
 public class ImageGalleryActivity extends BaseActivity {
 
-	private Gallery gallery;
-
-	private DisplayImageOptions options;
+	DisplayImageOptions options;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -33,9 +32,10 @@ public class ImageGalleryActivity extends BaseActivity {
 			.showStubImage(R.drawable.stub_image)
 			.cacheInMemory()
 			.cacheOnDisc()
+			.bitmapConfig(Bitmap.Config.RGB_565)
 			.build();
 
-		gallery = (Gallery) findViewById(R.id.gallery);
+		Gallery gallery = (Gallery) findViewById(R.id.gallery);
 		gallery.setAdapter(new ImagePagerAdapter(imageUrls));
 		gallery.setSelection(galleryPosition);
 	}

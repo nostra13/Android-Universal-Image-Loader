@@ -1,11 +1,10 @@
 package com.nostra13.example.universalimageloader;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -14,16 +13,16 @@ import android.widget.ImageView;
 
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.OnScrollSmartOptions;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class ImageGridActivity extends BaseActivity {
 
-	private String[] imageUrls;
+	String[] imageUrls;
 
-	private DisplayImageOptions options;
+	OnScrollSmartOptions smartOptions;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,12 +32,14 @@ public class ImageGridActivity extends BaseActivity {
 		Bundle bundle = getIntent().getExtras();
 		imageUrls = bundle.getStringArray(Extra.IMAGES);
 
-		options = new DisplayImageOptions.Builder()
+		DisplayImageOptions options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.stub_image)
 			.showImageForEmptyUri(R.drawable.image_for_empty_url)
 			.cacheInMemory()
 			.cacheOnDisc()
+			.bitmapConfig(Bitmap.Config.RGB_565)
 			.build();
+		smartOptions = new OnScrollSmartOptions(options);
 
 		GridView gridView = (GridView) findViewById(R.id.gridview);
 		gridView.setAdapter(new ImageAdapter());
@@ -48,6 +49,7 @@ public class ImageGridActivity extends BaseActivity {
 				startImageGalleryActivity(position);
 			}
 		});
+		gridView.setOnScrollListener(smartOptions);
 	}
 
 	private void startImageGalleryActivity(int position) {
@@ -82,14 +84,7 @@ public class ImageGridActivity extends BaseActivity {
 				imageView = (ImageView) convertView;
 			}
 
-			imageLoader.displayImage(imageUrls[position], imageView, options, new SimpleImageLoadingListener() {
-				@Override
-				public void onLoadingComplete(Bitmap loadedImage) {
-					Animation anim = AnimationUtils.loadAnimation(ImageGridActivity.this, R.anim.fade_in);
-					imageView.setAnimation(anim);
-					anim.start();
-				}
-			});
+			imageLoader.displayImage(imageUrls[position], imageView, smartOptions.getOptions());
 
 			return imageView;
 		}
