@@ -127,7 +127,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	 * Check whether the image URI of this task matches to image URI which is actual for current ImageView at this
 	 * moment and fire {@link ImageLoadingListener#onLoadingCancelled()} event if it doesn't.
 	 */
-	boolean checkTaskIsNotActual() {
+	private boolean checkTaskIsNotActual() {
 		String currentCacheKey = ImageLoader.getInstance().getLoadingUriForView(imageView);
 		// Check whether memory cache key (image URI) for current ImageView is actual. 
 		// If ImageView is reused for another task then current task should be cancelled.

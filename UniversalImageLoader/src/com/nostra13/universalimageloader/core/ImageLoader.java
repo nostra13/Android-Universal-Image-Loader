@@ -2,6 +2,7 @@ package com.nostra13.universalimageloader.core;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.BlockingQueue;
@@ -52,7 +53,7 @@ public class ImageLoader {
 	private ImageLoadingListener emptyListener;
 	private BitmapDisplayer fakeBitmapDisplayer;
 
-	private Map<ImageView, String> cacheKeysForImageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+	private Map<Integer, String> cacheKeysForImageViews = Collections.synchronizedMap(new HashMap<Integer, String>());
 	private Map<String, ReentrantLock> uriLocks = Collections.synchronizedMap(new WeakHashMap<String, ReentrantLock>());
 
 	private volatile static ImageLoader instance;
@@ -184,7 +185,7 @@ public class ImageLoader {
 		}
 
 		if (uri == null || uri.length() == 0) {
-			cacheKeysForImageViews.remove(imageView);
+			cacheKeysForImageViews.remove(imageView.hashCode());
 			listener.onLoadingStarted();
 			if (options.isShowImageForEmptyUri()) {
 				imageView.setImageResource(options.getImageForEmptyUri());
@@ -197,7 +198,7 @@ public class ImageLoader {
 
 		ImageSize targetSize = getImageSizeScaleTo(imageView);
 		String memoryCacheKey = MemoryCacheUtil.generateKey(uri, targetSize);
-		cacheKeysForImageViews.put(imageView, memoryCacheKey);
+		cacheKeysForImageViews.put(imageView.hashCode(), memoryCacheKey);
 
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
@@ -387,7 +388,7 @@ public class ImageLoader {
 
 	/** Returns URI of image which is loading at this moment into passed {@link ImageView} */
 	public String getLoadingUriForView(ImageView imageView) {
-		return cacheKeysForImageViews.get(imageView);
+		return cacheKeysForImageViews.get(imageView.hashCode());
 	}
 
 	/**
@@ -397,7 +398,7 @@ public class ImageLoader {
 	 *            {@link ImageView} for which display task will be cancelled
 	 */
 	public void cancelDisplayTask(ImageView imageView) {
-		cacheKeysForImageViews.remove(imageView);
+		cacheKeysForImageViews.remove(imageView.hashCode());
 	}
 
 	/** Stops all running display image tasks, discards all other scheduled tasks */
