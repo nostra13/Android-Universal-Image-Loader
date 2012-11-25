@@ -54,7 +54,7 @@ public class ImageLoader {
 	private BitmapDisplayer fakeBitmapDisplayer;
 
 	private Map<Integer, String> cacheKeysForImageViews = Collections.synchronizedMap(new HashMap<Integer, String>());
-	private Map<String, ReentrantLock> uriLocks = Collections.synchronizedMap(new WeakHashMap<String, ReentrantLock>());
+	private Map<String, ReentrantLock> uriLocks = new WeakHashMap<String, ReentrantLock>();
 
 	private volatile static ImageLoader instance;
 
@@ -452,13 +452,11 @@ public class ImageLoader {
 	}
 
 	private ReentrantLock getLockForUri(String uri) {
-		synchronized (uriLocks) {
-			ReentrantLock lock = uriLocks.get(uri);
-			if (lock == null) {
-				lock = new ReentrantLock();
-				uriLocks.put(uri, lock);
-			}
-			return lock;
+		ReentrantLock lock = uriLocks.get(uri);
+		if (lock == null) {
+			lock = new ReentrantLock();
+			uriLocks.put(uri, lock);
 		}
+		return lock;
 	}
 }
