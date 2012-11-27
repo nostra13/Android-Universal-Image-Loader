@@ -13,7 +13,7 @@ import android.widget.ImageView;
 
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.OnScrollSmartOptions;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -22,7 +22,7 @@ public class ImageGridActivity extends BaseActivity {
 
 	String[] imageUrls;
 
-	OnScrollSmartOptions smartOptions;
+	DisplayImageOptions options;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,14 +32,13 @@ public class ImageGridActivity extends BaseActivity {
 		Bundle bundle = getIntent().getExtras();
 		imageUrls = bundle.getStringArray(Extra.IMAGES);
 
-		DisplayImageOptions options = new DisplayImageOptions.Builder()
+		options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.stub_image)
 			.showImageForEmptyUri(R.drawable.image_for_empty_url)
 			.cacheInMemory()
 			.cacheOnDisc()
 			.bitmapConfig(Bitmap.Config.RGB_565)
 			.build();
-		smartOptions = new OnScrollSmartOptions(options);
 
 		GridView gridView = (GridView) findViewById(R.id.gridview);
 		gridView.setAdapter(new ImageAdapter());
@@ -49,7 +48,7 @@ public class ImageGridActivity extends BaseActivity {
 				startImageGalleryActivity(position);
 			}
 		});
-		gridView.setOnScrollListener(smartOptions);
+		gridView.setOnScrollListener(new PauseOnScrollListener(true, true));
 	}
 
 	private void startImageGalleryActivity(int position) {
@@ -84,7 +83,7 @@ public class ImageGridActivity extends BaseActivity {
 				imageView = (ImageView) convertView;
 			}
 
-			imageLoader.displayImage(imageUrls[position], imageView, smartOptions.getOptions());
+			imageLoader.displayImage(imageUrls[position], imageView, options);
 
 			return imageView;
 		}

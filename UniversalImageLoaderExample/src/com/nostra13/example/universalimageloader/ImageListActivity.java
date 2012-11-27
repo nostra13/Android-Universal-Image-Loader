@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.OnScrollSmartOptions;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 /**
@@ -20,9 +20,9 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
  */
 public class ImageListActivity extends BaseActivity {
 
-	String[] imageUrls;
+	DisplayImageOptions options;
 
-	OnScrollSmartOptions smartOptions;
+	String[] imageUrls;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,14 +32,13 @@ public class ImageListActivity extends BaseActivity {
 		Bundle bundle = getIntent().getExtras();
 		imageUrls = bundle.getStringArray(Extra.IMAGES);
 
-		DisplayImageOptions options = new DisplayImageOptions.Builder()
+		options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.stub_image)
 			.showImageForEmptyUri(R.drawable.image_for_empty_url)
 			.cacheInMemory()
 			.cacheOnDisc()
 			.displayer(new RoundedBitmapDisplayer(20))
 			.build();
-		smartOptions = new OnScrollSmartOptions(options);
 
 		ListView listView = (ListView) findViewById(android.R.id.list);
 		listView.setAdapter(new ItemAdapter());
@@ -49,8 +48,8 @@ public class ImageListActivity extends BaseActivity {
 				startImageGalleryActivity(position);
 			}
 		});
-		
-		listView.setOnScrollListener(smartOptions);
+
+		listView.setOnScrollListener(new PauseOnScrollListener(false, true));
 	}
 
 	private void startImageGalleryActivity(int position) {
@@ -97,7 +96,7 @@ public class ImageListActivity extends BaseActivity {
 
 			holder.text.setText("Item " + position);
 
-			imageLoader.displayImage(imageUrls[position], holder.image, smartOptions.getOptions());
+			imageLoader.displayImage(imageUrls[position], holder.image, options);
 
 			return view;
 		}
