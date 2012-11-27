@@ -17,6 +17,7 @@ import android.widget.ImageView;
 final class DisplayBitmapTask implements Runnable {
 
 	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
+	private static final String LOG_TASK_CANCELLED = "ImageView is reused for another image. Task is cancelled. [%s]";
 
 	private final Bitmap bitmap;
 	private final ImageView imageView;
@@ -36,6 +37,7 @@ final class DisplayBitmapTask implements Runnable {
 
 	public void run() {
 		if (isViewWasReused()) {
+			if (loggingEnabled) L.i(LOG_TASK_CANCELLED, memoryCacheKey);
 			listener.onLoadingCancelled();
 		} else {
 			if (loggingEnabled) L.i(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, memoryCacheKey);

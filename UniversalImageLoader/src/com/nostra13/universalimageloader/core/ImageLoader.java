@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 import android.content.Context;
@@ -50,15 +51,17 @@ public class ImageLoader {
 	private ImageLoaderConfiguration configuration;
 	private ExecutorService imageLoadingExecutor;
 	private ExecutorService cachedImageLoadingExecutor;
-	private ImageLoadingListener emptyListener;
-	private BitmapDisplayer fakeBitmapDisplayer;
 
-	private Map<Integer, String> cacheKeysForImageViews = Collections.synchronizedMap(new HashMap<Integer, String>());
-	private Map<String, ReentrantLock> uriLocks = new WeakHashMap<String, ReentrantLock>();
+	private final ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
+	private final BitmapDisplayer fakeBitmapDisplayer = new FakeBitmapDisplayer();
+
+	private final Map<Integer, String> cacheKeysForImageViews = Collections.synchronizedMap(new HashMap<Integer, String>());
+	private final Map<String, ReentrantLock> uriLocks = new WeakHashMap<String, ReentrantLock>();
+	private final AtomicBoolean paused = new AtomicBoolean(false);
 
 	private volatile static ImageLoader instance;
 
-	/** Returns singletone class instance */
+	/** Returns singleton class instance */
 	public static ImageLoader getInstance() {
 		if (instance == null) {
 			synchronized (ImageLoader.class) {
@@ -74,7 +77,7 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Initializes ImageLoader's singletone instance with configuration. Method shoiuld be called <b>once</b> (each
+	 * Initializes ImageLoader's singleton instance with configuration. Method should be called <b>once</b> (each
 	 * following call will have no effect)<br />
 	 * 
 	 * @param configuration
@@ -88,8 +91,6 @@ public class ImageLoader {
 		}
 		if (this.configuration == null) {
 			this.configuration = configuration;
-			emptyListener = new SimpleImageLoadingListener();
-			fakeBitmapDisplayer = new FakeBitmapDisplayer();
 		}
 	}
 
@@ -401,6 +402,22 @@ public class ImageLoader {
 		cacheKeysForImageViews.remove(imageView.hashCode());
 	}
 
+	/**
+	 * Pause ImageLoader. All new "load&display" tasks won't be executed until ImageLoader is {@link #resume() resumed}.<br />
+	 * Already running tasks are not paused.
+	 */
+	public void pause() {
+		paused.set(true);
+	}
+
+	/** Resumes waiting "load&display" tasks */
+	public void resume() {
+		synchronized (paused) {
+			paused.set(false);
+			paused.notifyAll();
+		}
+	}
+
 	/** Stops all running display image tasks, discards all other scheduled tasks */
 	public void stop() {
 		if (imageLoadingExecutor != null) {
@@ -416,7 +433,8 @@ public class ImageLoader {
 	 * Size computing algorithm:<br />
 	 * 1) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step #2.</br>
 	 * 2) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #3.<br />
-	 * 3) Get <b>maxImageWidthForMemoryCache</b> and <b>maxImageHeightForMemoryCache</b> from configuration. If both of them are not set then go to step #3.<br />
+	 * 3) Get <b>maxImageWidthForMemoryCache</b> and <b>maxImageHeightForMemoryCache</b> from configuration. If both of
+	 * them are not set then go to step #3.<br />
 	 * 4) Get device screen dimensions.
 	 */
 	private ImageSize getImageSizeScaleTo(ImageView imageView) {
@@ -458,5 +476,9 @@ public class ImageLoader {
 			uriLocks.put(uri, lock);
 		}
 		return lock;
+	}
+
+	AtomicBoolean getPause() {
+		return paused;
 	}
 }
