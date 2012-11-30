@@ -1,5 +1,6 @@
 package com.nostra13.universalimageloader.core;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
@@ -370,6 +371,17 @@ public class ImageLoader {
 		if (configuration != null) {
 			configuration.memoryCache.clear();
 		}
+	}
+	
+	/**
+	 * Return the file corresponding to uri if cached on disk.
+	 */
+	public File getCachedFileOnDiscIfExist(String uri){
+	    File file = configuration.discCache.get(uri);
+	    if (!file.exists()){
+	        return null;
+	    }
+	    return file;
 	}
 
 	/** Returns disc cache */
