@@ -1,5 +1,6 @@
 package com.nostra13.example.universalimageloader;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
@@ -58,7 +59,17 @@ public class ImagePagerActivity extends BaseActivity {
 
 		@Override
 		public void destroyItem(View container, int position, Object object) {
-			((ViewPager) container).removeView((View) object);
+			View rootView = (View) object;
+			ImageView imageView = (ImageView) rootView.findViewById(R.id.image);
+			BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+			if (drawable != null) {
+				Bitmap bitmap = drawable.getBitmap();
+				if (bitmap != null) {
+					bitmap.recycle();
+				}
+			}
+
+			((ViewPager) container).removeView(rootView);
 		}
 
 		@Override
