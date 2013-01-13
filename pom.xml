@@ -8,8 +8,8 @@
 	<groupId>com.nostra13.universalimageloader</groupId>
 	<artifactId>parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.7.0</version>
 	<name>Universal Image Loader Project</name>
+	<version>1.7.0</version>
 	<description>Reusable instrument for asynchronous image loading, caching and displaying on Android.</description>
 	<url>https://github.com/nostra13/Android-Universal-Image-Loader</url>
 
@@ -36,8 +36,8 @@
 
 	<developers>
 		<developer>
+		    <id>nostra13</id>
 			<name>Sergey Tarasevich</name>
-			<id>nostra13</id>
 		</developer>
 	</developers>
 
