@@ -1,7 +1,31 @@
+# Application Files
+*.apk
+*.ap_
+
+# Dex VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated folders
 */bin
 */gen
-.project
-/UniversalImageLoader/.classpath
-*/.externalToolBuilders
+*/target
+
+# Config file
 build.xml
 local.properties
+
+# Eclipse
+.classpath
+.project
+
+# Proguard
+proguard/
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
