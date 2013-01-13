@@ -1,4 +1,4 @@
-﻿package com.nostra13.example.universalimageloader;
+package com.nostra13.example.universalimageloader;
 
 import android.app.Activity;
 import android.os.Bundle;
