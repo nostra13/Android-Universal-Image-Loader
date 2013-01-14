@@ -1,5 +1,4 @@
 ﻿# Universal Image Loader for Android
-### 1 year with you :)
 
 This project aims to provide a reusable instrument for asynchronous image loading, caching and displaying. It is originally based on [Fedor Vlasov's project](https://github.com/thest1/LazyList) and has been vastly refactored and improved since then.
 
@@ -224,7 +223,7 @@ You can support the project and thank the author for his hard work :)
 * **[WebMoney](http://www.webmoney.ru/)** (Z417203268219)
 
 ## License
-Copyright (c) 2011-2012, [Sergey Tarasevich](http://nostra13android.blogspot.com)
+Copyright (c) 2011, [Sergey Tarasevich](http://nostra13android.blogspot.com)
 
 If you use Universal Image Loader code in your application you must inform the author about it ( *email: nostra13[at]gmail[dot]com* ) like this:
 > I use Universal Image Loader in [ApplicationName] - http://link_to_google_play.
