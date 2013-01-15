@@ -11,7 +11,7 @@
 # Generated folders
 */bin
 */gen
-*/target
+target
 
 # Config file
 build.xml
