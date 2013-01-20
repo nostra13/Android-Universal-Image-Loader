@@ -3,6 +3,7 @@ Change Log
 
 v1.7.0 *(27.11.2012)*
 ---
+ * Maven support
  * Introduced `ImageLoader.pause()` and `ImageLoader.resume()` (#106)
  * Introduced `PauseOnScrollListener` (instead of `OnScrollSmartOptions`) for convenient pause/resume ImageLoader on scroll/fling in list views (#106)
  * Prevented consuming of lot of memory by cacheKeysForImageViews (#108)
