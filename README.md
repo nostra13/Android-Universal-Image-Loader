@@ -91,12 +91,11 @@ public class MyApplication extends Application {
 
 ## Configuration and Display Options
 
-ImageLoader **Configuration (`ImageLoaderConfiguration`) is global** for application. You should set it once.
-**Display Options (`DisplayImageOptions`) are local** for every display task (`ImageLoader.displayImage(...)`).
+ * ImageLoader **Configuration (`ImageLoaderConfiguration`) is global** for application. You should set it once.
+ * **Display Options (`DisplayImageOptions`) are local** for every display task (`ImageLoader.displayImage(...)`).
 
 ### Configuration
-All options in Configuration builder are optional. Use only those you really want to customize.
-*See default values for config options in Java docs for every option.*
+All options in Configuration builder are optional. Use only those you really want to customize.<br />*See default values for config options in Java docs for every option.*
 ``` java
 // DON'T COPY THIS CODE TO YOUR PROJECT! This is just example of ALL options using.
 File cacheDir = StorageUtils.getCacheDirectory(context);
