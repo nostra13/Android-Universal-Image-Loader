@@ -15,12 +15,12 @@ This project aims to provide a reusable instrument for asynchronous image loadin
 Android 1.5+ support
 
 ## **[Downloads](https://github.com/nostra13/Android-Universal-Image-Loader/tree/master/downloads)**
- * **[universal-image-loader-1.7.0.jar](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/downloads/universal-image-loader-1.7.0.jar)** (library; contains *.class files)
- * **[universal-image-loader-1.7.0-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/downloads/universal-image-loader-1.7.0-sources.jar)** (sources; contains *.java files)
- * **[universal-image-loader-1.7.0-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/downloads/universal-image-loader-1.7.0-javadoc.jar)** (Java docs; contains *.html files)
- * **[universal-image-loader-1.7.0-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/downloads/universal-image-loader-1.7.0-with-sources.jar)** (library with sources inside; contains *.class and *.java files)<br />
+ * **[universal-image-loader-1.7.0.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0.jar)** (library; contains *.class files)
+ * **[universal-image-loader-1.7.0-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-sources.jar)** (sources; contains *.java files)
+ * **[universal-image-loader-1.7.0-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-javadoc.jar)** (Java docs; contains *.html files)
+ * **[universal-image-loader-1.7.0-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-with-sources.jar)** (library with sources inside; contains *.class and *.java files)<br />
    Prefer to use it so you can see Java docs in Eclipse tooltips.
- * **[universal-image-loader-sample-1.7.0.apk](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/downloads/universal-image-loader-sample-1.7.0.apk)** (the sample application)
+ * **[universal-image-loader-sample-1.7.0.apk](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.7.0.apk)** (the sample application)
 
 ## Documentation*
  * Universal Image Loader. Part 1 - Introduction [[RU](http://nostra13android.blogspot.com/2012/03/4-universal-image-loader-part-1.html) | [EN](http://www.intexsoft.com/blog/item/68-universal-image-loader-part-1.html)]
