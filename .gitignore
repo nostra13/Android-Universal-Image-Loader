@@ -1,5 +1,5 @@
 # Application Files
-*.apk
+sample/*.apk
 *.ap_
 
 # Dex VM
