@@ -79,14 +79,14 @@ public final class StorageUtils {
 		File dataDir = new File(new File(Environment.getExternalStorageDirectory(), "Android"), "data");
 		File appCacheDir = new File(new File(dataDir, context.getPackageName()), "cache");
 		if (!appCacheDir.exists()) {
-			try {
-				new File(dataDir, ".nomedia").createNewFile();
-			} catch (IOException e) {
-				L.e(e, "Can't create \".nomedia\" file in application external cache directory");
-			}
 			if (!appCacheDir.mkdirs()) {
 				L.w("Unable to create external cache directory");
 				return null;
+			}
+			try {
+				new File(appCacheDir, ".nomedia").createNewFile();
+			} catch (IOException e) {
+				L.i("Can't create \".nomedia\" file in application external cache directory");
 			}
 		}
 		return appCacheDir;
