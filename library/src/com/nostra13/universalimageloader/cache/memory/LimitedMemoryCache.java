@@ -30,8 +30,7 @@ public abstract class LimitedMemoryCache<K, V> extends BaseMemoryCache<K, V> {
 	private final List<V> hardCache = Collections.synchronizedList(new LinkedList<V>());
 
 	/**
-	 * @param sizeLimit
-	 *            Maximum size for cache (in bytes)
+	 * @param sizeLimit Maximum size for cache (in bytes)
 	 */
 	public LimitedMemoryCache(int sizeLimit) {
 		this.sizeLimit = sizeLimit;

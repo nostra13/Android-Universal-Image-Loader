@@ -16,26 +16,21 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 public class FileCountLimitedDiscCache extends LimitedDiscCache {
 
 	/**
-	 * @param cacheDir
-	 *            Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's needed
-	 *            for right cache limit work.
-	 * @param maxFileCount
-	 *            Maximum file count for cache. If file count in cache directory exceeds this limit then file with the
-	 *            most oldest last usage date will be deleted.
+	 * @param cacheDir Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
+	 *            needed for right cache limit work.
+	 * @param maxFileCount Maximum file count for cache. If file count in cache directory exceeds this limit then file
+	 *            with the most oldest last usage date will be deleted.
 	 */
 	public FileCountLimitedDiscCache(File cacheDir, int maxFileCount) {
 		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxFileCount);
 	}
 
 	/**
-	 * @param cacheDir
-	 *            Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's needed
-	 *            for right cache limit work.
-	 * @param fileNameGenerator
-	 *            Name generator for cached files
-	 * @param maxFileCount
-	 *            Maximum file count for cache. If file count in cache directory exceeds this limit then file with the
-	 *            most oldest last usage date will be deleted.
+	 * @param cacheDir Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
+	 *            needed for right cache limit work.
+	 * @param fileNameGenerator Name generator for cached files
+	 * @param maxFileCount Maximum file count for cache. If file count in cache directory exceeds this limit then file
+	 *            with the most oldest last usage date will be deleted.
 	 */
 	public FileCountLimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int maxFileCount) {
 		super(cacheDir, fileNameGenerator, maxFileCount);

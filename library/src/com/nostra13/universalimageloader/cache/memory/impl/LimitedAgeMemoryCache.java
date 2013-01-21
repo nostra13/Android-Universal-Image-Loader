@@ -22,10 +22,8 @@ public class LimitedAgeMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 	private final Map<K, Long> loadingDates = Collections.synchronizedMap(new HashMap<K, Long>());
 
 	/**
-	 * @param cache
-	 *            Wrapped memory cache
-	 * @param maxAge
-	 *            Max object age <b>(in seconds)</b>. If object age will exceed this value then it'll be removed from
+	 * @param cache Wrapped memory cache
+	 * @param maxAge Max object age <b>(in seconds)</b>. If object age will exceed this value then it'll be removed from
 	 *            cache on next treatment (and therefore be reloaded).
 	 */
 	public LimitedAgeMemoryCache(MemoryCacheAware<K, V> cache, long maxAge) {

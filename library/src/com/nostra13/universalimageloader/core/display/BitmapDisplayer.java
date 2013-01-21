@@ -15,10 +15,8 @@ public interface BitmapDisplayer {
 	 * Display bitmap in {@link ImageView}. Incoming bitmap can be changed any way before displaying. Displayed bitmap
 	 * should be returned.
 	 * 
-	 * @param bitmap
-	 *            Source bitmap
-	 * @param imageView
-	 *            {@link ImageView Image view}
+	 * @param bitmap Source bitmap
+	 * @param imageView {@link ImageView Image view}
 	 * @return Bitmap which was displayed in {@link ImageView}
 	 */
 	Bitmap display(Bitmap bitmap, ImageView imageView);

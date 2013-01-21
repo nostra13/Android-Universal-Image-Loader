@@ -122,8 +122,7 @@ public final class DisplayImageOptions {
 		/**
 		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
 		 * 
-		 * @param stubImageRes
-		 *            Stub image resource
+		 * @param stubImageRes Stub image resource
 		 */
 		public Builder showStubImage(int stubImageRes) {
 			stubImage = stubImageRes;
@@ -134,8 +133,7 @@ public final class DisplayImageOptions {
 		 * Image will be displayed in {@link android.widget.ImageView ImageView} if empty URI (null or empty string)
 		 * will be passed to <b>ImageLoader.displayImage(...)</b> method.
 		 * 
-		 * @param imageRes
-		 *            Image resource
+		 * @param imageRes Image resource
 		 */
 		public Builder showImageForEmptyUri(int imageRes) {
 			imageForEmptyUri = imageRes;

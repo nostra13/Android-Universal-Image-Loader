@@ -36,10 +36,8 @@ class ImageDecoder {
 	private boolean loggingEnabled;
 
 	/**
-	 * @param imageUri
-	 *            Image URI (<b>i.e.:</b> "http://site.com/image.png", "file:///mnt/sdcard/image.png")
-	 * @param imageDownloader
-	 *            Image downloader
+	 * @param imageUri Image URI (<b>i.e.:</b> "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param imageDownloader Image downloader
 	 * 
 	 */
 	ImageDecoder(URI imageUri, ImageDownloader imageDownloader, DisplayImageOptions options) {
@@ -52,10 +50,8 @@ class ImageDecoder {
 	 * Decodes image from URI into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
 	 * decoding (depend on incoming image scale type).
 	 * 
-	 * @param targetSize
-	 *            Image size to scale to during decoding
-	 * @param scaleType
-	 *            {@link ImageScaleType Image scale type}
+	 * @param targetSize Image size to scale to during decoding
+	 * @param scaleType {@link ImageScaleType Image scale type}
 	 * 
 	 * @return Decoded bitmap
 	 * @throws IOException
@@ -68,12 +64,9 @@ class ImageDecoder {
 	 * Decodes image from URI into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
 	 * decoding (depend on incoming image scale type).
 	 * 
-	 * @param targetSize
-	 *            Image size to scale to during decoding
-	 * @param scaleType
-	 *            {@link ImageScaleType Image scale type}
-	 * @param viewScaleType
-	 *            {@link ViewScaleType View scale type}
+	 * @param targetSize Image size to scale to during decoding
+	 * @param scaleType {@link ImageScaleType Image scale type}
+	 * @param viewScaleType {@link ViewScaleType View scale type}
 	 * 
 	 * @return Decoded bitmap
 	 * @throws IOException
