@@ -44,14 +44,6 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	public LimitedAgeDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, long maxAge) {
 		super(cacheDir, fileNameGenerator);
 		this.maxFileAge = maxAge * 1000; // to milliseconds
-		readLoadingDates();
-	}
-
-	private void readLoadingDates() {
-		File[] cachedFiles = getCacheDir().listFiles();
-		for (File cachedFile : cachedFiles) {
-			loadingDates.put(cachedFile, cachedFile.lastModified());
-		}
 	}
 
 	@Override
@@ -65,13 +57,22 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	public File get(String key) {
 		File file = super.get(key);
 		if (file.exists()) {
+			boolean cached;
 			Long loadingDate = loadingDates.get(file);
 			if (loadingDate == null) {
+				cached = false;
 				loadingDate = file.lastModified();
 			}
+			else {
+				cached = true;
+			}
+			
 			if (System.currentTimeMillis() - loadingDate > maxFileAge) {
 				file.delete();
 				loadingDates.remove(file);
+			}
+			else if (!cached) {
+				loadingDates.put(file, loadingDate);
 			}
 		}
 		return file;
