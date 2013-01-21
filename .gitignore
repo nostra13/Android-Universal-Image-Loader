@@ -1,32 +1,24 @@
-# Application Files
-sample/*.apk
-*.ap_
+# Android generated
+bin/
+gen/
 
-# Dex VM
-*.dex
-
-# Java class files
-*.class
-
-# Generated folders
-*/bin
-*/gen
-target
-
-# Config file
+# Ant
 build.xml
 local.properties
+
+# Maven
+target/
+pom.xml.*
+release.properties
 
 # Eclipse
 .classpath
 .project
-library/res
-
-# Proguard
-proguard/
+.externalToolBuilders/
 
 # IntelliJ
 *.iml
 *.ipr
 *.iws
 .idea/
+out/
