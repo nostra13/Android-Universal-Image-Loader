@@ -93,6 +93,14 @@ public class ImageLoader {
 	}
 
 	/**
+	 * Returns true - if ImageLoader {@linkplain #init(ImageLoaderConfiguration) is initialized with configuration};
+	 * false - otherwise
+	 */
+	public boolean isInited() {
+		return configuration != null;
+	}
+
+	/**
 	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn. <br/>
 	 * Default {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
 	 * configuration} will be used.<br />
@@ -100,7 +108,9 @@ public class ImageLoader {
 	 * 
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView {@link ImageView} which should display image
-	 * @throws RuntimeException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
 	public void displayImage(String uri, ImageView imageView) {
 		displayImage(uri, imageView, null, null);
@@ -116,7 +126,9 @@ public class ImageLoader {
 	 *            default display image options
 	 *            {@linkplain ImageLoaderConfiguration.Builder#defaultDisplayImageOptions(DisplayImageOptions) from
 	 *            configuration} will be used.
-	 * @throws RuntimeException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
 	public void displayImage(String uri, ImageView imageView, DisplayImageOptions options) {
 		displayImage(uri, imageView, options, null);
@@ -132,7 +144,9 @@ public class ImageLoader {
 	 * @param imageView {@link ImageView} which should display image
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
-	 * @throws RuntimeException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
 	public void displayImage(String uri, ImageView imageView, ImageLoadingListener listener) {
 		displayImage(uri, imageView, null, listener);
@@ -150,15 +164,14 @@ public class ImageLoader {
 	 *            configuration} will be used.
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
-	 * @throws RuntimeException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
 	public void displayImage(String uri, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
-		if (configuration == null) {
-			throw new RuntimeException(ERROR_NOT_INIT);
-		}
+		checkConfiguration();
 		if (imageView == null) {
-			L.w(TAG, ERROR_WRONG_ARGUMENTS);
-			return;
+			throw new IllegalArgumentException(ERROR_WRONG_ARGUMENTS);
 		}
 		if (listener == null) {
 			listener = emptyListener;
@@ -221,6 +234,8 @@ public class ImageLoader {
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(Context context, String uri, ImageLoadingListener listener) {
 		loadImage(context, uri, null, null, listener);
@@ -239,6 +254,8 @@ public class ImageLoader {
 	 *            incoming minImageSize .
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(Context context, String uri, ImageSize minImageSize, ImageLoadingListener listener) {
 		loadImage(context, uri, minImageSize, null, listener);
@@ -258,6 +275,8 @@ public class ImageLoader {
 	 *            Incoming options should contain {@link FakeBitmapDisplayer} as displayer.
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(Context context, String uri, DisplayImageOptions options, ImageLoadingListener listener) {
 		loadImage(context, uri, null, options, listener);
@@ -281,8 +300,11 @@ public class ImageLoader {
 	 *            Incoming options should contain {@link FakeBitmapDisplayer} as displayer.
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(Context context, String uri, ImageSize minImageSize, DisplayImageOptions options, ImageLoadingListener listener) {
+		checkConfiguration();
 		if (minImageSize == null) {
 			minImageSize = new ImageSize(configuration.maxImageWidthForMemoryCache, configuration.maxImageHeightForMemoryCache);
 		}
@@ -304,6 +326,17 @@ public class ImageLoader {
 		displayImage(uri, fakeImage, optionsWithFakeDisplayer, listener);
 	}
 
+	/**
+	 * Checks if ImageLoader's configuration was initialized
+	 * 
+	 * @throws IllegalStateException if configuration wasn't initialized
+	 */
+	private void checkConfiguration() {
+		if (configuration == null) {
+			throw new IllegalStateException(ERROR_NOT_INIT);
+		}
+	}
+
 	private void initExecutorsIfNeed() {
 		if (imageLoadingExecutor == null || imageLoadingExecutor.isShutdown()) {
 			imageLoadingExecutor = createExecutor();
@@ -320,34 +353,44 @@ public class ImageLoader {
 				configuration.displayImageThreadFactory);
 	}
 
-	/** Returns memory cache */
+	/**
+	 * Returns memory cache
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 */
 	public MemoryCacheAware<String, Bitmap> getMemoryCache() {
+		checkConfiguration();
 		return configuration.memoryCache;
 	}
 
 	/**
-	 * Clear memory cache.<br />
-	 * Do nothing if {@link #init(ImageLoaderConfiguration)} method wasn't called before.
+	 * Clears memory cache
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void clearMemoryCache() {
-		if (configuration != null) {
-			configuration.memoryCache.clear();
-		}
+		checkConfiguration();
+		configuration.memoryCache.clear();
 	}
 
-	/** Returns disc cache */
+	/**
+	 * Returns disc cache
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 */
 	public DiscCacheAware getDiscCache() {
+		checkConfiguration();
 		return configuration.discCache;
 	}
 
 	/**
-	 * Clear disc cache.<br />
-	 * Do nothing if {@link #init(ImageLoaderConfiguration)} method wasn't called before.
+	 * Clears disc cache.
+	 * 
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void clearDiscCache() {
-		if (configuration != null) {
-			configuration.discCache.clear();
-		}
+		checkConfiguration();
+		configuration.discCache.clear();
 	}
 
 	/** Returns URI of image which is loading at this moment into passed {@link ImageView} */
