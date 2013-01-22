@@ -1,6 +1,7 @@
 package com.nostra13.example.universalimageloader;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.nostra13.example.universalimageloader.downloader.ExtendedImageDownloader;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
@@ -16,16 +17,20 @@ public class UILApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 
+		initImageLoader(getApplicationContext());
+	}
+
+	public static void initImageLoader(Context context) {
 		// This configuration tuning is custom. You can tune every option, you may tune some of them, 
 		// or you can create default configuration by
 		//  ImageLoaderConfiguration.createDefault(this);
 		// method.
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
 			.threadPriority(Thread.NORM_PRIORITY - 2)
 			.memoryCacheSize(2 * 1024 * 1024) // 2 Mb
 			.denyCacheImageMultipleSizesInMemory()
 			.discCacheFileNameGenerator(new Md5FileNameGenerator())
-			.imageDownloader(new ExtendedImageDownloader(getApplicationContext()))
+			.imageDownloader(new ExtendedImageDownloader(context))
 			.tasksProcessingOrder(QueueProcessingType.LIFO)
 			.enableLogging() // Not necessary in common
 			.build();

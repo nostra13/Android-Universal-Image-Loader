@@ -8,10 +8,9 @@ import android.graphics.Bitmap;
 import android.widget.RemoteViews;
 
 import com.nostra13.example.universalimageloader.R;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.example.universalimageloader.UILApplication;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
@@ -31,15 +30,10 @@ public class UILWidgetProvider extends AppWidgetProvider {
 
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		// Initialize ImageLoader with configuration.
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context).threadPoolSize(3).threadPriority(Thread.NORM_PRIORITY - 2)
-				.memoryCacheSize(1500000) // 1.5 Mb
-				.denyCacheImageMultipleSizesInMemory().discCacheFileNameGenerator(new Md5FileNameGenerator()).enableLogging() // Not necessary in common
-				.build();
-		ImageLoader.getInstance().init(config);
+		UILApplication.initImageLoader(context);
 
-		final int N = appWidgetIds.length;
-		for (int i = 0; i < N; i++) {
+		final int widgetCount = appWidgetIds.length;
+		for (int i = 0; i < widgetCount; i++) {
 			int appWidgetId = appWidgetIds[i];
 			updateAppWidget(context, appWidgetManager, appWidgetId);
 		}
