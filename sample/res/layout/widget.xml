@@ -15,7 +15,7 @@
         android:paddingLeft="8dip"
         android:paddingRight="4dip"
         android:paddingTop="4dip"
-        android:src="@drawable/stub_image" />
+        android:src="@drawable/ic_stub" />
 
     <ImageView
         android:id="@+id/image_right"
@@ -27,6 +27,6 @@
         android:paddingLeft="4dip"
         android:paddingRight="8dip"
         android:paddingTop="4dip"
-        android:src="@drawable/stub_image" />
+        android:src="@drawable/ic_stub" />
 
 </LinearLayout>

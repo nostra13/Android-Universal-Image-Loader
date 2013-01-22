@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Activity titles -->
-    <string name="app_name">UniversalImageLoader</string>
+    <string name="app_name">UIL Sample</string>
     <string name="ac_name_image_list">Image List Example</string>
     <string name="ac_name_image_grid">Image Grid Example</string>
     <string name="ac_name_image_pager">Image Pager Example</string>

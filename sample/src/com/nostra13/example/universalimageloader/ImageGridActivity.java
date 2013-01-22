@@ -33,8 +33,8 @@ public class ImageGridActivity extends BaseActivity {
 		imageUrls = bundle.getStringArray(Extra.IMAGES);
 
 		options = new DisplayImageOptions.Builder()
-			.showStubImage(R.drawable.stub_image)
-			.showImageForEmptyUri(R.drawable.image_for_empty_url)
+			.showStubImage(R.drawable.ic_stub)
+			.showImageForEmptyUri(R.drawable.ic_empty)
 			.cacheInMemory()
 			.cacheOnDisc()
 			.bitmapConfig(Bitmap.Config.RGB_565)

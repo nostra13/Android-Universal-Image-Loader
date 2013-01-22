@@ -34,7 +34,7 @@ public class ImagePagerActivity extends BaseActivity {
 		int pagerPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
 
 		options = new DisplayImageOptions.Builder()
-			.showImageForEmptyUri(R.drawable.image_for_empty_url)
+			.showImageForEmptyUri(R.drawable.ic_empty)
 			.resetViewBeforeLoading()
 			.cacheOnDisc()
 			.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
@@ -110,7 +110,7 @@ public class ImagePagerActivity extends BaseActivity {
 					Toast.makeText(ImagePagerActivity.this, message, Toast.LENGTH_SHORT).show();
 
 					spinner.setVisibility(View.GONE);
-					imageView.setImageResource(android.R.drawable.ic_delete);
+					imageView.setImageResource(R.drawable.ic_error);
 				}
 
 				@Override

@@ -1,4 +1,5 @@
 package com.nostra13.example.universalimageloader;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -13,7 +14,6 @@ import android.widget.TextView;
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -33,11 +33,11 @@ public class ImageListActivity extends BaseActivity {
 		imageUrls = bundle.getStringArray(Extra.IMAGES);
 
 		options = new DisplayImageOptions.Builder()
-			.showStubImage(R.drawable.stub_image)
-			.showImageForEmptyUri(R.drawable.image_for_empty_url)
+			.showStubImage(R.drawable.ic_stub)
+			.showImageForEmptyUri(R.drawable.ic_empty)
 			.cacheInMemory()
 			.cacheOnDisc()
-			.displayer(new RoundedBitmapDisplayer(20))
+//			.displayer(new RoundedBitmapDisplayer(20))
 			.build();
 
 		ListView listView = (ListView) findViewById(android.R.id.list);
@@ -86,13 +86,14 @@ public class ImageListActivity extends BaseActivity {
 			View view = convertView;
 			final ViewHolder holder;
 			if (convertView == null) {
-				view = getLayoutInflater().inflate(R.layout.item_list_image, null);
+				view = getLayoutInflater().inflate(R.layout.item_list_image, parent, false);
 				holder = new ViewHolder();
 				holder.text = (TextView) view.findViewById(R.id.text);
 				holder.image = (ImageView) view.findViewById(R.id.image);
 				view.setTag(holder);
-			} else
+			} else {
 				holder = (ViewHolder) view.getTag();
+			}
 
 			holder.text.setText("Item " + position);
 

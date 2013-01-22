@@ -77,7 +77,7 @@ public final class Constants {
 			// Special cases
 			"file:///sdcard/UniversalImageLoader.png", // Image from SD card
 			"assets://LivingThings.jpg", // Image from assets
-			"drawable://" + R.drawable.app_icon, // Image from drawables
+			"drawable://" + R.drawable.ic_launcher, // Image from drawables
 			"http://upload.wikimedia.org/wikipedia/ru/b/b6/Как_кот_с_мышами_воевал.png", // Link with UTF-8
 			"https://www.iabti.org/images/M_images/Twitter_Image/follow_twitter_button_d.png", // Image from HTTPS
 			"http://bit.ly/soBiXr", // Redirect link
