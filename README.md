@@ -18,8 +18,7 @@ Android 1.5+ support
  * **[universal-image-loader-1.7.0.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0.jar)** (library; contains *.class files)
  * **[universal-image-loader-1.7.0-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-sources.jar)** (sources; contains *.java files)
  * **[universal-image-loader-1.7.0-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-javadoc.jar)** (Java docs; contains *.html files)
- * **[universal-image-loader-1.7.0-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-with-sources.jar)** (library with sources inside; contains *.class and *.java files)
- _Prefer to use this JAR so you can see Java docs in Eclipse tooltips._
+ * **[universal-image-loader-1.7.0-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-with-sources.jar)** (library with sources inside; contains *.class and *.java files)<br />_Prefer to use this JAR so you can see Java docs in Eclipse tooltips._
  * **[universal-image-loader-sample-1.7.0.apk](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.7.0.apk)** (sample application)
 
 ## Documentation*
