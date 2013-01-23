@@ -14,11 +14,12 @@ This project aims to provide a reusable instrument for asynchronous image loadin
  
 Android 1.5+ support
 
-## **[Downloads](https://github.com/nostra13/Android-Universal-Image-Loader/tree/master/downloads)**
+## Downloads
  * **[universal-image-loader-1.7.0.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0.jar)** (library; contains *.class files)
  * **[universal-image-loader-1.7.0-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-sources.jar)** (sources; contains *.java files)
  * **[universal-image-loader-1.7.0-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-javadoc.jar)** (Java docs; contains *.html files)
- * **[universal-image-loader-1.7.0-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-with-sources.jar)** (library with sources inside; contains *.class and *.java files) _Prefer to use this JAR so you can see Java docs in Eclipse tooltips._
+ * **[universal-image-loader-1.7.0-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.7.0-with-sources.jar)** (library with sources inside; contains *.class and *.java files)
+ _Prefer to use this JAR so you can see Java docs in Eclipse tooltips._
  * **[universal-image-loader-sample-1.7.0.apk](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.7.0.apk)** (sample application)
 
 ## Documentation*
@@ -30,16 +31,17 @@ Android 1.5+ support
 
 ### [Changelog](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/CHANGELOG.md)
 
-### [User Support](http://stackoverflow.com/questions/tagged/universal-image-loader)
- * First look at [Useful Info](https://github.com/nostra13/Android-Universal-Image-Loader#useful-info).
- * Search problem solution on [StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)
- * If you didn't found the answer you can ask your own question [here](http://stackoverflow.com/questions/tagged/universal-image-loader).<br />
-   Be sure to mention following information in your question:
-   - your configuration (ImageLoaderConfiguration)
-   - display options (DisplayImageOptions)
-   - ```getView()``` method code of your adapter (if you use it)
+### User Support
+ 1. Look into **[Useful Info](https://github.com/nostra13/Android-Universal-Image-Loader#useful-info)**
+ 2. Search problem solution on **[StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)**
+ 3. Ask your own question on **[StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)**.<br />
+    Be sure to mention following information in your question:
+   - your configuration (`ImageLoaderConfiguration`)
+   - display options (`DisplayImageOptions`)
+   - `getView()` method code of your adapter (if you use it)
    - XML layout of your ImageView you load image into
- * **Bugs** and **feature requests** place **[here](https://github.com/nostra13/Android-Universal-Image-Loader/issues/new)**.
+
+**Bugs** and **feature requests** put **[here](https://github.com/nostra13/Android-Universal-Image-Loader/issues/new)**.
 
 ## Quick Setup
 
