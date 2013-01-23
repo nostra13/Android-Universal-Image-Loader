@@ -79,7 +79,7 @@ public final class Constants {
 			"assets://LivingThings.jpg", // Image from assets
 			"drawable://" + R.drawable.ic_launcher, // Image from drawables
 			"http://upload.wikimedia.org/wikipedia/ru/b/b6/Как_кот_с_мышами_воевал.png", // Link with UTF-8
-			"https://www.iabti.org/images/M_images/Twitter_Image/follow_twitter_button_d.png", // Image from HTTPS
+			"https://www.eff.org/sites/default/files/chrome150_0.jpg", // Image from HTTPS
 			"http://bit.ly/soBiXr", // Redirect link
 			"", // Empty link
 			"http://wrong.site.com/corruptedLink", // Wrong link
@@ -88,6 +88,10 @@ public final class Constants {
 	private Constants() {
 	}
 
+	public static class Config {
+		public static final boolean DEVELOPER_MODE = false;
+	}
+	
 	public static class Extra {
 		public static final String IMAGES = "com.nostra13.example.universalimageloader.IMAGES";
 		public static final String IMAGE_POSITION = "com.nostra13.example.universalimageloader.IMAGE_POSITION";

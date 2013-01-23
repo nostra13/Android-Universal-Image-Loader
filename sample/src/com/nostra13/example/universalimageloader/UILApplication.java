@@ -2,7 +2,10 @@ package com.nostra13.example.universalimageloader;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
+import android.os.StrictMode;
 
+import com.nostra13.example.universalimageloader.Constants.Config;
 import com.nostra13.example.universalimageloader.downloader.ExtendedImageDownloader;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -17,6 +20,11 @@ public class UILApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 
+		if (Config.DEVELOPER_MODE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
+			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());
+		}
+		
 		initImageLoader(getApplicationContext());
 	}
 
