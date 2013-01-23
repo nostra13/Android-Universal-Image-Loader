@@ -284,7 +284,12 @@ final class LoadAndDisplayImageTask implements Runnable {
 			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.IN_SAMPLE_INT, ViewScaleType.FIT_INSIDE);
 
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-			boolean compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+			boolean compressedSuccessfully = false;
+			try {
+				compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+			} finally {
+				os.close();
+			}
 			if (compressedSuccessfully) {
 				bmp.recycle();
 				return;
