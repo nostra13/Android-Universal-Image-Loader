@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class UILApplication extends Application {
+	@SuppressWarnings("unused")
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -24,7 +25,7 @@ public class UILApplication extends Application {
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
 			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());
 		}
-		
+
 		initImageLoader(getApplicationContext());
 	}
 

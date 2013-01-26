@@ -7,6 +7,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -58,7 +59,7 @@ public class ImagePagerActivity extends BaseActivity {
 		}
 
 		@Override
-		public void destroyItem(View container, int position, Object object) {
+		public void destroyItem(ViewGroup container, int position, Object object) {
 			View rootView = (View) object;
 			ImageView imageView = (ImageView) rootView.findViewById(R.id.image);
 			BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
@@ -82,8 +83,8 @@ public class ImagePagerActivity extends BaseActivity {
 		}
 
 		@Override
-		public Object instantiateItem(View view, int position) {
-			final View imageLayout = inflater.inflate(R.layout.item_pager_image, null);
+		public Object instantiateItem(ViewGroup view, int position) {
+			final View imageLayout = inflater.inflate(R.layout.item_pager_image, view, false);
 			final ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
 			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 

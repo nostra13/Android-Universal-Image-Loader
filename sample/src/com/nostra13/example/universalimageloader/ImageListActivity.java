@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -37,7 +38,7 @@ public class ImageListActivity extends BaseActivity {
 			.showImageForEmptyUri(R.drawable.ic_empty)
 			.cacheInMemory()
 			.cacheOnDisc()
-//			.displayer(new RoundedBitmapDisplayer(20))
+			.displayer(new RoundedBitmapDisplayer(20))
 			.build();
 
 		ListView listView = (ListView) findViewById(android.R.id.list);
@@ -95,7 +96,7 @@ public class ImageListActivity extends BaseActivity {
 				holder = (ViewHolder) view.getTag();
 			}
 
-			holder.text.setText("Item " + position);
+			holder.text.setText("Item " + (position + 1));
 
 			imageLoader.displayImage(imageUrls[position], holder.image, options);
 
