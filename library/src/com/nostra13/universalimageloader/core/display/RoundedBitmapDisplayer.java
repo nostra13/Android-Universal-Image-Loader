@@ -14,6 +14,8 @@ import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Displays bitmap with rounded corners. <br />
+ * <b>NOTE:</b> It's strongly recommended your {@link ImageView} has defined width (<i>layout_width</i>) and height
+ * (<i>layout_height</i>) .<br />
  * <b>NOTE:</b> New {@link Bitmap} object is created for displaying. So this class needs more memory and can cause
  * {@link OutOfMemoryError}.
  * 
@@ -31,55 +33,92 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 	public Bitmap display(Bitmap bitmap, ImageView imageView) {
 		Bitmap roundBitmap;
 
-		int vw = imageView.getWidth();
-		int vh = imageView.getHeight();
 		int bw = bitmap.getWidth();
 		int bh = bitmap.getHeight();
+		int vw = imageView.getWidth();
+		int vh = imageView.getHeight();
+		if (vw <= 0) vw = bw;
+		if (vh <= 0) vh = bh;
 
-		int destWidth, destHeight;
-		Rect bitmapSrcRect;
+		int width, height;
+		Rect srcRect;
+		Rect destRect;
 		switch (imageView.getScaleType()) {
 			case CENTER_INSIDE:
+				float vRation = (float) vw / vh;
+				float bRation = (float) bw / bh;
+				int destWidth;
+				int destHeight;
+				if (vRation > bRation) {
+					destHeight = Math.min(vh, bh);
+					destWidth = (int) (bw / ((float) bh / destHeight));
+				} else {
+					destWidth = Math.min(vw, bw);
+					destHeight = (int) (bh / ((float) bw / destWidth));
+				}
+				int x = (vw - destWidth) / 2;
+				int y = (vh - destHeight) / 2;
+				srcRect = new Rect(0, 0, bw, bh);
+				destRect = new Rect(x, y, x + destWidth, y + destHeight);
+				width = vw;
+				height = vh;
+				break;
 			case FIT_CENTER:
 			case FIT_START:
 			case FIT_END:
 			default:
-				destWidth = bw;
-				destHeight = bh;
-				bitmapSrcRect = new Rect(0, 0, destWidth, destHeight);
+				vRation = (float) vw / vh;
+				bRation = (float) bw / bh;
+				if (vRation > bRation) {
+					width = (int) (bw / ((float) bh / vh));
+					height = vh;
+				} else {
+					width = vw;
+					height = (int) (bh / ((float) bw / vw));
+				}
+				srcRect = new Rect(0, 0, bw, bh);
+				destRect = new Rect(0, 0, width, height);
 				break;
 			case CENTER_CROP:
-				float vRation = (float) vw / vh;
-				float bRation = (float) bw / bh;
-				int x, y;
+				vRation = (float) vw / vh;
+				bRation = (float) bw / bh;
+				int srcWidth;
+				int srcHeight;
 				if (vRation > bRation) {
-					destWidth = bw;
-					destHeight = (int) (vh * ((float) bw / vw));
+					srcWidth = bw;
+					srcHeight = (int) (vh * ((float) bw / vw));
 					x = 0;
-					y = (bh - destHeight) / 2;
+					y = (bh - srcHeight) / 2;
 				} else {
-					destWidth = (int) (vw * ((float) bh / vh));
-					destHeight = bh;
-					x = (bw - destWidth) / 2;
+					srcWidth = (int) (vw * ((float) bh / vh));
+					srcHeight = bh;
+					x = (bw - srcWidth) / 2;
 					y = 0;
 				}
-				bitmapSrcRect = new Rect(x, y, destWidth, destHeight);
+				width = Math.min(vw, bw);
+				height = Math.min(vh, bh);
+				srcRect = new Rect(x, y, x + srcWidth, y + srcHeight);
+				destRect = new Rect(0, 0, width, height);
 				break;
 			case FIT_XY:
-				destWidth = vw;
-				destHeight = vh;
-				bitmapSrcRect = new Rect(0, 0, bw, bh);
+				width = vw;
+				height = vh;
+				srcRect = new Rect(0, 0, bw, bh);
+				destRect = new Rect(0, 0, width, height);
 				break;
 			case CENTER:
 			case MATRIX:
-				destWidth = vw;
-				destHeight = vh;
-				bitmapSrcRect = new Rect((bw - vw) / 2, (bh - vh) / 2, destWidth, destHeight);
+				width = Math.min(vw, bw);
+				height = Math.min(vh, bh);
+				x = (bw - width) / 2;
+				y = (bh - height) / 2;
+				srcRect = new Rect(x, y, x + width, y + height);
+				destRect = new Rect(0, 0, width, height);
 				break;
 		}
 
 		try {
-			roundBitmap = getRoundedCornerBitmap(bitmap, bitmapSrcRect, destWidth, destHeight);
+			roundBitmap = getRoundedCornerBitmap(bitmap, srcRect, destRect, width, height);
 		} catch (OutOfMemoryError e) {
 			L.e(e, "Can't create bitmap with rounded corners. Not enough memory.");
 			roundBitmap = bitmap;
@@ -88,12 +127,11 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		return roundBitmap;
 	}
 
-	private Bitmap getRoundedCornerBitmap(Bitmap bitmap, Rect srcRect, int width, int height) {
+	private Bitmap getRoundedCornerBitmap(Bitmap bitmap, Rect srcRect, Rect destRect, int width, int height) {
 		Bitmap output = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 		Canvas canvas = new Canvas(output);
 
 		final Paint paint = new Paint();
-		final Rect destRect = new Rect(0, 0, width, height);
 		final RectF destRectF = new RectF(destRect);
 
 		paint.setAntiAlias(true);
