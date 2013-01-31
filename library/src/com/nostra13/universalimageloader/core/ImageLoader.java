@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +52,7 @@ public class ImageLoader {
 	private ImageLoaderConfiguration configuration;
 	private ExecutorService imageLoadingExecutor;
 	private ExecutorService cachedImageLoadingExecutor;
+	private ExecutorService taskDistributor;
 
 	private final ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
 	private final BitmapDisplayer fakeBitmapDisplayer = new FakeBitmapDisplayer();
@@ -168,7 +170,7 @@ public class ImageLoader {
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
-	public void displayImage(String uri, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
+	public void displayImage(final String uri, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
 		checkConfiguration();
 		if (imageView == null) {
 			throw new IllegalArgumentException(ERROR_WRONG_ARGUMENTS);
@@ -215,13 +217,19 @@ public class ImageLoader {
 
 			initExecutorsIfNeed();
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener, getLockForUri(uri));
-			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
-			boolean isImageCachedOnDisc = configuration.discCache.get(uri).exists();
-			if (isImageCachedOnDisc) {
-				cachedImageLoadingExecutor.submit(displayImageTask);
-			} else {
-				imageLoadingExecutor.submit(displayImageTask);
-			}
+			final LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
+
+			taskDistributor.submit(new Runnable() {
+				@Override
+				public void run() {
+					boolean isImageCachedOnDisc = configuration.discCache.get(uri).exists();
+					if (isImageCachedOnDisc) {
+						cachedImageLoadingExecutor.submit(displayImageTask);
+					} else {
+						imageLoadingExecutor.submit(displayImageTask);
+					}
+				}
+			});
 		}
 	}
 
@@ -339,14 +347,17 @@ public class ImageLoader {
 
 	private void initExecutorsIfNeed() {
 		if (imageLoadingExecutor == null || imageLoadingExecutor.isShutdown()) {
-			imageLoadingExecutor = createExecutor();
+			imageLoadingExecutor = createTaskExecutor();
 		}
 		if (cachedImageLoadingExecutor == null || cachedImageLoadingExecutor.isShutdown()) {
-			cachedImageLoadingExecutor = createExecutor();
+			cachedImageLoadingExecutor = createTaskExecutor();
+		}
+		if (taskDistributor == null || taskDistributor.isShutdown()) {
+			taskDistributor = Executors.newCachedThreadPool();
 		}
 	}
 
-	private ExecutorService createExecutor() {
+	private ExecutorService createTaskExecutor() {
 		boolean lifo = configuration.tasksProcessingType == QueueProcessingType.LIFO;
 		BlockingQueue<Runnable> taskQueue = lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
 		return new ThreadPoolExecutor(configuration.threadPoolSize, configuration.threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue,
@@ -430,6 +441,9 @@ public class ImageLoader {
 		}
 		if (cachedImageLoadingExecutor != null) {
 			cachedImageLoadingExecutor.shutdownNow();
+		}
+		if (taskDistributor != null) {
+			taskDistributor.shutdownNow();
 		}
 	}
 
