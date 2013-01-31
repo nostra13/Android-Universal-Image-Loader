@@ -1,6 +1,15 @@
 Change Log
 ===
 
+v1.7.1 *(31.01.2013)*
+---
+ * Avoid I/O operations on the main thread, prevented ANR (#129, #154)
+ * Correctly handled every ImageView's scale type in 'RoundedBitmapDisplayer' (#70)
+ * Prevented slow precaching modified date in LimitedAgeDiscCache constructor (for large number of images in cache) (#141)
+ * Introduced 'ImageLoader.isInited()' method. Throw IllegalStateException on 'displayImage(...)', 'loadImage(...)', 'getMemoryCache()', 'clearMemoryCache()', 'getDiscCache()', 'clearDiscCache()' calls if ImageLoader isn't inited with config.
+ * Closed OutputStream after Bitmap compressing (#115)
+ * Sample: Refactored resources
+
 v1.7.0 *(27.11.2012)*
 ---
  * Maven support
@@ -42,3 +51,17 @@ v1.6.0 *(29.09.2012)*
 ---
  * Introduced `ImageLoader.loadImage(...)` which loads image, decodes it to Bitmap and returns Bitmap in callback (#51)
  * Avoided unnecessary image downloads (#44)
+
+v1.5.6 *(20.09.2012)*
+---
+ * **Changed API:** Changed `FileNameGenerator` to interface (instead of abstract class)
+ * Introduced `BitmapDisplayer` and `DisplayImageOptions.displayer(...)`
+ * Multithread displaying of cached images (instead of single-thread)
+ * Correctly handle UTF-8 symbols and spaces in image URL (#31)
+
+v1.5.5 *(18.08.2012)*
+---
+ * **Changed API:**
+   * Removed `DisplayImageOptions.transform()`
+   * Changed `FileNameGenerator` to abstract class (instead of interface)
+ * Fire `ImageLoadingListener` callbacks if image URI is null
