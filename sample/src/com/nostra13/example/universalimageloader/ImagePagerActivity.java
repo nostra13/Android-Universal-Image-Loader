@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -25,122 +24,122 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
  */
 public class ImagePagerActivity extends BaseActivity {
 
-	DisplayImageOptions options;
+    DisplayImageOptions options;
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.ac_image_pager);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.ac_image_pager);
 
-		Bundle bundle = getIntent().getExtras();
-		String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
-		int pagerPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
+        Bundle bundle = getIntent().getExtras();
+        String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
+        int pagerPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
 
-		options = new DisplayImageOptions.Builder()
-			.showImageForEmptyUri(R.drawable.ic_empty)
-			.resetViewBeforeLoading()
-			.cacheOnDisc()
-			.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
-			.bitmapConfig(Bitmap.Config.RGB_565)
-			.displayer(new FadeInBitmapDisplayer(300))
-			.build();
+        options = new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.ic_empty)
+                .resetViewBeforeLoading()
+                .cacheOnDisc()
+                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .displayer(new FadeInBitmapDisplayer(300))
+                .build();
 
-		ViewPager pager = (ViewPager) findViewById(R.id.pager);
-		pager.setAdapter(new ImagePagerAdapter(imageUrls));
-		pager.setCurrentItem(pagerPosition);
-	}
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        pager.setAdapter(new ImagePagerAdapter(imageUrls));
+        pager.setCurrentItem(pagerPosition);
+    }
 
-	private class ImagePagerAdapter extends PagerAdapter {
+    private class ImagePagerAdapter extends PagerAdapter {
 
-		private String[] images;
-		private LayoutInflater inflater;
+        private String[] images;
+        private LayoutInflater inflater;
 
-		ImagePagerAdapter(String[] images) {
-			this.images = images;
-			inflater = getLayoutInflater();
-		}
+        ImagePagerAdapter(String[] images) {
+            this.images = images;
+            inflater = getLayoutInflater();
+        }
 
-		@Override
-		public void destroyItem(ViewGroup container, int position, Object object) {
-			View rootView = (View) object;
-			ImageView imageView = (ImageView) rootView.findViewById(R.id.image);
-			BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-			if (drawable != null) {
-				Bitmap bitmap = drawable.getBitmap();
-				if (bitmap != null) {
-					bitmap.recycle();
-				}
-			}
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            View rootView = (View) object;
+            ImageView imageView = (ImageView) rootView.findViewById(R.id.image);
+            BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+            if (drawable != null) {
+                Bitmap bitmap = drawable.getBitmap();
+                if (bitmap != null) {
+                    bitmap.recycle();
+                }
+            }
 
-			((ViewPager) container).removeView(rootView);
-		}
+            ((ViewPager) container).removeView(rootView);
+        }
 
-		@Override
-		public void finishUpdate(View container) {
-		}
+        @Override
+        public void finishUpdate(View container) {
+        }
 
-		@Override
-		public int getCount() {
-			return images.length;
-		}
+        @Override
+        public int getCount() {
+            return images.length;
+        }
 
-		@Override
-		public Object instantiateItem(ViewGroup view, int position) {
-			final View imageLayout = inflater.inflate(R.layout.item_pager_image, view, false);
-			final ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
-			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
+        @Override
+        public Object instantiateItem(ViewGroup view, int position) {
+            final View imageLayout = inflater.inflate(R.layout.item_pager_image, view, false);
+            final ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
+            final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 
-			imageLoader.displayImage(images[position], imageView, options, new SimpleImageLoadingListener() {
-				@Override
-				public void onLoadingStarted() {
-					spinner.setVisibility(View.VISIBLE);
-				}
+            imageLoader.displayImage(images[position], imageView, options, new SimpleImageLoadingListener() {
+                @Override
+                public void onLoadingStarted() {
+                    spinner.setVisibility(View.VISIBLE);
+                }
 
-				@Override
-				public void onLoadingFailed(FailReason failReason) {
-					String message = null;
-					switch (failReason) {
-						case IO_ERROR:
-							message = "Input/Output error";
-							break;
-						case OUT_OF_MEMORY:
-							message = "Out Of Memory error";
-							break;
-						case UNKNOWN:
-							message = "Unknown error";
-							break;
-					}
-					Toast.makeText(ImagePagerActivity.this, message, Toast.LENGTH_SHORT).show();
+                @Override
+                public void onLoadingFailed(FailReason failReason) {
+                    String message = null;
+                    switch (failReason) {
+                        case IO_ERROR:
+                            message = "Input/Output error";
+                            break;
+                        case OUT_OF_MEMORY:
+                            message = "Out Of Memory error";
+                            break;
+                        case UNKNOWN:
+                            message = "Unknown error";
+                            break;
+                    }
+                    Toast.makeText(ImagePagerActivity.this, message, Toast.LENGTH_SHORT).show();
 
-					spinner.setVisibility(View.GONE);
-					imageView.setImageResource(R.drawable.ic_error);
-				}
+                    spinner.setVisibility(View.GONE);
+                    imageView.setImageResource(R.drawable.ic_error);
+                }
 
-				@Override
-				public void onLoadingComplete(Bitmap loadedImage) {
-					spinner.setVisibility(View.GONE);
-				}
-			});
+                @Override
+                public void onLoadingComplete(Bitmap loadedImage) {
+                    spinner.setVisibility(View.GONE);
+                }
+            });
 
-			((ViewPager) view).addView(imageLayout, 0);
-			return imageLayout;
-		}
+            ((ViewPager) view).addView(imageLayout, 0);
+            return imageLayout;
+        }
 
-		@Override
-		public boolean isViewFromObject(View view, Object object) {
-			return view.equals(object);
-		}
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view.equals(object);
+        }
 
-		@Override
-		public void restoreState(Parcelable state, ClassLoader loader) {
-		}
+        @Override
+        public void restoreState(Parcelable state, ClassLoader loader) {
+        }
 
-		@Override
-		public Parcelable saveState() {
-			return null;
-		}
+        @Override
+        public Parcelable saveState() {
+            return null;
+        }
 
-		@Override
-		public void startUpdate(View container) {
-		}
-	}
+        @Override
+        public void startUpdate(View container) {
+        }
+    }
 }
