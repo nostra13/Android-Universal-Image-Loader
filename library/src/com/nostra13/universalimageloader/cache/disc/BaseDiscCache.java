@@ -14,7 +14,7 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  */
 public abstract class BaseDiscCache implements DiscCacheAware {
 
-	private File cacheDir;
+	protected File cacheDir;
 
 	private FileNameGenerator fileNameGenerator;
 
@@ -41,9 +41,5 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 				f.delete();
 			}
 		}
-	}
-
-	protected File getCacheDir() {
-		return cacheDir;
 	}
 }

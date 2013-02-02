@@ -51,7 +51,7 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 
 	private void calculateCacheSizeAndFillUsageMap() {
 		int size = 0;
-		File[] cachedFiles = getCacheDir().listFiles();
+		File[] cachedFiles = cacheDir.listFiles();
 		for (File cachedFile : cachedFiles) {
 			size += getSize(cachedFile);
 			lastUsageDates.put(cachedFile, cachedFile.lastModified());
