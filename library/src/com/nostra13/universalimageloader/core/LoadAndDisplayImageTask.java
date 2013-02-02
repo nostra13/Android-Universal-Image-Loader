@@ -52,11 +52,12 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final int ATTEMPT_COUNT_TO_DECODE_BITMAP = 3;
 	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
-	private final ImageLoaderConfiguration configuration;
+	private final ImageLoaderEngine engine;
 	private final ImageLoadingInfo imageLoadingInfo;
 	private final Handler handler;
 
 	// Helper references
+	private final ImageLoaderConfiguration configuration;
 	private final ImageDownloader downloader;
 	private final boolean loggingEnabled;
 	private final String uri;
@@ -66,11 +67,12 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private final DisplayImageOptions options;
 	private final ImageLoadingListener listener;
 
-	public LoadAndDisplayImageTask(ImageLoaderConfiguration configuration, ImageLoadingInfo imageLoadingInfo, Handler handler) {
-		this.configuration = configuration;
+	public LoadAndDisplayImageTask(ImageLoaderEngine engine, ImageLoadingInfo imageLoadingInfo, Handler handler) {
+		this.engine = engine;
 		this.imageLoadingInfo = imageLoadingInfo;
 		this.handler = handler;
 
+		configuration = engine.configuration;
 		downloader = configuration.downloader;
 		loggingEnabled = configuration.loggingEnabled;
 		uri = imageLoadingInfo.uri;
@@ -83,7 +85,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	@Override
 	public void run() {
-		AtomicBoolean pause = ImageLoader.getInstance().getPause();
+		AtomicBoolean pause = engine.getPause();
 		if (pause.get()) {
 			synchronized (pause) {
 				if (loggingEnabled) L.i(LOG_WAITING_FOR_RESUME, memoryCacheKey);
@@ -123,7 +125,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		try {
 			if (checkTaskIsNotActual()) return;
 
-			bmp = ImageLoader.getInstance().getMemoryCache().get(memoryCacheKey);
+			bmp = configuration.memoryCache.get(memoryCacheKey);
 			if (bmp == null) {
 				bmp = tryLoadBitmap();
 				if (bmp == null) return;
@@ -144,7 +146,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 		if (checkTaskIsNotActual() || checkTaskIsInterrupted()) return;
 
-		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo);
+		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine);
 		displayBitmapTask.setLoggingEnabled(loggingEnabled);
 		handler.post(displayBitmapTask);
 	}
@@ -154,7 +156,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	 * moment and fire {@link ImageLoadingListener#onLoadingCancelled()} event if it doesn't.
 	 */
 	private boolean checkTaskIsNotActual() {
-		String currentCacheKey = ImageLoader.getInstance().getLoadingUriForView(imageView);
+		String currentCacheKey = engine.getLoadingUriForView(imageView);
 		// Check whether memory cache key (image URI) for current ImageView is actual. 
 		// If ImageView is reused for another task then current task should be cancelled.
 		boolean imageViewWasReused = !memoryCacheKey.equals(currentCacheKey);
@@ -320,5 +322,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 				}
 			});
 		}
+	}
+
+	String getLoadingUri() {
+		return uri;
 	}
 }

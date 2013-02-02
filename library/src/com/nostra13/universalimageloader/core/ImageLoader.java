@@ -1,18 +1,6 @@
 package com.nostra13.universalimageloader.core;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -27,9 +15,7 @@ import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.L;
@@ -50,16 +36,10 @@ public class ImageLoader {
 	private static final String LOG_LOAD_IMAGE_FROM_MEMORY_CACHE = "Load image from memory cache [%s]";
 
 	private ImageLoaderConfiguration configuration;
-	private ExecutorService imageLoadingExecutor;
-	private ExecutorService cachedImageLoadingExecutor;
-	private ExecutorService taskDistributor;
+	private ImageLoaderEngine engine;
 
 	private final ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
 	private final BitmapDisplayer fakeBitmapDisplayer = new FakeBitmapDisplayer();
-
-	private final Map<Integer, String> cacheKeysForImageViews = Collections.synchronizedMap(new HashMap<Integer, String>());
-	private final Map<String, ReentrantLock> uriLocks = new WeakHashMap<String, ReentrantLock>();
-	private final AtomicBoolean paused = new AtomicBoolean(false);
 
 	private volatile static ImageLoader instance;
 
@@ -90,13 +70,14 @@ public class ImageLoader {
 			throw new IllegalArgumentException(ERROR_INIT_CONFIG_WITH_NULL);
 		}
 		if (this.configuration == null) {
+			engine = new ImageLoaderEngine(configuration);
 			this.configuration = configuration;
 		}
 	}
 
 	/**
-	 * Returns true - if ImageLoader {@linkplain #init(ImageLoaderConfiguration) is initialized with configuration};
-	 * false - otherwise
+	 * Returns <b>true</b> - if ImageLoader {@linkplain #init(ImageLoaderConfiguration) is initialized with
+	 * configuration}; <b>false</b> - otherwise
 	 */
 	public boolean isInited() {
 		return configuration != null;
@@ -170,7 +151,7 @@ public class ImageLoader {
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
-	public void displayImage(final String uri, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
+	public void displayImage(String uri, ImageView imageView, DisplayImageOptions options, ImageLoadingListener listener) {
 		checkConfiguration();
 		if (imageView == null) {
 			throw new IllegalArgumentException(ERROR_WRONG_ARGUMENTS);
@@ -183,7 +164,7 @@ public class ImageLoader {
 		}
 
 		if (uri == null || uri.length() == 0) {
-			cacheKeysForImageViews.remove(imageView.hashCode());
+			engine.cancelDisplayTaskFor(imageView);
 			listener.onLoadingStarted();
 			if (options.isShowImageForEmptyUri()) {
 				imageView.setImageResource(options.getImageForEmptyUri());
@@ -196,7 +177,7 @@ public class ImageLoader {
 
 		ImageSize targetSize = getImageSizeScaleTo(imageView);
 		String memoryCacheKey = MemoryCacheUtil.generateKey(uri, targetSize);
-		cacheKeysForImageViews.put(imageView.hashCode(), memoryCacheKey);
+		engine.prepareDisplayTaskFor(imageView, memoryCacheKey);
 
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
@@ -215,21 +196,9 @@ public class ImageLoader {
 				}
 			}
 
-			initExecutorsIfNeed();
-			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener, getLockForUri(uri));
-			final LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
-
-			taskDistributor.submit(new Runnable() {
-				@Override
-				public void run() {
-					boolean isImageCachedOnDisc = configuration.discCache.get(uri).exists();
-					if (isImageCachedOnDisc) {
-						cachedImageLoadingExecutor.submit(displayImageTask);
-					} else {
-						imageLoadingExecutor.submit(displayImageTask);
-					}
-				}
-			});
+			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener, engine.getLockForUri(uri));
+			final LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(engine, imageLoadingInfo, new Handler());
+			engine.submit(displayImageTask);
 		}
 	}
 
@@ -345,25 +314,6 @@ public class ImageLoader {
 		}
 	}
 
-	private void initExecutorsIfNeed() {
-		if (imageLoadingExecutor == null || imageLoadingExecutor.isShutdown()) {
-			imageLoadingExecutor = createTaskExecutor();
-		}
-		if (cachedImageLoadingExecutor == null || cachedImageLoadingExecutor.isShutdown()) {
-			cachedImageLoadingExecutor = createTaskExecutor();
-		}
-		if (taskDistributor == null || taskDistributor.isShutdown()) {
-			taskDistributor = Executors.newCachedThreadPool();
-		}
-	}
-
-	private ExecutorService createTaskExecutor() {
-		boolean lifo = configuration.tasksProcessingType == QueueProcessingType.LIFO;
-		BlockingQueue<Runnable> taskQueue = lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
-		return new ThreadPoolExecutor(configuration.threadPoolSize, configuration.threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue,
-				configuration.displayImageThreadFactory);
-	}
-
 	/**
 	 * Returns memory cache
 	 * 
@@ -406,7 +356,7 @@ public class ImageLoader {
 
 	/** Returns URI of image which is loading at this moment into passed {@link ImageView} */
 	public String getLoadingUriForView(ImageView imageView) {
-		return cacheKeysForImageViews.get(imageView.hashCode());
+		return engine.getLoadingUriForView(imageView);
 	}
 
 	/**
@@ -415,7 +365,7 @@ public class ImageLoader {
 	 * @param imageView {@link ImageView} for which display task will be cancelled
 	 */
 	public void cancelDisplayTask(ImageView imageView) {
-		cacheKeysForImageViews.remove(imageView.hashCode());
+		engine.cancelDisplayTaskFor(imageView);
 	}
 
 	/**
@@ -423,28 +373,17 @@ public class ImageLoader {
 	 * Already running tasks are not paused.
 	 */
 	public void pause() {
-		paused.set(true);
+		engine.pause();
 	}
 
 	/** Resumes waiting "load&display" tasks */
 	public void resume() {
-		synchronized (paused) {
-			paused.set(false);
-			paused.notifyAll();
-		}
+		engine.resume();
 	}
 
 	/** Stops all running display image tasks, discards all other scheduled tasks */
 	public void stop() {
-		if (imageLoadingExecutor != null) {
-			imageLoadingExecutor.shutdownNow();
-		}
-		if (cachedImageLoadingExecutor != null) {
-			cachedImageLoadingExecutor.shutdownNow();
-		}
-		if (taskDistributor != null) {
-			taskDistributor.shutdownNow();
-		}
+		engine.stop();
 	}
 
 	/**
@@ -486,18 +425,5 @@ public class ImageLoader {
 			L.e(e);
 		}
 		return value;
-	}
-
-	private ReentrantLock getLockForUri(String uri) {
-		ReentrantLock lock = uriLocks.get(uri);
-		if (lock == null) {
-			lock = new ReentrantLock();
-			uriLocks.put(uri, lock);
-		}
-		return lock;
-	}
-
-	AtomicBoolean getPause() {
-		return paused;
 	}
 }

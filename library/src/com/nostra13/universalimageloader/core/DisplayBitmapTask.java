@@ -24,15 +24,17 @@ final class DisplayBitmapTask implements Runnable {
 	private final String memoryCacheKey;
 	private final BitmapDisplayer bitmapDisplayer;
 	private final ImageLoadingListener listener;
+	private final ImageLoaderEngine engine;
 
 	private boolean loggingEnabled;
 
-	public DisplayBitmapTask(Bitmap bitmap, ImageLoadingInfo imageLoadingInfo) {
+	public DisplayBitmapTask(Bitmap bitmap, ImageLoadingInfo imageLoadingInfo, ImageLoaderEngine engine) {
 		this.bitmap = bitmap;
 		imageView = imageLoadingInfo.imageView;
 		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
 		bitmapDisplayer = imageLoadingInfo.options.getDisplayer();
 		listener = imageLoadingInfo.listener;
+		this.engine = engine; 
 	}
 
 	public void run() {
@@ -43,13 +45,13 @@ final class DisplayBitmapTask implements Runnable {
 			if (loggingEnabled) L.i(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, memoryCacheKey);
 			Bitmap displayedBitmap = bitmapDisplayer.display(bitmap, imageView);
 			listener.onLoadingComplete(displayedBitmap);
-			ImageLoader.getInstance().cancelDisplayTask(imageView);
+			engine.cancelDisplayTaskFor(imageView);
 		}
 	}
 
 	/** Checks whether memory cache key (image URI) for current ImageView is actual */
 	private boolean isViewWasReused() {
-		String currentCacheKey = ImageLoader.getInstance().getLoadingUriForView(imageView);
+		String currentCacheKey = engine.getLoadingUriForView(imageView);
 		return !memoryCacheKey.equals(currentCacheKey);
 	}
 
