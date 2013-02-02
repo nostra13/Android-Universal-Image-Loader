@@ -23,7 +23,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
-import com.nostra13.universalimageloader.utils.FileUtils;
+import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
 /**
@@ -290,7 +290,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 			try {
 				compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
 			} finally {
-				os.close();
+				IoUtils.closeSilently(os);
 			}
 			if (compressedSuccessfully) {
 				bmp.recycle();
@@ -304,12 +304,12 @@ final class LoadAndDisplayImageTask implements Runnable {
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 			try {
-				FileUtils.copyStream(is, os);
+				IoUtils.copyStream(is, os);
 			} finally {
-				os.close();
+				IoUtils.closeSilently(os);
 			}
 		} finally {
-			is.close();
+			IoUtils.closeSilently(is);
 		}
 	}
 

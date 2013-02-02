@@ -12,6 +12,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
+import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
 /**
@@ -78,7 +79,7 @@ class ImageDecoder {
 		try {
 			subsampledBitmap = BitmapFactory.decodeStream(imageStream, null, decodeOptions);
 		} finally {
-			imageStream.close();
+			IoUtils.closeSilently(imageStream);
 		}
 		if (subsampledBitmap == null) {
 			return null;
@@ -111,7 +112,7 @@ class ImageDecoder {
 		try {
 			BitmapFactory.decodeStream(imageStream, null, options);
 		} finally {
-			imageStream.close();
+			IoUtils.closeSilently(imageStream);
 		}
 
 		int scale = 1;
