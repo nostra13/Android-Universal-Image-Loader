@@ -50,7 +50,7 @@ public class ImageListActivity extends BaseActivity {
 			}
 		});
 
-		listView.setOnScrollListener(new PauseOnScrollListener(false, true));
+		listView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
 	}
 
 	private void startImageGalleryActivity(int position) {

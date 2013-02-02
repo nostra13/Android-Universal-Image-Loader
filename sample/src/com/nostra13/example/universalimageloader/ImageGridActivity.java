@@ -48,7 +48,7 @@ public class ImageGridActivity extends BaseActivity {
 				startImageGalleryActivity(position);
 			}
 		});
-		gridView.setOnScrollListener(new PauseOnScrollListener(true, true));
+		gridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
 	}
 
 	private void startImageGalleryActivity(int position) {

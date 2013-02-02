@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.StrictMode;
 
 import com.nostra13.example.universalimageloader.Constants.Config;
-import com.nostra13.example.universalimageloader.downloader.ExtendedImageDownloader;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -39,7 +38,6 @@ public class UILApplication extends Application {
 			.memoryCacheSize(2 * 1024 * 1024) // 2 Mb
 			.denyCacheImageMultipleSizesInMemory()
 			.discCacheFileNameGenerator(new Md5FileNameGenerator())
-			.imageDownloader(new ExtendedImageDownloader(context))
 			.tasksProcessingOrder(QueueProcessingType.LIFO)
 			.enableLogging() // Not necessary in common
 			.build();
