@@ -9,7 +9,7 @@ import java.net.URLConnection;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 
 /**
- * Default implementation of ImageDownloader. Uses {@link URLConnection} for image stream retrieving.
+ * Implementation of ImageDownloader which uses {@link URLConnection} for image stream retrieving.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */

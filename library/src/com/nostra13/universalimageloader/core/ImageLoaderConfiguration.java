@@ -146,7 +146,7 @@ public final class ImageLoaderConfiguration {
 		private boolean loggingEnabled = false;
 
 		public Builder(Context context) {
-			this.context = context;
+			this.context = context.getApplicationContext();
 		}
 
 		/**
@@ -323,7 +323,7 @@ public final class ImageLoaderConfiguration {
 		/**
 		 * Sets utility which will be responsible for downloading of image.<br />
 		 * Default value -
-		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createImageDownloader()
+		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createImageDownloader(Context)
 		 * DefaultConfigurationFactory.createImageDownloader()}
 		 * */
 		public Builder imageDownloader(ImageDownloader imageDownloader) {
@@ -381,7 +381,7 @@ public final class ImageLoaderConfiguration {
 				memoryCache = DefaultConfigurationFactory.createMemoryCache(memoryCacheSize, denyCacheImageMultipleSizesInMemory);
 			}
 			if (downloader == null) {
-				downloader = DefaultConfigurationFactory.createImageDownloader();
+				downloader = DefaultConfigurationFactory.createImageDownloader(context);
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();
