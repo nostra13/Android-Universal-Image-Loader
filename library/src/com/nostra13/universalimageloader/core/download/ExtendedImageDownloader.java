@@ -18,8 +18,7 @@ import android.net.Uri;
  * Image downloader which supports retrieving images from {@linkplain ContentProvider content providers}
  * (<b>"content://..."</b>), assets (<b>"assets://..."</b>) and drawables (<b>"drawable://..."</b>).
  * 
- * @author Sergey Tarasevich
- * @created 02.02.2013
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class ExtendedImageDownloader extends URLConnectionImageDownloader {
 

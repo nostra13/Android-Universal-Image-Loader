@@ -10,6 +10,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.BufferedHttpEntity;
 
+/**
+ * Implementation of ImageDownloader which uses {@link HttpClient} for image stream retrieving.
+ * 
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ */
 public class HttpClientImageDownloader extends ImageDownloader {
 
 	private HttpClient httpClient;

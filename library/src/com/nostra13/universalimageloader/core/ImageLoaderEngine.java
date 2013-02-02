@@ -21,8 +21,7 @@ import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeq
 /**
  * {@link ImageLoader} engine which responsible for {@linkplain LoadAndDisplayImageTask display task} execution.
  * 
- * @author Sergey Tarasevich
- * @created 01.02.2013
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 class ImageLoaderEngine {
 
