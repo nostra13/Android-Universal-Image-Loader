@@ -29,6 +29,8 @@ import com.nostra13.universalimageloader.utils.L;
  */
 public final class ImageLoaderConfiguration {
 
+	final Context context;
+
 	final int maxImageWidthForMemoryCache;
 	final int maxImageHeightForMemoryCache;
 	final int maxImageWidthForDiscCache;
@@ -48,6 +50,7 @@ public final class ImageLoaderConfiguration {
 	final boolean loggingEnabled;
 
 	private ImageLoaderConfiguration(final Builder builder) {
+		context = builder.context;
 		maxImageWidthForMemoryCache = builder.maxImageWidthForMemoryCache;
 		maxImageHeightForMemoryCache = builder.maxImageHeightForMemoryCache;
 		maxImageWidthForDiscCache = builder.maxImageWidthForDiscCache;

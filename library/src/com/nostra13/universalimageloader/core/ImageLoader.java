@@ -2,7 +2,6 @@ package com.nostra13.universalimageloader.core;
 
 import java.lang.reflect.Field;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -207,15 +206,14 @@ public class ImageLoader {
 	 * {@link ImageLoadingListener#onLoadingComplete(Bitmap) callback}.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
-	 * @param context Application context (used for creation of fake {@link ImageView})
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
 	 * 
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public void loadImage(Context context, String uri, ImageLoadingListener listener) {
-		loadImage(context, uri, null, null, listener);
+	public void loadImage(String uri, ImageLoadingListener listener) {
+		loadImage(uri, null, null, listener);
 	}
 
 	/**
@@ -223,7 +221,6 @@ public class ImageLoader {
 	 * {@link ImageLoadingListener#onLoadingComplete(Bitmap) callback}.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
-	 * @param context Application context (used for creation of fake {@link ImageView})
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param minImageSize Minimal size for {@link Bitmap} which will be returned in
 	 *            {@linkplain ImageLoadingListener#onLoadingComplete(Bitmap) callback}. Downloaded image will be decoded
@@ -234,8 +231,8 @@ public class ImageLoader {
 	 * 
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public void loadImage(Context context, String uri, ImageSize minImageSize, ImageLoadingListener listener) {
-		loadImage(context, uri, minImageSize, null, listener);
+	public void loadImage(String uri, ImageSize minImageSize, ImageLoadingListener listener) {
+		loadImage(uri, minImageSize, null, listener);
 	}
 
 	/**
@@ -243,7 +240,6 @@ public class ImageLoader {
 	 * {@link ImageLoadingListener#onLoadingComplete(Bitmap) callback}.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
-	 * @param context Application context (used for creation of fake {@link ImageView})
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param options {@linkplain DisplayImageOptions Display image options} for image displaying. If <b>null</b> -
 	 *            default display image options
@@ -255,8 +251,8 @@ public class ImageLoader {
 	 * 
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public void loadImage(Context context, String uri, DisplayImageOptions options, ImageLoadingListener listener) {
-		loadImage(context, uri, null, options, listener);
+	public void loadImage(String uri, DisplayImageOptions options, ImageLoadingListener listener) {
+		loadImage(uri, null, options, listener);
 	}
 
 	/**
@@ -264,7 +260,6 @@ public class ImageLoader {
 	 * {@link ImageLoadingListener#onLoadingComplete(Bitmap) callback}.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
-	 * @param context Application context (used for creation of fake {@link ImageView})
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param minImageSize Minimal size for {@link Bitmap} which will be returned in
 	 *            {@linkplain ImageLoadingListener#onLoadingComplete(Bitmap) callback}. Downloaded image will be decoded
@@ -280,7 +275,7 @@ public class ImageLoader {
 	 * 
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public void loadImage(Context context, String uri, ImageSize minImageSize, DisplayImageOptions options, ImageLoadingListener listener) {
+	public void loadImage(String uri, ImageSize minImageSize, DisplayImageOptions options, ImageLoadingListener listener) {
 		checkConfiguration();
 		if (minImageSize == null) {
 			minImageSize = new ImageSize(configuration.maxImageWidthForMemoryCache, configuration.maxImageHeightForMemoryCache);
@@ -296,7 +291,7 @@ public class ImageLoader {
 			optionsWithFakeDisplayer = new DisplayImageOptions.Builder().cloneFrom(options).displayer(fakeBitmapDisplayer).build();
 		}
 
-		ImageView fakeImage = new ImageView(context);
+		ImageView fakeImage = new ImageView(configuration.context);
 		fakeImage.setLayoutParams(new LayoutParams(minImageSize.getWidth(), minImageSize.getHeight()));
 		fakeImage.setScaleType(ScaleType.CENTER_CROP);
 
