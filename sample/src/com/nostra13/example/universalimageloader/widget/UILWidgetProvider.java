@@ -43,14 +43,14 @@ public class UILWidgetProvider extends AppWidgetProvider {
 		final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
 
 		ImageSize minImageSize = new ImageSize(70, 70); // 70 - approximate size of ImageView in widget
-		ImageLoader.getInstance().loadImage(context, IMAGES[0], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
+		ImageLoader.getInstance().loadImage(IMAGES[0], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
 			@Override
 			public void onLoadingComplete(Bitmap loadedImage) {
 				views.setImageViewBitmap(R.id.image_left, loadedImage);
 				appWidgetManager.updateAppWidget(appWidgetId, views);
 			}
 		});
-		ImageLoader.getInstance().loadImage(context, IMAGES[1], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
+		ImageLoader.getInstance().loadImage(IMAGES[1], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
 			@Override
 			public void onLoadingComplete(Bitmap loadedImage) {
 				views.setImageViewBitmap(R.id.image_right, loadedImage);
