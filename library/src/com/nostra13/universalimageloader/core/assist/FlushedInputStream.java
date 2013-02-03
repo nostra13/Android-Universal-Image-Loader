@@ -1,6 +1,6 @@
 package com.nostra13.universalimageloader.core.assist;
 
-import java.io.FilterInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -8,10 +8,14 @@ import java.io.InputStream;
  * Many streams obtained over slow connection show <a href="http://code.google.com/p/android/issues/detail?id=6066">this
  * problem</a>.
  */
-public class FlushedInputStream extends FilterInputStream {
+public class FlushedInputStream extends BufferedInputStream {
 
 	public FlushedInputStream(InputStream inputStream) {
 		super(inputStream);
+	}
+	
+	public FlushedInputStream(InputStream inputStream, int size) {
+		super(inputStream, size);
 	}
 
 	@Override
