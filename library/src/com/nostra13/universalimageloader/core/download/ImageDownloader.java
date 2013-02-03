@@ -23,7 +23,7 @@ public abstract class ImageDownloader {
 	/** Retrieves {@link InputStream} of image by URI. Image can be located as in the network and on local file system. */
 	public InputStream getStream(URI imageUri) throws IOException {
 		String scheme = imageUri.getScheme();
-		if (SCHEME_HTTP.equals(scheme) || SCHEME_HTTPS.equals(scheme) || SCHEME_FTP.equals(scheme)) {
+		if (SCHEME_HTTP.equals(scheme) || SCHEME_HTTPS.equals(scheme)) {
 			return getStreamFromNetwork(imageUri);
 		} else if (SCHEME_FILE.equals(scheme)) {
 			return getStreamFromFile(imageUri);
