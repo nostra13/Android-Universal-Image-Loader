@@ -45,13 +45,13 @@ public class ImageGridActivity extends BaseActivity {
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				startImageGalleryActivity(position);
+				startImagePagerActivity(position);
 			}
 		});
 		gridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
 	}
 
-	private void startImageGalleryActivity(int position) {
+	private void startImagePagerActivity(int position) {
 		Intent intent = new Intent(this, ImagePagerActivity.class);
 		intent.putExtra(Extra.IMAGES, imageUrls);
 		intent.putExtra(Extra.IMAGE_POSITION, position);

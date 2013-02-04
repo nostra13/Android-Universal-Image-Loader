@@ -1,10 +1,12 @@
 package com.nostra13.example.universalimageloader;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
@@ -17,6 +19,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
  */
 public class ImageGalleryActivity extends BaseActivity {
 
+	String[] imageUrls;
+
 	DisplayImageOptions options;
 
 	public void onCreate(Bundle savedInstanceState) {
@@ -24,8 +28,7 @@ public class ImageGalleryActivity extends BaseActivity {
 		setContentView(R.layout.ac_image_gallery);
 
 		Bundle bundle = getIntent().getExtras();
-		String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
-		int galleryPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
+		imageUrls = bundle.getStringArray(Extra.IMAGES);
 
 		options = new DisplayImageOptions.Builder()
 			.showImageForEmptyUri(R.drawable.ic_empty)
@@ -36,23 +39,26 @@ public class ImageGalleryActivity extends BaseActivity {
 			.build();
 
 		Gallery gallery = (Gallery) findViewById(R.id.gallery);
-		gallery.setAdapter(new ImagePagerAdapter(imageUrls));
-		gallery.setSelection(galleryPosition);
+		gallery.setAdapter(new ImageGalleryAdapter());
+		gallery.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				startImagePagerActivity(position);
+			}
+		});
 	}
 
-	private class ImagePagerAdapter extends BaseAdapter {
+	private void startImagePagerActivity(int position) {
+		Intent intent = new Intent(this, ImagePagerActivity.class);
+		intent.putExtra(Extra.IMAGES, imageUrls);
+		intent.putExtra(Extra.IMAGE_POSITION, position);
+		startActivity(intent);
+	}
 
-		private String[] images;
-		private LayoutInflater inflater;
-
-		ImagePagerAdapter(String[] images) {
-			this.images = images;
-			inflater = getLayoutInflater();
-		}
-
+	private class ImageGalleryAdapter extends BaseAdapter {
 		@Override
 		public int getCount() {
-			return images.length;
+			return imageUrls.length;
 		}
 
 		@Override
@@ -69,9 +75,9 @@ public class ImageGalleryActivity extends BaseActivity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			ImageView imageView = (ImageView) convertView;
 			if (imageView == null) {
-				imageView = (ImageView) inflater.inflate(R.layout.item_gallery_image, parent, false);
+				imageView = (ImageView) getLayoutInflater().inflate(R.layout.item_gallery_image, parent, false);
 			}
-			imageLoader.displayImage(images[position], imageView, options);
+			imageLoader.displayImage(imageUrls[position], imageView, options);
 			return imageView;
 		}
 	}

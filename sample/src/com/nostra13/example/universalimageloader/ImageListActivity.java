@@ -46,14 +46,14 @@ public class ImageListActivity extends BaseActivity {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				startImageGalleryActivity(position);
+				startImagePagerActivity(position);
 			}
 		});
 
 		listView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
 	}
 
-	private void startImageGalleryActivity(int position) {
+	private void startImagePagerActivity(int position) {
 		Intent intent = new Intent(this, ImagePagerActivity.class);
 		intent.putExtra(Extra.IMAGES, imageUrls);
 		intent.putExtra(Extra.IMAGE_POSITION, position);
