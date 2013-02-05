@@ -147,7 +147,7 @@ class ImageDecoder {
 			scale = 1;
 		}
 
-		if (loggingEnabled) L.d(LOG_IMAGE_SUBSAMPLED, imageWidth, imageHeight, targetWidth, targetHeight, scale);
+		log(LOG_IMAGE_SUBSAMPLED, imageWidth, imageHeight, targetWidth, targetHeight, scale);
 		return scale;
 	}
 
@@ -175,7 +175,7 @@ class ImageDecoder {
 			if (scaledBitmap != subsampledBitmap) {
 				subsampledBitmap.recycle();
 			}
-			if (loggingEnabled) L.d(LOG_IMAGE_SCALED, (int) srcWidth, (int) srcHeight, destWidth, destHeight);
+			log(LOG_IMAGE_SCALED, (int) srcWidth, (int) srcHeight, destWidth, destHeight);
 		} else {
 			scaledBitmap = subsampledBitmap;
 		}
@@ -185,5 +185,9 @@ class ImageDecoder {
 
 	void setLoggingEnabled(boolean loggingEnabled) {
 		this.loggingEnabled = loggingEnabled;
+	}
+
+	private void log(String message, Object... args) {
+		if (loggingEnabled) L.i(message, args);
 	}
 }

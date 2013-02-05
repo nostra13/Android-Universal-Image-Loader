@@ -40,7 +40,7 @@ class ImageLoaderEngine {
 		this.configuration = configuration;
 	}
 
-	/** Submits display task to execution pool */
+	/** Submits task to execution pool */
 	void submit(final LoadAndDisplayImageTask task) {
 		initExecutorsIfNeed();
 		taskDistributor.submit(new Runnable() {
@@ -54,6 +54,12 @@ class ImageLoaderEngine {
 				}
 			}
 		});
+	}
+
+	/** Submits task to execution pool */
+	void submit(ProcessAndDisplayImageTask task) {
+		initExecutorsIfNeed();
+		cachedImageLoadingExecutor.submit(task);
 	}
 
 	private void initExecutorsIfNeed() {

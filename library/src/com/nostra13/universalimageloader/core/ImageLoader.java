@@ -29,10 +29,26 @@ public class ImageLoader {
 
 	public static final String TAG = ImageLoader.class.getSimpleName();
 
+	static final String LOG_WAITING_FOR_RESUME = "ImageLoader is paused. Waiting...  [%s]";
+	static final String LOG_RESUME_AFTER_PAUSE = ".. Resume loading [%s]";
+	static final String LOG_DELAY_BEFORE_LOADING = "Delay %d ms before loading...  [%s]";
+	static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
+	static final String LOG_LOAD_IMAGE_FROM_MEMORY_CACHE = "Load image from memory cache [%s]";
+	static final String LOG_WAITING_FOR_IMAGE_LOADED = "Image already is loading. Waiting... [%s]";
+	static final String LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING = "...Get cached bitmap from memory after waiting. [%s]";
+	static final String LOG_LOAD_IMAGE_FROM_INTERNET = "Load image from Internet [%s]";
+	static final String LOG_LOAD_IMAGE_FROM_DISC_CACHE = "Load image from disc cache [%s]";
+	static final String LOG_PREPROCESS_IMAGE = "PreProcess image before caching in memory [%s]";
+	static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
+	static final String LOG_POSTPROCESS_IMAGE = "PostProcess image before displaying [%s]";
+	static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
+	static final String LOG_TASK_CANCELLED = "ImageView is reused for another image. Task is cancelled. [%s]";
+	static final String LOG_TASK_INTERRUPTED = "Task was interrupted [%s]";
+	static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
+
 	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (ImageView reference are required)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
-	private static final String LOG_LOAD_IMAGE_FROM_MEMORY_CACHE = "Load image from memory cache [%s]";
 
 	private ImageLoaderConfiguration configuration;
 	private ImageLoaderEngine engine;
@@ -165,7 +181,7 @@ public class ImageLoader {
 		if (uri == null || uri.length() == 0) {
 			engine.cancelDisplayTaskFor(imageView);
 			listener.onLoadingStarted();
-			if (options.isShowImageForEmptyUri()) {
+			if (options.shouldShowImageForEmptyUri()) {
 				imageView.setImageResource(options.getImageForEmptyUri());
 			} else {
 				imageView.setImageBitmap(null);
@@ -178,16 +194,21 @@ public class ImageLoader {
 		String memoryCacheKey = MemoryCacheUtil.generateKey(uri, targetSize);
 		engine.prepareDisplayTaskFor(imageView, memoryCacheKey);
 
+		listener.onLoadingStarted();
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
 			if (configuration.loggingEnabled) L.i(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey);
-			listener.onLoadingStarted();
-			options.getDisplayer().display(bmp, imageView);
-			listener.onLoadingComplete(bmp);
-		} else {
-			listener.onLoadingStarted();
 
-			if (options.isShowStubImage()) {
+			if (options.shouldPostProcess()) {
+				ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener, engine.getLockForUri(uri));
+				ProcessAndDisplayImageTask displayTask = new ProcessAndDisplayImageTask(engine, bmp, imageLoadingInfo, new Handler());
+				engine.submit(displayTask);
+			} else {
+				options.getDisplayer().display(bmp, imageView);
+				listener.onLoadingComplete(bmp);
+			}
+		} else {
+			if (options.shouldShowStubImage()) {
 				imageView.setImageResource(options.getStubImage());
 			} else {
 				if (options.isResetViewBeforeLoading()) {
@@ -196,8 +217,8 @@ public class ImageLoader {
 			}
 
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener, engine.getLockForUri(uri));
-			final LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(engine, imageLoadingInfo, new Handler());
-			engine.submit(displayImageTask);
+			LoadAndDisplayImageTask displayTask = new LoadAndDisplayImageTask(engine, imageLoadingInfo, new Handler());
+			engine.submit(displayTask);
 		}
 	}
 

@@ -1,10 +1,12 @@
 package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
+import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 
 /**
  * Contains options for image display. Defines:
@@ -41,6 +43,8 @@ public final class DisplayImageOptions {
 	private final ImageScaleType imageScaleType;
 	private final Bitmap.Config bitmapConfig;
 	private final int delayBeforeLoading;
+	private final BitmapProcessor preProcessor;
+	private final BitmapProcessor postProcessor;
 	private final BitmapDisplayer displayer;
 
 	private DisplayImageOptions(Builder builder) {
@@ -52,15 +56,29 @@ public final class DisplayImageOptions {
 		imageScaleType = builder.imageScaleType;
 		bitmapConfig = builder.bitmapConfig;
 		delayBeforeLoading = builder.delayBeforeLoading;
+		preProcessor = builder.preProcessor;
+		postProcessor = builder.postProcessor;
 		displayer = builder.displayer;
 	}
 
-	boolean isShowStubImage() {
+	boolean shouldShowStubImage() {
 		return stubImage != 0;
 	}
 
-	boolean isShowImageForEmptyUri() {
+	boolean shouldShowImageForEmptyUri() {
 		return imageForEmptyUri != 0;
+	}
+
+	boolean shouldPreProcess() {
+		return preProcessor != null;
+	}
+
+	boolean shouldPostProcess() {
+		return postProcessor != null;
+	}
+
+	boolean shouldDelayBeforeLoading() {
+		return delayBeforeLoading > 0;
 	}
 
 	Integer getStubImage() {
@@ -91,12 +109,16 @@ public final class DisplayImageOptions {
 		return bitmapConfig;
 	}
 
-	boolean isDelayBeforeLoading() {
-		return delayBeforeLoading > 0;
-	}
-
 	int getDelayBeforeLoading() {
 		return delayBeforeLoading;
+	}
+
+	BitmapProcessor getPreProcessor() {
+		return preProcessor;
+	}
+
+	BitmapProcessor getPostProcessor() {
+		return postProcessor;
 	}
 
 	BitmapDisplayer getDisplayer() {
@@ -117,6 +139,8 @@ public final class DisplayImageOptions {
 		private ImageScaleType imageScaleType = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		private Bitmap.Config bitmapConfig = Bitmap.Config.ARGB_8888;
 		private int delayBeforeLoading = 0;
+		private BitmapProcessor preProcessor = null;
+		private BitmapProcessor postProcessor = null;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 
 		/**
@@ -176,6 +200,24 @@ public final class DisplayImageOptions {
 		/** Sets delay time before starting loading task. Default - no delay. */
 		public Builder delayBeforeLoading(int delayInMillis) {
 			this.delayBeforeLoading = delayInMillis;
+			return this;
+		}
+
+		/**
+		 * Sets bitmap processor which will be process bitmaps before they will be cached in memory. So memory cache
+		 * will contain bitmap processed by incoming preProcessor.
+		 */
+		public Builder preProcessor(BitmapProcessor preProcessor) {
+			this.preProcessor = preProcessor;
+			return this;
+		}
+
+		/**
+		 * Sets bitmap processor which will be process bitmaps before they will be displayed in {@link ImageView} but
+		 * after they'll have been saved in memory cache.
+		 */
+		public Builder postProcessor(BitmapProcessor postProcessor) {
+			this.postProcessor = postProcessor;
 			return this;
 		}
 
