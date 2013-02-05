@@ -119,9 +119,6 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 
 		try {
 			roundBitmap = getRoundedCornerBitmap(bitmap, srcRect, destRect, width, height);
-			if (roundBitmap != bitmap) {
-				bitmap.recycle();
-			}
 		} catch (OutOfMemoryError e) {
 			L.e(e, "Can't create bitmap with rounded corners. Not enough memory.");
 			roundBitmap = bitmap;
