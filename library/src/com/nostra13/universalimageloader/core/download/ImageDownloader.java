@@ -6,7 +6,8 @@ import java.io.InputStream;
 import java.net.URI;
 
 /**
- * Provides retrieving of {@link InputStream} of image by URI.
+ * Provides retrieving of {@link InputStream} of image by URI.<br />
+ * Successors have to be thread-safe.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
