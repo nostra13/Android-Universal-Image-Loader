@@ -1,6 +1,11 @@
 package com.nostra13.example.universalimageloader;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +19,8 @@ import android.widget.TextView;
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 /**
@@ -51,6 +58,12 @@ public class ImageListActivity extends BaseActivity {
 		});
 
 		listView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
+	}
+
+	@Override
+	public void onBackPressed() {
+		AnimateFirstDisplayListener.displayedImages.clear();
+		super.onBackPressed();
 	}
 
 	private void startImagePagerActivity(int position) {
@@ -98,9 +111,37 @@ public class ImageListActivity extends BaseActivity {
 
 			holder.text.setText("Item " + (position + 1));
 
-			imageLoader.displayImage(imageUrls[position], holder.image, options);
+			final String imageUri = imageUrls[position];
+			final ImageView imageView = holder.image;
+			imageLoader.displayImage(imageUri, imageView, options, new AnimateFirstDisplayListener(imageUri, imageView));
 
 			return view;
+		}
+	}
+
+	private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
+
+		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
+
+		private final String imageUri;
+		private final ImageView imageView;
+
+		AnimateFirstDisplayListener(String imageUri, ImageView imageView) {
+			this.imageUri = imageUri;
+			this.imageView = imageView;
+		}
+
+		@Override
+		public void onLoadingComplete(Bitmap loadedImage) {
+			if (loadedImage != null) {
+				boolean firstDisplay = !displayedImages.contains(imageUri);
+				if (firstDisplay) {
+					FadeInBitmapDisplayer.animate(imageView, 500);
+				} else {
+					imageView.setImageBitmap(loadedImage);
+				}
+				displayedImages.add(imageUri);
+			}
 		}
 	}
 }
