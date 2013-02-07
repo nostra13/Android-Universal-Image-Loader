@@ -4,9 +4,9 @@ Change Log
 v1.7.1 *(31.01.2013)*
 ---
  * Avoid I/O operations on the main thread, prevented ANR (#129, #154)
- * Correctly handled every ImageView's scale type in 'RoundedBitmapDisplayer' (#70)
+ * Correctly handled every ImageView's scale type in `RoundedBitmapDisplayer` (#70)
  * Prevented slow precaching modified date in LimitedAgeDiscCache constructor (for large number of images in cache) (#141)
- * Introduced 'ImageLoader.isInited()' method. Throw IllegalStateException on 'displayImage(...)', 'loadImage(...)', 'getMemoryCache()', 'clearMemoryCache()', 'getDiscCache()', 'clearDiscCache()' calls if ImageLoader isn't inited with config.
+ * Introduced `ImageLoader.isInited()` method. Throw IllegalStateException on `displayImage(...)`, `loadImage(...)`, `getMemoryCache()`, `clearMemoryCache()`, `getDiscCache()`, `clearDiscCache()` calls if ImageLoader isn't inited with config.
  * Closed OutputStream after Bitmap compressing (#115)
  * Sample: Refactored resources
 
