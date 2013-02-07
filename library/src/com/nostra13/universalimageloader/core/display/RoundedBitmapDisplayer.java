@@ -23,7 +23,7 @@ import com.nostra13.universalimageloader.utils.L;
  */
 public class RoundedBitmapDisplayer implements BitmapDisplayer {
 
-	private int roundPixels;
+	private final int roundPixels;
 
 	public RoundedBitmapDisplayer(int roundPixels) {
 		this.roundPixels = roundPixels;
@@ -31,6 +31,21 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 
 	@Override
 	public Bitmap display(Bitmap bitmap, ImageView imageView) {
+		Bitmap roundedBitmap = roundCorners(bitmap, imageView, roundPixels);
+		imageView.setImageBitmap(roundedBitmap);
+		return roundedBitmap;
+	}
+
+	/**
+	 * Process incoming {@linkplain Bitmap} to make rounded corners according to target {@link ImageView}.<br />
+	 * This method <b>doesn't display</b> result bitmap in {@link ImageView}
+	 * 
+	 * @param bitmap Incoming Bitmap to process
+	 * @param imageView Target {@link ImageView} to display bitmap in
+	 * @param roundPixels
+	 * @return Result bitmap with rounded corners
+	 */
+	public static Bitmap roundCorners(Bitmap bitmap, ImageView imageView, int roundPixels) {
 		Bitmap roundBitmap;
 
 		int bw = bitmap.getWidth();
@@ -118,16 +133,16 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		}
 
 		try {
-			roundBitmap = getRoundedCornerBitmap(bitmap, srcRect, destRect, width, height);
+			roundBitmap = getRoundedCornerBitmap(bitmap, roundPixels, srcRect, destRect, width, height);
 		} catch (OutOfMemoryError e) {
 			L.e(e, "Can't create bitmap with rounded corners. Not enough memory.");
 			roundBitmap = bitmap;
 		}
-		imageView.setImageBitmap(roundBitmap);
+
 		return roundBitmap;
 	}
 
-	private Bitmap getRoundedCornerBitmap(Bitmap bitmap, Rect srcRect, Rect destRect, int width, int height) {
+	private static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int roundPixels, Rect srcRect, Rect destRect, int width, int height) {
 		Bitmap output = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 		Canvas canvas = new Canvas(output);
 
