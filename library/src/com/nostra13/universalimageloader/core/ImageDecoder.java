@@ -1,5 +1,9 @@
 package com.nostra13.universalimageloader.core;
 
+import static com.nostra13.universalimageloader.core.ImageLoader.LOG_CANT_DECODE_IMAGE;
+import static com.nostra13.universalimageloader.core.ImageLoader.LOG_IMAGE_SCALED;
+import static com.nostra13.universalimageloader.core.ImageLoader.LOG_IMAGE_SUBSAMPLING;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -26,9 +30,6 @@ import com.nostra13.universalimageloader.utils.L;
  * @see DisplayImageOptions
  */
 class ImageDecoder {
-
-	private static final String LOG_IMAGE_SUBSAMPLED = "Original image (%1$dx%2$d) is going to be subsampled to %3$dx%4$d view. Computed scale size - %5$d";
-	private static final String LOG_IMAGE_SCALED = "Subsampled image (%1$dx%2$d) was scaled to %3$dx%4$d";
 
 	private final URI imageUri;
 	private final ImageDownloader imageDownloader;
@@ -82,6 +83,7 @@ class ImageDecoder {
 			IoUtils.closeSilently(imageStream);
 		}
 		if (subsampledBitmap == null) {
+			log(LOG_CANT_DECODE_IMAGE, imageUri);
 			return null;
 		}
 
@@ -147,7 +149,7 @@ class ImageDecoder {
 			scale = 1;
 		}
 
-		log(LOG_IMAGE_SUBSAMPLED, imageWidth, imageHeight, targetWidth, targetHeight, scale);
+		log(LOG_IMAGE_SUBSAMPLING, imageWidth, imageHeight, targetWidth, targetHeight, scale);
 		return scale;
 	}
 

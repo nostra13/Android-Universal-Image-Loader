@@ -33,18 +33,21 @@ public class ImageLoader {
 	static final String LOG_RESUME_AFTER_PAUSE = ".. Resume loading [%s]";
 	static final String LOG_DELAY_BEFORE_LOADING = "Delay %d ms before loading...  [%s]";
 	static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
-	static final String LOG_LOAD_IMAGE_FROM_MEMORY_CACHE = "Load image from memory cache [%s]";
 	static final String LOG_WAITING_FOR_IMAGE_LOADED = "Image already is loading. Waiting... [%s]";
 	static final String LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING = "...Get cached bitmap from memory after waiting. [%s]";
+	static final String LOG_LOAD_IMAGE_FROM_MEMORY_CACHE = "Load image from memory cache [%s]";
 	static final String LOG_LOAD_IMAGE_FROM_INTERNET = "Load image from Internet [%s]";
 	static final String LOG_LOAD_IMAGE_FROM_DISC_CACHE = "Load image from disc cache [%s]";
+	static final String LOG_IMAGE_SUBSAMPLING = "Original image (%1$dx%2$d) is going to be subsampled to %3$dx%4$d view. Computed scale size - %5$d";
+	static final String LOG_IMAGE_SCALED = "Subsampled image (%1$dx%2$d) was scaled to %3$dx%4$d";
 	static final String LOG_PREPROCESS_IMAGE = "PreProcess image before caching in memory [%s]";
-	static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
 	static final String LOG_POSTPROCESS_IMAGE = "PostProcess image before displaying [%s]";
+	static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
 	static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
+	static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
 	static final String LOG_TASK_CANCELLED = "ImageView is reused for another image. Task is cancelled. [%s]";
 	static final String LOG_TASK_INTERRUPTED = "Task was interrupted [%s]";
-	static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
+	static final String LOG_CANT_DECODE_IMAGE = "Image can't be decoded [%s]";
 
 	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (ImageView reference are required)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
