@@ -132,12 +132,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 				if (checkTaskIsNotActual() || checkTaskIsInterrupted()) return;
 
+				if (options.shouldPreProcess()) {
+					log(LOG_PREPROCESS_IMAGE, memoryCacheKey);
+					bmp = options.getPreProcessor().process(bmp);
+				}
 				if (options.isCacheInMemory()) {
-					if (options.shouldPreProcess()) {
-						log(LOG_PREPROCESS_IMAGE, memoryCacheKey);
-						bmp = options.getPreProcessor().process(bmp);
-					}
-
 					log(LOG_CACHE_IMAGE_IN_MEMORY, memoryCacheKey);
 					configuration.memoryCache.put(memoryCacheKey, bmp);
 				}

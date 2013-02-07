@@ -205,7 +205,8 @@ public final class DisplayImageOptions {
 
 		/**
 		 * Sets bitmap processor which will be process bitmaps before they will be cached in memory. So memory cache
-		 * will contain bitmap processed by incoming preProcessor.
+		 * will contain bitmap processed by incoming preProcessor.<br />
+		 * Image will be pre-processed even if caching in memory is disabled.
 		 */
 		public Builder preProcessor(BitmapProcessor preProcessor) {
 			this.preProcessor = preProcessor;
