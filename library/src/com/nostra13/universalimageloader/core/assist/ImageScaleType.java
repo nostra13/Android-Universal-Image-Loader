@@ -11,13 +11,8 @@ import android.widget.ImageView.ScaleType;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public enum ImageScaleType {
-	/**
-	 * The same as {@link #IN_SAMPLE_POWER_OF_2}
-	 * 
-	 * @deprecated Will be deleted in the future. Use {@link #IN_SAMPLE_POWER_OF_2}.
-	 */
-	@Deprecated
-	POWER_OF_2,
+	/** Image won't be scaled */
+	NONE,
 	/**
 	 * Image will be reduces 2-fold until next reduce step make image smaller target size.<br />
 	 * It's <b>fast</b> type and it's preferable for usage in lists/grids/galleries (and other {@linkplain AdapterView
@@ -26,13 +21,6 @@ public enum ImageScaleType {
 	 * Note: If original image size is smaller than target size then original image <b>won't</b> be scaled.
 	 */
 	IN_SAMPLE_POWER_OF_2,
-	/**
-	 * The same as {@link #IN_SAMPLE_INT}
-	 * 
-	 * @deprecated Will be deleted in the future. Use {@link #IN_SAMPLE_INT}.
-	 */
-	@Deprecated
-	EXACT,
 	/**
 	 * Image will be subsampled in an integer number of times. Use it if memory economy is quite important.<br />
 	 * Relates to {@link BitmapFactory.Options#inSampleSize}<br />
