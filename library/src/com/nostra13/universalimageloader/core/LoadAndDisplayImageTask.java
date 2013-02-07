@@ -135,7 +135,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 				if (options.isCacheInMemory()) {
 					if (options.shouldPreProcess()) {
 						log(LOG_PREPROCESS_IMAGE, memoryCacheKey);
-						bmp = options.getPreProcessor().process(bmp, imageView);
+						bmp = options.getPreProcessor().process(bmp);
 					}
 
 					log(LOG_CACHE_IMAGE_IN_MEMORY, memoryCacheKey);
@@ -147,7 +147,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 			if (options.shouldPostProcess()) {
 				log(LOG_POSTPROCESS_IMAGE, memoryCacheKey);
-				bmp = options.getPostProcessor().process(bmp, imageView);
+				bmp = options.getPostProcessor().process(bmp);
 			}
 		} finally {
 			loadFromUriLock.unlock();

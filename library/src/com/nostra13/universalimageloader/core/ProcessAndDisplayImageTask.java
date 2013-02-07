@@ -33,7 +33,7 @@ class ProcessAndDisplayImageTask implements Runnable {
 	public void run() {
 		if (engine.configuration.loggingEnabled) L.i(LOG_POSTPROCESS_IMAGE, imageLoadingInfo.memoryCacheKey);
 		BitmapProcessor processor = imageLoadingInfo.options.getPostProcessor();
-		final Bitmap processedBitmap = processor.process(bitmap, imageLoadingInfo.imageView);
+		final Bitmap processedBitmap = processor.process(bitmap);
 		if (processedBitmap != bitmap) {
 			bitmap.recycle();
 		}
