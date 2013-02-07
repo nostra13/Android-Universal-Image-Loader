@@ -1,7 +1,6 @@
 package com.nostra13.example.universalimageloader;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,8 +12,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public abstract class BaseActivity extends Activity {
 
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
-
-	private boolean instanceStateSaved;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -34,18 +31,5 @@ public abstract class BaseActivity extends Activity {
 			default:
 				return false;
 		}
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		instanceStateSaved = true;
-	}
-
-	@Override
-	protected void onDestroy() {
-		if (!instanceStateSaved) {
-			imageLoader.stop();
-		}
-		super.onDestroy();
 	}
 }

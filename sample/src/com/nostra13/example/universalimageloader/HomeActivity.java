@@ -53,6 +53,12 @@ public class HomeActivity extends BaseActivity {
 		startActivity(intent);
 	}
 
+	@Override
+	public void onBackPressed() {
+		imageLoader.stop();
+		super.onBackPressed();
+	}
+	
 	private void copyTestImageToSdCard(final File testImageOnSdCard) {
 		new Thread(new Runnable() {
 			@Override
