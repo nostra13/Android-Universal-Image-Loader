@@ -309,7 +309,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 		// If previous compression wasn't needed or failed
 		// Download and save original image
-		InputStream is = downloader.getStream(new URI(uri));
+		InputStream is = downloader.getStream(new URI(uri), options.getExtraForDownloader());
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 			try {

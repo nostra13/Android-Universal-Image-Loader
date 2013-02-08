@@ -89,8 +89,8 @@ public final class ImageLoaderConfiguration {
 	 * <li>memoryCache = {@link UsingFreqLimitedCache} with limited memory cache size (
 	 * {@link Builder#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
 	 * <li>discCache = {@link UnlimitedDiscCache}</li>
-	 * <li>imageDownloader = {@link ImageDownloader#createDefault()}</li>
-	 * <li>discCacheFileNameGenerator = {@link FileNameGenerator#createDefault()}</li>
+	 * <li>imageDownloader = {@link DefaultConfigurationFactory#createImageDownloader(Context)}</li>
+	 * <li>discCacheFileNameGenerator = {@link DefaultConfigurationFactory#createFileNameGenerator()}</li>
 	 * <li>defaultDisplayImageOptions = {@link DisplayImageOptions#createSimple() Simple options}</li>
 	 * <li>tasksProcessingOrder = {@link QueueProcessingType#FIFO}</li>
 	 * <li>detailed logging disabled</li>

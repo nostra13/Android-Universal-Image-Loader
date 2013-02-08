@@ -75,7 +75,7 @@ class ImageDecoder {
 	 */
 	public Bitmap decode(ImageSize targetSize, ImageScaleType scaleType, ViewScaleType viewScaleType) throws IOException {
 		Options decodeOptions = getBitmapOptionsForImageDecoding(targetSize, scaleType, viewScaleType);
-		InputStream imageStream = imageDownloader.getStream(imageUri);
+		InputStream imageStream = imageDownloader.getStream(imageUri, displayOptions.getExtraForDownloader());
 		Bitmap subsampledBitmap;
 		try {
 			subsampledBitmap = BitmapFactory.decodeStream(imageStream, null, decodeOptions);
@@ -109,7 +109,7 @@ class ImageDecoder {
 		// decode image size
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
-		InputStream imageStream = imageDownloader.getStream(imageUri);
+		InputStream imageStream = imageDownloader.getStream(imageUri, displayOptions.getExtraForDownloader());
 		try {
 			BitmapFactory.decodeStream(imageStream, null, options);
 		} finally {

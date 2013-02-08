@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 
 /**
@@ -44,6 +45,7 @@ public final class DisplayImageOptions {
 	private final ImageScaleType imageScaleType;
 	private final Bitmap.Config bitmapConfig;
 	private final int delayBeforeLoading;
+	private final Object extraForDownloader;
 	private final BitmapProcessor preProcessor;
 	private final BitmapProcessor postProcessor;
 	private final BitmapDisplayer displayer;
@@ -58,6 +60,7 @@ public final class DisplayImageOptions {
 		imageScaleType = builder.imageScaleType;
 		bitmapConfig = builder.bitmapConfig;
 		delayBeforeLoading = builder.delayBeforeLoading;
+		extraForDownloader = builder.extraForDownloader;
 		preProcessor = builder.preProcessor;
 		postProcessor = builder.postProcessor;
 		displayer = builder.displayer;
@@ -123,6 +126,10 @@ public final class DisplayImageOptions {
 		return delayBeforeLoading;
 	}
 
+	Object getExtraForDownloader() {
+		return extraForDownloader;
+	}
+
 	BitmapProcessor getPreProcessor() {
 		return preProcessor;
 	}
@@ -150,6 +157,7 @@ public final class DisplayImageOptions {
 		private ImageScaleType imageScaleType = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		private Bitmap.Config bitmapConfig = Bitmap.Config.ARGB_8888;
 		private int delayBeforeLoading = 0;
+		private Object extraForDownloader = null;
 		private BitmapProcessor preProcessor = null;
 		private BitmapProcessor postProcessor = null;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
@@ -222,6 +230,12 @@ public final class DisplayImageOptions {
 		/** Sets delay time before starting loading task. Default - no delay. */
 		public Builder delayBeforeLoading(int delayInMillis) {
 			this.delayBeforeLoading = delayInMillis;
+			return this;
+		}
+
+		/** Sets auxiliary object which will be passed to {@link ImageDownloader#getStream(java.net.URI, Object)} */
+		public Builder extraForDownloader(Object extra) {
+			this.extraForDownloader = extra;
 			return this;
 		}
 

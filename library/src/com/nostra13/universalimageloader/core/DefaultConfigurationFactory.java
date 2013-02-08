@@ -17,7 +17,7 @@ import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemor
 import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
-import com.nostra13.universalimageloader.core.download.ExtendedImageDownloader;
+import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
@@ -56,9 +56,9 @@ public class DefaultConfigurationFactory {
 		return memoryCache;
 	}
 
-	/** Create default implementation of {@link ImageDownloader} - {@link ExtendedImageDownloader} */
+	/** Create default implementation of {@link ImageDownloader} - {@link BaseImageDownloader} */
 	public static ImageDownloader createImageDownloader(Context context) {
-		return new ExtendedImageDownloader(context);
+		return new BaseImageDownloader(context);
 	}
 
 	/** Create default implementation of {@link BitmapDisplayer} */
