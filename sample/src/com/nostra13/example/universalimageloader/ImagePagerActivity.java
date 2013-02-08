@@ -37,6 +37,7 @@ public class ImagePagerActivity extends BaseActivity {
 
 		options = new DisplayImageOptions.Builder()
 			.showImageForEmptyUri(R.drawable.ic_empty)
+			.showImageOnFail(R.drawable.ic_error)
 			.resetViewBeforeLoading()
 			.cacheOnDisc()
 			.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
@@ -112,7 +113,6 @@ public class ImagePagerActivity extends BaseActivity {
 					Toast.makeText(ImagePagerActivity.this, message, Toast.LENGTH_SHORT).show();
 
 					spinner.setVisibility(View.GONE);
-					imageView.setImageResource(R.drawable.ic_error);
 				}
 
 				@Override

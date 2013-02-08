@@ -43,6 +43,7 @@ public class ImageListActivity extends BaseActivity {
 		options = new DisplayImageOptions.Builder()
 			.showStubImage(R.drawable.ic_stub)
 			.showImageForEmptyUri(R.drawable.ic_empty)
+			.showImageOnFail(R.drawable.ic_error)
 			.cacheInMemory()
 			.cacheOnDisc()
 			.displayer(new RoundedBitmapDisplayer(20))
