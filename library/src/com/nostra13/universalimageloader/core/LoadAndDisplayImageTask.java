@@ -327,6 +327,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
+					if (options.shouldShowImageOnFail()) {
+						imageView.setImageResource(options.getImageOnFail());
+					}
 					listener.onLoadingFailed(failReason);
 				}
 			});

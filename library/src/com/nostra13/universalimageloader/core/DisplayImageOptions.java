@@ -37,6 +37,7 @@ public final class DisplayImageOptions {
 
 	private final int stubImage;
 	private final int imageForEmptyUri;
+	private final int imageOnFail;
 	private final boolean resetViewBeforeLoading;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
@@ -50,6 +51,7 @@ public final class DisplayImageOptions {
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
 		imageForEmptyUri = builder.imageForEmptyUri;
+		imageOnFail = builder.imageOnFail;
 		resetViewBeforeLoading = builder.resetViewBeforeLoading;
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
@@ -69,6 +71,10 @@ public final class DisplayImageOptions {
 		return imageForEmptyUri != 0;
 	}
 
+	boolean shouldShowImageOnFail() {
+		return imageOnFail != 0;
+	}
+
 	boolean shouldPreProcess() {
 		return preProcessor != null;
 	}
@@ -81,12 +87,16 @@ public final class DisplayImageOptions {
 		return delayBeforeLoading > 0;
 	}
 
-	Integer getStubImage() {
+	int getStubImage() {
 		return stubImage;
 	}
 
-	Integer getImageForEmptyUri() {
+	int getImageForEmptyUri() {
 		return imageForEmptyUri;
+	}
+
+	int getImageOnFail() {
+		return imageOnFail;
 	}
 
 	boolean isResetViewBeforeLoading() {
@@ -133,6 +143,7 @@ public final class DisplayImageOptions {
 	public static class Builder {
 		private int stubImage = 0;
 		private int imageForEmptyUri = 0;
+		private int imageOnFail = 0;
 		private boolean resetViewBeforeLoading = false;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
@@ -154,13 +165,24 @@ public final class DisplayImageOptions {
 		}
 
 		/**
-		 * Image will be displayed in {@link android.widget.ImageView ImageView} if empty URI (null or empty string)
-		 * will be passed to <b>ImageLoader.displayImage(...)</b> method.
+		 * Incoming image will be displayed in {@link android.widget.ImageView ImageView} if empty URI (null or empty
+		 * string) will be passed to <b>ImageLoader.displayImage(...)</b> method.
 		 * 
 		 * @param imageRes Image resource
 		 */
 		public Builder showImageForEmptyUri(int imageRes) {
 			imageForEmptyUri = imageRes;
+			return this;
+		}
+
+		/**
+		 * Incoming image will be displayed in {@link android.widget.ImageView ImageView} if some error occurs during
+		 * requested image loading/decoding.
+		 * 
+		 * @param imageRes Image resource
+		 */
+		public Builder showImageOnFail(int imageRes) {
+			imageOnFail = imageRes;
 			return this;
 		}
 
