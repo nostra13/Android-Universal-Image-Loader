@@ -115,9 +115,7 @@ public class ImageListActivity extends BaseActivity {
 
 			holder.text.setText("Item " + (position + 1));
 
-			final String imageUri = imageUrls[position];
-			final ImageView imageView = holder.image;
-			imageLoader.displayImage(imageUri, imageView, options, animateFirstListener);
+			imageLoader.displayImage(imageUrls[position], holder.image, options, animateFirstListener);
 
 			return view;
 		}
