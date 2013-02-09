@@ -40,7 +40,7 @@ Android 1.5+ support
    - `getView()` method code of your adapter (if you use it)
    - XML layout of your ImageView you load image into
 
-**Bugs** and **feature requests** put **[here](https://github.com/nostra13/Android-Universal-Image-Loader/issues/new)**.
+**Bugs** and **feature requests** put **[here](https://github.com/nostra13/Android-Universal-Image-Loader/issues/new)**.<br />
 If you have some **issues on migration** to newer library version - be sure to ask for help **[here](https://github.com/nostra13/Android-Universal-Image-Loader/issues/169)**
 
 ## Quick Setup
@@ -324,7 +324,7 @@ You can support the project and thank the author for his hard work :)
 ## License
 
 If you use Universal Image Loader code in your application you must inform the author about it ( *email: nostra13[at]gmail[dot]com* ) like this:
-> **Subject:** UIL usage notification
+> **Subject:** UIL usage notification<br />
 > **Text:** I use Universal Image Loader in &lt;ApplicationName> - http://link_to_google_play.
 > I [allow|don't allow] to mention my app in "Applications using Universal Image Loader" on GitHub.
 
