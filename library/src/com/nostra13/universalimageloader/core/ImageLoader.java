@@ -285,7 +285,7 @@ public class ImageLoader {
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 * 
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
-	 * @param minImageSize Minimal size for {@link Bitmap} which will be returned in
+	 * @param targetImageSize Minimal size for {@link Bitmap} which will be returned in
 	 *            {@linkplain ImageLoadingListener#onLoadingComplete(Bitmap) callback}. Downloaded image will be decoded
 	 *            and scaled to {@link Bitmap} of the size which is <b>equal or larger</b> (usually a bit larger) than
 	 *            incoming minImageSize .
@@ -299,10 +299,10 @@ public class ImageLoader {
 	 * 
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public void loadImage(String uri, ImageSize minImageSize, DisplayImageOptions options, ImageLoadingListener listener) {
+	public void loadImage(String uri, ImageSize targetImageSize, DisplayImageOptions options, ImageLoadingListener listener) {
 		checkConfiguration();
-		if (minImageSize == null) {
-			minImageSize = new ImageSize(configuration.maxImageWidthForMemoryCache, configuration.maxImageHeightForMemoryCache);
+		if (targetImageSize == null) {
+			targetImageSize = new ImageSize(configuration.maxImageWidthForMemoryCache, configuration.maxImageHeightForMemoryCache);
 		}
 		if (options == null) {
 			options = configuration.defaultDisplayImageOptions;
@@ -316,7 +316,7 @@ public class ImageLoader {
 		}
 
 		ImageView fakeImage = new ImageView(configuration.context);
-		fakeImage.setLayoutParams(new LayoutParams(minImageSize.getWidth(), minImageSize.getHeight()));
+		fakeImage.setLayoutParams(new LayoutParams(targetImageSize.getWidth(), targetImageSize.getHeight()));
 		fakeImage.setScaleType(ScaleType.CENTER_CROP);
 
 		displayImage(uri, fakeImage, optionsWithFakeDisplayer, listener);
