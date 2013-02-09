@@ -284,6 +284,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private void saveImageOnDisc(File targetFile) throws IOException, URISyntaxException {
+		File cacheDir = targetFile.getParentFile();
+		if (!cacheDir.exists()) {
+			cacheDir.mkdirs();
+		}
+
 		int width = configuration.maxImageWidthForDiscCache;
 		int height = configuration.maxImageHeightForDiscCache;
 		if (width > 0 || height > 0) {
