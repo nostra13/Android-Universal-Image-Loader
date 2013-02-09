@@ -112,7 +112,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
 		.discCacheSize(50 * 1024 * 1024)
 		.discCacheFileCount(100)
 		.discCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
-		.imageDownloader(new URLConnectionImageDownloader()) // default
+		.imageDownloader(new BaseImageDownloader(context)) // default
 		.tasksProcessingOrder(QueueProcessingType.FIFO) // default
 		.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
 		.enableLogging()
@@ -126,20 +126,32 @@ Display Options can be applied to every display task (`ImageLoader.displayImage(
 ``` java
 // DON'T COPY THIS CODE TO YOUR PROJECT! This is just example of ALL options using.
 DisplayImageOptions options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.stub_image)
-		.showImageForEmptyUri(R.drawable.image_for_empty_url)
+		.showStubImage(R.drawable.ic_stub)
+		.showImageForEmptyUri(R.drawable.ic_empty)
+		.showImageOnFail(R.drawable.ic_error)
 		.resetViewBeforeLoading()
+		.delayBeforeLoading(1000)
 		.cacheInMemory()
 		.cacheOnDisc()
+		.preProcessor(...)
+		.postProcessor(...)
+		.extraForDownloader(...)
 		.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2) // default
 		.bitmapConfig(Bitmap.Config.ARGB_8888) // default
-		.delayBeforeLoading(1000)
 		.displayer(new SimpleBitmapDisplayer()) // default
 		.build();
 ```
 
 ## Usage
 
+### Acceptable URIs examples
+``` java
+String imageUri = "http://site.com/image.png"; // from Web
+String imageUri = "file:///mnt/sdcard/image.png"; // from SD card
+String imageUri = "content://media/external/audio/albumart/13"; // from content provider
+String imageUri = "assets://image.png"; // from assets
+String imageUri = "drawable://" + R.drawable.image; // from drawables
+```
 ### Simple
 ``` java
 // Load image, decode it to Bitmap and display Bitmap in ImageView
@@ -147,10 +159,10 @@ imageLoader.displayImage(imageUri, imageView);
 ```
 ``` java
 // Load image, decode it to Bitmap and return Bitmap to callback
-imageLoader.loadImage(context, imageUri, new SimpleImageLoadingListener() {
+imageLoader.loadImage(imageUri, new SimpleImageLoadingListener() {
 	@Override
-	public void onLoadingComplete(Bitmap loadedImage) {
-		// Do whatever you want with loaded Bitmap
+	public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+		// Do whatever you want with Bitmap
 	}
 });
 ```
@@ -160,19 +172,19 @@ imageLoader.loadImage(context, imageUri, new SimpleImageLoadingListener() {
 // Load image, decode it to Bitmap and display Bitmap in ImageView
 imageLoader.displayImage(imageUri, imageView, displayOptions, new ImageLoadingListener() {
 	@Override
-	public void onLoadingStarted() {
+	public void onLoadingStarted(String imageUri, View view) {
 		...
 	}
 	@Override
-	public void onLoadingFailed(FailReason failReason) {
+	public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
 		...
 	}
 	@Override
-	public void onLoadingComplete(Bitmap loadedImage) {
+	public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 		...
 	}
 	@Override
-	public void onLoadingCancelled() {
+	public void onLoadingCancelled(String imageUri, View view) {
 		...
 	}
 });
@@ -180,10 +192,10 @@ imageLoader.displayImage(imageUri, imageView, displayOptions, new ImageLoadingLi
 ``` java
 // Load image, decode it to Bitmap and return Bitmap to callback
 ImageSize targetSize = new ImageSize(120, 80); // result Bitmap will be fit to this size
-imageLoader.loadImage(context, imageUri, targetSize, displayOptions, new SimpleImageLoadingListener() {
+imageLoader.loadImage(imageUri, targetSize, displayOptions, new SimpleImageLoadingListener() {
 	@Override
-	public void onLoadingComplete(Bitmap loadedImage) {
-		// Do whatever you want with loaded Bitmap
+	public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+		// Do whatever you want with Bitmap
 	}
 });
 ```
@@ -256,21 +268,21 @@ To provide caching on external storage (SD card) add following permission to And
 ```
 
 3. How UIL define Bitmap size needed for exact ImageView? It searches defined parameters:
- * Get ```android:layout_width``` and ```android:layout_height``` parameters
- * Get ```android:maxWidth``` and/or ```android:maxHeight``` parameters
- * Get maximum width and/or height parameters from configuration (```memoryCacheExtraOptions(int, int)``` option)
+ * Get `android:layout_width` and `android:layout_height` parameters
+ * Get `android:maxWidth` and/or `android:maxHeight` parameters
+ * Get maximum width and/or height parameters from configuration (`memoryCacheExtraOptions(int, int)` option)
  * Get width and/or height of device screen
 
- So **try to set** ```android:layout_width```|```android:layout_height``` or ```android:maxWidth```|```android:maxHeight``` parameters for ImageView if you know approximate maximum size of it. It will help correctly compute Bitmap size needed for this view and **save memory**.
+ So **try to set** `android:layout_width`|`android:layout_height` or `android:maxWidth`|`android:maxHeight` parameters for ImageView if you know approximate maximum size of it. It will help correctly compute Bitmap size needed for this view and **save memory**.
 
 4. If you often got **OutOfMemoryError** in your app using Universal Image Loader then try next (all of them or several):
- - Reduce thread pool size in configuration (```.threadPoolSize(...)```). 1 - 5 is recommended.
- - Use ```.bitmapConfig(Bitmap.Config.RGB_565)``` in display options. Bitmaps in RGB_565 consume 2 times less memory than in ARGB_8888.
- - Use ```.memoryCache(new WeakMemoryCache())``` in configuration or disable caching in memory at all in display options (don't call ```.cacheInMemory()```).
- - Use ```.imageScaleType(ImageScaleType.IN_SAMPLE_INT)``` in display options. Or try ```.imageScaleType(ImageScaleType.EXACTLY)```.
+ - Reduce thread pool size in configuration (`.threadPoolSize(...)`). 1 - 5 is recommended.
+ - Use `.bitmapConfig(Bitmap.Config.RGB_565)` in display options. Bitmaps in RGB_565 consume 2 times less memory than in ARGB_8888.
+ - Use `.memoryCache(new WeakMemoryCache())` in configuration or disable caching in memory at all in display options (don't call `.cacheInMemory()`).
+ - Use `.imageScaleType(ImageScaleType.IN_SAMPLE_INT)` in display options. Or try `.imageScaleType(ImageScaleType.EXACTLY)`.
  - Avoid using RoundedBitmapDisplayer. It creates new Bitmap object with ARGB_8888 config for displaying during work.
  
-5. For memory cache configuration (ImageLoaderConfiguration.Builder.memoryCache(...)) you can use already prepared implementations:
+5. For memory cache configuration (`ImageLoaderConfiguration.memoryCache(...)`) you can use already prepared implementations:
  * UsingFreqLimitedMemoryCache (The least frequently used bitmap is deleted when cache size limit is exceeded) - Used by default
  * LRULimitedMemoryCache (Least recently used bitmap is deleted when cache size limit is exceeded)
  * FIFOLimitedMemoryCache (FIFO rule is used for deletion when cache size limit is exceeded)
@@ -278,7 +290,7 @@ To provide caching on external storage (SD card) add following permission to And
  * LimitedAgeMemoryCache (Decorator. Cached object is deleted when its age exceeds defined value)
  * WeakMemoryCache (Memory cache with only weak references to bitmaps)
 
-6. For disc cache configuration (ImageLoaderConfiguration.Builder.discCache(...)) you can use already prepared implementations:
+6. For disc cache configuration (`ImageLoaderConfiguration.discCache(...)`) you can use already prepared implementations:
  * UnlimitedDiscCache (The fastest cache, doesn't limit cache size) - Used by default
  * TotalSizeLimitedDiscCache (Cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last usage date will be deleted)
  * FileCountLimitedDiscCache (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
@@ -286,7 +298,7 @@ To provide caching on external storage (SD card) add following permission to And
  
  **NOTE:** UnlimitedDiscCache is 30%-faster than other limited disc cache implementations.
 
-7. To display bitmap (DisplayImageOptions.Builder.displayer(...)) you can use already prepared implementations: 
+7. To display bitmap (`DisplayImageOptions.displayer(...)`) you can use already prepared implementations: 
  * RoundedBitmapDisplayer (Displays bitmap with rounded corners)
  * FadeInBitmapDisplayer (Displays image with "fade in" animation)
 
@@ -294,12 +306,12 @@ To provide caching on external storage (SD card) add following permission to And
 ``` java
 boolean pauseOnScroll = false; // or true
 boolean pauseOnFling = true; // or false
-PauseOnScrollListener listener = new PauseOnScrollListener(pauseOnScroll, pauseOnFling);
+PauseOnScrollListener listener = new PauseOnScrollListener(imageLoader, pauseOnScroll, pauseOnFling);
 listView.setOnScrollListener(listener);
 ```
  
 ## Applications using Universal Image Loader
-**[MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)** | [Деловой Киров](https://play.google.com/store/apps/details?id=ru.normakirov.dknorma) | [Бизнес-завтрак](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch) | [Menu55](http://www.free-lance.ru/users/max475imus/viewproj.php?prjid=3152141) | [SpokenPic](http://spokenpic.com) | [Kumir](https://play.google.com/store/apps/details?id=ru.premiakumir.android) | [EUKO 2012](https://play.google.com/store/apps/details?id=de.netlands.emsapp) | [TuuSo Image Search](https://play.google.com/store/apps/details?id=com.tuuso) | [Газета Стройка](https://play.google.com/store/apps/details?id=ru.normakirov.stroyka) | **[Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)** | [Quiz Guess The Guy] (https://play.google.com/store/apps/details?id=com.game.guesstheguy) | [Volksempfänger (alpha)](http://volksempfaenger.0x4a42.net) | **[ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox), [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro)** | [London 2012 Games](https://play.google.com/store/apps/details?id=com.mbwasi.london) | [카톡 이미지 - 예쁜 프로필 이미지](https://play.google.com/store/apps/details?id=com.bydoori.firstbasea) | [dailyPen](https://play.google.com/store/apps/details?id=com.bydoori.dailypen) | [Mania!](https://play.google.com/store/apps/details?id=com.astro.mania.activities) | **[Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities)** | **[Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test)** | [Lafemme Fashion Finder](https://play.google.com/store/apps/details?id=me.getlafem.lafemme2) | [FastPaleo](https://play.google.com/store/apps/details?id=com.mqmobile.droid.fastpaleo) | **[Sporee - Live Soccer Scores](https://play.google.com/store/apps/details?id=com.sporee.android)** | [friendizer](https://play.google.com/store/apps/details?id=com.teamagly.friendizer) | [LowPrice lowest book price](https://play.google.com/store/apps/details?id=com.binarybricks.lowprice) | [bluebee](https://play.google.com/store/apps/details?id=mobi.bluebee.android.app) | [Game PromoBox](https://play.google.com/store/apps/details?id=com.gamepromobox) | **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)** | [Festival Wallpaper](https://play.google.com/store/apps/details?id=com.cs.fwallpaper) | [Gaudi Hall](https://play.google.com/store/apps/details?id=ru.normakirov.gaudihall) | [Spocal](https://play.google.com/store/apps/details?id=net.spocal.android) | [PhotoDownloader for Facebook](https://play.google.com/store/apps/details?id=com.giannz.photodownloader) | [Вкладыши](https://play.google.com/store/apps/details?id=com.banjen.app.gumimages) | [Dressdrobe](https://play.google.com/store/apps/details?id=com.dressdrobe.mario) | [mofferin](https://play.google.com/store/apps/details?id=com.mmobile.mofferin) | [WordBoxer](http://www.wordboxer.com/) | [EZ Imgur](https://play.google.com/store/apps/details?id=com.ezimgur) | [Ciudad en línea](https://play.google.com/store/apps/details?id=com.aliadosweb.android.cel) | [Urbanismo en línea](https://play.google.com/store/apps/details?id=com.aliadosweb.android.opel) | [Waypost](https://play.google.com/store/apps/details?id=com.brushfire.waypost) | [Moonrise Kingdom Wallpapers HD](https://play.google.com/store/apps/details?id=net.dnlk.moonrisekingdom.gallery) | [Chic or Shock?](https://play.google.com/store/apps/details?id=com.chicorshock) | [Auto Wallpapers](https://play.google.com/store/apps/details?id=ru.evgsd.autowallpapers) | [Heyou](https://play.google.com/store/apps/details?id=heyou.pythagorapps.heyou) | [Brasil Notícias](https://play.google.com/store/apps/details?id=com.acerolamob.android.brasilnoticias) | [ProfiAuto’s VideoBlog](https://play.google.com/store/apps/details?id=pl.profiauto.android.videoblog) | [CarteleraApp (Cine)](https://play.google.com/store/apps/details?id=com.jcminarro.android.tools), [AdsFree](https://play.google.com/store/apps/details?id=com.jcminarro.android.tools.carteleraApp) | [Listonic - Zamów Zakupy](https://play.google.com/store/apps/details?id=com.listonic.shop) | **[Topface - meeting is easy](https://play.google.com/store/apps/details?id=com.topface.topface)** | [Name The Meme](https://play.google.com/store/apps/details?id=it.fi.appstyx.namethememe) | [Name The World](https://play.google.com/store/apps/details?id=it.fi.appstyx.nametheworld) | [Pregnancy Tickers - Widget](https://play.google.com/store/apps/details?id=com.romkuapps.tickers) | [Hindi Movies & More](https://play.google.com/store/apps/details?id=info.mediatree.hindimoviesandmore) | [Telugu Movies & More](https://play.google.com/store/apps/details?id=info.mediatree.telugu) | [Jessica Alba HD Wallpaper](https://play.google.com/store/apps/details?id=com.maxtra_jessicaalba) | [User Manager ROOT Android 4.2](https://play.google.com/store/apps/details?id=com.ramdroid.usermanagerpro) | [DNSHmob](https://play.google.com/store/apps/details?id=era.ndroid.dnshmob) | [Theke](https://play.google.com/store/apps/details?id=com.sh.theke) | [SensibleJournal](https://play.google.com/store/apps/details?id=dk.dtu.imm.sensiblejournal) | [PiCorner for Flickr, Instagram](https://play.google.com/store/apps/details?id=com.gmail.charleszq.picorner) | [Survey-n-More - Paid Surveys](https://play.google.com/store/apps/details?id=com.surveynmore.paidsurveyapp) | [STROBEL Verlag Basic](https://play.google.com/store/apps/details?id=de.nexoma.android.strobel.basic) | **[reddit is fun](https://play.google.com/store/apps/details?id=com.andrewshu.android.reddit)**, [golden platinum](https://play.google.com/store/apps/details?id=com.andrewshu.android.redditdonation) | [iDukan Diet Tracker](https://play.google.com/store/apps/details?id=com.harptreesoftware.idukan) | [Geek Hero Comic](https://play.google.com/store/apps/details?id=pete.apps.media.geekherocomic)
+**[MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)** | [Деловой Киров](https://play.google.com/store/apps/details?id=ru.normakirov.dknorma) | [Бизнес-завтрак](https://play.google.com/store/apps/details?id=ru.normakirov.businesslunch) | [Menu55](http://www.free-lance.ru/users/max475imus/viewproj.php?prjid=3152141) | [SpokenPic](http://spokenpic.com) | [Kumir](https://play.google.com/store/apps/details?id=ru.premiakumir.android) | [EUKO 2012](https://play.google.com/store/apps/details?id=de.netlands.emsapp) | [TuuSo Image Search](https://play.google.com/store/apps/details?id=com.tuuso) | [Газета Стройка](https://play.google.com/store/apps/details?id=ru.normakirov.stroyka) | **[Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)** | [Quiz Guess The Guy] (https://play.google.com/store/apps/details?id=com.game.guesstheguy) | [Volksempfänger (alpha)](http://volksempfaenger.0x4a42.net) | **[ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox), [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro)** | [London 2012 Games](https://play.google.com/store/apps/details?id=com.mbwasi.london) | [카톡 이미지 - 예쁜 프로필 이미지](https://play.google.com/store/apps/details?id=com.bydoori.firstbasea) | [dailyPen](https://play.google.com/store/apps/details?id=com.bydoori.dailypen) | [Mania!](https://play.google.com/store/apps/details?id=com.astro.mania.activities) | **[Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities)** | **[Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test)** | [Lafemme Fashion Finder](https://play.google.com/store/apps/details?id=me.getlafem.lafemme2) | [FastPaleo](https://play.google.com/store/apps/details?id=com.mqmobile.droid.fastpaleo) | **[Sporee - Live Soccer Scores](https://play.google.com/store/apps/details?id=com.sporee.android)** | [friendizer](https://play.google.com/store/apps/details?id=com.teamagly.friendizer) | [LowPrice lowest book price](https://play.google.com/store/apps/details?id=com.binarybricks.lowprice) | [bluebee](https://play.google.com/store/apps/details?id=mobi.bluebee.android.app) | [Game PromoBox](https://play.google.com/store/apps/details?id=com.gamepromobox) | **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)** | [Festival Wallpaper](https://play.google.com/store/apps/details?id=com.cs.fwallpaper) | [Gaudi Hall](https://play.google.com/store/apps/details?id=ru.normakirov.gaudihall) | [Spocal](https://play.google.com/store/apps/details?id=net.spocal.android) | [PhotoDownloader for Facebook](https://play.google.com/store/apps/details?id=com.giannz.photodownloader) | [Вкладыши](https://play.google.com/store/apps/details?id=com.banjen.app.gumimages) | [Dressdrobe](https://play.google.com/store/apps/details?id=com.dressdrobe.mario) | [mofferin](https://play.google.com/store/apps/details?id=com.mmobile.mofferin) | [WordBoxer](http://www.wordboxer.com/) | [EZ Imgur](https://play.google.com/store/apps/details?id=com.ezimgur) | [Ciudad en línea](https://play.google.com/store/apps/details?id=com.aliadosweb.android.cel) | [Urbanismo en línea](https://play.google.com/store/apps/details?id=com.aliadosweb.android.opel) | [Waypost](https://play.google.com/store/apps/details?id=com.brushfire.waypost) | [Moonrise Kingdom Wallpapers HD](https://play.google.com/store/apps/details?id=net.dnlk.moonrisekingdom.gallery) | [Chic or Shock?](https://play.google.com/store/apps/details?id=com.chicorshock) | [Auto Wallpapers](https://play.google.com/store/apps/details?id=ru.evgsd.autowallpapers) | [Heyou](https://play.google.com/store/apps/details?id=heyou.pythagorapps.heyou) | [Brasil Notícias](https://play.google.com/store/apps/details?id=com.acerolamob.android.brasilnoticias) | [ProfiAuto’s VideoBlog](https://play.google.com/store/apps/details?id=pl.profiauto.android.videoblog) | [CarteleraApp (Cine)](https://play.google.com/store/apps/details?id=com.jcminarro.android.tools), [AdsFree](https://play.google.com/store/apps/details?id=com.jcminarro.android.tools.carteleraApp) | [Listonic - Zamów Zakupy](https://play.google.com/store/apps/details?id=com.listonic.shop) | **[Topface - meeting is easy](https://play.google.com/store/apps/details?id=com.topface.topface)** | [Name The Meme](https://play.google.com/store/apps/details?id=it.fi.appstyx.namethememe) | [Name The World](https://play.google.com/store/apps/details?id=it.fi.appstyx.nametheworld) | [Pregnancy Tickers - Widget](https://play.google.com/store/apps/details?id=com.romkuapps.tickers) | [Jessica Alba HD Wallpaper](https://play.google.com/store/apps/details?id=com.maxtra_jessicaalba) | [User Manager ROOT Android 4.2](https://play.google.com/store/apps/details?id=com.ramdroid.usermanagerpro) | [DNSHmob](https://play.google.com/store/apps/details?id=era.ndroid.dnshmob) | [Theke](https://play.google.com/store/apps/details?id=com.sh.theke) | [SensibleJournal](https://play.google.com/store/apps/details?id=dk.dtu.imm.sensiblejournal) | [PiCorner for Flickr, Instagram](https://play.google.com/store/apps/details?id=com.gmail.charleszq.picorner) | [Survey-n-More - Paid Surveys](https://play.google.com/store/apps/details?id=com.surveynmore.paidsurveyapp) | [STROBEL Verlag Basic](https://play.google.com/store/apps/details?id=de.nexoma.android.strobel.basic) | **[reddit is fun](https://play.google.com/store/apps/details?id=com.andrewshu.android.reddit)**, [golden platinum](https://play.google.com/store/apps/details?id=com.andrewshu.android.redditdonation) | [iDukan Diet Tracker](https://play.google.com/store/apps/details?id=com.harptreesoftware.idukan) | [Geek Hero Comic](https://play.google.com/store/apps/details?id=pete.apps.media.geekherocomic)[Sprinter](https://play.google.com/store/apps/details?id=com.manavo.sprinter) | [Twxter](https://play.google.com/store/apps/details?id=com.oadigital.twxter) | [Locaside ★ Parties und Events](https://play.google.com/store/apps/details?id=de.partyison.app) | [fileboost](https://play.google.com/store/apps/details?id=apps.powdercode.fileboost) | [Urbanoe Mobile](https://play.google.com/store/apps/details?id=com.teleronsoftware.urbanoe.client) | [What Channel's the Game On...?](https://play.google.com/store/apps/details?id=com.mosaheb.wcgo.user)
 
 ## Donation
 You can support the project and thank the author for his hard work :)
@@ -307,12 +319,24 @@ You can support the project and thank the author for his hard work :)
 * **[WebMoney](http://www.webmoney.ru/)** (Z417203268219)
 
 ## License
-Copyright (c) 2011, [Sergey Tarasevich](http://nostra13android.blogspot.com)
 
 If you use Universal Image Loader code in your application you must inform the author about it ( *email: nostra13[at]gmail[dot]com* ) like this:
-> I use Universal Image Loader in [ApplicationName] - http://link_to_google_play.
+> **Subject:** UIL usage notification
+> **Text:** I use Universal Image Loader in &lt;ApplicationName> - http://link_to_google_play.
 > I [allow|don't allow] to mention my app in "Applications using Universal Image Loader" on GitHub.
 
-Also you should mention it (but it is not required) in application UI with string **"Using Universal-Image-Loader (c) 2011, Sergey Tarasevich"** (e.g. in some "About" section).
+Also I'll be grateful if you mention UIL in application UI with string **"Using Universal Image Loader (c) 2011-2013, Sergey Tarasevich"** (e.g. in some "About" section).
 
-Licensed under the [BSD 3-clause](http://www.opensource.org/licenses/BSD-3-Clause)
+    Copyright 2011-2013 Sergey Tarasevich
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
