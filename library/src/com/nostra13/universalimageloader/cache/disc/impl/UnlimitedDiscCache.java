@@ -14,9 +14,8 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  * @see BaseDiscCache
  */
 public class UnlimitedDiscCache extends BaseDiscCache {
-	/**
-	 * @param cacheDir Directory for file caching
-	 */
+
+	/** @param cacheDir Directory for file caching */
 	public UnlimitedDiscCache(File cacheDir) {
 		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator());
 	}

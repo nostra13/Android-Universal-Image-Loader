@@ -11,7 +11,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public interface BitmapProcessor {
-
 	/**
 	 * Makes some processing of incoming bitmap.<br />
 	 * This method is executing on additional thread (not on UI thread).<br />

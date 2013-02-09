@@ -11,7 +11,6 @@ import android.widget.ImageView;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public interface BitmapDisplayer {
-
 	/**
 	 * Display bitmap in {@link ImageView}. Displayed bitmap should be returned.<br />
 	 * <b>NOTE:</b> This method is called on UI thread so it's strongly recommended not to do any heavy work in it.

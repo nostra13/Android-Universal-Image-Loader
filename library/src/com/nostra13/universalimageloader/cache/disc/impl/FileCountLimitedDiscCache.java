@@ -14,7 +14,6 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  * @see LimitedDiscCache
  */
 public class FileCountLimitedDiscCache extends LimitedDiscCache {
-
 	/**
 	 * @param cacheDir Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
 	 *            needed for right cache limit work.

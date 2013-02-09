@@ -8,7 +8,6 @@ import java.util.Collection;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public interface MemoryCacheAware<K, V> {
-
 	/**
 	 * Puts value into cache by key
 	 * 

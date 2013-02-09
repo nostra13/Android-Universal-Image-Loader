@@ -8,7 +8,6 @@ import java.io.File;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public interface DiscCacheAware {
-
 	/**
 	 * This method must not to save file on file system in fact. It is called after image was cached in cache directory
 	 * and it was decoded to bitmap in memory. Such order is required to prevent possible deletion of file after it was

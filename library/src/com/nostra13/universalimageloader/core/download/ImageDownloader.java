@@ -13,7 +13,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public interface ImageDownloader {
-
 	/**
 	 * Retrieves {@link InputStream} of image by URI.
 	 * 

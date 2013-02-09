@@ -29,7 +29,6 @@ import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
  * @see HttpClientImageDownloader
  */
 public class BaseImageDownloader implements ImageDownloader {
-
 	/** {@value} */
 	public static final int DEFAULT_HTTP_CONNECT_TIMEOUT = 5 * 1000; // milliseconds
 	/** {@value} */
