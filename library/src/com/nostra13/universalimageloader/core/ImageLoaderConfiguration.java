@@ -13,6 +13,7 @@ import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -49,6 +50,8 @@ public final class ImageLoaderConfiguration {
 	final ThreadFactory displayImageThreadFactory;
 	final boolean loggingEnabled;
 
+	final ImageDownloader networkDeniedDownloader;
+	
 	private ImageLoaderConfiguration(final Builder builder) {
 		context = builder.context;
 		maxImageWidthForMemoryCache = builder.maxImageWidthForMemoryCache;
@@ -73,6 +76,8 @@ public final class ImageLoaderConfiguration {
 				return t;
 			}
 		};
+
+		networkDeniedDownloader = new NetworkDeniedImageDownloader(downloader);
 	}
 
 	/**

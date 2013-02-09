@@ -13,8 +13,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
+import android.view.View;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
 
@@ -35,6 +38,7 @@ class ImageLoaderEngine {
 	private final Map<String, ReentrantLock> uriLocks = new WeakHashMap<String, ReentrantLock>();
 
 	private final AtomicBoolean paused = new AtomicBoolean(false);
+	private final AtomicBoolean networkDenied = new AtomicBoolean(false);
 
 	ImageLoaderEngine(ImageLoaderConfiguration configuration) {
 		this.configuration = configuration;
@@ -104,6 +108,20 @@ class ImageLoaderEngine {
 	}
 
 	/**
+	 * Denies engine to download images from network. If image isn't cached then
+	 * {@link ImageLoadingListener#onLoadingFailed(String, View, FailReason)} callback was fired with
+	 * {@link FailReason#NETWORK_DENIED}
+	 */
+	void denyNetworkDownloads() {
+		networkDenied.set(true);
+	}
+
+	/** Allows engine to download images from network. */
+	void allowNetworkDownloads() {
+		networkDenied.set(false);
+	}
+
+	/**
 	 * Pauses engine. All new "load&display" tasks won't be executed until ImageLoader is {@link #resume() resumed}.<br />
 	 * Already running tasks are not paused.
 	 */
@@ -143,5 +161,9 @@ class ImageLoaderEngine {
 
 	AtomicBoolean getPause() {
 		return paused;
+	}
+
+	boolean isNetworkDenied() {
+		return networkDenied.get();
 	}
 }

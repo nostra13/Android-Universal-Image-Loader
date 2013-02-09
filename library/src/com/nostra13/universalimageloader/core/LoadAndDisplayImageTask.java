@@ -61,6 +61,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	// Helper references
 	private final ImageLoaderConfiguration configuration;
 	private final ImageDownloader downloader;
+	private final ImageDownloader networkDeniedDownloader;
 	private final boolean loggingEnabled;
 	final String uri;
 	private final String memoryCacheKey;
@@ -76,6 +77,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 		configuration = engine.configuration;
 		downloader = configuration.downloader;
+		networkDeniedDownloader = configuration.networkDeniedDownloader;
 		loggingEnabled = configuration.loggingEnabled;
 		uri = imageLoadingInfo.uri;
 		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
@@ -222,6 +224,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 			if (bitmap == null) {
 				fireImageLoadingFailedEvent(FailReason.IO_ERROR);
 			}
+		} catch (IllegalStateException e) {
+			fireImageLoadingFailedEvent(FailReason.NETWORK_DENIED);
+		} catch (UnsupportedOperationException e) {
+			L.e(e);
+			fireImageLoadingFailedEvent(FailReason.UNSUPPORTED_URI_SCHEME);
 		} catch (IOException e) {
 			L.e(e);
 			fireImageLoadingFailedEvent(FailReason.IO_ERROR);
@@ -244,7 +251,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (configuration.handleOutOfMemory) {
 			bmp = decodeWithOOMHandling(imageUri);
 		} else {
-			ImageDecoder decoder = new ImageDecoder(imageUri, downloader, options);
+			ImageDecoder decoder = new ImageDecoder(imageUri, getDownloader(), options);
 			decoder.setLoggingEnabled(loggingEnabled);
 			ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageView);
 			bmp = decoder.decode(targetSize, options.getImageScaleType(), viewScaleType);
@@ -254,7 +261,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	private Bitmap decodeWithOOMHandling(URI imageUri) throws IOException {
 		Bitmap result = null;
-		ImageDecoder decoder = new ImageDecoder(imageUri, downloader, options);
+		ImageDecoder decoder = new ImageDecoder(imageUri, getDownloader(), options);
 		decoder.setLoggingEnabled(loggingEnabled);
 		for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
 			try {
@@ -294,7 +301,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (width > 0 || height > 0) {
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
-			ImageDecoder decoder = new ImageDecoder(new URI(uri), downloader, options);
+			ImageDecoder decoder = new ImageDecoder(new URI(uri), getDownloader(), options);
 			decoder.setLoggingEnabled(loggingEnabled);
 			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.IN_SAMPLE_INT, ViewScaleType.FIT_INSIDE);
 			if (bmp != null) {
@@ -314,7 +321,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 		// If previous compression wasn't needed or failed
 		// Download and save original image
-		InputStream is = downloader.getStream(new URI(uri), options.getExtraForDownloader());
+		InputStream is = getDownloader().getStream(new URI(uri), options.getExtraForDownloader());
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 			try {
@@ -339,6 +346,10 @@ final class LoadAndDisplayImageTask implements Runnable {
 				}
 			});
 		}
+	}
+
+	private ImageDownloader getDownloader() {
+		return engine.isNetworkDenied() ? networkDeniedDownloader : downloader;
 	}
 
 	String getLoadingUri() {

@@ -5,12 +5,14 @@ import java.lang.reflect.Field;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
@@ -385,6 +387,20 @@ public class ImageLoader {
 	 */
 	public void cancelDisplayTask(ImageView imageView) {
 		engine.cancelDisplayTaskFor(imageView);
+	}
+
+	/**
+	 * Denies ImageLoader to download images from network. If image isn't cached then
+	 * {@link ImageLoadingListener#onLoadingFailed(String, View, FailReason)} callback was fired with
+	 * {@link FailReason#NETWORK_DENIED}
+	 */
+	public void denyNetworkDownloads() {
+		engine.denyNetworkDownloads();
+	}
+
+	/** Allows ImageLoader to download images from network. */
+	public void allowNetworkDownloads() {
+		engine.allowNetworkDownloads();
 	}
 
 	/**

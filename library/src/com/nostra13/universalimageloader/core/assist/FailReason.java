@@ -6,5 +6,5 @@ package com.nostra13.universalimageloader.core.assist;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public enum FailReason {
-	IO_ERROR, OUT_OF_MEMORY, UNKNOWN
+	IO_ERROR, OUT_OF_MEMORY, UNSUPPORTED_URI_SCHEME, NETWORK_DENIED, UNKNOWN
 }

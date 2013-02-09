@@ -36,12 +36,7 @@ public class BaseImageDownloader implements ImageDownloader {
 
 	protected static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
-	protected static final String SCHEME_HTTP = "http";
-	protected static final String SCHEME_HTTPS = "https";
-	protected static final String SCHEME_FILE = "file";
-	protected static final String SCHEME_CONTENT = "content";
-	protected static final String SCHEME_ASSETS = "assets";
-	protected static final String SCHEME_DRAWABLE = "drawable";
+	private static final String ERROR_UNSUPPORTED_SCHEME = "UIL doesn't support scheme [%s] by default. You should implement this support byself";
 
 	protected static final String SCHEME_ASSETS_PREFIX = SCHEME_ASSETS + "://";
 	protected static final String SCHEME_DRAWABLE_PREFIX = SCHEME_DRAWABLE + "://";
@@ -159,16 +154,20 @@ public class BaseImageDownloader implements ImageDownloader {
 	}
 
 	/**
-	 * Retrieves {@link InputStream} of image by URI from other source. Should be overriden by successors to implement
-	 * image downloading from special sources.
+	 * Retrieves {@link InputStream} of image by URI from other source with unsupported scheme. Should be overriden by
+	 * successors to implement image downloading from special sources.<br />
+	 * This method is called only if image URI has unsupported scheme. Throws {@link UnsupportedOperationException} by
+	 * default.
 	 * 
 	 * @param imageUri Image URI
 	 * @param extra Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
 	 *            DisplayImageOptions.extraForDownloader(Object)}; can be null
 	 * @return {@link InputStream} of image
 	 * @throws IOException if some I/O error occurs
+	 * @throws UnsupportedOperationException @throws UnsupportedOperationException if image URI has unsupported
+	 *             scheme(protocol)
 	 */
 	protected InputStream getStreamFromOtherSource(URI imageUri, Object extra) throws IOException {
-		return null;
+		throw new UnsupportedOperationException(String.format(ERROR_UNSUPPORTED_SCHEME, imageUri.getScheme()));
 	}
 }

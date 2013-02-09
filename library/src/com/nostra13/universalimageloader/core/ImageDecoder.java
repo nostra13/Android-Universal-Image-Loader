@@ -54,24 +54,11 @@ class ImageDecoder {
 	 * 
 	 * @param targetSize Image size to scale to during decoding
 	 * @param scaleType {@link ImageScaleType Image scale type}
-	 * 
-	 * @return Decoded bitmap
-	 * @throws IOException
-	 */
-	public Bitmap decode(ImageSize targetSize, ImageScaleType scaleType) throws IOException {
-		return decode(targetSize, scaleType, ViewScaleType.FIT_INSIDE);
-	}
-
-	/**
-	 * Decodes image from URI into {@link Bitmap}. Image is scaled close to incoming {@link ImageSize image size} during
-	 * decoding (depend on incoming image scale type).
-	 * 
-	 * @param targetSize Image size to scale to during decoding
-	 * @param scaleType {@link ImageScaleType Image scale type}
 	 * @param viewScaleType {@link ViewScaleType View scale type}
 	 * 
 	 * @return Decoded bitmap
 	 * @throws IOException
+	 * @throws UnsupportedOperationException
 	 */
 	public Bitmap decode(ImageSize targetSize, ImageScaleType scaleType, ViewScaleType viewScaleType) throws IOException {
 		Options decodeOptions = getBitmapOptionsForImageDecoding(targetSize, scaleType, viewScaleType);
