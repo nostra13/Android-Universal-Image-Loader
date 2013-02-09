@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
@@ -76,6 +77,8 @@ public class ImageListActivity extends BaseActivity {
 
 	class ItemAdapter extends BaseAdapter {
 
+		private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+		
 		private class ViewHolder {
 			public TextView text;
 			public ImageView image;
@@ -114,7 +117,7 @@ public class ImageListActivity extends BaseActivity {
 
 			final String imageUri = imageUrls[position];
 			final ImageView imageView = holder.image;
-			imageLoader.displayImage(imageUri, imageView, options, new AnimateFirstDisplayListener(imageUri, imageView));
+			imageLoader.displayImage(imageUri, imageView, options, animateFirstListener);
 
 			return view;
 		}
@@ -124,15 +127,10 @@ public class ImageListActivity extends BaseActivity {
 
 		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
 
-		private final ImageView imageView;
-
-		AnimateFirstDisplayListener(String imageUri, ImageView imageView) {
-			this.imageView = imageView;
-		}
-
 		@Override
-		public void onLoadingComplete(String imageUri, Object extra, Bitmap loadedImage) {
+		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 			if (loadedImage != null) {
+				ImageView imageView = (ImageView) view;
 				boolean firstDisplay = !displayedImages.contains(imageUri);
 				if (firstDisplay) {
 					FadeInBitmapDisplayer.animate(imageView, 500);

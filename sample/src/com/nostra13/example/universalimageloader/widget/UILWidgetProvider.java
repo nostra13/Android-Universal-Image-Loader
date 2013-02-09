@@ -1,10 +1,12 @@
 package com.nostra13.example.universalimageloader.widget;
 
 import static com.nostra13.example.universalimageloader.Constants.IMAGES;
+
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.nostra13.example.universalimageloader.R;
@@ -45,14 +47,14 @@ public class UILWidgetProvider extends AppWidgetProvider {
 		ImageSize minImageSize = new ImageSize(70, 70); // 70 - approximate size of ImageView in widget
 		ImageLoader.getInstance().loadImage(IMAGES[0], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
 			@Override
-			public void onLoadingComplete(String imageUri, Object extra, Bitmap loadedImage) {
+			public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 				views.setImageViewBitmap(R.id.image_left, loadedImage);
 				appWidgetManager.updateAppWidget(appWidgetId, views);
 			}
 		});
 		ImageLoader.getInstance().loadImage(IMAGES[1], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
 			@Override
-			public void onLoadingComplete(String imageUri, Object extra, Bitmap loadedImage) {
+			public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 				views.setImageViewBitmap(R.id.image_right, loadedImage);
 				appWidgetManager.updateAppWidget(appWidgetId, views);
 			}

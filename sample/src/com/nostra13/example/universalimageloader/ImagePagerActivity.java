@@ -92,12 +92,12 @@ public class ImagePagerActivity extends BaseActivity {
 
 			imageLoader.displayImage(images[position], imageView, options, new SimpleImageLoadingListener() {
 				@Override
-				public void onLoadingStarted(String imageUri, Object extra) {
+				public void onLoadingStarted(String imageUri, View view) {
 					spinner.setVisibility(View.VISIBLE);
 				}
 
 				@Override
-				public void onLoadingFailed(String imageUri, Object extra, FailReason failReason) {
+				public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
 					String message = null;
 					switch (failReason) {
 						case IO_ERROR:
@@ -116,7 +116,7 @@ public class ImagePagerActivity extends BaseActivity {
 				}
 
 				@Override
-				public void onLoadingComplete(String imageUri, Object extra, Bitmap loadedImage) {
+				public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 					spinner.setVisibility(View.GONE);
 				}
 			});
