@@ -19,8 +19,8 @@
 
 	<licenses>
 		<license>
-			<name>The BSD 3-Clause License</name>
-			<url>http://opensource.org/licenses/BSD-3-Clause</url>
+			<name>Apache License Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -29,7 +29,6 @@
 		<connection>scm:git:git://github.com/nostra13/Android-Universal-Image-Loader.git</connection>
 		<developerConnection>scm:git:git@github.com:nostra13/Android-Universal-Image-Loader.git</developerConnection>
 		<url>https://github.com/nostra13/Android-Universal-Image-Loader</url>
-		<tag>v1.7.0</tag>
 	</scm>
 
 	<developers>
