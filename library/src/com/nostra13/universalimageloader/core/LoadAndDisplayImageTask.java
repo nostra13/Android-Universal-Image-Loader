@@ -172,7 +172,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					listener.onLoadingCancelled(uri, options.getExtraForListener());
+					listener.onLoadingCancelled(uri, imageView);
 				}
 			});
 		}
@@ -335,7 +335,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 					if (options.shouldShowImageOnFail()) {
 						imageView.setImageResource(options.getImageOnFail());
 					}
-					listener.onLoadingFailed(uri, options.getExtraForListener(), failReason);
+					listener.onLoadingFailed(uri, imageView, failReason);
 				}
 			});
 		}

@@ -22,7 +22,7 @@ final class DisplayBitmapTask implements Runnable {
 	private final String imageUri;
 	private final ImageView imageView;
 	private final String memoryCacheKey;
-	private final DisplayImageOptions options;
+	private final BitmapDisplayer displayer;
 	private final ImageLoadingListener listener;
 	private final ImageLoaderEngine engine;
 
@@ -33,7 +33,7 @@ final class DisplayBitmapTask implements Runnable {
 		imageUri = imageLoadingInfo.uri;
 		imageView = imageLoadingInfo.imageView;
 		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
-		options = imageLoadingInfo.options;
+		displayer = imageLoadingInfo.options.getDisplayer();
 		listener = imageLoadingInfo.listener;
 		this.engine = engine;
 	}
@@ -41,11 +41,11 @@ final class DisplayBitmapTask implements Runnable {
 	public void run() {
 		if (isViewWasReused()) {
 			if (loggingEnabled) L.i(LOG_TASK_CANCELLED, memoryCacheKey);
-			listener.onLoadingCancelled(imageUri, options.getExtraForListener());
+			listener.onLoadingCancelled(imageUri, imageView);
 		} else {
 			if (loggingEnabled) L.i(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, memoryCacheKey);
-			Bitmap displayedBitmap = options.getDisplayer().display(bitmap, imageView);
-			listener.onLoadingComplete(imageUri, options.getExtraForListener(), displayedBitmap);
+			Bitmap displayedBitmap = displayer.display(bitmap, imageView);
+			listener.onLoadingComplete(imageUri, imageView, displayedBitmap);
 			engine.cancelDisplayTaskFor(imageView);
 		}
 	}

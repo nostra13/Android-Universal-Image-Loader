@@ -3,7 +3,6 @@ package com.nostra13.universalimageloader.core;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
@@ -47,7 +46,6 @@ public final class DisplayImageOptions {
 	private final Bitmap.Config bitmapConfig;
 	private final int delayBeforeLoading;
 	private final Object extraForDownloader;
-	private final Object extraForListener;
 	private final BitmapProcessor preProcessor;
 	private final BitmapProcessor postProcessor;
 	private final BitmapDisplayer displayer;
@@ -63,7 +61,6 @@ public final class DisplayImageOptions {
 		bitmapConfig = builder.bitmapConfig;
 		delayBeforeLoading = builder.delayBeforeLoading;
 		extraForDownloader = builder.extraForDownloader;
-		extraForListener = builder.extraForListener;
 		preProcessor = builder.preProcessor;
 		postProcessor = builder.postProcessor;
 		displayer = builder.displayer;
@@ -133,10 +130,6 @@ public final class DisplayImageOptions {
 		return extraForDownloader;
 	}
 
-	Object getExtraForListener() {
-		return extraForListener;
-	}
-
 	BitmapProcessor getPreProcessor() {
 		return preProcessor;
 	}
@@ -165,7 +158,6 @@ public final class DisplayImageOptions {
 		private Bitmap.Config bitmapConfig = Bitmap.Config.ARGB_8888;
 		private int delayBeforeLoading = 0;
 		private Object extraForDownloader = null;
-		private Object extraForListener = null;
 		private BitmapProcessor preProcessor = null;
 		private BitmapProcessor postProcessor = null;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
@@ -244,15 +236,6 @@ public final class DisplayImageOptions {
 		/** Sets auxiliary object which will be passed to {@link ImageDownloader#getStream(java.net.URI, Object)} */
 		public Builder extraForDownloader(Object extra) {
 			this.extraForDownloader = extra;
-			return this;
-		}
-
-		/**
-		 * Sets auxiliary object which will be passed to {@link ImageLoadingListener
-		 * ImageLoadingListener.onLoading***(...)} callbacks
-		 */
-		public Builder extraForListener(Object extra) {
-			this.extraForListener = extra;
 			return this;
 		}
 

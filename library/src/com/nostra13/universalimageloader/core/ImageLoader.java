@@ -183,13 +183,13 @@ public class ImageLoader {
 
 		if (uri == null || uri.length() == 0) {
 			engine.cancelDisplayTaskFor(imageView);
-			listener.onLoadingStarted(uri, options.getExtraForListener());
+			listener.onLoadingStarted(uri, imageView);
 			if (options.shouldShowImageForEmptyUri()) {
 				imageView.setImageResource(options.getImageForEmptyUri());
 			} else {
 				imageView.setImageBitmap(null);
 			}
-			listener.onLoadingComplete(uri, options.getExtraForListener(), null);
+			listener.onLoadingComplete(uri, imageView, null);
 			return;
 		}
 
@@ -197,7 +197,7 @@ public class ImageLoader {
 		String memoryCacheKey = MemoryCacheUtil.generateKey(uri, targetSize);
 		engine.prepareDisplayTaskFor(imageView, memoryCacheKey);
 
-		listener.onLoadingStarted(uri, options.getExtraForListener());
+		listener.onLoadingStarted(uri, imageView);
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
 			if (configuration.loggingEnabled) L.i(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey);
@@ -208,7 +208,7 @@ public class ImageLoader {
 				engine.submit(displayTask);
 			} else {
 				options.getDisplayer().display(bmp, imageView);
-				listener.onLoadingComplete(uri, options.getExtraForListener(), bmp);
+				listener.onLoadingComplete(uri, imageView, bmp);
 			}
 		} else {
 			if (options.shouldShowStubImage()) {
