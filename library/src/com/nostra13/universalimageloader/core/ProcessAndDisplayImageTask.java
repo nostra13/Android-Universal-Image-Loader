@@ -14,6 +14,7 @@ import com.nostra13.universalimageloader.utils.L;
  * {@link DisplayBitmapTask}.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.8.0
  */
 class ProcessAndDisplayImageTask implements Runnable {
 

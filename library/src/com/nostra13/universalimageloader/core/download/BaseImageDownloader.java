@@ -27,6 +27,7 @@ import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * 
  * @see HttpClientImageDownloader
+ * @since 1.8.0
  */
 public class BaseImageDownloader implements ImageDownloader {
 	/** {@value} */

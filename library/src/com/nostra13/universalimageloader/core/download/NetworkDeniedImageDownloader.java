@@ -9,6 +9,7 @@ import java.net.URI;
  * In most cases this downloader shouldn't be used directly.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.8.0
  */
 public class NetworkDeniedImageDownloader implements ImageDownloader {
 
