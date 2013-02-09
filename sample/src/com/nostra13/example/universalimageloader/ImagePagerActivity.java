@@ -1,7 +1,6 @@
 package com.nostra13.example.universalimageloader;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.PagerAdapter;
@@ -62,17 +61,7 @@ public class ImagePagerActivity extends BaseActivity {
 
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
-			View rootView = (View) object;
-			ImageView imageView = (ImageView) rootView.findViewById(R.id.image);
-			BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-			if (drawable != null) {
-				Bitmap bitmap = drawable.getBitmap();
-				if (bitmap != null) {
-					bitmap.recycle();
-				}
-			}
-
-			((ViewPager) container).removeView(rootView);
+			((ViewPager) container).removeView((View) object);
 		}
 
 		@Override
@@ -105,6 +94,12 @@ public class ImagePagerActivity extends BaseActivity {
 							break;
 						case OUT_OF_MEMORY:
 							message = "Out Of Memory error";
+							break;
+						case NETWORK_DENIED:
+							message = "Downloads are denied";
+							break;
+						case UNSUPPORTED_URI_SCHEME:
+							message = "Unsupported URI scheme";
 							break;
 						case UNKNOWN:
 							message = "Unknown error";
