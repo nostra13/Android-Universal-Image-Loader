@@ -86,18 +86,18 @@ public class ImagePagerActivity extends BaseActivity {
 
 		@Override
 		public Object instantiateItem(ViewGroup view, int position) {
-			final View imageLayout = inflater.inflate(R.layout.item_pager_image, view, false);
-			final ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
+			View imageLayout = inflater.inflate(R.layout.item_pager_image, view, false);
+			ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
 			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 
 			imageLoader.displayImage(images[position], imageView, options, new SimpleImageLoadingListener() {
 				@Override
-				public void onLoadingStarted() {
+				public void onLoadingStarted(String imageUri, Object extra) {
 					spinner.setVisibility(View.VISIBLE);
 				}
 
 				@Override
-				public void onLoadingFailed(FailReason failReason) {
+				public void onLoadingFailed(String imageUri, Object extra, FailReason failReason) {
 					String message = null;
 					switch (failReason) {
 						case IO_ERROR:
@@ -116,7 +116,7 @@ public class ImagePagerActivity extends BaseActivity {
 				}
 
 				@Override
-				public void onLoadingComplete(Bitmap loadedImage) {
+				public void onLoadingComplete(String imageUri, Object extra, Bitmap loadedImage) {
 					spinner.setVisibility(View.GONE);
 				}
 			});

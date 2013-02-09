@@ -45,14 +45,14 @@ public class UILWidgetProvider extends AppWidgetProvider {
 		ImageSize minImageSize = new ImageSize(70, 70); // 70 - approximate size of ImageView in widget
 		ImageLoader.getInstance().loadImage(IMAGES[0], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
 			@Override
-			public void onLoadingComplete(Bitmap loadedImage) {
+			public void onLoadingComplete(String imageUri, Object extra, Bitmap loadedImage) {
 				views.setImageViewBitmap(R.id.image_left, loadedImage);
 				appWidgetManager.updateAppWidget(appWidgetId, views);
 			}
 		});
 		ImageLoader.getInstance().loadImage(IMAGES[1], minImageSize, optionsWithFakeDisplayer, new SimpleImageLoadingListener() {
 			@Override
-			public void onLoadingComplete(Bitmap loadedImage) {
+			public void onLoadingComplete(String imageUri, Object extra, Bitmap loadedImage) {
 				views.setImageViewBitmap(R.id.image_right, loadedImage);
 				appWidgetManager.updateAppWidget(appWidgetId, views);
 			}

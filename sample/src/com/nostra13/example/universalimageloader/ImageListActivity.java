@@ -124,16 +124,14 @@ public class ImageListActivity extends BaseActivity {
 
 		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
 
-		private final String imageUri;
 		private final ImageView imageView;
 
 		AnimateFirstDisplayListener(String imageUri, ImageView imageView) {
-			this.imageUri = imageUri;
 			this.imageView = imageView;
 		}
 
 		@Override
-		public void onLoadingComplete(Bitmap loadedImage) {
+		public void onLoadingComplete(String imageUri, Object extra, Bitmap loadedImage) {
 			if (loadedImage != null) {
 				boolean firstDisplay = !displayedImages.contains(imageUri);
 				if (firstDisplay) {
