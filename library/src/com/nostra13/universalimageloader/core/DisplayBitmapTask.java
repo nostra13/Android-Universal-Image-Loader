@@ -19,9 +19,10 @@ import com.nostra13.universalimageloader.utils.L;
 final class DisplayBitmapTask implements Runnable {
 
 	private final Bitmap bitmap;
+	private final String imageUri;
 	private final ImageView imageView;
 	private final String memoryCacheKey;
-	private final BitmapDisplayer bitmapDisplayer;
+	private final DisplayImageOptions options;
 	private final ImageLoadingListener listener;
 	private final ImageLoaderEngine engine;
 
@@ -29,9 +30,10 @@ final class DisplayBitmapTask implements Runnable {
 
 	public DisplayBitmapTask(Bitmap bitmap, ImageLoadingInfo imageLoadingInfo, ImageLoaderEngine engine) {
 		this.bitmap = bitmap;
+		imageUri = imageLoadingInfo.uri;
 		imageView = imageLoadingInfo.imageView;
 		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
-		bitmapDisplayer = imageLoadingInfo.options.getDisplayer();
+		options = imageLoadingInfo.options;
 		listener = imageLoadingInfo.listener;
 		this.engine = engine;
 	}
@@ -39,11 +41,11 @@ final class DisplayBitmapTask implements Runnable {
 	public void run() {
 		if (isViewWasReused()) {
 			if (loggingEnabled) L.i(LOG_TASK_CANCELLED, memoryCacheKey);
-			listener.onLoadingCancelled();
+			listener.onLoadingCancelled(imageUri, options.getExtraForListener());
 		} else {
 			if (loggingEnabled) L.i(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, memoryCacheKey);
-			Bitmap displayedBitmap = bitmapDisplayer.display(bitmap, imageView);
-			listener.onLoadingComplete(displayedBitmap);
+			Bitmap displayedBitmap = options.getDisplayer().display(bitmap, imageView);
+			listener.onLoadingComplete(imageUri, options.getExtraForListener(), displayedBitmap);
 			engine.cancelDisplayTaskFor(imageView);
 		}
 	}

@@ -62,11 +62,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private final ImageLoaderConfiguration configuration;
 	private final ImageDownloader downloader;
 	private final boolean loggingEnabled;
-	private final String uri;
+	final String uri;
 	private final String memoryCacheKey;
-	private final ImageView imageView;
+	final ImageView imageView;
 	private final ImageSize targetSize;
-	private final DisplayImageOptions options;
+	final DisplayImageOptions options;
 	final ImageLoadingListener listener;
 
 	public LoadAndDisplayImageTask(ImageLoaderEngine engine, ImageLoadingInfo imageLoadingInfo, Handler handler) {
@@ -172,7 +172,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					listener.onLoadingCancelled();
+					listener.onLoadingCancelled(uri, options.getExtraForListener());
 				}
 			});
 		}
@@ -335,7 +335,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 					if (options.shouldShowImageOnFail()) {
 						imageView.setImageResource(options.getImageOnFail());
 					}
-					listener.onLoadingFailed(failReason);
+					listener.onLoadingFailed(uri, options.getExtraForListener(), failReason);
 				}
 			});
 		}
