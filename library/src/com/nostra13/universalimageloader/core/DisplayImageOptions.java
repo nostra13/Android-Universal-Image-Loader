@@ -29,12 +29,16 @@ import com.nostra13.universalimageloader.core.process.BitmapProcessor;
  * <ul>
  * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading</li>
  * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} if empty URI is passed</li>
+ * <li>whether stub image will be displayed in {@link android.widget.ImageView ImageView} if image loading fails</li>
  * <li>whether {@link android.widget.ImageView ImageView} should be reset before image loading start</li>
  * <li>whether loaded image will be cached in memory</li>
  * <li>whether loaded image will be cached on disc</li>
  * <li>image scale type</li>
  * <li>bitmap decoding configuration</li>
  * <li>delay before loading of image</li>
+ * <li>auxiliary object which will be passed to {@link ImageDownloader#getStream(java.net.URI, Object) ImageDownloader}</li>
+ * <li>pre-processor for image Bitmap (before caching in memory)</li>
+ * <li>post-processor for image Bitmap (after caching in memory, before displaying)</li>
  * <li>how decoded {@link Bitmap} will be displayed</li>
  * </ul>
  * 
