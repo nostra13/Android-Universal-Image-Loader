@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nostra13.example.universalimageloader"
-    android:versionCode="27"
-    android:versionName="1.7.1" >
+    android:versionCode="28"
+    android:versionName="1.8.0" >
 
     <uses-sdk
         android:minSdkVersion="4"
@@ -38,7 +38,7 @@
             android:label="@string/ac_name_image_gallery" />
 
         <!-- Widget -->
-        <receiver android:name=".widget.UILWidgetProvider">
+        <receiver android:name=".widget.UILWidgetProvider" >
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_provider" />
