@@ -17,7 +17,7 @@ import com.nostra13.universalimageloader.utils.L;
 public abstract class LimitedMemoryCache<K, V> extends BaseMemoryCache<K, V> {
 
 	private static final int MAX_NORMAL_CACHE_SIZE_IN_MB = 16;
-	private static final int MAX_NORMAL_CACHE_SIZE = 16 * 1024 * 1024;
+	private static final int MAX_NORMAL_CACHE_SIZE = MAX_NORMAL_CACHE_SIZE_IN_MB * 1024 * 1024;
 
 	private final int sizeLimit;
 

@@ -17,7 +17,7 @@ import com.nostra13.universalimageloader.utils.L;
  */
 public class TotalSizeLimitedDiscCache extends LimitedDiscCache {
 
-	private static final int MIN_NORMAL_CACHE_SIZE_IN_MB = 8;
+	private static final int MIN_NORMAL_CACHE_SIZE_IN_MB = 2;
 	private static final int MIN_NORMAL_CACHE_SIZE = MIN_NORMAL_CACHE_SIZE_IN_MB * 1024 * 1024;
 
 	/**
