@@ -9,6 +9,7 @@ import android.widget.ImageView;
  * Implementations have to be thread-safe.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.5.6
  */
 public interface BitmapDisplayer {
 	/**

@@ -13,6 +13,7 @@ import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
  * Information for load'n'display image task
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.3.1
  * @see MemoryCacheUtil
  * @see DisplayImageOptions
  * @see ImageLoadingListener

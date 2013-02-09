@@ -12,6 +12,7 @@ import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
  * value then this object will be removed from cache.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.3.1
  * @see MemoryCacheAware
  */
 public class LimitedAgeMemoryCache<K, V> implements MemoryCacheAware<K, V> {

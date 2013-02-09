@@ -9,6 +9,7 @@ import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
  * <b>NOTE:</b> This utility works with file system so avoid using it on application main thread.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.8.0
  */
 public final class DiscCacheUtil {
 

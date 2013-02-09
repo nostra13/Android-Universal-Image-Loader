@@ -21,6 +21,7 @@ import com.nostra13.universalimageloader.utils.L;
  * Presents configuration for {@link ImageLoader}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  * @see ImageLoader
  * @see MemoryCacheAware
  * @see DiscCacheAware

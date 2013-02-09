@@ -23,7 +23,7 @@ import com.nostra13.universalimageloader.utils.L;
  * Decodes images to {@link Bitmap}, scales them to needed size
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * 
+ * @since 1.0.0
  * @see ImageScaleType
  * @see ViewScaleType
  * @see ImageDownloader

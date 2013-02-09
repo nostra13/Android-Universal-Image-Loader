@@ -26,6 +26,7 @@ import com.nostra13.universalimageloader.utils.L;
  * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before any other method.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  */
 public class ImageLoader {
 

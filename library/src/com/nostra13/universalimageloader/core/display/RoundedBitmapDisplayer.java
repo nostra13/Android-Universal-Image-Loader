@@ -20,6 +20,7 @@ import com.nostra13.universalimageloader.utils.L;
  * {@link OutOfMemoryError}.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.5.6
  */
 public class RoundedBitmapDisplayer implements BitmapDisplayer {
 

@@ -4,6 +4,7 @@ package com.nostra13.universalimageloader.core.assist;
  * Present width and height values
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  */
 public class ImageSize {
 

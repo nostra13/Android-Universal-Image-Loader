@@ -8,6 +8,7 @@ import android.view.View;
  * implements all methods in the {@link ImageLoadingListener} but does nothing.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.4.0
  */
 public class SimpleImageLoadingListener implements ImageLoadingListener {
 	@Override

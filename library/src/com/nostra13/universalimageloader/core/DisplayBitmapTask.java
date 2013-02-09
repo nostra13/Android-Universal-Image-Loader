@@ -13,6 +13,7 @@ import com.nostra13.universalimageloader.utils.L;
  * Displays bitmap in {@link ImageView}. Must be called on UI thread.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.3.1
  * @see ImageLoadingListener
  * @see BitmapDisplayer
  */

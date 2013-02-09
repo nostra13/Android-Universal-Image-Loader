@@ -9,6 +9,7 @@ import android.widget.ImageView;
  * Displays image with "fade in" animation
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.6.4
  */
 public class FadeInBitmapDisplayer implements BitmapDisplayer {
 

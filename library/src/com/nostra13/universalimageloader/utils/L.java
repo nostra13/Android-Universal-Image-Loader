@@ -8,6 +8,7 @@ import android.util.Log;
  * "Less-word" analog of Android {@link Log logger}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.6.4
  */
 public final class L {
 

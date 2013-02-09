@@ -15,6 +15,7 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  * usage date will be deleted.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  * @see BaseDiscCache
  * @see FileNameGenerator
  */

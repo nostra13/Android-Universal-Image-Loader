@@ -11,6 +11,7 @@ import com.nostra13.universalimageloader.utils.L;
  * {@link #getSizeLimit()}).
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  * @see BaseMemoryCache
  */
 public abstract class LimitedMemoryCache<K, V> extends BaseMemoryCache<K, V> {

@@ -9,6 +9,7 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  * Base disc cache. Implements common functionality for disc cache.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  * @see DiscCacheAware
  * @see FileNameGenerator
  */

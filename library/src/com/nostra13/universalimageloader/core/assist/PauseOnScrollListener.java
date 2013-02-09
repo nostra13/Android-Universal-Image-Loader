@@ -15,6 +15,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
  * This listener can wrap your custom {@linkplain OnScrollListener listener}.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.7.0
  */
 public class PauseOnScrollListener implements OnScrollListener {
 

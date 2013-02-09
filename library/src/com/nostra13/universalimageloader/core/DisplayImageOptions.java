@@ -33,6 +33,7 @@ import com.nostra13.universalimageloader.core.process.BitmapProcessor;
  * <li>or by static method: {@link #createSimple()}</li> <br />
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  */
 public final class DisplayImageOptions {
 

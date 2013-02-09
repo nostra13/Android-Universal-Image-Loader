@@ -6,6 +6,7 @@ import java.util.Collection;
  * Interface for memory cache
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  */
 public interface MemoryCacheAware<K, V> {
 	/**

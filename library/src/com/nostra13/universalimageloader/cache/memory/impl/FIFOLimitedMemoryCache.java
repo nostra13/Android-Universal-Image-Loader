@@ -15,6 +15,7 @@ import com.nostra13.universalimageloader.cache.memory.LimitedMemoryCache;
  * exceed size limit. When cache reaches limit size then cache clearing is processed by FIFO principle.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  */
 public class FIFOLimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
 

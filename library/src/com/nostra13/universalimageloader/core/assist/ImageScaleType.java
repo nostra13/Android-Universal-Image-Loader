@@ -9,6 +9,7 @@ import android.widget.ImageView.ScaleType;
  * Type of image scaling during decoding.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.5.0
  */
 public enum ImageScaleType {
 	/** Image won't be scaled */

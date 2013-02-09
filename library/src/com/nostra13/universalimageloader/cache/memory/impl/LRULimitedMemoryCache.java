@@ -17,6 +17,7 @@ import com.nostra13.universalimageloader.cache.memory.LimitedMemoryCache;
  * exceed size limit. When cache reaches limit size then the least recently used bitmap is deleted from cache.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.3.0
  */
 public class LRULimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
 

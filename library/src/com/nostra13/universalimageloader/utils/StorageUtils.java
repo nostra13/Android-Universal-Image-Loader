@@ -10,6 +10,7 @@ import android.os.Environment;
  * Provides application storage paths
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  */
 public final class StorageUtils {
 

@@ -46,6 +46,7 @@ import com.nostra13.universalimageloader.utils.L;
  * display it in {@link ImageView} using {@link DisplayBitmapTask}.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.3.1
  * @see ImageLoaderConfiguration
  * @see ImageLoadingInfo
  */

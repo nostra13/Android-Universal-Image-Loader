@@ -16,6 +16,7 @@ import android.content.Context;
  * Implementation of ImageDownloader which uses {@link HttpClient} for image stream retrieving.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.4.1
  */
 public class HttpClientImageDownloader extends BaseImageDownloader {
 

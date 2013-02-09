@@ -11,6 +11,7 @@ import com.nostra13.universalimageloader.cache.memory.BaseMemoryCache;
  * Memory cache with {@linkplain WeakReference weak references} to {@linkplain android.graphics.Bitmap bitmaps}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.5.3
  */
 public class WeakMemoryCache extends BaseMemoryCache<String, Bitmap> {
 	@Override

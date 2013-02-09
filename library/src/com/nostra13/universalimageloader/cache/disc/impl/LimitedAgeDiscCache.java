@@ -13,6 +13,7 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  * Cache which deletes files which were loaded more than defined time. Cache size is unlimited.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.3.1
  * @see BaseDiscCache
  */
 public class LimitedAgeDiscCache extends BaseDiscCache {

@@ -11,6 +11,7 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  * oldest last usage date will be deleted.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  * @see LimitedDiscCache
  */
 public class FileCountLimitedDiscCache extends LimitedDiscCache {

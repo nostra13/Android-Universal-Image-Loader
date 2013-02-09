@@ -12,6 +12,7 @@ import com.nostra13.universalimageloader.utils.L;
  * usage date will be deleted.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  * @see LimitedDiscCache
  */
 public class TotalSizeLimitedDiscCache extends LimitedDiscCache {

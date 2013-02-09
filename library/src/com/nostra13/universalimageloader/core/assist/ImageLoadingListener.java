@@ -8,6 +8,7 @@ import android.view.View;
  * You can use {@link SimpleImageLoadingListener} for implementing only needed methods.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  * @see SimpleImageLoadingListener
  * @see FailReason
  */

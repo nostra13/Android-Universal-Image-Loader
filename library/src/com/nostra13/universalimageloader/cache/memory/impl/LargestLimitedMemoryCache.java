@@ -18,6 +18,7 @@ import android.graphics.Bitmap;
  * cache.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  */
 public class LargestLimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
 	/**

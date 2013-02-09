@@ -25,6 +25,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
  * Factory for providing of default options for {@linkplain ImageLoaderConfiguration configuration}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.5.6
  */
 public class DefaultConfigurationFactory {
 

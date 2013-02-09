@@ -11,6 +11,7 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  * Default implementation of {@linkplain DiscCacheAware disc cache}. Cache size is unlimited.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  * @see BaseDiscCache
  */
 public class UnlimitedDiscCache extends BaseDiscCache {

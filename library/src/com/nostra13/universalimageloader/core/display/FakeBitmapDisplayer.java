@@ -13,6 +13,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
  * ImageLoader.loadImage()}
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.6.0
  */
 public final class FakeBitmapDisplayer implements BitmapDisplayer {
 	@Override

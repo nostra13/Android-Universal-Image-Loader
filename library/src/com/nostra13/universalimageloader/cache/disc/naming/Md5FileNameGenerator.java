@@ -10,6 +10,7 @@ import com.nostra13.universalimageloader.utils.L;
  * Names image file as MD5 hash of image URI
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.4.0
  */
 public class Md5FileNameGenerator implements FileNameGenerator {
 
