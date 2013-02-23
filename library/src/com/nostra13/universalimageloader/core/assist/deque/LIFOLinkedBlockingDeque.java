@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
  * {@link LinkedBlockingDeque} using LIFO algorithm
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.6.3
  */
 public class LIFOLinkedBlockingDeque<T> extends LinkedBlockingDeque<T> {
 

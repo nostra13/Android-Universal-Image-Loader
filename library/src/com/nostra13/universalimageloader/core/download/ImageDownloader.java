@@ -31,11 +31,17 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 public interface ImageDownloader {
 
 	/// Supported URI schemes(protocols)
+	/** {@value} */
 	String SCHEME_HTTP = "http";
+	/** {@value} */
 	String SCHEME_HTTPS = "https";
+	/** {@value} */
 	String SCHEME_FILE = "file";
+	/** {@value} */
 	String SCHEME_CONTENT = "content";
+	/** {@value} */
 	String SCHEME_ASSETS = "assets";
+	/** {@value} */
 	String SCHEME_DRAWABLE = "drawable";
 
 	/**

@@ -50,11 +50,14 @@ public class BaseImageDownloader implements ImageDownloader {
 	/** {@value} */
 	public static final int DEFAULT_HTTP_READ_TIMEOUT = 20 * 1000; // milliseconds
 
+	/** {@value} */
 	protected static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
 	private static final String ERROR_UNSUPPORTED_SCHEME = "UIL doesn't support scheme [%s] by default. You should implement this support byself";
 
+	/** {@value} */
 	protected static final String SCHEME_ASSETS_PREFIX = SCHEME_ASSETS + "://";
+	/** {@value} */
 	protected static final String SCHEME_DRAWABLE_PREFIX = SCHEME_DRAWABLE + "://";
 
 	protected final Context context;
@@ -180,8 +183,7 @@ public class BaseImageDownloader implements ImageDownloader {
 	 *            DisplayImageOptions.extraForDownloader(Object)}; can be null
 	 * @return {@link InputStream} of image
 	 * @throws IOException if some I/O error occurs
-	 * @throws UnsupportedOperationException @throws UnsupportedOperationException if image URI has unsupported
-	 *             scheme(protocol)
+	 * @throws UnsupportedOperationException if image URI has unsupported scheme(protocol)
 	 */
 	protected InputStream getStreamFromOtherSource(URI imageUri, Object extra) throws IOException {
 		throw new UnsupportedOperationException(String.format(ERROR_UNSUPPORTED_SCHEME, imageUri.getScheme()));
