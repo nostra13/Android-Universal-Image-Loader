@@ -147,10 +147,10 @@ public class ImageListActivity extends BaseActivity {
 				boolean firstDisplay = !displayedImages.contains(imageUri);
 				if (firstDisplay) {
 					FadeInBitmapDisplayer.animate(imageView, 500);
+					displayedImages.add(imageUri);
 				} else {
 					imageView.setImageBitmap(loadedImage);
 				}
-				displayedImages.add(imageUri);
 			}
 		}
 	}
