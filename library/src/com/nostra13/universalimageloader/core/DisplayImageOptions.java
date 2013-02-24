@@ -291,12 +291,16 @@ public final class DisplayImageOptions {
 		public Builder cloneFrom(DisplayImageOptions options) {
 			stubImage = options.stubImage;
 			imageForEmptyUri = options.imageForEmptyUri;
+			imageOnFail = options.imageOnFail;
 			resetViewBeforeLoading = options.resetViewBeforeLoading;
 			cacheInMemory = options.cacheInMemory;
 			cacheOnDisc = options.cacheOnDisc;
 			imageScaleType = options.imageScaleType;
 			bitmapConfig = options.bitmapConfig;
 			delayBeforeLoading = options.delayBeforeLoading;
+			extraForDownloader = options.extraForDownloader;
+			preProcessor = options.preProcessor;
+			postProcessor = options.postProcessor;
 			displayer = options.displayer;
 			return this;
 		}
