@@ -19,6 +19,7 @@ import java.lang.ref.Reference;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -56,7 +57,7 @@ public abstract class BaseMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 
 	@Override
 	public Collection<K> keys() {
-		return softMap.keySet();
+		return new HashSet<K>(softMap.keySet());
 	}
 
 	@Override
