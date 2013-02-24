@@ -15,7 +15,7 @@ v1.8.0 *(10.02.2013)*
  * Support of "content://", "assets://", "drawable://" URI schemes out of the box ([#162](https://github.com/nostra13/Android-Universal-Image-Loader/issues/162))
  * Introduced `DisplayImageOptions.showImageOnFail(int)`
  * Introduced `DisplayImageOptions.preProcessor(BitmapProcessor)` and `DisplayImageOptions.postProcessor(BitmapProcessor)` ([#151](https://github.com/nostra13/Android-Universal-Image-Loader/issues/151))
- * Introduced `DisplayImageOptions.extraForDownloader(Object)`, allows to pass auxiliary object which will be passed to `ImageDownloader.getStream(URI, Object)` (#150)
+ * Introduced `DisplayImageOptions.extraForDownloader(Object)`, allows to pass auxiliary object which will be passed to `ImageDownloader.getStream(URI, Object)` ([#150](https://github.com/nostra13/Android-Universal-Image-Loader/issues/150))
  * Introduced `ImageLoader.denyNetworkDownloads()` and `ImageLoader.allowNetworkDownloads()` ([#148](https://github.com/nostra13/Android-Universal-Image-Loader/issues/148))
  * Introduced `FailReason.UNSUPPORTED_URI_SCHEME` and `FailReason.NETWORK_DENIED`
  * Introduced `ImageScaleType.NONE`
