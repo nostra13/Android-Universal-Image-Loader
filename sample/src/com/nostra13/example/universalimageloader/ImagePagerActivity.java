@@ -39,7 +39,11 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
  */
 public class ImagePagerActivity extends BaseActivity {
 
+	private static final String STATE_POSITION = "STATE_POSITION";
+
 	DisplayImageOptions options;
+
+	ViewPager pager;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,6 +52,10 @@ public class ImagePagerActivity extends BaseActivity {
 		Bundle bundle = getIntent().getExtras();
 		String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
 		int pagerPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
+
+		if (savedInstanceState != null) {
+			pagerPosition = savedInstanceState.getInt(STATE_POSITION);
+		}
 
 		options = new DisplayImageOptions.Builder()
 			.showImageForEmptyUri(R.drawable.ic_empty)
@@ -59,9 +67,14 @@ public class ImagePagerActivity extends BaseActivity {
 			.displayer(new FadeInBitmapDisplayer(300))
 			.build();
 
-		ViewPager pager = (ViewPager) findViewById(R.id.pager);
+		pager = (ViewPager) findViewById(R.id.pager);
 		pager.setAdapter(new ImagePagerAdapter(imageUrls));
 		pager.setCurrentItem(pagerPosition);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putInt(STATE_POSITION, pager.getCurrentItem());
 	}
 
 	private class ImagePagerAdapter extends PagerAdapter {
