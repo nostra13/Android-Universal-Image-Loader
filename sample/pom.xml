@@ -38,7 +38,7 @@
 				<artifactId>android-maven-plugin</artifactId>
 				<configuration>
 					<sdk>
-						<platform>4</platform>
+						<platform>${android.platform}</platform>
 					</sdk>
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
 					<source>${sourceCompatibility}</source>
