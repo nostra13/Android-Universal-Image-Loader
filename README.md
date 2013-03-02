@@ -2,7 +2,8 @@
 
 This project aims to provide a reusable instrument for asynchronous image loading, caching and displaying. It is originally based on [Fedor Vlasov's project](https://github.com/thest1/LazyList) and has been vastly refactored and improved since then.
 
-![Screenshot](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/UniversalImageLoader.png)
+![Screenshot](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/UniversalImageLoader.png) 
+
 
 ## Features
  * Multithread image loading
@@ -11,8 +12,12 @@ This project aims to provide a reusable instrument for asynchronous image loadin
  * Possibility to "listen" loading process
  * Possibility to customize every display image call with separated options
  * Widget support
- 
-Android 1.5+ support
+ * Android 1.5+ support
+
+## Travis CI
+[![Build Status](https://travis-ci.org/chrisjenx/Android-Universal-Image-Loader.png?branch=testing)](https://travis-ci.org/chrisjenx/Android-Universal-Image-Loader)
+Under continuous test from Travis CI
+
 
 ## Downloads
  * **[universal-image-loader-1.8.0.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.8.0.jar)** (library; contains *.class files)

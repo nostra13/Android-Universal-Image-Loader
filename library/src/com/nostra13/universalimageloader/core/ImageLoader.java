@@ -39,14 +39,13 @@ import com.nostra13.universalimageloader.utils.L;
 /**
  * Singletone for image loading and displaying at {@link ImageView ImageViews}<br />
  * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before any other method.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */
 public class ImageLoader {
 
 	public static final String TAG = ImageLoader.class.getSimpleName();
-
 	static final String LOG_WAITING_FOR_RESUME = "ImageLoader is paused. Waiting...  [%s]";
 	static final String LOG_RESUME_AFTER_PAUSE = ".. Resume loading [%s]";
 	static final String LOG_DELAY_BEFORE_LOADING = "Delay %d ms before loading...  [%s]";
@@ -66,17 +65,9 @@ public class ImageLoader {
 	static final String LOG_TASK_CANCELLED = "ImageView is reused for another image. Task is cancelled. [%s]";
 	static final String LOG_TASK_INTERRUPTED = "Task was interrupted [%s]";
 	static final String LOG_CANT_DECODE_IMAGE = "Image can't be decoded [%s]";
-
 	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (ImageView reference are required)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
-
-	private ImageLoaderConfiguration configuration;
-	private ImageLoaderEngine engine;
-
-	private final ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
-	private final BitmapDisplayer fakeBitmapDisplayer = new FakeBitmapDisplayer();
-
 	private volatile static ImageLoader instance;
 
 	/** Returns singleton class instance */
@@ -90,6 +81,10 @@ public class ImageLoader {
 		}
 		return instance;
 	}
+	private final ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
+	private final BitmapDisplayer fakeBitmapDisplayer = new FakeBitmapDisplayer();
+	private ImageLoaderConfiguration configuration;
+	private ImageLoaderEngine engine;
 
 	protected ImageLoader() {
 	}
@@ -97,7 +92,7 @@ public class ImageLoader {
 	/**
 	 * Initializes ImageLoader's singleton instance with configuration. Method should be called <b>once</b> (each
 	 * following call will have no effect)<br />
-	 * 
+	 *
 	 * @param configuration {@linkplain ImageLoaderConfiguration ImageLoader configuration}
 	 * @throws IllegalArgumentException if <b>configuration</b> parameter is null
 	 */
@@ -124,10 +119,10 @@ public class ImageLoader {
 	 * Default {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
 	 * configuration} will be used.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
-	 * 
+	 *
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView {@link ImageView} which should display image
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
@@ -138,14 +133,14 @@ public class ImageLoader {
 	/**
 	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
-	 * 
+	 *
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView {@link ImageView} which should display image
 	 * @param options {@linkplain DisplayImageOptions Display image options} for image displaying. If <b>null</b> -
 	 *            default display image options
 	 *            {@linkplain ImageLoaderConfiguration.Builder#defaultDisplayImageOptions(DisplayImageOptions) from
 	 *            configuration} will be used.
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
@@ -158,12 +153,12 @@ public class ImageLoader {
 	 * Default {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
 	 * configuration} will be used.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
-	 * 
+	 *
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView {@link ImageView} which should display image
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
@@ -174,7 +169,7 @@ public class ImageLoader {
 	/**
 	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
-	 * 
+	 *
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param imageView {@link ImageView} which should display image
 	 * @param options {@linkplain DisplayImageOptions Display image options} for image displaying. If <b>null</b> -
@@ -183,7 +178,7 @@ public class ImageLoader {
 	 *            configuration} will be used.
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
@@ -211,7 +206,8 @@ public class ImageLoader {
 			return;
 		}
 
-		ImageSize targetSize = getImageSizeScaleTo(imageView);
+        final DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
+		final ImageSize targetSize = ImageSize.getImageSizeScaleTo(imageView, configuration, displayMetrics);
 		String memoryCacheKey = MemoryCacheUtil.generateKey(uri, targetSize);
 		engine.prepareDisplayTaskFor(imageView, memoryCacheKey);
 
@@ -247,11 +243,11 @@ public class ImageLoader {
 	 * Adds load image task to execution pool. Image will be returned with
 	 * {@link ImageLoadingListener#onLoadingComplete(Bitmap) callback}.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
-	 * 
+	 *
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(String uri, ImageLoadingListener listener) {
@@ -262,7 +258,7 @@ public class ImageLoader {
 	 * Adds load image task to execution pool. Image will be returned with
 	 * {@link ImageLoadingListener#onLoadingComplete(Bitmap) callback}.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
-	 * 
+	 *
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param minImageSize Minimal size for {@link Bitmap} which will be returned in
 	 *            {@linkplain ImageLoadingListener#onLoadingComplete(Bitmap) callback}. Downloaded image will be decoded
@@ -270,7 +266,7 @@ public class ImageLoader {
 	 *            incoming minImageSize .
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(String uri, ImageSize minImageSize, ImageLoadingListener listener) {
@@ -281,7 +277,7 @@ public class ImageLoader {
 	 * Adds load image task to execution pool. Image will be returned with
 	 * {@link ImageLoadingListener#onLoadingComplete(Bitmap) callback}.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
-	 * 
+	 *
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param options {@linkplain DisplayImageOptions Display image options} for image displaying. If <b>null</b> -
 	 *            default display image options
@@ -290,7 +286,7 @@ public class ImageLoader {
 	 *            Incoming options should contain {@link FakeBitmapDisplayer} as displayer.
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(String uri, DisplayImageOptions options, ImageLoadingListener listener) {
@@ -301,7 +297,7 @@ public class ImageLoader {
 	 * Adds load image task to execution pool. Image will be returned with
 	 * {@link ImageLoadingListener#onLoadingComplete(Bitmap) callback}.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
-	 * 
+	 *
 	 * @param uri Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
 	 * @param targetImageSize Minimal size for {@link Bitmap} which will be returned in
 	 *            {@linkplain ImageLoadingListener#onLoadingComplete(Bitmap) callback}. Downloaded image will be decoded
@@ -314,7 +310,7 @@ public class ImageLoader {
 	 *            Incoming options should contain {@link FakeBitmapDisplayer} as displayer.
 	 * @param listener {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
 	 *            thread.
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(String uri, ImageSize targetImageSize, DisplayImageOptions options, ImageLoadingListener listener) {
@@ -342,7 +338,7 @@ public class ImageLoader {
 
 	/**
 	 * Checks if ImageLoader's configuration was initialized
-	 * 
+	 *
 	 * @throws IllegalStateException if configuration wasn't initialized
 	 */
 	private void checkConfiguration() {
@@ -353,7 +349,7 @@ public class ImageLoader {
 
 	/**
 	 * Returns memory cache
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public MemoryCacheAware<String, Bitmap> getMemoryCache() {
@@ -363,7 +359,7 @@ public class ImageLoader {
 
 	/**
 	 * Clears memory cache
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void clearMemoryCache() {
@@ -373,7 +369,7 @@ public class ImageLoader {
 
 	/**
 	 * Returns disc cache
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public DiscCacheAware getDiscCache() {
@@ -383,7 +379,7 @@ public class ImageLoader {
 
 	/**
 	 * Clears disc cache.
-	 * 
+	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void clearDiscCache() {
@@ -398,7 +394,7 @@ public class ImageLoader {
 
 	/**
 	 * Cancel the task of loading and displaying image for passed {@link ImageView}.
-	 * 
+	 *
 	 * @param imageView {@link ImageView} for which display task will be cancelled
 	 */
 	public void cancelDisplayTask(ImageView imageView) {
@@ -437,44 +433,4 @@ public class ImageLoader {
 		engine.stop();
 	}
 
-	/**
-	 * Defines image size for loading at memory (for memory economy) by {@link ImageView} parameters.<br />
-	 * Size computing algorithm:<br />
-	 * 1) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step #2.</br>
-	 * 2) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #3.<br />
-	 * 3) Get <b>maxImageWidthForMemoryCache</b> and <b>maxImageHeightForMemoryCache</b> from configuration. If both of
-	 * them are not set then go to step #3.<br />
-	 * 4) Get device screen dimensions.
-	 */
-	private ImageSize getImageSizeScaleTo(ImageView imageView) {
-		DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
-
-		LayoutParams params = imageView.getLayoutParams();
-		int width = params.width; // Get layout width parameter
-		if (width <= 0) width = getFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
-		if (width <= 0) width = configuration.maxImageWidthForMemoryCache;
-		if (width <= 0) width = displayMetrics.widthPixels;
-
-		int height = params.height; // Get layout height parameter
-		if (height <= 0) height = getFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
-		if (height <= 0) height = configuration.maxImageHeightForMemoryCache;
-		if (height <= 0) height = displayMetrics.heightPixels;
-
-		return new ImageSize(width, height);
-	}
-
-	private int getFieldValue(Object object, String fieldName) {
-		int value = 0;
-		try {
-			Field field = ImageView.class.getDeclaredField(fieldName);
-			field.setAccessible(true);
-			int fieldValue = (Integer) field.get(object);
-			if (fieldValue > 0 && fieldValue < Integer.MAX_VALUE) {
-				value = fieldValue;
-			}
-		} catch (Exception e) {
-			L.e(e);
-		}
-		return value;
-	}
 }
