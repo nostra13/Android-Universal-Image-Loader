@@ -308,7 +308,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	private void saveImageOnDisc(File targetFile) throws IOException, URISyntaxException {
 		File cacheDir = targetFile.getParentFile();
-		if (!cacheDir.exists()) {
+		if (cacheDir == null || !cacheDir.exists()) {
 			cacheDir.mkdirs();
 		}
 
