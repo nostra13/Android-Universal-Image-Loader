@@ -15,44 +15,84 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.download;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-
 /**
  * Provides retrieving of {@link InputStream} of image by URI.<br />
  * Implementations have to be thread-safe.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.4.0
  */
-public interface ImageDownloader {
+public interface ImageDownloader
+{
 
-	/// Supported URI schemes(protocols)
-	/** {@value} */
-	String SCHEME_HTTP = "http";
-	/** {@value} */
-	String SCHEME_HTTPS = "https";
-	/** {@value} */
-	String SCHEME_FILE = "file";
-	/** {@value} */
-	String SCHEME_CONTENT = "content";
-	/** {@value} */
-	String SCHEME_ASSETS = "assets";
-	/** {@value} */
-	String SCHEME_DRAWABLE = "drawable";
 
-	/**
-	 * Retrieves {@link InputStream} of image by URI.
-	 * 
-	 * @param imageUri Image URI
-	 * @param extra Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
-	 *            DisplayImageOptions.extraForDownloader(Object)}; can be null
-	 * @return {@link InputStream} of image
-	 * @throws IOException if some I/O error occurs during getting image stream
-	 * @throws UnsupportedOperationException if image URI has unsupported scheme(protocol)
-	 */
-	InputStream getStream(URI imageUri, Object extra) throws IOException;
+    /**
+     * Retrieves {@link InputStream} of image by URI.
+     *
+     * @param imageUri Image URI
+     * @param extra    Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
+     *                 DisplayImageOptions.extraForDownloader(Object)}; can be null
+     * @return {@link InputStream} of image
+     * @throws IOException                   if some I/O error occurs during getting image stream
+     * @throws UnsupportedOperationException if image URI has unsupported scheme(protocol)
+     */
+    InputStream getStream(URI imageUri, Object extra) throws IOException;
+
+    enum SCHEME
+    {
+        /**
+         * http Uri
+         */
+        SCHEME_HTTP("http"),
+        /**
+         * https Uri
+         */
+        SCHEME_HTTPS("https"),
+        /**
+         * file Uri
+         */
+        SCHEME_FILE("file"),
+        /**
+         * content Uri
+         */
+        SCHEME_CONTENT("content"),
+        /**
+         * assets Uri
+         */
+        SCHEME_ASSETS("assets"),
+        /**
+         * drawable Uri
+         */
+        SCHEME_DRAWABLE("drawable"),
+        SCHEME_UNKNOWN;
+
+        public static SCHEME getScheme(URI uri)
+        {
+            if(uri == null) return SCHEME_UNKNOWN;
+            final String uriScheme = uri.getScheme();
+            for (SCHEME scheme : SCHEME.values())
+            {
+                if(scheme.scheme.equals(uriScheme)) return scheme;
+            }
+            return SCHEME_UNKNOWN;
+        }
+
+        final String scheme;
+
+        SCHEME()
+        {
+            this.scheme = "";
+        }
+
+        SCHEME(final String scheme)
+        {
+            this.scheme = scheme;
+        }
+    }
 }
