@@ -67,7 +67,7 @@ public class ImageLoader {
 	static final String LOG_TASK_INTERRUPTED = "Task was interrupted [%s]";
 	static final String LOG_CANT_DECODE_IMAGE = "Image can't be decoded [%s]";
 
-	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (ImageView reference are required)";
+	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (ImageView reference must not be null)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
 
