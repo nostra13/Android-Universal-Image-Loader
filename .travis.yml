@@ -1,5 +1,8 @@
 language: java
 before_install:
+  # fix the 64bit box
+  - sudo apt-get update -qq
+  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
   # download the latest android sdk and unzip
   - wget http://dl.google.com/android/android-sdk_r21.1-linux.tgz
   - tar -zxf android-sdk_r21.1-linux.tgz
