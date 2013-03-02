@@ -12,11 +12,11 @@
     <url>https://github.com/nostra13/Android-Universal-Image-Loader</url>
     <inceptionYear>2011</inceptionYear>
 
-    <!--<parent>-->
-        <!--<groupId>org.sonatype.oss</groupId>-->
-        <!--<artifactId>oss-parent</artifactId>-->
-        <!--<version>7</version>-->
-    <!--</parent>-->
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
     <licenses>
         <license>
@@ -63,11 +63,12 @@
     </properties>
 
     <distributionManagement>
-        <repository>
+        <snapshotRepository>
             <id>internal.repos</id>
             <name>Internal Repository</name>
+            <!--You will need to change this if you want to deploy to a local maven repos-->
             <url>file:///Users/chris/Git/mvn-repos</url>
-        </repository>
+        </snapshotRepository>
     </distributionManagement>
 
     <dependencyManagement>
@@ -168,7 +169,6 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <sourceDirectory>src</sourceDirectory>
     </build>
 
 </project>
