@@ -60,15 +60,13 @@
         <android.version>4.1.1.4</android.version>
         <android.platform>16</android.platform>
         <android-support.version>r7</android-support.version>
-        <!--maven variable which points to your local repository -->
-        <internal.repo.path>file:///Users/chris/Git/mvn-repos</internal.repo.path>
     </properties>
 
     <distributionManagement>
         <repository>
             <id>internal.repos</id>
             <name>Internal Repository</name>
-            <url>${internal.repo.path}</url>
+            <url>file:///Users/chris/Git/mvn-repos</url>
         </repository>
     </distributionManagement>
 
@@ -117,8 +115,6 @@
                             <platform>${android.platform}</platform>
                         </sdk>
                         <undeployBeforeDeploy>true</undeployBeforeDeploy>
-                        <source>${sourceCompatibility}</source>
-                        <target>${sourceCompatibility}</target>
                     </configuration>
                     <extensions>true</extensions>
                 </plugin>
