@@ -15,6 +15,8 @@ import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
  * become eligible for garbage collection.<br />
  * <br />
  * <b>NOTE:</b> This cache uses only strong references for stored Bitmaps.
+ * 
+ * @since 1.8.1
  */
 public class LruMemoryCache implements MemoryCacheAware<String, Bitmap> {
 
