@@ -62,6 +62,27 @@ public class ImageSizeTest
         Assertions.assertThat(result).isNotNull().isEqualsToByComparingFields(expected);
     }
 
+    /**
+     * This will make sure the view falls back to the ViewParams/Max/Or Config if wrap content so that it is
+     * never shrunk to the first image size.
+     * In this case it falls back to the config size
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGetImageSizeScaleTo_dontUseImageActualSizeWithWrapContent() throws Exception
+    {
+        //Set it to wrap content so that it will fall back to
+        mView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mView.measure(View.MeasureSpec.makeMeasureSpec(250, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(250, View.MeasureSpec.EXACTLY));
+        // We layout the view to give it a width and height
+        mView.layout(0, 0, 200, 200);
+
+        ImageSize expected = new ImageSize(500, 500);
+        ImageSize result = ImageSize.getImageSizeScaleTo(mView, mConfiguration, mDisplayMetrics);
+        Assertions.assertThat(result).isNotNull().isEqualsToByComparingFields(expected);
+    }
+
     @Test
     public void testGetImageSizeScaleTo_useImageLayoutParams() throws Exception
     {

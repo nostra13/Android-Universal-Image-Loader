@@ -57,13 +57,15 @@ public class ImageSize
 
         final ViewGroup.LayoutParams params = imageView.getLayoutParams();
 
-        int width = imageView.getWidth(); // Get the actual image width
+        // Get the actual image width if not wrap so that the image will be made too small
+        int width = params.width != ViewGroup.LayoutParams.WRAP_CONTENT ? imageView.getWidth() : 0;
         if (width <= 0) width = params.width; // Get layout width parameter
         if (width <= 0) width = getFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
         if (width <= 0) width = configuration.getMaxImageWidthForMemoryCache();
         if (width <= 0) width = displayMetrics.widthPixels;
 
-        int height = imageView.getHeight(); //get actual image height first
+        //get actual image height first if not wrap so the image will never be made too small
+        int height = (params.width != ViewGroup.LayoutParams.WRAP_CONTENT) ? imageView.getHeight() : 0;
         if (height <= 0) height = params.height; // Get layout height parameter
         if (height <= 0) height = getFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
         if (height <= 0) height = configuration.getMaxImageHeightForMemoryCache();
