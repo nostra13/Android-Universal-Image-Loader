@@ -440,22 +440,26 @@ public class ImageLoader {
 	/**
 	 * Defines image size for loading at memory (for memory economy) by {@link ImageView} parameters.<br />
 	 * Size computing algorithm:<br />
-	 * 1) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step #2.</br>
-	 * 2) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #3.<br />
-	 * 3) Get <b>maxImageWidthForMemoryCache</b> and <b>maxImageHeightForMemoryCache</b> from configuration. If both of
+	 * 1) Get the actual drawn <b>getWidth()</b> and <b>getHeight()</b> of the View.
+	 * 2) Get <b>layout_width</b> and <b>layout_height</b>. If both of them haven't exact value then go to step #2.</br>
+	 * 3) Get <b>maxWidth</b> and <b>maxHeight</b>. If both of them are not set then go to step #3.<br />
+	 * 4) Get <b>maxImageWidthForMemoryCache</b> and <b>maxImageHeightForMemoryCache</b> from configuration. If both of
 	 * them are not set then go to step #3.<br />
-	 * 4) Get device screen dimensions.
+	 * 5) Get device screen dimensions.
 	 */
 	private ImageSize getImageSizeScaleTo(ImageView imageView) {
-		DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
+		final DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
 
-		LayoutParams params = imageView.getLayoutParams();
-		int width = params.width; // Get layout width parameter
+		final LayoutParams params = imageView.getLayoutParams();
+		
+		int width = imageView.getWidth(); // Get actual image width
+		if (width <= 0) width = params.width; // Get layout width parameter
 		if (width <= 0) width = getFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
 		if (width <= 0) width = configuration.maxImageWidthForMemoryCache;
 		if (width <= 0) width = displayMetrics.widthPixels;
 
-		int height = params.height; // Get layout height parameter
+		int height = imageView.getHeight() // Get actual image height
+		if (height <= 0) height = params.height; // Get layout height parameter
 		if (height <= 0) height = getFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
 		if (height <= 0) height = configuration.maxImageHeightForMemoryCache;
 		if (height <= 0) height = displayMetrics.heightPixels;
