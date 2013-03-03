@@ -53,7 +53,8 @@ public class BaseImageDownloader implements ImageDownloader {
 	/** {@value} */
 	protected static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
-	private static final String ERROR_UNSUPPORTED_SCHEME = "UIL doesn't support scheme [%s] by default. You should implement this support byself";
+	private static final String ERROR_UNSUPPORTED_SCHEME = "UIL doesn't support scheme(protocol) [%s] by default. "
+			+ "You should implement this support yourself (BaseImageDownloader.getStreamFromOtherSource(...))";
 
 	/** {@value} */
 	protected static final String SCHEME_ASSETS_PREFIX = SCHEME_ASSETS + "://";
