@@ -31,8 +31,8 @@ import com.nostra13.universalimageloader.cache.memory.LimitedMemoryCache;
  * Limited {@link Bitmap bitmap} cache. Provides {@link Bitmap bitmaps} storing. Size of all stored bitmaps will not to
  * exceed size limit. When cache reaches limit size then the least recently used bitmap is deleted from cache.<br />
  * <br />
- * <b>NOTE:</b> This cache uses strong and weak references for stored Bitmaps. Strong references - for limited count of Bitmaps (depends on
- * cache size), weak references - for all other cached Bitmaps.
+ * <b>NOTE:</b> This cache uses strong and weak references for stored Bitmaps. Strong references - for limited count of
+ * Bitmaps (depends on cache size), weak references - for all other cached Bitmaps.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.3.0
@@ -45,8 +45,11 @@ public class LRULimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
 	/** Cache providing Least-Recently-Used logic */
 	private final Map<String, Bitmap> lruCache = Collections.synchronizedMap(new LinkedHashMap<String, Bitmap>(INITIAL_CAPACITY, LOAD_FACTOR, true));
 
-	public LRULimitedMemoryCache(int sizeLimit) {
-		super(sizeLimit);
+	/**
+	 * @param maxSize Maximum sum of the sizes of the Bitmaps in this cache
+	 */
+	public LRULimitedMemoryCache(int maxSize) {
+		super(maxSize);
 	}
 
 	@Override

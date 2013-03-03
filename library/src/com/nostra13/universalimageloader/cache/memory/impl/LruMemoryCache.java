@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
  * <br />
  * <b>NOTE:</b> This cache uses only strong references for stored Bitmaps.
  * 
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.1
  */
 public class LruMemoryCache implements MemoryCacheAware<String, Bitmap> {
