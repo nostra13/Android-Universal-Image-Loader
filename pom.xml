@@ -56,8 +56,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.6</java.version>
-		<android.version>1.5_r4</android.version>
-		<android.platform>3</android.platform>
+		<android.version>4.1.1.4</android.version>
+		<android.platform>16</android.platform>
 		<android-support.version>r7</android-support.version>
 	</properties>
 
@@ -100,14 +100,12 @@
 				<plugin>
 					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 					<artifactId>android-maven-plugin</artifactId>
-					<version>3.5.0</version>
+					<version>3.5.1</version>
 					<configuration>
 						<sdk>
 							<platform>${android.platform}</platform>
 						</sdk>
 						<undeployBeforeDeploy>true</undeployBeforeDeploy>
-						<source>${sourceCompatibility}</source>
-						<target>${sourceCompatibility}</target>
 					</configuration>
 					<extensions>true</extensions>
 				</plugin>
@@ -161,7 +159,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<sourceDirectory>src</sourceDirectory>
 	</build>
 
 </project>

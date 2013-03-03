@@ -17,11 +17,12 @@
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>android</artifactId>
-			<version>2.3.1</version>
+			<version>${android.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>support-v4</artifactId>
+			<version>${android-support.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -38,12 +39,10 @@
 				<artifactId>android-maven-plugin</artifactId>
 				<configuration>
 					<sdk>
-						<platform>4</platform>
+						<platform>${android.platform}</platform>
 					</sdk>
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
-					<source>${sourceCompatibility}</source>
-					<target>${sourceCompatibility}</target>
-				</configuration>
+					</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
