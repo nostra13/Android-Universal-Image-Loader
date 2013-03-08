@@ -1,6 +1,20 @@
 Change Log
 ===
 
+v1.8.1 *(08.03.2013)*
+---
+ * **Changed API:**
+   * `ImageLoader.denyNetworkDownloads()` -> `ImageLoader.denyNetworkDownloads(true)`
+   * `ImageLoader.allowNetworkDownloads()` -> `ImageLoader.denyNetworkDownloads(false)`
+ * Introduced `ImageLoader.denyNetworkDownloads(boolean)`
+ * Introduced `ImageLoader.handleSlowNetwork(boolean)`. `FlushedInsputStream` isn't used for downloads by default.
+ * Handled HTTP(S) redirects
+ * Added `LruMemoryCache` (based on Android's LruCache), uses only strong references.
+ * Fixed `DisplayImageOptions.cloneFrom(...)` ([#173](https://github.com/nostra13/Android-Universal-Image-Loader/issues/173))
+ * Fixed ConcurrentModification issue in `MemoryCacheUtil. findCacheKeysForImageUri(...)` ([#174](https://github.com/nostra13/Android-Universal-Image-Loader/issues/174))
+ * Fixed issue "Disc Cache can't find image by URI with special/local UTF-8 characters"
+ * Improved calculation of target image size to scale (consider measured View width and height)
+
 v1.8.0 *(10.02.2013)*
 ---
  * **Changed API:**
