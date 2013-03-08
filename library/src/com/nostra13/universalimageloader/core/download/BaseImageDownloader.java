@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLConnection;
 
 import android.content.ContentResolver;
@@ -52,6 +53,8 @@ public class BaseImageDownloader implements ImageDownloader {
 
 	/** {@value} */
 	protected static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
+
+	private static final int MAX_REDIRECT_COUNT = 5;
 
 	private static final String ERROR_UNSUPPORTED_SCHEME = "UIL doesn't support scheme(protocol) [%s] by default. "
 			+ "You should implement this support yourself (BaseImageDownloader.getStreamFromOtherSource(...))";
@@ -106,10 +109,23 @@ public class BaseImageDownloader implements ImageDownloader {
 	 *             URI.
 	 */
 	protected InputStream getStreamFromNetwork(URI imageUri, Object extra) throws IOException {
-		HttpURLConnection conn = (HttpURLConnection) imageUri.toURL().openConnection();
+		HttpURLConnection conn = connectTo(imageUri.toString());
+
+		int redirectCount = 0;
+		while (conn.getResponseCode() / 100 == 3 && redirectCount < MAX_REDIRECT_COUNT) {
+			conn = connectTo(conn.getHeaderField("Location"));
+			redirectCount++;
+		}
+
+		return new FlushedInputStream(conn.getInputStream(), BUFFER_SIZE);
+	}
+
+	private HttpURLConnection connectTo(String url) throws IOException {
+		HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
 		conn.setConnectTimeout(connectTimeout);
 		conn.setReadTimeout(readTimeout);
-		return new FlushedInputStream(conn.getInputStream(), BUFFER_SIZE);
+		conn.connect();
+		return conn;
 	}
 
 	/**
