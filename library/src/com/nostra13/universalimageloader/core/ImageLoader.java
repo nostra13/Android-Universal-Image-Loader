@@ -470,7 +470,7 @@ public class ImageLoader {
 		if (width <= 0) width = configuration.maxImageWidthForMemoryCache;
 		if (width <= 0) width = displayMetrics.widthPixels;
 
-		int height = params.height != LayoutParams.WRAP_CONTENT ? 0 : imageView.getHeight(); // Get actual image height
+		int height = params.height == LayoutParams.WRAP_CONTENT ? 0 : imageView.getHeight(); // Get actual image height
 		if (height <= 0) height = params.height; // Get layout height parameter
 		if (height <= 0) height = getFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
 		if (height <= 0) height = configuration.maxImageHeightForMemoryCache;
