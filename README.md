@@ -294,14 +294,17 @@ To provide caching on external storage (SD card) add following permission to And
  - Use `.imageScaleType(ImageScaleType.IN_SAMPLE_INT)` in display options. Or try `.imageScaleType(ImageScaleType.EXACTLY)`.
  - Avoid using RoundedBitmapDisplayer. It creates new Bitmap object with ARGB_8888 config for displaying during work.
  
-5. For memory cache configuration (`ImageLoaderConfiguration.memoryCache(...)`) you can use already prepared implementations:
- * `LruLimitedCache` (Least recently used bitmap is deleted when cache size limit is exceeded) (Uses only strong references)
- * `UsingFreqLimitedMemoryCache` (The least frequently used bitmap is deleted when cache size limit is exceeded) - Used by default
- * `LRULimitedMemoryCache` (Least recently used bitmap is deleted when cache size limit is exceeded)
- * `FIFOLimitedMemoryCache` (FIFO rule is used for deletion when cache size limit is exceeded)
- * `LargestLimitedMemoryCache` (The largest bitmap is deleted when cache size limit is exceeded)
- * `LimitedAgeMemoryCache` (Decorator. Cached object is deleted when its age exceeds defined value)
- * `WeakMemoryCache` (Memory cache with only weak references to bitmaps)
+5. For memory cache configuration (`ImageLoaderConfiguration.memoryCache(...)`) you can use already prepared implementations.
+ * Cache using **only strong** references:
+     * `LruMemoryCache` (Least recently used bitmap is deleted when cache size limit is exceeded)
+ * Caches using **weak and strong** references:
+     * `UsingFreqLimitedMemoryCache` (Least frequently used bitmap is deleted when cache size limit is exceeded) - **Used by default**
+     * `LRULimitedMemoryCache` (Least recently used bitmap is deleted when cache size limit is exceeded)
+     * `FIFOLimitedMemoryCache` (FIFO rule is used for deletion when cache size limit is exceeded)
+     * `LargestLimitedMemoryCache` (The largest bitmap is deleted when cache size limit is exceeded)
+     * `LimitedAgeMemoryCache` (Decorator. Cached object is deleted when its age exceeds defined value)
+ * Cache using **only weak** references:
+     * `WeakMemoryCache` (Unlimited cache)
 
 6. For disc cache configuration (`ImageLoaderConfiguration.discCache(...)`) you can use already prepared implementations:
  * `UnlimitedDiscCache` (The fastest cache, doesn't limit cache size) - Used by default
@@ -315,7 +318,7 @@ To provide caching on external storage (SD card) add following permission to And
  * `RoundedBitmapDisplayer` (Displays bitmap with rounded corners)
  * `FadeInBitmapDisplayer` (Displays image with "fade in" animation)
 
-8. To avoid list (grid, ...) scrolling lags you can use ```PauseOnScrollListener```:
+8. To avoid list (grid, ...) scrolling lags you can use `PauseOnScrollListener`:
 ``` java
 boolean pauseOnScroll = false; // or true
 boolean pauseOnFling = true; // or false
