@@ -81,6 +81,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private final ImageLoaderConfiguration configuration;
 	private final ImageDownloader downloader;
 	private final ImageDownloader networkDeniedDownloader;
+	private final ImageDownloader slowNetworkDownloader;
 	private final boolean loggingEnabled;
 	final String uri;
 	final String encodedUri;
@@ -98,6 +99,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		configuration = engine.configuration;
 		downloader = configuration.downloader;
 		networkDeniedDownloader = configuration.networkDeniedDownloader;
+		slowNetworkDownloader = configuration.slowNetworkDownloader;
 		loggingEnabled = configuration.loggingEnabled;
 		uri = imageLoadingInfo.uri;
 		encodedUri = Uri.encode(uri, ALLOWED_URI_CHARS);
@@ -370,7 +372,15 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private ImageDownloader getDownloader() {
-		return engine.isNetworkDenied() ? networkDeniedDownloader : downloader;
+		ImageDownloader d;
+		if (engine.isNetworkDenied()) {
+			d = networkDeniedDownloader;
+		} else if (engine.isSlowNetwork()) {
+			d = slowNetworkDownloader;
+		} else {
+			d = downloader;
+		}
+		return d;
 	}
 
 	String getLoadingUri() {

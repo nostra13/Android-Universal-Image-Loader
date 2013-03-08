@@ -34,7 +34,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 
 /**
  * Provides retrieving of {@link InputStream} of image by URI from network or file system or app resources.<br />
@@ -117,7 +116,7 @@ public class BaseImageDownloader implements ImageDownloader {
 			redirectCount++;
 		}
 
-		return new FlushedInputStream(conn.getInputStream(), BUFFER_SIZE);
+		return new BufferedInputStream(conn.getInputStream(), BUFFER_SIZE);
 	}
 
 	private HttpURLConnection connectTo(String url) throws IOException {

@@ -30,6 +30,7 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
+import com.nostra13.universalimageloader.core.download.SlowNetworkImageDownloader;
 import com.nostra13.universalimageloader.utils.L;
 
 /**
@@ -67,7 +68,8 @@ public final class ImageLoaderConfiguration {
 	final boolean loggingEnabled;
 
 	final ImageDownloader networkDeniedDownloader;
-	
+	final ImageDownloader slowNetworkDownloader;
+
 	private ImageLoaderConfiguration(final Builder builder) {
 		context = builder.context;
 		maxImageWidthForMemoryCache = builder.maxImageWidthForMemoryCache;
@@ -94,6 +96,7 @@ public final class ImageLoaderConfiguration {
 		};
 
 		networkDeniedDownloader = new NetworkDeniedImageDownloader(downloader);
+		slowNetworkDownloader = new SlowNetworkImageDownloader(downloader);
 	}
 
 	/**

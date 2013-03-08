@@ -32,6 +32,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
@@ -55,6 +56,7 @@ class ImageLoaderEngine {
 
 	private final AtomicBoolean paused = new AtomicBoolean(false);
 	private final AtomicBoolean networkDenied = new AtomicBoolean(false);
+	private final AtomicBoolean slowNetwork = new AtomicBoolean(false);
 
 	ImageLoaderEngine(ImageLoaderConfiguration configuration) {
 		this.configuration = configuration;
@@ -124,17 +126,28 @@ class ImageLoaderEngine {
 	}
 
 	/**
-	 * Denies engine to download images from network. If image isn't cached then
-	 * {@link ImageLoadingListener#onLoadingFailed(String, View, FailReason)} callback was fired with
+	 * Denies or allows engine to download images from the network.<br />
+	 * <br />
+	 * If downloads are denied and if image isn't cached then
+	 * {@link ImageLoadingListener#onLoadingFailed(String, View, FailReason)} callback will be fired with
 	 * {@link FailReason#NETWORK_DENIED}
+	 * 
+	 * @param denyNetworkDownloads pass <b>true</b> - to deny engine to download images from the network; <b>false</b> -
+	 *            to allow engine to download images from network.
 	 */
-	void denyNetworkDownloads() {
-		networkDenied.set(true);
+	void denyNetworkDownloads(boolean denyNetworkDownloads) {
+		networkDenied.set(denyNetworkDownloads);
 	}
 
-	/** Allows engine to download images from network. */
-	void allowNetworkDownloads() {
-		networkDenied.set(false);
+	/**
+	 * Sets option whether ImageLoader will use {@link FlushedInputStream} for network downloads to handle <a
+	 * href="http://code.google.com/p/android/issues/detail?id=6066">this known problem</a> or not.
+	 * 
+	 * @param handleSlowNetwork pass <b>true</b> - to use {@link FlushedInputStream} for network downloads; <b>false</b>
+	 *            - otherwise.
+	 */
+	void handleSlowNetwork(boolean handleSlowNetwork) {
+		slowNetwork.set(handleSlowNetwork);
 	}
 
 	/**
@@ -181,5 +194,9 @@ class ImageLoaderEngine {
 
 	boolean isNetworkDenied() {
 		return networkDenied.get();
+	}
+
+	boolean isSlowNetwork() {
+		return slowNetwork.get();
 	}
 }

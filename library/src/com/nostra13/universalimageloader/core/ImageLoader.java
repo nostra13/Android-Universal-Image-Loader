@@ -28,6 +28,7 @@ import android.widget.ImageView.ScaleType;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
@@ -406,17 +407,28 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Denies ImageLoader to download images from network. If image isn't cached then
-	 * {@link ImageLoadingListener#onLoadingFailed(String, View, FailReason)} callback was fired with
+	 * Denies or allows ImageLoader to download images from the network.<br />
+	 * <br />
+	 * If downloads are denied and if image isn't cached then
+	 * {@link ImageLoadingListener#onLoadingFailed(String, View, FailReason)} callback will be fired with
 	 * {@link FailReason#NETWORK_DENIED}
+	 * 
+	 * @param denyNetworkDownloads pass <b>true</b> - to deny engine to download images from the network; <b>false</b> -
+	 *            to allow engine to download images from network.
 	 */
-	public void denyNetworkDownloads() {
-		engine.denyNetworkDownloads();
+	void denyNetworkDownloads(boolean denyNetworkDownloads) {
+		engine.denyNetworkDownloads(denyNetworkDownloads);
 	}
 
-	/** Allows ImageLoader to download images from network. */
-	public void allowNetworkDownloads() {
-		engine.allowNetworkDownloads();
+	/**
+	 * Sets option whether ImageLoader will use {@link FlushedInputStream} for network downloads to handle <a
+	 * href="http://code.google.com/p/android/issues/detail?id=6066">this known problem</a> or not.
+	 * 
+	 * @param handleSlowNetwork pass <b>true</b> - to use {@link FlushedInputStream} for network downloads; <b>false</b>
+	 *            - otherwise.
+	 */
+	void handleSlowNetwork(boolean handleSlowNetwork) {
+		engine.handleSlowNetwork(handleSlowNetwork);
 	}
 
 	/**
