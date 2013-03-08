@@ -32,6 +32,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
+@SuppressWarnings("deprecation")
 public class ImageGalleryActivity extends BaseActivity {
 
 	String[] imageUrls;
