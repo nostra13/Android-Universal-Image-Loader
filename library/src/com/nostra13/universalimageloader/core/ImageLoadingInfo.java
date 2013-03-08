@@ -17,7 +17,6 @@ package com.nostra13.universalimageloader.core;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import android.net.Uri;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
@@ -44,7 +43,7 @@ final class ImageLoadingInfo {
 	final ReentrantLock loadFromUriLock;
 
 	public ImageLoadingInfo(String uri, ImageView imageView, ImageSize targetSize, DisplayImageOptions options, ImageLoadingListener listener, ReentrantLock loadFromUriLock) {
-		this.uri = Uri.encode(uri, "@#&=*+-_.,:!?()/~'%");
+		this.uri = uri;
 		this.imageView = imageView;
 		this.targetSize = targetSize;
 		this.options = options;

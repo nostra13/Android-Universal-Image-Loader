@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.widget.ImageView;
@@ -70,6 +71,8 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final int ATTEMPT_COUNT_TO_DECODE_BITMAP = 3;
 	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
+	private static final String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
+
 	private final ImageLoaderEngine engine;
 	private final ImageLoadingInfo imageLoadingInfo;
 	private final Handler handler;
@@ -80,6 +83,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private final ImageDownloader networkDeniedDownloader;
 	private final boolean loggingEnabled;
 	final String uri;
+	final String encodedUri;
 	private final String memoryCacheKey;
 	final ImageView imageView;
 	private final ImageSize targetSize;
@@ -96,6 +100,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		networkDeniedDownloader = configuration.networkDeniedDownloader;
 		loggingEnabled = configuration.loggingEnabled;
 		uri = imageLoadingInfo.uri;
+		encodedUri = Uri.encode(uri, ALLOWED_URI_CHARS);
 		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
 		imageView = imageLoadingInfo.imageView;
 		targetSize = imageLoadingInfo.targetSize;
@@ -233,7 +238,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 				discCache.put(uri, imageFile);
 				imageUriForDecoding = imageFile.toURI();
 			} else {
-				imageUriForDecoding = new URI(uri);
+				imageUriForDecoding = new URI(encodedUri);
 			}
 
 			bitmap = decodeImage(imageUriForDecoding);
@@ -317,7 +322,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (width > 0 || height > 0) {
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
-			ImageDecoder decoder = new ImageDecoder(new URI(uri), getDownloader(), options);
+			ImageDecoder decoder = new ImageDecoder(new URI(encodedUri), getDownloader(), options);
 			decoder.setLoggingEnabled(loggingEnabled);
 			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.IN_SAMPLE_INT, ViewScaleType.FIT_INSIDE);
 			if (bmp != null) {
@@ -337,7 +342,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 		// If previous compression wasn't needed or failed
 		// Download and save original image
-		InputStream is = getDownloader().getStream(new URI(uri), options.getExtraForDownloader());
+		InputStream is = getDownloader().getStream(new URI(encodedUri), options.getExtraForDownloader());
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 			try {
