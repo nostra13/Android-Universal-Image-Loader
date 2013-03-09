@@ -15,8 +15,6 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
-import java.util.concurrent.ThreadFactory;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -28,8 +26,8 @@ import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
+import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloader;
 import com.nostra13.universalimageloader.core.download.SlowNetworkImageDownloader;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -64,7 +62,7 @@ public final class ImageLoaderConfiguration {
 	final DiscCacheAware discCache;
 	final ImageDownloader downloader;
 	final DisplayImageOptions defaultDisplayImageOptions;
-	final ThreadFactory displayImageThreadFactory;
+	final int threadPriority;
 	final boolean loggingEnabled;
 
 	final DiscCacheAware reserveDiscCache;
@@ -87,14 +85,7 @@ public final class ImageLoaderConfiguration {
 		loggingEnabled = builder.loggingEnabled;
 		downloader = builder.downloader;
 		tasksProcessingType = builder.tasksProcessingType;
-		displayImageThreadFactory = new ThreadFactory() {
-			@Override
-			public Thread newThread(Runnable r) {
-				Thread t = new Thread(r);
-				t.setPriority(builder.threadPriority);
-				return t;
-			}
-		};
+		threadPriority = builder.threadPriority;
 
 		networkDeniedDownloader = new NetworkDeniedImageDownloader(downloader);
 		slowNetworkDownloader = new SlowNetworkImageDownloader(downloader);

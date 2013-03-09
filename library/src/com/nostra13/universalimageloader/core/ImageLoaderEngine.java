@@ -100,7 +100,7 @@ class ImageLoaderEngine {
 		boolean lifo = configuration.tasksProcessingType == QueueProcessingType.LIFO;
 		BlockingQueue<Runnable> taskQueue = lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
 		return new ThreadPoolExecutor(configuration.threadPoolSize, configuration.threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue,
-				configuration.displayImageThreadFactory);
+				DefaultConfigurationFactory.createThreadFactory(configuration.threadPriority));
 	}
 
 	/** Returns URI of image which is loading at this moment into passed {@link ImageView} */

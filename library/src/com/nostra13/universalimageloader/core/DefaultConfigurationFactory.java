@@ -16,6 +16,8 @@
 package com.nostra13.universalimageloader.core;
 
 import java.io.File;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -90,5 +92,33 @@ public class DefaultConfigurationFactory {
 	/** Creates default implementation of {@link BitmapDisplayer} */
 	public static BitmapDisplayer createBitmapDisplayer() {
 		return new SimpleBitmapDisplayer();
+	}
+
+	public static ThreadFactory createThreadFactory(int threadPriority) {
+		return new DefaultThreadFactory(threadPriority);
+	}
+
+	private static class DefaultThreadFactory implements ThreadFactory {
+
+		private static final AtomicInteger poolNumber = new AtomicInteger(1);
+
+		private final ThreadGroup group;
+		private final AtomicInteger threadNumber = new AtomicInteger(1);
+		private final String namePrefix;
+		private final int threadPriority;
+
+		DefaultThreadFactory(int threadPriority) {
+			this.threadPriority = threadPriority;
+			SecurityManager s = System.getSecurityManager();
+			group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
+			namePrefix = "pool-" + poolNumber.getAndIncrement() + "-thread-";
+		}
+
+		public Thread newThread(Runnable r) {
+			Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
+			if (t.isDaemon()) t.setDaemon(false);
+			t.setPriority(threadPriority);
+			return t;
+		}
 	}
 }
