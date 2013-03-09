@@ -18,6 +18,7 @@ package com.nostra13.universalimageloader.core.download;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -137,7 +138,7 @@ public class BaseImageDownloader implements ImageDownloader {
 	 * @throws IOException if some I/O error occurs reading from file system
 	 */
 	protected InputStream getStreamFromFile(URI imageUri, Object extra) throws IOException {
-		return new BufferedInputStream(imageUri.toURL().openStream(), BUFFER_SIZE);
+		return new BufferedInputStream(new FileInputStream(imageUri.getRawPath()), BUFFER_SIZE);
 	}
 
 	/**
