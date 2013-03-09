@@ -89,7 +89,7 @@ public final class Constants {
 			"http://c.wrzuta.pl/wm16596/a32f1a47002ab3a949afeb4f",
 			"http://macprovid.vo.llnwd.net/o43/hub/media/1090/6882/01_headline_Muse.jpg",
 			// Special cases
-			"file:///sdcard/UniversalImageLoader.png", // Image from SD card
+			"file:///sdcard/UniversalImageLoader-http%3A%2F%2Fd.png", // Image from SD card with encoded symbols
 			"assets://LivingThings.jpg", // Image from assets
 			"drawable://" + R.drawable.ic_launcher, // Image from drawables
 			"http://upload.wikimedia.org/wikipedia/ru/b/b6/Как_кот_с_мышами_воевал.png", // Link with UTF-8

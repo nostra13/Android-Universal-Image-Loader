@@ -38,7 +38,7 @@ public class HomeActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ac_home);
 
-		File testImageOnSdCard = new File("/mnt/sdcard/UniversalImageLoader.png");
+		File testImageOnSdCard = new File("/mnt/sdcard/UniversalImageLoader-http%3A%2F%2Fd.png");
 		if (!testImageOnSdCard.exists()) {
 			copyTestImageToSdCard(testImageOnSdCard);
 		}
