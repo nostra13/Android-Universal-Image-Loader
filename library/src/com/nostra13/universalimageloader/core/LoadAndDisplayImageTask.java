@@ -216,6 +216,10 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private Bitmap tryLoadBitmap() {
 		DiscCacheAware discCache = configuration.discCache;
 		File imageFile = discCache.get(uri);
+		File cacheDir = imageFile.getParentFile();
+		if (cacheDir == null || (!cacheDir.exists() && !cacheDir.mkdirs())) {
+			imageFile = configuration.reserveDiscCache.get(uri);
+		}
 
 		Bitmap bitmap = null;
 		try {
@@ -314,11 +318,6 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private void saveImageOnDisc(File targetFile) throws IOException, URISyntaxException {
-		File cacheDir = targetFile.getParentFile();
-		if (cacheDir == null || !cacheDir.exists()) {
-			cacheDir.mkdirs();
-		}
-
 		int width = configuration.maxImageWidthForDiscCache;
 		int height = configuration.maxImageHeightForDiscCache;
 		if (width > 0 || height > 0) {

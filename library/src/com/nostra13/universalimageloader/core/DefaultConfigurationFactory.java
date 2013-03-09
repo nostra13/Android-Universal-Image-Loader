@@ -44,12 +44,12 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
  */
 public class DefaultConfigurationFactory {
 
-	/** Create {@linkplain HashCodeFileNameGenerator default implementation} of FileNameGenerator */
+	/** Creates {@linkplain HashCodeFileNameGenerator default implementation} of FileNameGenerator */
 	public static FileNameGenerator createFileNameGenerator() {
 		return new HashCodeFileNameGenerator();
 	}
 
-	/** Create default implementation of {@link DisckCacheAware} depends on incoming parameters */
+	/** Creates default implementation of {@link DisckCacheAware} depends on incoming parameters */
 	public static DiscCacheAware createDiscCache(Context context, FileNameGenerator discCacheFileNameGenerator, int discCacheSize, int discCacheFileCount) {
 		if (discCacheSize > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
@@ -63,7 +63,17 @@ public class DefaultConfigurationFactory {
 		}
 	}
 
-	/** Create default implementation of {@link MemoryCacheAware} depends on incoming parameters */
+	/** Creates reserve disc cache which will be used if primary disc cache becomes unavailable */
+	public static DiscCacheAware createReserveDiscCache(Context context) {
+		File cacheDir = context.getCacheDir();
+		File individualDir = new File(cacheDir, "uil-images");
+		if (individualDir.exists() || individualDir.mkdir()) {
+			cacheDir = individualDir;
+		}
+		return new TotalSizeLimitedDiscCache(cacheDir, 2 * 1024 * 1024); // limit - 2 Mb
+	}
+
+	/** Creates default implementation of {@link MemoryCacheAware} depends on incoming parameters */
 	public static MemoryCacheAware<String, Bitmap> createMemoryCache(int memoryCacheSize, boolean denyCacheImageMultipleSizesInMemory) {
 		MemoryCacheAware<String, Bitmap> memoryCache = new UsingFreqLimitedMemoryCache(memoryCacheSize);
 		if (denyCacheImageMultipleSizesInMemory) {
@@ -72,12 +82,12 @@ public class DefaultConfigurationFactory {
 		return memoryCache;
 	}
 
-	/** Create default implementation of {@link ImageDownloader} - {@link BaseImageDownloader} */
+	/** Creates default implementation of {@link ImageDownloader} - {@link BaseImageDownloader} */
 	public static ImageDownloader createImageDownloader(Context context) {
 		return new BaseImageDownloader(context);
 	}
 
-	/** Create default implementation of {@link BitmapDisplayer} */
+	/** Creates default implementation of {@link BitmapDisplayer} */
 	public static BitmapDisplayer createBitmapDisplayer() {
 		return new SimpleBitmapDisplayer();
 	}

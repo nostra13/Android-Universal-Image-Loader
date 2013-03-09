@@ -67,6 +67,7 @@ public final class ImageLoaderConfiguration {
 	final ThreadFactory displayImageThreadFactory;
 	final boolean loggingEnabled;
 
+	final DiscCacheAware reserveDiscCache;
 	final ImageDownloader networkDeniedDownloader;
 	final ImageDownloader slowNetworkDownloader;
 
@@ -97,6 +98,8 @@ public final class ImageLoaderConfiguration {
 
 		networkDeniedDownloader = new NetworkDeniedImageDownloader(downloader);
 		slowNetworkDownloader = new SlowNetworkImageDownloader(downloader);
+
+		reserveDiscCache = DefaultConfigurationFactory.createReserveDiscCache(context);
 	}
 
 	/**
