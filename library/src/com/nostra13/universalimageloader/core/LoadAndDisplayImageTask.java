@@ -49,6 +49,7 @@ import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.FailReason.FailType;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -249,25 +250,22 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 			bitmap = decodeImage(imageUriForDecoding);
 			if (bitmap == null) {
-				fireImageLoadingFailedEvent(FailReason.IO_ERROR);
+				fireImageLoadingFailedEvent(FailType.DECODING_ERROR, null);
 			}
 		} catch (IllegalStateException e) {
-			fireImageLoadingFailedEvent(FailReason.NETWORK_DENIED);
-		} catch (UnsupportedOperationException e) {
-			L.e(e);
-			fireImageLoadingFailedEvent(FailReason.UNSUPPORTED_URI_SCHEME);
+			fireImageLoadingFailedEvent(FailType.NETWORK_DENIED, null);
 		} catch (IOException e) {
 			L.e(e);
-			fireImageLoadingFailedEvent(FailReason.IO_ERROR);
+			fireImageLoadingFailedEvent(FailType.IO_ERROR, e);
 			if (imageFile.exists()) {
 				imageFile.delete();
 			}
 		} catch (OutOfMemoryError e) {
 			L.e(e);
-			fireImageLoadingFailedEvent(FailReason.OUT_OF_MEMORY);
+			fireImageLoadingFailedEvent(FailType.OUT_OF_MEMORY, e);
 		} catch (Throwable e) {
 			L.e(e);
-			fireImageLoadingFailedEvent(FailReason.UNKNOWN);
+			fireImageLoadingFailedEvent(FailType.UNKNOWN, e);
 		}
 		return bitmap;
 	}
@@ -356,7 +354,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		}
 	}
 
-	private void fireImageLoadingFailedEvent(final FailReason failReason) {
+	private void fireImageLoadingFailedEvent(final FailType failType, final Throwable failCause) {
 		if (!Thread.interrupted()) {
 			handler.post(new Runnable() {
 				@Override
@@ -364,7 +362,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 					if (options.shouldShowImageOnFail()) {
 						imageView.setImageResource(options.getImageOnFail());
 					}
-					listener.onLoadingFailed(uri, imageView, failReason);
+					listener.onLoadingFailed(uri, imageView, new FailReason(failType, failCause));
 				}
 			});
 		}
