@@ -116,18 +116,18 @@ public class ImagePagerActivity extends BaseActivity {
 				@Override
 				public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
 					String message = null;
-					switch (failReason) {
+					switch (failReason.getType()) {
 						case IO_ERROR:
 							message = "Input/Output error";
 							break;
-						case OUT_OF_MEMORY:
-							message = "Out Of Memory error";
+						case DECODING_ERROR:
+							message = "Image can't be decoded";
 							break;
 						case NETWORK_DENIED:
 							message = "Downloads are denied";
 							break;
-						case UNSUPPORTED_URI_SCHEME:
-							message = "Unsupported URI scheme";
+						case OUT_OF_MEMORY:
+							message = "Out Of Memory error";
 							break;
 						case UNKNOWN:
 							message = "Unknown error";
