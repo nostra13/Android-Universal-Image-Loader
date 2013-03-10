@@ -16,7 +16,12 @@
 package com.nostra13.universalimageloader.core;
 
 import java.io.File;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.Context;
@@ -32,6 +37,8 @@ import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
@@ -45,6 +52,13 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
  * @since 1.5.6
  */
 public class DefaultConfigurationFactory {
+
+	/** Creates default implementation of task executor */
+	public static Executor createExecutor(int threadPoolSize, int threadPriority, QueueProcessingType tasksProcessingType) {
+		boolean lifo = tasksProcessingType == QueueProcessingType.LIFO;
+		BlockingQueue<Runnable> taskQueue = lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
+		return new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue, createThreadFactory(threadPriority));
+	}
 
 	/** Creates {@linkplain HashCodeFileNameGenerator default implementation} of FileNameGenerator */
 	public static FileNameGenerator createFileNameGenerator() {
@@ -94,7 +108,8 @@ public class DefaultConfigurationFactory {
 		return new SimpleBitmapDisplayer();
 	}
 
-	public static ThreadFactory createThreadFactory(int threadPriority) {
+	/** Creates default implementation of {@linkplain ThreadFactory thread factory} for task executor */
+	private static ThreadFactory createThreadFactory(int threadPriority) {
 		return new DefaultThreadFactory(threadPriority);
 	}
 

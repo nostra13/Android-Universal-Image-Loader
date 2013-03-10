@@ -19,12 +19,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -34,8 +31,6 @@ import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
 
 /**
  * {@link ImageLoader} engine which responsible for {@linkplain LoadAndDisplayImageTask display task} execution.
@@ -47,8 +42,8 @@ class ImageLoaderEngine {
 
 	final ImageLoaderConfiguration configuration;
 
-	private ExecutorService imageLoadingExecutor;
-	private ExecutorService cachedImageLoadingExecutor;
+	private Executor taskExecutor;
+	private Executor taskExecutorForCachedImages;
 	private ExecutorService taskDistributor;
 
 	private final Map<Integer, String> cacheKeysForImageViews = Collections.synchronizedMap(new HashMap<Integer, String>());
@@ -60,19 +55,23 @@ class ImageLoaderEngine {
 
 	ImageLoaderEngine(ImageLoaderConfiguration configuration) {
 		this.configuration = configuration;
+
+		taskExecutor = configuration.taskExecutor;
+		taskExecutorForCachedImages = configuration.taskExecutorForCachedImages;
+
+		taskDistributor = Executors.newCachedThreadPool();
 	}
 
 	/** Submits task to execution pool */
 	void submit(final LoadAndDisplayImageTask task) {
-		initExecutorsIfNeed();
-		taskDistributor.submit(new Runnable() {
+		taskDistributor.execute(new Runnable() {
 			@Override
 			public void run() {
 				boolean isImageCachedOnDisc = configuration.discCache.get(task.getLoadingUri()).exists();
 				if (isImageCachedOnDisc) {
-					cachedImageLoadingExecutor.submit(task);
+					taskExecutorForCachedImages.execute(task);
 				} else {
-					imageLoadingExecutor.submit(task);
+					taskExecutor.execute(task);
 				}
 			}
 		});
@@ -80,27 +79,7 @@ class ImageLoaderEngine {
 
 	/** Submits task to execution pool */
 	void submit(ProcessAndDisplayImageTask task) {
-		initExecutorsIfNeed();
-		cachedImageLoadingExecutor.submit(task);
-	}
-
-	private void initExecutorsIfNeed() {
-		if (imageLoadingExecutor == null || imageLoadingExecutor.isShutdown()) {
-			imageLoadingExecutor = createTaskExecutor();
-		}
-		if (cachedImageLoadingExecutor == null || cachedImageLoadingExecutor.isShutdown()) {
-			cachedImageLoadingExecutor = createTaskExecutor();
-		}
-		if (taskDistributor == null || taskDistributor.isShutdown()) {
-			taskDistributor = Executors.newCachedThreadPool();
-		}
-	}
-
-	private ExecutorService createTaskExecutor() {
-		boolean lifo = configuration.tasksProcessingType == QueueProcessingType.LIFO;
-		BlockingQueue<Runnable> taskQueue = lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
-		return new ThreadPoolExecutor(configuration.threadPoolSize, configuration.threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue,
-				DefaultConfigurationFactory.createThreadFactory(configuration.threadPriority));
+		taskExecutorForCachedImages.execute(task);
 	}
 
 	/** Returns URI of image which is loading at this moment into passed {@link ImageView} */
@@ -166,17 +145,24 @@ class ImageLoaderEngine {
 		}
 	}
 
-	/** Stops all running display image tasks, discards all other scheduled tasks */
-	void stop() {
-		if (imageLoadingExecutor != null) {
-			imageLoadingExecutor.shutdownNow();
+	/** Stops all running display image tasks, discards all other scheduled tasks. Clears internal data. */
+	void destroy() {
+		if (!configuration.customExecutor) {
+			((ExecutorService) taskExecutor).shutdownNow();
 		}
-		if (cachedImageLoadingExecutor != null) {
-			cachedImageLoadingExecutor.shutdownNow();
+		if (!configuration.customExecutorForCachedImages) {
+			((ExecutorService) taskExecutorForCachedImages).shutdownNow();
 		}
 		if (taskDistributor != null) {
 			taskDistributor.shutdownNow();
 		}
+
+		cacheKeysForImageViews.clear();
+		uriLocks.clear();
+		
+		taskExecutor = null;
+		taskExecutorForCachedImages = null;
+		taskDistributor = null;
 	}
 
 	ReentrantLock getLockForUri(String uri) {

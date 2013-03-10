@@ -48,6 +48,8 @@ public class ImageLoader {
 
 	public static final String TAG = ImageLoader.class.getSimpleName();
 
+	static final String LOG_INIT_CONFIG = "Initialize ImageLoader with configuration";
+	static final String LOG_DESTROY = "Destroy ImageLoader";
 	static final String LOG_WAITING_FOR_RESUME = "ImageLoader is paused. Waiting...  [%s]";
 	static final String LOG_RESUME_AFTER_PAUSE = ".. Resume loading [%s]";
 	static final String LOG_DELAY_BEFORE_LOADING = "Delay %d ms before loading...  [%s]";
@@ -68,6 +70,8 @@ public class ImageLoader {
 	static final String LOG_TASK_INTERRUPTED = "Task was interrupted [%s]";
 	static final String LOG_CANT_DECODE_IMAGE = "Image can't be decoded [%s]";
 
+	private static final String WARNING_RE_INIT_CONFIG = "Try to initialize ImageLoader which had already been initialized before. "
+			+ "To re-init ImageLoader with new configuration call ImageLoader.destroy() at first.";
 	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (ImageView reference must not be null)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
@@ -96,8 +100,9 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Initializes ImageLoader's singleton instance with configuration. Method should be called <b>once</b> (each
-	 * following call will have no effect)<br />
+	 * Initializes ImageLoader instance with configuration.<br />
+	 * If configurations was set before ( {@link #isInited()} == true) then this method does nothing.<br />
+	 * To force initialization with new configuration you should {@linkplain #destroy() destroy ImageLoader} at first.
 	 * 
 	 * @param configuration {@linkplain ImageLoaderConfiguration ImageLoader configuration}
 	 * @throws IllegalArgumentException if <b>configuration</b> parameter is null
@@ -107,8 +112,11 @@ public class ImageLoader {
 			throw new IllegalArgumentException(ERROR_INIT_CONFIG_WITH_NULL);
 		}
 		if (this.configuration == null) {
+			if (configuration.loggingEnabled) L.d(LOG_INIT_CONFIG);
 			engine = new ImageLoaderEngine(configuration);
 			this.configuration = configuration;
+		} else {
+			L.w(WARNING_RE_INIT_CONFIG);
 		}
 	}
 
@@ -444,9 +452,20 @@ public class ImageLoader {
 		engine.resume();
 	}
 
-	/** Stops all running display image tasks, discards all other scheduled tasks */
-	public void stop() {
-		engine.stop();
+	/**
+	 * Clears current configuration. Stops all running display image tasks, discards all other scheduled tasks (true for
+	 * built-in task executors, false - for
+	 * {@linkplain ImageLoaderConfiguration.Builder#taskExecutor(java.util.concurrent.ExecutorService) custom task
+	 * executors}).<br />
+	 * <br />
+	 * You can {@linkplain #init(ImageLoaderConfiguration) init} ImageLoader with new configuration after calling this
+	 * method.
+	 */
+	public void destroy() {
+		if (configuration != null && configuration.loggingEnabled) L.d(LOG_DESTROY);
+		engine.destroy();
+		engine = null;
+		configuration = null;
 	}
 
 	/**
