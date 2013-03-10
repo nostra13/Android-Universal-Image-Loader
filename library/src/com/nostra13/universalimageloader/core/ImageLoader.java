@@ -453,17 +453,21 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Clears current configuration. Stops all running display image tasks, discards all other scheduled tasks (true for
-	 * built-in task executors, false - for
-	 * {@linkplain ImageLoaderConfiguration.Builder#taskExecutor(java.util.concurrent.ExecutorService) custom task
-	 * executors}).<br />
-	 * <br />
+	 * Cancels all running and scheduled display image tasks.<br />
+	 * ImageLoader still can be used after calling this method.
+	 */
+	public void stop() {
+		engine.stop();
+	}
+
+	/**
+	 * {@linkplain #stop() Stops ImageLoader} and clears current configuration. <br />
 	 * You can {@linkplain #init(ImageLoaderConfiguration) init} ImageLoader with new configuration after calling this
 	 * method.
 	 */
 	public void destroy() {
 		if (configuration != null && configuration.loggingEnabled) L.d(LOG_DESTROY);
-		engine.destroy();
+		stop();
 		engine = null;
 		configuration = null;
 	}

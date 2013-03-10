@@ -68,6 +68,7 @@ class ImageLoaderEngine {
 			@Override
 			public void run() {
 				boolean isImageCachedOnDisc = configuration.discCache.get(task.getLoadingUri()).exists();
+				initExecutorsIfNeed();
 				if (isImageCachedOnDisc) {
 					taskExecutorForCachedImages.execute(task);
 				} else {
@@ -79,7 +80,21 @@ class ImageLoaderEngine {
 
 	/** Submits task to execution pool */
 	void submit(ProcessAndDisplayImageTask task) {
+		initExecutorsIfNeed();
 		taskExecutorForCachedImages.execute(task);
+	}
+
+	private void initExecutorsIfNeed() {
+		if (taskExecutor == null) {
+			taskExecutor = createTaskExecutor();
+		}
+		if (taskExecutorForCachedImages == null) {
+			taskExecutorForCachedImages = createTaskExecutor();
+		}
+	}
+
+	private Executor createTaskExecutor() {
+		return DefaultConfigurationFactory.createExecutor(configuration.threadPoolSize, configuration.threadPriority, configuration.tasksProcessingType);
 	}
 
 	/** Returns URI of image which is loading at this moment into passed {@link ImageView} */
@@ -145,24 +160,17 @@ class ImageLoaderEngine {
 		}
 	}
 
-	/** Stops all running display image tasks, discards all other scheduled tasks. Clears internal data. */
-	void destroy() {
+	/** Stops engine, cancels all running and scheduled display image tasks. Clears internal data. */
+	void stop() {
 		if (!configuration.customExecutor) {
-			((ExecutorService) taskExecutor).shutdownNow();
+			taskExecutor = null;
 		}
 		if (!configuration.customExecutorForCachedImages) {
-			((ExecutorService) taskExecutorForCachedImages).shutdownNow();
-		}
-		if (taskDistributor != null) {
-			taskDistributor.shutdownNow();
+			taskExecutorForCachedImages = null;
 		}
 
 		cacheKeysForImageViews.clear();
 		uriLocks.clear();
-		
-		taskExecutor = null;
-		taskExecutorForCachedImages = null;
-		taskDistributor = null;
 	}
 
 	ReentrantLock getLockForUri(String uri) {
