@@ -11,6 +11,8 @@
     <string name="label_activity_examples">Activity Examples</string>
     <string name="menu_item_clear_memory_cache">Clear memory cache</string>
     <string name="menu_item_clear_disc_cache">Clear disc cache</string>
+    <string name="menu_item_pause_on_scroll">Pause on scroll</string>
+    <string name="menu_item_pause_on_fling">Pause on fling</string>
     <string name="button_image_list">ListView</string>
     <string name="button_image_grid">GridView</string>
     <string name="button_image_pager">ViewPager</string>

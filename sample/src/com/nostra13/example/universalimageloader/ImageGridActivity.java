@@ -28,12 +28,11 @@ import android.widget.ImageView;
 
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class ImageGridActivity extends BaseActivity {
+public class ImageGridActivity extends AbsListViewBaseActivity {
 
 	String[] imageUrls;
 
@@ -56,15 +55,14 @@ public class ImageGridActivity extends BaseActivity {
 			.bitmapConfig(Bitmap.Config.RGB_565)
 			.build();
 
-		GridView gridView = (GridView) findViewById(R.id.gridview);
-		gridView.setAdapter(new ImageAdapter());
-		gridView.setOnItemClickListener(new OnItemClickListener() {
+		listView = (GridView) findViewById(R.id.gridview);
+		listView.setAdapter(new ImageAdapter());
+		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				startImagePagerActivity(position);
 			}
 		});
-		gridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
 	}
 
 	private void startImagePagerActivity(int position) {

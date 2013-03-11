@@ -34,7 +34,6 @@ import android.widget.TextView;
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
@@ -42,7 +41,7 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class ImageListActivity extends BaseActivity {
+public class ImageListActivity extends AbsListViewBaseActivity {
 
 	DisplayImageOptions options;
 
@@ -65,7 +64,7 @@ public class ImageListActivity extends BaseActivity {
 			.displayer(new RoundedBitmapDisplayer(20))
 			.build();
 
-		ListView listView = (ListView) findViewById(android.R.id.list);
+		listView = (ListView) findViewById(android.R.id.list);
 		listView.setAdapter(new ItemAdapter());
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -73,8 +72,6 @@ public class ImageListActivity extends BaseActivity {
 				startImagePagerActivity(position);
 			}
 		});
-
-		listView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
 	}
 
 	@Override
@@ -93,7 +90,7 @@ public class ImageListActivity extends BaseActivity {
 	class ItemAdapter extends BaseAdapter {
 
 		private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
-		
+
 		private class ViewHolder {
 			public TextView text;
 			public ImageView image;
