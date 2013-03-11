@@ -59,11 +59,6 @@ public class BaseImageDownloader implements ImageDownloader {
 	private static final String ERROR_UNSUPPORTED_SCHEME = "UIL doesn't support scheme(protocol) [%s] by default. "
 			+ "You should implement this support yourself (BaseImageDownloader.getStreamFromOtherSource(...))";
 
-	/** {@value} */
-	protected static final String SCHEME_ASSETS_PREFIX = SCHEME_ASSETS + "://";
-	/** {@value} */
-	protected static final String SCHEME_DRAWABLE_PREFIX = SCHEME_DRAWABLE + "://";
-
 	protected final Context context;
 	protected final int connectTimeout;
 	protected final int readTimeout;
@@ -82,19 +77,21 @@ public class BaseImageDownloader implements ImageDownloader {
 
 	@Override
 	public InputStream getStream(URI imageUri, Object extra) throws IOException {
-		String scheme = imageUri.getScheme();
-		if (SCHEME_HTTP.equals(scheme) || SCHEME_HTTPS.equals(scheme)) {
-			return getStreamFromNetwork(imageUri, extra);
-		} else if (SCHEME_FILE.equals(scheme)) {
-			return getStreamFromFile(imageUri, extra);
-		} else if (SCHEME_CONTENT.equals(scheme)) {
-			return getStreamFromContent(imageUri, extra);
-		} else if (SCHEME_ASSETS.equals(scheme)) {
-			return getStreamFromAssets(imageUri, extra);
-		} else if (SCHEME_DRAWABLE.equals(scheme)) {
-			return getStreamFromDrawable(imageUri, extra);
-		} else {
-			return getStreamFromOtherSource(imageUri, extra);
+		switch (Scheme.ofUri(imageUri)) {
+			case HTTP:
+			case HTTPS:
+				return getStreamFromNetwork(imageUri, extra);
+			case FILE:
+				return getStreamFromFile(imageUri, extra);
+			case CONTENT:
+				return getStreamFromContent(imageUri, extra);
+			case ASSETS:
+				return getStreamFromAssets(imageUri, extra);
+			case DRAWABLE:
+				return getStreamFromDrawable(imageUri, extra);
+			case UNKNOWN:
+			default:
+				return getStreamFromOtherSource(imageUri, extra);
 		}
 	}
 
@@ -166,7 +163,7 @@ public class BaseImageDownloader implements ImageDownloader {
 	 * @throws IOException if some I/O error occurs file reading
 	 */
 	protected InputStream getStreamFromAssets(URI imageUri, Object extra) throws IOException {
-		String filePath = imageUri.toString().substring(SCHEME_ASSETS_PREFIX.length()); // Remove "assets://" prefix from image URI
+		String filePath = imageUri.toString().substring(Scheme.ASSETS.getUriPrefix().length()); // Remove "assets://" prefix from image URI
 		return context.getAssets().open(filePath);
 	}
 
@@ -179,7 +176,7 @@ public class BaseImageDownloader implements ImageDownloader {
 	 * @return {@link InputStream} of image
 	 */
 	protected InputStream getStreamFromDrawable(URI imageUri, Object extra) {
-		String drawableIdString = imageUri.toString().substring(SCHEME_DRAWABLE_PREFIX.length()); // Remove "drawable://" prefix from image URI
+		String drawableIdString = imageUri.toString().substring(Scheme.DRAWABLE.getUriPrefix().length()); // Remove "drawable://" prefix from image URI
 		int drawableId = Integer.parseInt(drawableIdString);
 		BitmapDrawable drawable = (BitmapDrawable) context.getResources().getDrawable(drawableId);
 		Bitmap bitmap = drawable.getBitmap();

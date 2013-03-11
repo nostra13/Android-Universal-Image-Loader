@@ -29,21 +29,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
  * @since 1.4.0
  */
 public interface ImageDownloader {
-
-	/// Supported URI schemes(protocols)
-	/** {@value} */
-	String SCHEME_HTTP = "http";
-	/** {@value} */
-	String SCHEME_HTTPS = "https";
-	/** {@value} */
-	String SCHEME_FILE = "file";
-	/** {@value} */
-	String SCHEME_CONTENT = "content";
-	/** {@value} */
-	String SCHEME_ASSETS = "assets";
-	/** {@value} */
-	String SCHEME_DRAWABLE = "drawable";
-
 	/**
 	 * Retrieves {@link InputStream} of image by URI.
 	 * 
@@ -55,4 +40,41 @@ public interface ImageDownloader {
 	 * @throws UnsupportedOperationException if image URI has unsupported scheme(protocol)
 	 */
 	InputStream getStream(URI imageUri, Object extra) throws IOException;
+
+	enum Scheme {
+		HTTP("http"), HTTPS("https"), FILE("file"), CONTENT("content"), ASSETS("assets"), DRAWABLE("drawable"), UNKNOWN("");
+
+		private String scheme;
+
+		Scheme(String scheme) {
+			this.scheme = scheme;
+		}
+
+		public static Scheme ofUri(URI uri) {
+			if (uri != null) {
+				String uriScheme = uri.getScheme();
+				for (Scheme s : values()) {
+					if (s.scheme.equalsIgnoreCase(uriScheme)) {
+						return s;
+					}
+				}
+			}
+			return UNKNOWN;
+		}
+
+		public static Scheme ofUri(String uri) {
+			if (uri != null) {
+				for (Scheme s : values()) {
+					if (uri.startsWith(s.getUriPrefix())) {
+						return s;
+					}
+				}
+			}
+			return UNKNOWN;
+		}
+
+		public String getUriPrefix() {
+			return scheme + "://";
+		}
+	}
 }

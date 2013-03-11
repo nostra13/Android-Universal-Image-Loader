@@ -39,10 +39,12 @@ public class SlowNetworkImageDownloader implements ImageDownloader {
 	@Override
 	public InputStream getStream(URI imageUri, Object extra) throws IOException {
 		InputStream imageStream = wrappedDownloader.getStream(imageUri, extra);
-		String scheme = imageUri.getScheme();
-		if (SCHEME_HTTP.equals(scheme) || SCHEME_HTTPS.equals(scheme)) {
-			imageStream = new FlushedInputStream(imageStream);
+		switch (Scheme.ofUri(imageUri)) {
+			case HTTP:
+			case HTTPS:
+				return new FlushedInputStream(imageStream);
+			default:
+				return imageStream;
 		}
-		return imageStream;
 	}
 }
