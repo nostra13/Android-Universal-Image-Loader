@@ -25,8 +25,6 @@ import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloader;
@@ -64,7 +62,6 @@ public final class ImageLoaderConfiguration {
 	final int threadPoolSize;
 	final int threadPriority;
 	final QueueProcessingType tasksProcessingType;
-	final boolean handleOutOfMemory;
 
 	final MemoryCacheAware<String, Bitmap> memoryCache;
 	final DiscCacheAware discCache;
@@ -89,7 +86,6 @@ public final class ImageLoaderConfiguration {
 		threadPoolSize = builder.threadPoolSize;
 		threadPriority = builder.threadPriority;
 		tasksProcessingType = builder.tasksProcessingType;
-		handleOutOfMemory = builder.handleOutOfMemory;
 		discCache = builder.discCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
@@ -168,7 +164,6 @@ public final class ImageLoaderConfiguration {
 		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
 		private int threadPriority = DEFAULT_THREAD_PRIORITY;
 		private boolean denyCacheImageMultipleSizesInMemory = false;
-		private boolean handleOutOfMemory = true;
 		private QueueProcessingType tasksProcessingType = DEFAULT_TASK_PROCESSING_TYPE;
 
 		private int memoryCacheSize = DEFAULT_MEMORY_CACHE_SIZE;
@@ -314,17 +309,6 @@ public final class ImageLoaderConfiguration {
 		 * */
 		public Builder denyCacheImageMultipleSizesInMemory() {
 			this.denyCacheImageMultipleSizesInMemory = true;
-			return this;
-		}
-
-		/**
-		 * ImageLoader try clean memory and re-display image it self when {@link OutOfMemoryError} occurs. You can
-		 * switch off this feature by this method and process error by your way (you can know that
-		 * {@link OutOfMemoryError} occurred if you got {@link FailReason#OUT_OF_MEMORY} in
-		 * {@link ImageLoadingListener#onLoadingFailed(FailReason)}).
-		 */
-		public Builder offOutOfMemoryHandling() {
-			this.handleOutOfMemory = false;
 			return this;
 		}
 

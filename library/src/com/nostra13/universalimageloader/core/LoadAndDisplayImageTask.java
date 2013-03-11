@@ -44,7 +44,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
@@ -69,7 +68,6 @@ import com.nostra13.universalimageloader.utils.L;
  */
 final class LoadAndDisplayImageTask implements Runnable {
 
-	private static final int ATTEMPT_COUNT_TO_DECODE_BITMAP = 3;
 	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
 	private static final String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
@@ -271,48 +269,10 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private Bitmap decodeImage(URI imageUri) throws IOException {
-		Bitmap bmp = null;
-
-		if (configuration.handleOutOfMemory) {
-			bmp = decodeWithOOMHandling(imageUri);
-		} else {
-			ImageDecoder decoder = new ImageDecoder(imageUri, getDownloader(), options);
-			decoder.setLoggingEnabled(loggingEnabled);
-			ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageView);
-			bmp = decoder.decode(targetSize, options.getImageScaleType(), viewScaleType);
-		}
-		return bmp;
-	}
-
-	private Bitmap decodeWithOOMHandling(URI imageUri) throws IOException {
-		Bitmap result = null;
 		ImageDecoder decoder = new ImageDecoder(imageUri, getDownloader(), options);
 		decoder.setLoggingEnabled(loggingEnabled);
-		for (int attempt = 1; attempt <= ATTEMPT_COUNT_TO_DECODE_BITMAP; attempt++) {
-			try {
-				ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageView);
-				result = decoder.decode(targetSize, options.getImageScaleType(), viewScaleType);
-			} catch (OutOfMemoryError e) {
-				L.e(e);
-
-				switch (attempt) {
-					case 1:
-						System.gc();
-						break;
-					case 2:
-						configuration.memoryCache.clear();
-						System.gc();
-						break;
-					case 3:
-						throw e;
-				}
-				// Wait some time while GC is working
-				SystemClock.sleep(attempt * 1000);
-				continue;
-			}
-			break;
-		}
-		return result;
+		ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageView);
+		return decoder.decode(targetSize, options.getImageScaleType(), viewScaleType);
 	}
 
 	private void saveImageOnDisc(File targetFile) throws IOException, URISyntaxException {
