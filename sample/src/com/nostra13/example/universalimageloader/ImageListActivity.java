@@ -145,8 +145,6 @@ public class ImageListActivity extends AbsListViewBaseActivity {
 				if (firstDisplay) {
 					FadeInBitmapDisplayer.animate(imageView, 500);
 					displayedImages.add(imageUri);
-				} else {
-					imageView.setImageBitmap(loadedImage);
 				}
 			}
 		}
