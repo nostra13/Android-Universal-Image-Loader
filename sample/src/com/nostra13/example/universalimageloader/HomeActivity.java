@@ -33,12 +33,15 @@ import com.nostra13.universalimageloader.utils.L;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class HomeActivity extends BaseActivity {
+
+	private static final String TEST_FILE_NAME = "Universal Image Loader @#&=+-_.,!()~'%20.png";
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ac_home);
 
-		File testImageOnSdCard = new File("/mnt/sdcard/UniversalImageLoader-http%3A%2F%2Fd.png");
+		File testImageOnSdCard = new File("/mnt/sdcard", TEST_FILE_NAME);
 		if (!testImageOnSdCard.exists()) {
 			copyTestImageToSdCard(testImageOnSdCard);
 		}
@@ -73,13 +76,13 @@ public class HomeActivity extends BaseActivity {
 		imageLoader.stop();
 		super.onBackPressed();
 	}
-	
+
 	private void copyTestImageToSdCard(final File testImageOnSdCard) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					InputStream is = getAssets().open("UniversalImageLoader.png");
+					InputStream is = getAssets().open(TEST_FILE_NAME);
 					FileOutputStream fos = new FileOutputStream(testImageOnSdCard);
 					byte[] buffer = new byte[8192];
 					int read;
