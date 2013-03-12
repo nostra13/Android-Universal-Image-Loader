@@ -17,7 +17,6 @@ package com.nostra13.universalimageloader.core.download;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 /**
  * Decorator. Prevents downloads from network (throws {@link IllegalStateException exception}).<br />
@@ -35,7 +34,7 @@ public class NetworkDeniedImageDownloader implements ImageDownloader {
 	}
 
 	@Override
-	public InputStream getStream(URI imageUri, Object extra) throws IOException {
+	public InputStream getStream(String imageUri, Object extra) throws IOException {
 		switch (Scheme.ofUri(imageUri)) {
 			case HTTP:
 			case HTTPS:

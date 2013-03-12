@@ -21,7 +21,6 @@ import static com.nostra13.universalimageloader.core.ImageLoader.LOG_IMAGE_SUBSA
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -46,7 +45,7 @@ import com.nostra13.universalimageloader.utils.L;
  */
 class ImageDecoder {
 
-	private final URI imageUri;
+	private final String imageUri;
 	private final ImageDownloader imageDownloader;
 	private final DisplayImageOptions displayOptions;
 
@@ -57,7 +56,7 @@ class ImageDecoder {
 	 * @param imageDownloader Image downloader
 	 * 
 	 */
-	ImageDecoder(URI imageUri, ImageDownloader imageDownloader, DisplayImageOptions options) {
+	ImageDecoder(String imageUri, ImageDownloader imageDownloader, DisplayImageOptions options) {
 		this.imageUri = imageUri;
 		this.imageDownloader = imageDownloader;
 		this.displayOptions = options;

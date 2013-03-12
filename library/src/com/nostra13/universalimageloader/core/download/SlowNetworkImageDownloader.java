@@ -17,7 +17,6 @@ package com.nostra13.universalimageloader.core.download;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 
@@ -37,7 +36,7 @@ public class SlowNetworkImageDownloader implements ImageDownloader {
 	}
 
 	@Override
-	public InputStream getStream(URI imageUri, Object extra) throws IOException {
+	public InputStream getStream(String imageUri, Object extra) throws IOException {
 		InputStream imageStream = wrappedDownloader.getStream(imageUri, extra);
 		switch (Scheme.ofUri(imageUri)) {
 			case HTTP:

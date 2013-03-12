@@ -36,13 +36,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Handler;
 import android.widget.ImageView;
 
@@ -54,6 +52,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
+import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -70,8 +69,6 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
-	private static final String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
-
 	private final ImageLoaderEngine engine;
 	private final ImageLoadingInfo imageLoadingInfo;
 	private final Handler handler;
@@ -83,7 +80,6 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private final ImageDownloader slowNetworkDownloader;
 	private final boolean loggingEnabled;
 	final String uri;
-	final String encodedUri;
 	private final String memoryCacheKey;
 	final ImageView imageView;
 	private final ImageSize targetSize;
@@ -101,7 +97,6 @@ final class LoadAndDisplayImageTask implements Runnable {
 		slowNetworkDownloader = configuration.slowNetworkDownloader;
 		loggingEnabled = configuration.loggingEnabled;
 		uri = imageLoadingInfo.uri;
-		encodedUri = Uri.encode(uri, ALLOWED_URI_CHARS);
 		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
 		imageView = imageLoadingInfo.imageView;
 		targetSize = imageLoadingInfo.targetSize;
@@ -226,7 +221,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 			if (imageFile.exists()) {
 				log(LOG_LOAD_IMAGE_FROM_DISC_CACHE, memoryCacheKey);
 
-				Bitmap b = decodeImage(imageFile.toURI());
+				Bitmap b = decodeImage(Scheme.FILE.wrap(imageFile.getAbsolutePath()));
 				if (b != null) {
 					return b;
 				}
@@ -235,15 +230,15 @@ final class LoadAndDisplayImageTask implements Runnable {
 			// Load image from Web
 			log(LOG_LOAD_IMAGE_FROM_INTERNET, memoryCacheKey);
 
-			URI imageUriForDecoding;
+			String imageUriForDecoding;
 			if (options.isCacheOnDisc()) {
 				log(LOG_CACHE_IMAGE_ON_DISC, memoryCacheKey);
 
 				saveImageOnDisc(imageFile);
 				discCache.put(uri, imageFile);
-				imageUriForDecoding = imageFile.toURI();
+				imageUriForDecoding = Scheme.FILE.wrap(imageFile.getAbsolutePath());
 			} else {
-				imageUriForDecoding = new URI(encodedUri);
+				imageUriForDecoding = uri;
 			}
 
 			bitmap = decodeImage(imageUriForDecoding);
@@ -268,7 +263,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return bitmap;
 	}
 
-	private Bitmap decodeImage(URI imageUri) throws IOException {
+	private Bitmap decodeImage(String imageUri) throws IOException {
 		ImageDecoder decoder = new ImageDecoder(imageUri, getDownloader(), options);
 		decoder.setLoggingEnabled(loggingEnabled);
 		ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageView);
@@ -281,7 +276,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (width > 0 || height > 0) {
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
-			ImageDecoder decoder = new ImageDecoder(new URI(encodedUri), getDownloader(), options);
+			ImageDecoder decoder = new ImageDecoder(uri, getDownloader(), options);
 			decoder.setLoggingEnabled(loggingEnabled);
 			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.IN_SAMPLE_INT, ViewScaleType.FIT_INSIDE);
 			if (bmp != null) {
@@ -301,7 +296,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 		// If previous compression wasn't needed or failed
 		// Download and save original image
-		InputStream is = getDownloader().getStream(new URI(encodedUri), options.getExtraForDownloader());
+		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 			try {
