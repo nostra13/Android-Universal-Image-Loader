@@ -1,6 +1,22 @@
 Change Log
 ===
 
+v1.8.2 *(13.03.2013)*
+---
+ * **Changed API:**
+   * `ImageDownloader.getStream***(URI, ...)` -> `ImageDownloader.getStream***(String, ...)`
+   * Made `FailReason` as a class instead of enum. Can be used in switches: `FailReason.getType()`
+   * Removed `ImageLoader.offOutOfMemoryHandling()`. ImageLoader doesn't handle OutOfMemoryError by default anymore (but still catches it for callbacks).
+ * Introduced `ImageLoader.taskExecutor(Executor)` and `ImageLoader.taskExecutorForCachedImages(Executor)` ([#187](https://github.com/nostra13/Android-Universal-Image-Loader/issues/187))
+ * Introduced `ImageLoader.destroy()`
+ * Handled SD card unmount ([#170](https://github.com/nostra13/Android-Universal-Image-Loader/issues/170))
+ * Added `Scheme` class
+ * Fixed bugs:
+   * problem of loading of local files with encoded symbols in path ([#179](https://github.com/nostra13/Android-Universal-Image-Loader/issues/179))
+   * minor mistake in `getImageSizeScaleTo()` method ([#200](https://github.com/nostra13/Android-Universal-Image-Loader/issues/200))
+   * possible concurrency issue in memory caches ([#116](https://github.com/nostra13/Android-Universal-Image-Loader/issues/116))
+   * wrong visibility of methods `ImageLoader.denyNetworkDownloads(boolean)` and `ImageLoader.handleSlowNetworks(boolean)` 
+
 v1.8.1 *(08.03.2013)*
 ---
  * **Changed API:**
