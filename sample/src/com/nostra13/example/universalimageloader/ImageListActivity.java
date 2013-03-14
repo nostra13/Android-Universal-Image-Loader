@@ -65,7 +65,7 @@ public class ImageListActivity extends AbsListViewBaseActivity {
 			.build();
 
 		listView = (ListView) findViewById(android.R.id.list);
-		listView.setAdapter(new ItemAdapter());
+		((ListView) listView).setAdapter(new ItemAdapter());
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

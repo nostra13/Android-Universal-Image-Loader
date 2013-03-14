@@ -56,7 +56,7 @@ public class ImageGridActivity extends AbsListViewBaseActivity {
 			.build();
 
 		listView = (GridView) findViewById(R.id.gridview);
-		listView.setAdapter(new ImageAdapter());
+		((GridView) listView).setAdapter(new ImageAdapter());
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
