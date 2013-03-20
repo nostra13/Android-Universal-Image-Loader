@@ -43,7 +43,7 @@ import com.nostra13.universalimageloader.utils.L;
  * @see ImageDownloader
  * @see DisplayImageOptions
  */
-class ImageDecoder {
+public class ImageDecoder {
 
 	private final String imageUri;
 	private final ImageDownloader imageDownloader;
@@ -56,7 +56,7 @@ class ImageDecoder {
 	 * @param imageDownloader Image downloader
 	 * 
 	 */
-	ImageDecoder(String imageUri, ImageDownloader imageDownloader, DisplayImageOptions options) {
+	public ImageDecoder(String imageUri, ImageDownloader imageDownloader, DisplayImageOptions options) {
 		this.imageUri = imageUri;
 		this.imageDownloader = imageDownloader;
 		this.displayOptions = options;
