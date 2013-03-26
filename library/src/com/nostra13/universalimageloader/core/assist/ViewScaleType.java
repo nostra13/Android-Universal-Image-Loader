@@ -36,6 +36,27 @@ public enum ViewScaleType {
 	 */
 	CROP;
 
+	/**
+	 * Defines scale type of ImageView.
+	 * 
+	 * @param imageView {@link ImageView}
+	 * @return {@link #FIT_INSIDE} for
+	 *         <ul>
+	 *         <li>{@link ScaleType#FIT_CENTER}</li>
+	 *         <li>{@link ScaleType#FIT_XY}</li>
+	 *         <li>{@link ScaleType#FIT_START}</li>
+	 *         <li>{@link ScaleType#FIT_END}</li>
+	 *         <li>{@link ScaleType#CENTER_INSIDE}</li>
+	 *         </ul>
+	 *         {@link #CROP} for
+	 *         <ul>
+	 *         <li>{@link ScaleType#CENTER}</li>
+	 *         <li>{@link ScaleType#CENTER_CROP}</li>
+	 *         <li>{@link ScaleType#MATRIX}</li>
+	 *         </ul>
+	 *         ,
+	 * 
+	 */
 	public static ViewScaleType fromImageView(ImageView imageView) {
 		switch (imageView.getScaleType()) {
 			case FIT_CENTER:
