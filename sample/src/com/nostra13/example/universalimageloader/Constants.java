@@ -95,6 +95,7 @@ public final class Constants {
 			"http://upload.wikimedia.org/wikipedia/ru/b/b6/Как_кот_с_мышами_воевал.png", // Link with UTF-8
 			"https://www.eff.org/sites/default/files/chrome150_0.jpg", // Image from HTTPS
 			"http://bit.ly/soBiXr", // Redirect link
+			"http://img001.us.expono.com/100001/100001-1bc30-2d736f_m.jpg", // EXIF
 			"", // Empty link
 			"http://wrong.site.com/corruptedLink", // Wrong link
 	};
