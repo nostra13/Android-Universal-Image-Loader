@@ -25,6 +25,7 @@ import android.graphics.Bitmap;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.3
+ * @see ImageDecodingInfo
  */
 public interface ImageDecoder {
 
