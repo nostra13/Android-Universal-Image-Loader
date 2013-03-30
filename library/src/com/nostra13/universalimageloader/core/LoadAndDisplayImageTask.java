@@ -36,6 +36,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.FileNotFoundException;
+
 import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
@@ -238,9 +240,20 @@ final class LoadAndDisplayImageTask implements Runnable {
 			if (options.isCacheOnDisc()) {
 				log(LOG_CACHE_IMAGE_ON_DISC, memoryCacheKey);
 
-				saveImageOnDisc(imageFile);
-				discCache.put(uri, imageFile);
-				imageUriForDecoding = Scheme.FILE.wrap(imageFile.getAbsolutePath());
+                try {
+                    saveImageOnDisc(imageFile);
+                    discCache.put(uri, imageFile);
+                    imageUriForDecoding = Scheme.FILE.wrap(imageFile.getAbsolutePath());
+                } catch (FileNotFoundException e) {
+                    L.e(e);
+                    imageFile.getParentFile().mkdirs();
+                    imageUriForDecoding = uri;
+                } catch (OutOfMemoryError e) {
+                    throw e;
+                } catch (Exception e) {
+                    L.e(e);
+                    imageUriForDecoding = uri;
+                }
 			} else {
 				imageUriForDecoding = uri;
 			}
