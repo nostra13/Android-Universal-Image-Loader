@@ -23,7 +23,7 @@ package com.nostra13.universalimageloader.core.assist;
  */
 public class ImageSize {
 
-	private static final String TO_STRING_PATTERN = "%sx%s";
+	private static final String TO_STRING_PATTERN = "%1$dx%2$d";
 
 	private final int width;
 	private final int height;
@@ -33,12 +33,32 @@ public class ImageSize {
 		this.height = height;
 	}
 
+	public ImageSize(int width, int height, int rotation) {
+		if (rotation % 180 == 0) {
+			this.width = width;
+			this.height = height;
+		} else {
+			this.width = height;
+			this.height = width;
+		}
+	}
+
 	public int getWidth() {
 		return width;
 	}
 
 	public int getHeight() {
 		return height;
+	}
+
+	/** Scales down dimensions in <b>sampleSize</b> times. Returns new object. */
+	public ImageSize scaleDown(int sampleSize) {
+		return new ImageSize(width / sampleSize, height / sampleSize);
+	}
+
+	/** Scales dimensions according to incoming scale. Returns new object. */
+	public ImageSize scale(float scale) {
+		return new ImageSize((int) (width * scale), (int) (height * scale));
 	}
 
 	@Override

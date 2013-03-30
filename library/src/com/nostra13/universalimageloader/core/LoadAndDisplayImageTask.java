@@ -51,6 +51,8 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
+import com.nostra13.universalimageloader.core.decode.ImageDecoder;
+import com.nostra13.universalimageloader.core.decode.ImageDecodingInfo;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import com.nostra13.universalimageloader.utils.IoUtils;
@@ -78,6 +80,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private final ImageDownloader downloader;
 	private final ImageDownloader networkDeniedDownloader;
 	private final ImageDownloader slowNetworkDownloader;
+	private final ImageDecoder decoder;
 	private final boolean loggingEnabled;
 	final String uri;
 	private final String memoryCacheKey;
@@ -95,6 +98,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		downloader = configuration.downloader;
 		networkDeniedDownloader = configuration.networkDeniedDownloader;
 		slowNetworkDownloader = configuration.slowNetworkDownloader;
+		decoder = configuration.decoder;
 		loggingEnabled = configuration.loggingEnabled;
 		uri = imageLoadingInfo.uri;
 		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
@@ -264,10 +268,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private Bitmap decodeImage(String imageUri) throws IOException {
-		ImageDecoder decoder = new ImageDecoder(imageUri, getDownloader(), options);
-		decoder.setLoggingEnabled(loggingEnabled);
 		ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageView);
-		return decoder.decode(targetSize, options.getImageScaleType(), viewScaleType);
+		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, imageUri, targetSize, viewScaleType, getDownloader(), options);
+		return decoder.decode(decodingInfo);
 	}
 
 	private void saveImageOnDisc(File targetFile) throws IOException, URISyntaxException {
@@ -276,9 +279,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (width > 0 || height > 0) {
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
-			ImageDecoder decoder = new ImageDecoder(uri, getDownloader(), options);
-			decoder.setLoggingEnabled(loggingEnabled);
-			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.IN_SAMPLE_INT, ViewScaleType.FIT_INSIDE);
+			DisplayImageOptions specialOptions = new DisplayImageOptions.Builder().cloneFrom(options).imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
+			ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, uri, targetImageSize, ViewScaleType.FIT_INSIDE, getDownloader(), specialOptions);
+			Bitmap bmp = decoder.decode(decodingInfo);
 			if (bmp != null) {
 				OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 				boolean compressedSuccessfully = false;

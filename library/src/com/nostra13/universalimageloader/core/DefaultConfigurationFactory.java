@@ -39,6 +39,8 @@ import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemor
 import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
+import com.nostra13.universalimageloader.core.decode.BaseImageDecoder;
+import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
@@ -101,6 +103,11 @@ public class DefaultConfigurationFactory {
 	/** Creates default implementation of {@link ImageDownloader} - {@link BaseImageDownloader} */
 	public static ImageDownloader createImageDownloader(Context context) {
 		return new BaseImageDownloader(context);
+	}
+
+	/** Creates default implementation of {@link ImageDecoder} - {@link BaseImageDecoder} */
+	public static ImageDecoder createImageDecoder(boolean loggingEnabled) {
+		return new BaseImageDecoder(loggingEnabled);
 	}
 
 	/** Creates default implementation of {@link BitmapDisplayer} */

@@ -26,6 +26,7 @@ import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloader;
 import com.nostra13.universalimageloader.core.download.SlowNetworkImageDownloader;
@@ -66,6 +67,7 @@ public final class ImageLoaderConfiguration {
 	final MemoryCacheAware<String, Bitmap> memoryCache;
 	final DiscCacheAware discCache;
 	final ImageDownloader downloader;
+	final ImageDecoder decoder;
 	final DisplayImageOptions defaultDisplayImageOptions;
 	final boolean loggingEnabled;
 
@@ -91,6 +93,7 @@ public final class ImageLoaderConfiguration {
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
 		loggingEnabled = builder.loggingEnabled;
 		downloader = builder.downloader;
+		decoder = builder.decoder;
 
 		customExecutor = builder.customExecutor;
 		customExecutorForCachedImages = builder.customExecutorForCachedImages;
@@ -174,6 +177,7 @@ public final class ImageLoaderConfiguration {
 		private DiscCacheAware discCache = null;
 		private FileNameGenerator discCacheFileNameGenerator = null;
 		private ImageDownloader downloader = null;
+		private ImageDecoder decoder;
 		private DisplayImageOptions defaultDisplayImageOptions = null;
 
 		private boolean loggingEnabled = false;
@@ -429,6 +433,17 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
+		 * Sets utility which will be responsible for decoding of image stream.<br />
+		 * Default value -
+		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createImageDecoder(boolean)
+		 * DefaultConfigurationFactory.createImageDecoder()}
+		 * */
+		public Builder imageDecoder(ImageDecoder imageDecoder) {
+			this.decoder = imageDecoder;
+			return this;
+		}
+
+		/**
 		 * Sets disc cache for images.<br />
 		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache
 		 * UnlimitedDiscCache}. Cache directory is defined by
@@ -499,6 +514,9 @@ public final class ImageLoaderConfiguration {
 			}
 			if (downloader == null) {
 				downloader = DefaultConfigurationFactory.createImageDownloader(context);
+			}
+			if (decoder == null) {
+				decoder = DefaultConfigurationFactory.createImageDecoder(loggingEnabled);
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();
