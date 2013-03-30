@@ -1,6 +1,19 @@
 Change Log
 ===
 
+v1.8.3 *(31.03.2013)*
+---
+ * Android 2.0+ support
+ * Added EXIF orientation support ([#172](https://github.com/nostra13/Android-Universal-Image-Loader/issues/172))
+ * Introduced `ImageLoaderConfiguration.imageDecoder(ImageDecoder)`
+ * Introduced `DisplayImageOptions.decodingOptions(BitmapFactory.Options)`
+ * Handled disc cache non-availability
+ * Use `LruMemoryCache` as default memory cache for API >= 9, `LRULimitedMemoryCache` - for API < 9. Default memory cache size - 1/8 of available app memory.
+ * Improved `LimitedDiscCache` and `FuzzyKeyMemoryCache` performance
+ * Fixed bugs:
+    * `.denyCacheImageMultipleSizesInMemory` doesn't work if own memory cache is set
+	* `java.lang.NoSuchMethodError` in sample app ([#206](https://github.com/nostra13/Android-Universal-Image-Loader/issues/206))
+
 v1.8.2 *(13.03.2013)*
 ---
  * **Changed API:**
