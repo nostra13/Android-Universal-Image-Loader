@@ -19,7 +19,7 @@ Android 2.0+ support
  * **[universal-image-loader-1.8.3-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.8.3-sources.jar)** (sources; contains *.java files)
  * **[universal-image-loader-1.8.3-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.8.3-javadoc.jar)** (Java docs; contains *.html files)
  * **[universal-image-loader-1.8.3-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.8.3-with-sources.jar)** (library with sources inside; contains *.class and *.java files)<br />_Prefer to use this JAR so you can see Java docs in Eclipse tooltips._
- * **[universal-image-loader-sample-1.8.3.apk](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.8.3-fixed.apk)** (sample application)
+ * **[universal-image-loader-sample-1.8.3.apk](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.8.3.apk)** (sample application)
 
 Latest snapshot of the library - **[here](https://github.com/nostra13/Android-Universal-Image-Loader/tree/master/sample/libs)**
 
