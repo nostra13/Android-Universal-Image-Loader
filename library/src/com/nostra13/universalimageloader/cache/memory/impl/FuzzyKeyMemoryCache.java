@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Comparator;
 
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
-import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Decorator for {@link MemoryCacheAware}. Provides special feature for cache: some different keys are considered as
