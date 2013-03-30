@@ -55,7 +55,7 @@ public class ImageLoader {
 	static final String LOG_WAITING_FOR_IMAGE_LOADED = "Image already is loading. Waiting... [%s]";
 	static final String LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING = "...Get cached bitmap from memory after waiting. [%s]";
 	static final String LOG_LOAD_IMAGE_FROM_MEMORY_CACHE = "Load image from memory cache [%s]";
-	static final String LOG_LOAD_IMAGE_FROM_INTERNET = "Load image from Internet [%s]";
+	static final String LOG_LOAD_IMAGE_FROM_NETWORK = "Load image from network [%s]";
 	static final String LOG_LOAD_IMAGE_FROM_DISC_CACHE = "Load image from disc cache [%s]";
 	static final String LOG_PREPROCESS_IMAGE = "PreProcess image before caching in memory [%s]";
 	static final String LOG_POSTPROCESS_IMAGE = "PostProcess image before displaying [%s]";

@@ -20,7 +20,7 @@ import static com.nostra13.universalimageloader.core.ImageLoader.LOG_CACHE_IMAGE
 import static com.nostra13.universalimageloader.core.ImageLoader.LOG_DELAY_BEFORE_LOADING;
 import static com.nostra13.universalimageloader.core.ImageLoader.LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING;
 import static com.nostra13.universalimageloader.core.ImageLoader.LOG_LOAD_IMAGE_FROM_DISC_CACHE;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_LOAD_IMAGE_FROM_INTERNET;
+import static com.nostra13.universalimageloader.core.ImageLoader.LOG_LOAD_IMAGE_FROM_NETWORK;
 import static com.nostra13.universalimageloader.core.ImageLoader.LOG_POSTPROCESS_IMAGE;
 import static com.nostra13.universalimageloader.core.ImageLoader.LOG_PREPROCESS_IMAGE;
 import static com.nostra13.universalimageloader.core.ImageLoader.LOG_RESUME_AFTER_PAUSE;
@@ -36,9 +36,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.FileNotFoundException;
-
-import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -112,32 +109,8 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	@Override
 	public void run() {
-		AtomicBoolean pause = engine.getPause();
-		if (pause.get()) {
-			synchronized (pause) {
-				log(LOG_WAITING_FOR_RESUME, memoryCacheKey);
-				try {
-					pause.wait();
-				} catch (InterruptedException e) {
-					L.e(LOG_TASK_INTERRUPTED, memoryCacheKey);
-					return;
-				}
-				log(LOG_RESUME_AFTER_PAUSE, memoryCacheKey);
-			}
-		}
-		if (checkTaskIsNotActual()) return;
-
-		if (options.shouldDelayBeforeLoading()) {
-			log(LOG_DELAY_BEFORE_LOADING, options.getDelayBeforeLoading(), memoryCacheKey);
-			try {
-				Thread.sleep(options.getDelayBeforeLoading());
-			} catch (InterruptedException e) {
-				L.e(LOG_TASK_INTERRUPTED, memoryCacheKey);
-				return;
-			}
-
-			if (checkTaskIsNotActual()) return;
-		}
+		if (waitIfPaused()) return;
+		if (delayIfNeed()) return;
 
 		ReentrantLock loadFromUriLock = imageLoadingInfo.loadFromUriLock;
 		log(LOG_START_DISPLAY_IMAGE_TASK, memoryCacheKey);
@@ -185,6 +158,43 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	/**
+	 * @return true - if task should be interrupted; false - otherwise
+	 */
+	private boolean waitIfPaused() {
+		AtomicBoolean pause = engine.getPause();
+		if (pause.get()) {
+			synchronized (pause) {
+				log(LOG_WAITING_FOR_RESUME, memoryCacheKey);
+				try {
+					pause.wait();
+				} catch (InterruptedException e) {
+					L.e(LOG_TASK_INTERRUPTED, memoryCacheKey);
+					return true;
+				}
+				log(LOG_RESUME_AFTER_PAUSE, memoryCacheKey);
+			}
+		}
+		return checkTaskIsNotActual();
+	}
+
+	/**
+	 * @return true - if task should be interrupted; false - otherwise
+	 */
+	private boolean delayIfNeed() {
+		if (options.shouldDelayBeforeLoading()) {
+			log(LOG_DELAY_BEFORE_LOADING, options.getDelayBeforeLoading(), memoryCacheKey);
+			try {
+				Thread.sleep(options.getDelayBeforeLoading());
+			} catch (InterruptedException e) {
+				L.e(LOG_TASK_INTERRUPTED, memoryCacheKey);
+				return true;
+			}
+			return checkTaskIsNotActual();
+		}
+		return false;
+	}
+
+	/**
 	 * Check whether the image URI of this task matches to image URI which is actual for current ImageView at this
 	 * moment and fire {@link ImageLoadingListener#onLoadingCancelled()} event if it doesn't.
 	 */
@@ -214,53 +224,23 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private Bitmap tryLoadBitmap() {
-		DiscCacheAware discCache = configuration.discCache;
-		File imageFile = discCache.get(uri);
-		File cacheDir = imageFile.getParentFile();
-		if (cacheDir == null || (!cacheDir.exists() && !cacheDir.mkdirs())) {
-			imageFile = configuration.reserveDiscCache.get(uri);
-		}
+		File imageFile = getImageFileInDiscCache();
 
 		Bitmap bitmap = null;
 		try {
-			// Try to load image from disc cache
 			if (imageFile.exists()) {
 				log(LOG_LOAD_IMAGE_FROM_DISC_CACHE, memoryCacheKey);
 
-				Bitmap b = decodeImage(Scheme.FILE.wrap(imageFile.getAbsolutePath()));
-				if (b != null) {
-					return b;
-				}
+				bitmap = decodeImage(Scheme.FILE.wrap(imageFile.getAbsolutePath()));
 			}
-
-			// Load image from Web
-			log(LOG_LOAD_IMAGE_FROM_INTERNET, memoryCacheKey);
-
-			String imageUriForDecoding;
-			if (options.isCacheOnDisc()) {
-				log(LOG_CACHE_IMAGE_ON_DISC, memoryCacheKey);
-
-                try {
-                    saveImageOnDisc(imageFile);
-                    discCache.put(uri, imageFile);
-                    imageUriForDecoding = Scheme.FILE.wrap(imageFile.getAbsolutePath());
-                } catch (FileNotFoundException e) {
-                    L.e(e);
-                    imageFile.getParentFile().mkdirs();
-                    imageUriForDecoding = uri;
-                } catch (OutOfMemoryError e) {
-                    throw e;
-                } catch (Exception e) {
-                    L.e(e);
-                    imageUriForDecoding = uri;
-                }
-			} else {
-				imageUriForDecoding = uri;
-			}
-
-			bitmap = decodeImage(imageUriForDecoding);
 			if (bitmap == null) {
-				fireImageLoadingFailedEvent(FailType.DECODING_ERROR, null);
+				log(LOG_LOAD_IMAGE_FROM_NETWORK, memoryCacheKey);
+
+				String imageUriForDecoding = options.isCacheOnDisc() ? tryCacheImageOnDisc(imageFile) : uri;
+				bitmap = decodeImage(imageUriForDecoding);
+				if (bitmap == null) {
+					fireImageLoadingFailedEvent(FailType.DECODING_ERROR, null);
+				}
 			}
 		} catch (IllegalStateException e) {
 			fireImageLoadingFailedEvent(FailType.NETWORK_DENIED, null);
@@ -280,38 +260,73 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return bitmap;
 	}
 
+	private File getImageFileInDiscCache() {
+		DiscCacheAware discCache = configuration.discCache;
+		File imageFile = discCache.get(uri);
+		File cacheDir = imageFile.getParentFile();
+		if (cacheDir == null || (!cacheDir.exists() && !cacheDir.mkdirs())) {
+			imageFile = configuration.reserveDiscCache.get(uri);
+			cacheDir = imageFile.getParentFile();
+			if (cacheDir == null || !cacheDir.exists()) {
+				cacheDir.mkdirs();
+			}
+		}
+		return imageFile;
+	}
+
 	private Bitmap decodeImage(String imageUri) throws IOException {
 		ViewScaleType viewScaleType = ViewScaleType.fromImageView(imageView);
 		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, imageUri, targetSize, viewScaleType, getDownloader(), options);
 		return decoder.decode(decodingInfo);
 	}
 
-	private void saveImageOnDisc(File targetFile) throws IOException, URISyntaxException {
-		int width = configuration.maxImageWidthForDiscCache;
-		int height = configuration.maxImageHeightForDiscCache;
-		if (width > 0 || height > 0) {
-			// Download, decode, compress and save image
-			ImageSize targetImageSize = new ImageSize(width, height);
-			DisplayImageOptions specialOptions = new DisplayImageOptions.Builder().cloneFrom(options).imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
-			ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, uri, targetImageSize, ViewScaleType.FIT_INSIDE, getDownloader(), specialOptions);
-			Bitmap bmp = decoder.decode(decodingInfo);
-			if (bmp != null) {
-				OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-				boolean compressedSuccessfully = false;
-				try {
-					compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
-				} finally {
-					IoUtils.closeSilently(os);
-				}
-				if (compressedSuccessfully) {
-					bmp.recycle();
-					return;
-				}
+	/**
+	 * @return Cached image URI; or original image URI if caching failed
+	 */
+	private String tryCacheImageOnDisc(File targetFile) {
+		log(LOG_CACHE_IMAGE_ON_DISC, memoryCacheKey);
+
+		try {
+			int width = configuration.maxImageWidthForDiscCache;
+			int height = configuration.maxImageHeightForDiscCache;
+			boolean saved = false;
+			if (width > 0 || height > 0) {
+				saved = downloadSizedImage(targetFile, width, height);
+			}
+			if (!saved) {
+				downloadImage(targetFile);
+			}
+
+			configuration.discCache.put(uri, targetFile);
+			return Scheme.FILE.wrap(targetFile.getAbsolutePath());
+		} catch (IOException e) {
+			L.e(e);
+			return uri;
+		}
+	}
+
+	private boolean downloadSizedImage(File targetFile, int maxWidth, int maxHeight) throws IOException {
+		// Download, decode, compress and save image
+		ImageSize targetImageSize = new ImageSize(maxWidth, maxHeight);
+		DisplayImageOptions specialOptions = new DisplayImageOptions.Builder().cloneFrom(options).imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
+		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, uri, targetImageSize, ViewScaleType.FIT_INSIDE, getDownloader(), specialOptions);
+		Bitmap bmp = decoder.decode(decodingInfo);
+		boolean savedSuccessfully = false;
+		if (bmp != null) {
+			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
+			try {
+				savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+			} finally {
+				IoUtils.closeSilently(os);
+			}
+			if (savedSuccessfully) {
+				bmp.recycle();
 			}
 		}
+		return savedSuccessfully;
+	}
 
-		// If previous compression wasn't needed or failed
-		// Download and save original image
+	private void downloadImage(File targetFile) throws IOException {
 		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
