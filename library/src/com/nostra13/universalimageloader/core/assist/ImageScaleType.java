@@ -15,11 +15,6 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.assist;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.widget.AdapterView;
-import android.widget.ImageView.ScaleType;
-
 /**
  * Type of image scaling during decoding.
  * 
@@ -31,40 +26,45 @@ public enum ImageScaleType {
 	NONE,
 	/**
 	 * Image will be reduces 2-fold until next reduce step make image smaller target size.<br />
-	 * It's <b>fast</b> type and it's preferable for usage in lists/grids/galleries (and other {@linkplain AdapterView
-	 * adapter-views}) .<br />
-	 * Relates to {@link BitmapFactory.Options#inSampleSize}<br />
+	 * It's <b>fast</b> type and it's preferable for usage in lists/grids/galleries (and other
+	 * {@linkplain android.widget.AdapterView adapter-views}) .<br />
+	 * Relates to {@link android.graphics.BitmapFactory.Options#inSampleSize}<br />
 	 * Note: If original image size is smaller than target size then original image <b>won't</b> be scaled.
 	 */
 	IN_SAMPLE_POWER_OF_2,
 	/**
-	 * Image will be subsampled in an integer number of times. Use it if memory economy is quite important.<br />
-	 * Relates to {@link BitmapFactory.Options#inSampleSize}<br />
+	 * Image will be subsampled in an integer number of times (1, 2, 3, ...). Use it if memory economy is quite
+	 * important.<br />
+	 * Relates to {@link android.graphics.BitmapFactory.Options#inSampleSize}<br />
 	 * Note: If original image size is smaller than target size then original image <b>won't</b> be scaled.
 	 */
 	IN_SAMPLE_INT,
 	/**
 	 * Image will scaled-down exactly to target size (scaled width or height or both will be equal to target size;
-	 * depends on {@linkplain ScaleType ImageView's scale type}). Use it if memory economy is critically important.<br />
-	 * Note: If original image size is smaller than target size then original image <b>won't</b> be scaled.<br />
+	 * depends on {@linkplain android.widget.ImageView.ScaleType ImageView's scale type}). Use it if memory economy is
+	 * critically important.<br />
+	 * <b>Note:</b> If original image size is smaller than target size then original image <b>won't</b> be scaled.<br />
 	 * <br />
-	 * <b>Important note:</b> For creating result Bitmap (of exact size) additional Bitmap will be created with
-	 * {@link Bitmap#createScaledBitmap(Bitmap, int, int, boolean) Bitmap.createScaledBitmap(...)}. So this scale type
-	 * requires more memory for creation of result Bitmap, but then save memory by keeping in memory smaller Bitmap
-	 * (comparing with IN_SAMPLE... scale types).
+	 * <b>NOTE:</b> For creating result Bitmap (of exact size) additional Bitmap will be created with
+	 * {@link android.graphics.Bitmap#createBitmap(android.graphics.Bitmap, int, int, int, int, android.graphics.Matrix, boolean)
+	 * Bitmap.createBitmap(...)}.<br />
+	 * <b>Cons:</b> Saves memory by keeping smaller Bitmap in memory cache (comparing with IN_SAMPLE... scale types)<br />
+	 * <b>Pros:</b> Requires more memory in one time for creation of result Bitmap.
 	 */
 	EXACTLY,
 
 	/**
 	 * Image will scaled exactly to target size (scaled width or height or both will be equal to target size; depends on
-	 * {@linkplain ScaleType ImageView's scale type}). Use it if memory economy is critically important.<br />
-	 * Note: If original image size is smaller than target size then original image <b>will be stretched</b> to target
-	 * size.<br />
+	 * {@linkplain android.widget.ImageView.ScaleType ImageView's scale type}). Use it if memory economy is critically
+	 * important.<br />
+	 * <b>Note:</b> If original image size is smaller than target size then original image <b>will be stretched</b> to
+	 * target size.<br />
 	 * <br />
-	 * <b>Important note:</b> For creating result Bitmap (of exact size) additional Bitmap will be created with
-	 * {@link Bitmap#createScaledBitmap(Bitmap, int, int, boolean) Bitmap.createScaledBitmap(...)}. So this scale type
-	 * requires more memory for creation of result Bitmap, but then save memory by keeping in memory smaller Bitmap
-	 * (comparing with IN_SAMPLE... scale types).
+	 * <b>NOTE:</b> For creating result Bitmap (of exact size) additional Bitmap will be created with
+	 * {@link android.graphics.Bitmap#createBitmap(android.graphics.Bitmap, int, int, int, int, android.graphics.Matrix, boolean)
+	 * Bitmap.createBitmap(...)}.<br />
+	 * <b>Cons:</b> Saves memory by keeping smaller Bitmap in memory cache (comparing with IN_SAMPLE... scale types)<br />
+	 * <b>Pros:</b> Requires more memory in one time for creation of result Bitmap.
 	 */
 	EXACTLY_STRETCHED
 }
