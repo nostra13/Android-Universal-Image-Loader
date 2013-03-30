@@ -62,7 +62,7 @@ public class ImagePagerActivity extends BaseActivity {
 			.showImageOnFail(R.drawable.ic_error)
 			.resetViewBeforeLoading()
 			.cacheOnDisc()
-			.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+			.imageScaleType(ImageScaleType.EXACTLY)
 			.bitmapConfig(Bitmap.Config.RGB_565)
 			.displayer(new FadeInBitmapDisplayer(300))
 			.build();
