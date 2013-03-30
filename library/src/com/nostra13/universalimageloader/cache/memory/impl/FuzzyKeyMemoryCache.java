@@ -17,9 +17,9 @@ package com.nostra13.universalimageloader.cache.memory.impl;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
 
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Decorator for {@link MemoryCacheAware}. Provides special feature for cache: some different keys are considered as
@@ -41,37 +41,40 @@ public class FuzzyKeyMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 	}
 
 	@Override
-	public synchronized boolean put(K key, V value) {
+	public boolean put(K key, V value) {
 		// Search equal key and remove this entry
-		K keyToRemove = null;
-		for (Iterator<K> it = cache.keys().iterator(); it.hasNext();) {
-			K cacheKey = it.next();
-			if (keyComparator.compare(key, cacheKey) == 0) {
-				keyToRemove = cacheKey;
+		synchronized (cache) {
+			K keyToRemove = null;
+			for (K cacheKey : cache.keys()) {
+				if (keyComparator.compare(key, cacheKey) == 0) {
+					keyToRemove = cacheKey;
+					break;
+				}
+			}
+			if (keyToRemove != null) {
+				cache.remove(keyToRemove);
 			}
 		}
-		cache.remove(keyToRemove);
-
 		return cache.put(key, value);
 	}
 
 	@Override
-	public synchronized V get(K key) {
+	public V get(K key) {
 		return cache.get(key);
 	}
 
 	@Override
-	public synchronized void remove(K key) {
+	public void remove(K key) {
 		cache.remove(key);
 	}
 
 	@Override
-	public synchronized void clear() {
+	public void clear() {
 		cache.clear();
 	}
 
 	@Override
-	public synchronized Collection<K> keys() {
+	public Collection<K> keys() {
 		return cache.keys();
 	}
 }
