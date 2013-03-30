@@ -303,10 +303,10 @@ To provide caching on external storage (SD card) add following permission to And
  
 5. For memory cache configuration (`ImageLoaderConfiguration.memoryCache(...)`) you can use already prepared implementations.
  * Cache using **only strong** references:
-     * `LruMemoryCache` (Least recently used bitmap is deleted when cache size limit is exceeded)
+     * `LruMemoryCache` (Least recently used bitmap is deleted when cache size limit is exceeded) - **Used by default for API >= 9**
  * Caches using **weak and strong** references:
-     * `UsingFreqLimitedMemoryCache` (Least frequently used bitmap is deleted when cache size limit is exceeded) - **Used by default**
-     * `LRULimitedMemoryCache` (Least recently used bitmap is deleted when cache size limit is exceeded)
+     * `UsingFreqLimitedMemoryCache` (Least frequently used bitmap is deleted when cache size limit is exceeded)
+     * `LRULimitedMemoryCache` (Least recently used bitmap is deleted when cache size limit is exceeded) - **Used by default for API < 9**
      * `FIFOLimitedMemoryCache` (FIFO rule is used for deletion when cache size limit is exceeded)
      * `LargestLimitedMemoryCache` (The largest bitmap is deleted when cache size limit is exceeded)
      * `LimitedAgeMemoryCache` (Decorator. Cached object is deleted when its age exceeds defined value)
@@ -314,7 +314,7 @@ To provide caching on external storage (SD card) add following permission to And
      * `WeakMemoryCache` (Unlimited cache)
 
 6. For disc cache configuration (`ImageLoaderConfiguration.discCache(...)`) you can use already prepared implementations:
- * `UnlimitedDiscCache` (The fastest cache, doesn't limit cache size) - Used by default
+ * `UnlimitedDiscCache` (The fastest cache, doesn't limit cache size) - **Used by default**
  * `TotalSizeLimitedDiscCache` (Cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last usage date will be deleted)
  * `FileCountLimitedDiscCache` (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
  * `LimitedAgeDiscCache` (Size-unlimited cache with limited files' lifetime. If age of cached file exceeds defined limit then it will be deleted from cache.)
