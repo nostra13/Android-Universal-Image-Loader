@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache;
@@ -34,9 +35,8 @@ import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
-import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
-import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
-import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
+import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
 import com.nostra13.universalimageloader.core.decode.BaseImageDecoder;
@@ -91,11 +91,20 @@ public class DefaultConfigurationFactory {
 		return new TotalSizeLimitedDiscCache(cacheDir, 2 * 1024 * 1024); // limit - 2 Mb
 	}
 
-	/** Creates default implementation of {@link MemoryCacheAware} depends on incoming parameters */
-	public static MemoryCacheAware<String, Bitmap> createMemoryCache(int memoryCacheSize, boolean denyCacheImageMultipleSizesInMemory) {
-		MemoryCacheAware<String, Bitmap> memoryCache = new UsingFreqLimitedMemoryCache(memoryCacheSize);
-		if (denyCacheImageMultipleSizesInMemory) {
-			memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheUtil.createFuzzyKeyComparator());
+	/**
+	 * Creates default implementation of {@link MemoryCacheAware} depends on incoming parameters: <br />
+	 * {@link LruMemoryCache} (for API >= 9) or {@link LRULimitedMemoryCache} (for API < 9).<br />
+	 * Default cache size = 1/8 of available app memory.
+	 */
+	public static MemoryCacheAware<String, Bitmap> createMemoryCache(int memoryCacheSize) {
+		if (memoryCacheSize == 0) {
+			memoryCacheSize = (int) (Runtime.getRuntime().maxMemory() / 8);
+		}
+		MemoryCacheAware<String, Bitmap> memoryCache;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			memoryCache = new LruMemoryCache(memoryCacheSize);
+		} else {
+			memoryCache = new LRULimitedMemoryCache(memoryCacheSize);
 		}
 		return memoryCache;
 	}
@@ -110,7 +119,7 @@ public class DefaultConfigurationFactory {
 		return new BaseImageDecoder(loggingEnabled);
 	}
 
-	/** Creates default implementation of {@link BitmapDisplayer} */
+	/** Creates default implementation of {@link BitmapDisplayer} - {@link SimpleBitmapDisplayer} */
 	public static BitmapDisplayer createBitmapDisplayer() {
 		return new SimpleBitmapDisplayer();
 	}

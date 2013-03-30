@@ -117,10 +117,10 @@ public final class ImageLoaderConfiguration {
 	 * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
 	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
 	 * <li>allow to cache different sizes of image in memory</li>
-	 * <li>memoryCache = {@link UsingFreqLimitedCache} with limited memory cache size (
-	 * {@link Builder#DEFAULT_MEMORY_CACHE_SIZE this} bytes)</li>
+	 * <li>memoryCache = {@link DefaultConfigurationFactory#createMemoryCache(int)}</li>
 	 * <li>discCache = {@link UnlimitedDiscCache}</li>
 	 * <li>imageDownloader = {@link DefaultConfigurationFactory#createImageDownloader(Context)}</li>
+	 * <li>imageDecoder = {@link DefaultConfigurationFactory#createImageDecoder(boolean)}</li>
 	 * <li>discCacheFileNameGenerator = {@link DefaultConfigurationFactory#createFileNameGenerator()}</li>
 	 * <li>defaultDisplayImageOptions = {@link DisplayImageOptions#createSimple() Simple options}</li>
 	 * <li>tasksProcessingOrder = {@link QueueProcessingType#FIFO}</li>
@@ -149,7 +149,6 @@ public final class ImageLoaderConfiguration {
 		/** {@value} */
 		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
 		/** {@value} */
-		public static final int DEFAULT_MEMORY_CACHE_SIZE = 2 * 1024 * 1024; // bytes
 		public static final QueueProcessingType DEFAULT_TASK_PROCESSING_TYPE = QueueProcessingType.FIFO;
 
 		private Context context;
@@ -171,7 +170,7 @@ public final class ImageLoaderConfiguration {
 		private boolean denyCacheImageMultipleSizesInMemory = false;
 		private QueueProcessingType tasksProcessingType = DEFAULT_TASK_PROCESSING_TYPE;
 
-		private int memoryCacheSize = DEFAULT_MEMORY_CACHE_SIZE;
+		private int memoryCacheSize = 0;
 		private int discCacheSize = 0;
 		private int discCacheFileCount = 0;
 
@@ -333,11 +332,11 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets maximum memory cache size for {@link android.graphics.Bitmap bitmaps} (in bytes).<br />
-		 * Default value - {@link #DEFAULT_MEMORY_CACHE_SIZE this}<br />
+		 * Default value - 1/8 of available app memory.<br />
 		 * <b>NOTE:</b> If you use this method then
-		 * {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache UsingFreqLimitedCache}
-		 * will be used as memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method for introduction your
-		 * own implementation of {@link MemoryCacheAware}.
+		 * {@link com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache LruMemoryCache} will be used as
+		 * memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method to set your own implementation of
+		 * {@link MemoryCacheAware}.
 		 */
 		public Builder memoryCacheSize(int memoryCacheSize) {
 			if (memoryCacheSize <= 0) throw new IllegalArgumentException("memoryCacheSize must be a positive number");
@@ -352,8 +351,8 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets memory cache for {@link android.graphics.Bitmap bitmaps}.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache
-		 * UsingFreqLimitedCache} with limited memory cache size (size = {@link #DEFAULT_MEMORY_CACHE_SIZE this})<br />
+		 * Default value - {@link com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache LruMemoryCache}
+		 * with limited memory cache size (size = 1/8 of available app memory)<br />
 		 * <br />
 		 * <b>NOTE:</b> If you set custom memory cache then following configuration option will not be considered:
 		 * <ul>
@@ -361,7 +360,7 @@ public final class ImageLoaderConfiguration {
 		 * </ul>
 		 */
 		public Builder memoryCache(MemoryCacheAware<String, Bitmap> memoryCache) {
-			if (memoryCacheSize != DEFAULT_MEMORY_CACHE_SIZE) {
+			if (memoryCacheSize != 0) {
 				L.w(WARNING_OVERLAP_MEMORY_CACHE);
 			}
 
@@ -512,8 +511,9 @@ public final class ImageLoaderConfiguration {
 				discCache = DefaultConfigurationFactory.createDiscCache(context, discCacheFileNameGenerator, discCacheSize, discCacheFileCount);
 			}
 			if (memoryCache == null) {
-				memoryCache = DefaultConfigurationFactory.createMemoryCache(memoryCacheSize, denyCacheImageMultipleSizesInMemory);
-			} else if (denyCacheImageMultipleSizesInMemory) {
+				memoryCache = DefaultConfigurationFactory.createMemoryCache(memoryCacheSize);
+			}
+			if (denyCacheImageMultipleSizesInMemory) {
 				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheUtil.createFuzzyKeyComparator());
 			}
 			if (downloader == null) {
