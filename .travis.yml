@@ -8,7 +8,7 @@ before_install:
   - tar -zxf android-sdk_r21.1-linux.tgz
   # setup your ANDROID_HOME and PATH environment variables
   # use ~/builds/[Github username]/[project]/android-sdk-linux
-  - export ANDROID_HOME=$PWD/android-sdk-linux
+  - export ANDROID_HOME='pmd'/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   # Download the android sdk we need
   # Android Platform tools, required to compile
