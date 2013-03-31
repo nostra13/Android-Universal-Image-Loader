@@ -33,6 +33,7 @@
 	</dependencies>
 
 	<build>
+		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
@@ -42,7 +43,7 @@
 						<platform>${android.platform}</platform>
 					</sdk>
 					<undeployBeforeDeploy>true</undeployBeforeDeploy>
-					</configuration>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

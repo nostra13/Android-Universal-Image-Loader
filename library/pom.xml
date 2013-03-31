@@ -17,11 +17,13 @@
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>android</artifactId>
-		</dependency>
+			<scope>provided</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
-		<plugins>
+		<sourceDirectory>src</sourceDirectory>
+        <plugins>
 			<plugin>
 				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 				<artifactId>android-maven-plugin</artifactId>
