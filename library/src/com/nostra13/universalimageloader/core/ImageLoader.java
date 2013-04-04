@@ -227,7 +227,7 @@ public class ImageLoader {
 
 			if (options.shouldPostProcess()) {
 				ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener, engine.getLockForUri(uri));
-				ProcessAndDisplayImageTask displayTask = new ProcessAndDisplayImageTask(engine, bmp, imageLoadingInfo, new Handler());
+				ProcessAndDisplayImageTask displayTask = new ProcessAndDisplayImageTask(engine, bmp, imageLoadingInfo, options.getHandler());
 				engine.submit(displayTask);
 			} else {
 				options.getDisplayer().display(bmp, imageView);
@@ -243,7 +243,7 @@ public class ImageLoader {
 			}
 
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener, engine.getLockForUri(uri));
-			LoadAndDisplayImageTask displayTask = new LoadAndDisplayImageTask(engine, imageLoadingInfo, new Handler());
+			LoadAndDisplayImageTask displayTask = new LoadAndDisplayImageTask(engine, imageLoadingInfo, options.getHandler());
 			engine.submit(displayTask);
 		}
 	}
