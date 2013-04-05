@@ -20,6 +20,7 @@ import android.graphics.BitmapFactory.Options;
 import android.os.Handler;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
@@ -264,7 +265,8 @@ public final class DisplayImageOptions {
 		/**
 		 * Sets options for image decoding.<br />
 		 * <b>NOTE:</b> {@link Options#inSampleSize} of incoming options will <b>NOT</b> be considered. Library
-		 * calculate the most appropriate sample size itself according yo {@link #imageScaleType(ImageScaleType)} options.<br />
+		 * calculate the most appropriate sample size itself according yo {@link #imageScaleType(ImageScaleType)}
+		 * options.<br />
 		 * <b>NOTE:</b> This option overlaps {@link #bitmapConfig(android.graphics.Bitmap.Config) bitmapConfig()}
 		 * option.
 		 */
@@ -314,7 +316,8 @@ public final class DisplayImageOptions {
 		}
 
 		/**
-		 * Sets custom Handler for controlling running of completion-posting jobs.
+		 * Sets custom {@linkplain Handler handler} for displaying images and firing {@linkplain ImageLoadingListener
+		 * listener} events.
 		 */
 		public Builder handler(Handler handler) {
 			this.handler = handler;
