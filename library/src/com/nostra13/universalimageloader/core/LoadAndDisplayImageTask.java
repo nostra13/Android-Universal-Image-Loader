@@ -30,12 +30,9 @@ import static com.nostra13.universalimageloader.core.ImageLoader.LOG_TASK_INTERR
 import static com.nostra13.universalimageloader.core.ImageLoader.LOG_WAITING_FOR_IMAGE_LOADED;
 import static com.nostra13.universalimageloader.core.ImageLoader.LOG_WAITING_FOR_RESUME;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -67,8 +64,6 @@ import com.nostra13.universalimageloader.utils.L;
  * @see ImageLoadingInfo
  */
 final class LoadAndDisplayImageTask implements Runnable {
-
-	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
 	private final ImageLoaderEngine engine;
 	private final ImageLoadingInfo imageLoadingInfo;
@@ -313,7 +308,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		Bitmap bmp = decoder.decode(decodingInfo);
 		boolean savedSuccessfully = false;
 		if (bmp != null) {
-			savedSuccessfully = configuration.discImageWriter.writeSizedImage(bmp, configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, targetFile, BUFFER_SIZE);
+			savedSuccessfully = configuration.discImageWriter.writeSizedImage(bmp, configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, targetFile);
 			if (savedSuccessfully) {
 				bmp.recycle();
 			}
@@ -324,7 +319,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private void downloadImage(File targetFile) throws IOException {
 		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
 		try{
-			configuration.discImageWriter.writeImage(is, targetFile, BUFFER_SIZE);
+			configuration.discImageWriter.writeImage(is, targetFile);
 		}finally{
 			// in case a user did not close the input stream
 			IoUtils.closeSilently(is);

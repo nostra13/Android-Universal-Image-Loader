@@ -19,7 +19,7 @@ public interface DiscCacheWriter {
 	 * @param buffersize size of the buffer to use
 	 * @throws IOException if some I/O error occurs storing image stream
 	 */
-	public void writeImage(InputStream inputstream, File targetFile, int buffersize) throws IOException;
+	public void writeImage(InputStream inputstream, File targetFile) throws IOException;
 	/**
 	 * Stores {@link InputStream} in the provide file after compressing the given {@link Bitmap}.
 	 * @param bmp
@@ -30,6 +30,6 @@ public interface DiscCacheWriter {
 	 * @return true if saved, false otherwise
 	 * @throws IOException if some I/O error occurs storing image
 	 */
-	public boolean writeSizedImage(Bitmap bmp, CompressFormat imageCompressFormatForDiscCache,int imageQualityForDiscCache, File targetFile,int buffersize) throws IOException;
+	public boolean writeSizedImage(Bitmap bmp, CompressFormat imageCompressFormatForDiscCache,int imageQualityForDiscCache, File targetFile) throws IOException;
 		
 }
