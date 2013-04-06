@@ -313,12 +313,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		Bitmap bmp = decoder.decode(decodingInfo);
 		boolean savedSuccessfully = false;
 		if (bmp != null) {
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-			try {
-				savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
-			} finally {
-				IoUtils.closeSilently(os);
-			}
+			savedSuccessfully = configuration.discImageWriter.writeSizedImage(bmp, configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, targetFile, BUFFER_SIZE);
 			if (savedSuccessfully) {
 				bmp.recycle();
 			}
@@ -328,14 +323,10 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	private void downloadImage(File targetFile) throws IOException {
 		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
-		try {
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-			try {
-				IoUtils.copyStream(is, os);
-			} finally {
-				IoUtils.closeSilently(os);
-			}
-		} finally {
+		try{
+			configuration.discImageWriter.writeImage(is, targetFile, BUFFER_SIZE);
+		}finally{
+			// in case a user did not close the input stream
 			IoUtils.closeSilently(is);
 		}
 	}
