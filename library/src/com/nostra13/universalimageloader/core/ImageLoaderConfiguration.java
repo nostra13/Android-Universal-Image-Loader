@@ -24,6 +24,7 @@ import android.graphics.Bitmap.CompressFormat;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
+import com.nostra13.universalimageloader.cache.disc.writer.DiscCacheWriter;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
@@ -72,6 +73,7 @@ public final class ImageLoaderConfiguration {
 	final ImageDecoder decoder;
 	final DisplayImageOptions defaultDisplayImageOptions;
 	final boolean loggingEnabled;
+	final DiscCacheWriter discImageWriter;
 
 	final DiscCacheAware reserveDiscCache;
 	final ImageDownloader networkDeniedDownloader;
@@ -93,6 +95,7 @@ public final class ImageLoaderConfiguration {
 		discCache = builder.discCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
+		discImageWriter = builder.discImageWriter;
 		loggingEnabled = builder.loggingEnabled;
 		downloader = builder.downloader;
 		decoder = builder.decoder;
@@ -182,6 +185,7 @@ public final class ImageLoaderConfiguration {
 		private DisplayImageOptions defaultDisplayImageOptions = null;
 
 		private boolean loggingEnabled = false;
+		private DiscCacheWriter discImageWriter;
 
 		public Builder(Context context) {
 			this.context = context.getApplicationContext();
@@ -432,6 +436,16 @@ public final class ImageLoaderConfiguration {
 			this.downloader = imageDownloader;
 			return this;
 		}
+		/**
+		 * Sets utility which will be responsible for storing of image.<br />
+		 * Default value -
+		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createImageDownloader(Context)
+		 * DefaultConfigurationFactory.createImageDownloader()}
+		 * */
+		public Builder discCacheImageWriter(DiscCacheWriter discCacheImageWriter) {
+			this.discImageWriter = discCacheImageWriter;
+			return this;
+		}
 
 		/**
 		 * Sets utility which will be responsible for decoding of image stream.<br />
@@ -524,6 +538,9 @@ public final class ImageLoaderConfiguration {
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();
+			}
+			if (discImageWriter == null){
+				discImageWriter = DefaultConfigurationFactory.createImageWriter();
 			}
 		}
 	}

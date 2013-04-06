@@ -34,6 +34,8 @@ import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCac
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.disc.writer.DiscCacheWriter;
+import com.nostra13.universalimageloader.cache.disc.writer.impl.DefaultDiscCacheWriter;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -112,6 +114,10 @@ public class DefaultConfigurationFactory {
 	/** Creates default implementation of {@link ImageDownloader} - {@link BaseImageDownloader} */
 	public static ImageDownloader createImageDownloader(Context context) {
 		return new BaseImageDownloader(context);
+	}
+	/** Creates default implementation of {@link DiscCacheWriter} - {@link DefaultDiscCacheWriter} */
+	public static DiscCacheWriter createImageWriter() {
+		return new DefaultDiscCacheWriter();
 	}
 
 	/** Creates default implementation of {@link ImageDecoder} - {@link BaseImageDecoder} */
