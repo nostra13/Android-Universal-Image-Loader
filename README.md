@@ -122,6 +122,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
 		.discCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
 		.imageDownloader(new BaseImageDownloader(context)) // default
 		.imageDecoder(new BaseImageDecoder()) // default
+		.handler(new Handler()) // default
 		.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
 		.enableLogging()
 		.build();
