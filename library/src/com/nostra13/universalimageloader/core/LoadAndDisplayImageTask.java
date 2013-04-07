@@ -15,21 +15,6 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_CACHE_IMAGE_IN_MEMORY;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_CACHE_IMAGE_ON_DISC;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_DELAY_BEFORE_LOADING;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_LOAD_IMAGE_FROM_DISC_CACHE;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_LOAD_IMAGE_FROM_NETWORK;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_POSTPROCESS_IMAGE;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_PREPROCESS_IMAGE;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_RESUME_AFTER_PAUSE;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_START_DISPLAY_IMAGE_TASK;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_TASK_CANCELLED;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_TASK_INTERRUPTED;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_WAITING_FOR_IMAGE_LOADED;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_WAITING_FOR_RESUME;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,6 +52,24 @@ import com.nostra13.universalimageloader.utils.L;
  * @see ImageLoadingInfo
  */
 final class LoadAndDisplayImageTask implements Runnable {
+
+	private static final String LOG_WAITING_FOR_RESUME = "ImageLoader is paused. Waiting...  [%s]";
+	private static final String LOG_RESUME_AFTER_PAUSE = ".. Resume loading [%s]";
+	private static final String LOG_DELAY_BEFORE_LOADING = "Delay %d ms before loading...  [%s]";
+	private static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
+	private static final String LOG_WAITING_FOR_IMAGE_LOADED = "Image already is loading. Waiting... [%s]";
+	private static final String LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING = "...Get cached bitmap from memory after waiting. [%s]";
+	private static final String LOG_LOAD_IMAGE_FROM_NETWORK = "Load image from network [%s]";
+	private static final String LOG_LOAD_IMAGE_FROM_DISC_CACHE = "Load image from disc cache [%s]";
+	private static final String LOG_PREPROCESS_IMAGE = "PreProcess image before caching in memory [%s]";
+	private static final String LOG_POSTPROCESS_IMAGE = "PostProcess image before displaying [%s]";
+	private static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
+	private static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
+	private static final String LOG_TASK_CANCELLED = "ImageView is reused for another image. Task is cancelled. [%s]";
+	private static final String LOG_TASK_INTERRUPTED = "Task was interrupted [%s]";
+
+	private static final String WARNING_PRE_PROCESSOR_NULL = "Pre-processor returned null [%s]";
+	private static final String WARNING_POST_PROCESSOR_NULL = "Pre-processor returned null [%s]";
 
 	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
@@ -133,8 +136,12 @@ final class LoadAndDisplayImageTask implements Runnable {
 				if (options.shouldPreProcess()) {
 					log(LOG_PREPROCESS_IMAGE, memoryCacheKey);
 					bmp = options.getPreProcessor().process(bmp);
+					if (bmp == null) {
+						L.w(WARNING_PRE_PROCESSOR_NULL, memoryCacheKey);
+					}
 				}
-				if (options.isCacheInMemory()) {
+
+				if (bmp != null && options.isCacheInMemory()) {
 					log(LOG_CACHE_IMAGE_IN_MEMORY, memoryCacheKey);
 					configuration.memoryCache.put(memoryCacheKey, bmp);
 				}
@@ -142,9 +149,12 @@ final class LoadAndDisplayImageTask implements Runnable {
 				log(LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING, memoryCacheKey);
 			}
 
-			if (options.shouldPostProcess()) {
+			if (bmp != null && options.shouldPostProcess()) {
 				log(LOG_POSTPROCESS_IMAGE, memoryCacheKey);
 				bmp = options.getPostProcessor().process(bmp);
+				if (bmp == null) {
+					L.w(WARNING_POST_PROCESSOR_NULL, memoryCacheKey);
+				}
 			}
 		} finally {
 			loadFromUriLock.unlock();

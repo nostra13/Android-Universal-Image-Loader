@@ -15,8 +15,6 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_POSTPROCESS_IMAGE;
-
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.widget.ImageView;
@@ -32,6 +30,8 @@ import com.nostra13.universalimageloader.utils.L;
  * @since 1.8.0
  */
 class ProcessAndDisplayImageTask implements Runnable {
+
+	private static final String LOG_POSTPROCESS_IMAGE = "PostProcess image before displaying [%s]";
 
 	private final ImageLoaderEngine engine;
 	private final Bitmap bitmap;

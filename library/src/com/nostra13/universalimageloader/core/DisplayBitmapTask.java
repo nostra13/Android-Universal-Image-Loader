@@ -15,8 +15,6 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_DISPLAY_IMAGE_IN_IMAGEVIEW;
-import static com.nostra13.universalimageloader.core.ImageLoader.LOG_TASK_CANCELLED;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
@@ -33,6 +31,9 @@ import com.nostra13.universalimageloader.utils.L;
  * @see BitmapDisplayer
  */
 final class DisplayBitmapTask implements Runnable {
+
+	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
+	private static final String LOG_TASK_CANCELLED = "ImageView is reused for another image. Task is cancelled. [%s]";
 
 	private final Bitmap bitmap;
 	private final String imageUri;
