@@ -33,7 +33,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 public final class MemoryCacheUtil {
 
 	private static final String URI_AND_SIZE_SEPARATOR = "_";
-	private static final String MEMORY_CACHE_KEY_FORMAT = "%1$s" + URI_AND_SIZE_SEPARATOR + "%2$s";
+	private static final String WIDTH_AND_HEIGHT_SEPARATOR = "x";
 
 	private MemoryCacheUtil() {
 	}
@@ -44,7 +44,8 @@ public final class MemoryCacheUtil {
 	 * ([width]x[height]).
 	 */
 	public static String generateKey(String imageUri, ImageSize targetSize) {
-		return String.format(MEMORY_CACHE_KEY_FORMAT, imageUri, targetSize);
+		return new StringBuilder(imageUri).append(URI_AND_SIZE_SEPARATOR).append(targetSize.getWidth()).append(WIDTH_AND_HEIGHT_SEPARATOR)
+				.append(targetSize.getHeight()).toString();
 	}
 
 	public static Comparator<String> createFuzzyKeyComparator() {

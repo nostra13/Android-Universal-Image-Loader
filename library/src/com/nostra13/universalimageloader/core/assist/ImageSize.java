@@ -23,7 +23,7 @@ package com.nostra13.universalimageloader.core.assist;
  */
 public class ImageSize {
 
-	private static final String TO_STRING_PATTERN = "%1$dx%2$d";
+	private static final String SEPARATOR = "x";
 
 	private final int width;
 	private final int height;
@@ -63,6 +63,6 @@ public class ImageSize {
 
 	@Override
 	public String toString() {
-		return String.format(TO_STRING_PATTERN, width, height);
+		return new StringBuilder(width).append(SEPARATOR).append(height).toString();
 	}
 }
