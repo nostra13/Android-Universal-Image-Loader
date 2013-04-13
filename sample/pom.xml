@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>com.nostra13.universalimageloader</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.8.4</version>
+		<version>1.8.4-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
