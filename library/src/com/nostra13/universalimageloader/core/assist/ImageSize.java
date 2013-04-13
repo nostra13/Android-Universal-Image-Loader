@@ -23,6 +23,7 @@ package com.nostra13.universalimageloader.core.assist;
  */
 public class ImageSize {
 
+	private static final int TO_STRING_MAX_LENGHT = 9; // "9999x9999".length()
 	private static final String SEPARATOR = "x";
 
 	private final int width;
@@ -63,6 +64,6 @@ public class ImageSize {
 
 	@Override
 	public String toString() {
-		return new StringBuilder(width).append(SEPARATOR).append(height).toString();
+		return new StringBuilder(TO_STRING_MAX_LENGHT).append(width).append(SEPARATOR).append(height).toString();
 	}
 }
