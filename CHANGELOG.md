@@ -1,6 +1,16 @@
 Change Log
 ===
 
+v1.8.4 *(13.04.2013)*
+---
+ * Travis CI, added Unit tests ([#189](https://github.com/nostra13/Android-Universal-Image-Loader/issues/189))
+ * Introduced `DisplayImageOptions.handler(Handler)` ([#231](https://github.com/nostra13/Android-Universal-Image-Loader/issues/231))
+ * Fixed bugs:
+   * `ConcurrentModificationException` in `BaseMemoryCache` ([#229](https://github.com/nostra13/Android-Universal-Image-Loader/issues/229))
+   * `NullPointerException` in `LimitedDiscCache` ([#234](https://github.com/nostra13/Android-Universal-Image-Loader/issues/234))
+   * `NullPointerException` in `LruMemoryCache` ([#233](https://github.com/nostra13/Android-Universal-Image-Loader/issues/233))
+ * Improved work with Strings on UI thread ([#244](https://github.com/nostra13/Android-Universal-Image-Loader/issues/244))
+
 v1.8.3 *(31.03.2013)*
 ---
  * Android 2.0+ support
