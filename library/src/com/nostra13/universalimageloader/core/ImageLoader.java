@@ -16,6 +16,7 @@
 package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
@@ -187,7 +188,7 @@ public class ImageLoader {
 			options = configuration.defaultDisplayImageOptions;
 		}
 
-		if (uri == null || uri.length() == 0) {
+		if (TextUtils.isEmpty(uri)) {
 			engine.cancelDisplayTaskFor(imageView);
 			listener.onLoadingStarted(uri, imageView);
 			if (options.shouldShowImageForEmptyUri()) {
