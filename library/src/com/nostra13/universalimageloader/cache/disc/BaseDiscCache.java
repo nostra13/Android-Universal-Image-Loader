@@ -30,6 +30,8 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  */
 public abstract class BaseDiscCache implements DiscCacheAware {
 
+	private static final String ERROR_ARG_NULL = "\"%s\" argument must be not null";
+
 	protected File cacheDir;
 
 	private FileNameGenerator fileNameGenerator;
@@ -39,6 +41,13 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 	}
 
 	public BaseDiscCache(File cacheDir, FileNameGenerator fileNameGenerator) {
+		if (cacheDir == null) {
+			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);
+		}
+		if (fileNameGenerator == null) {
+			throw new IllegalArgumentException("fileNameGenerator" + ERROR_ARG_NULL);
+		}
+
 		this.cacheDir = cacheDir;
 		this.fileNameGenerator = fileNameGenerator;
 	}
