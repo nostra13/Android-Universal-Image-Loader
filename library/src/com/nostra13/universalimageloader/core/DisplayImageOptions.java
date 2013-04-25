@@ -72,6 +72,7 @@ public final class DisplayImageOptions {
 	private final BitmapProcessor preProcessor;
 	private final BitmapProcessor postProcessor;
 	private final BitmapDisplayer displayer;
+	private final BitmapDisplayer displayerForMemoryCache;
 	private final Handler handler;
 
 	private DisplayImageOptions(Builder builder) {
@@ -88,6 +89,7 @@ public final class DisplayImageOptions {
 		preProcessor = builder.preProcessor;
 		postProcessor = builder.postProcessor;
 		displayer = builder.displayer;
+		displayerForMemoryCache = builder.displayerForMemoryCache;
 		handler = builder.handler;
 	}
 
@@ -166,6 +168,10 @@ public final class DisplayImageOptions {
 	public BitmapDisplayer getDisplayer() {
 		return displayer;
 	}
+	
+	public BitmapDisplayer getDisplayerForMemoryCache() {
+		return displayerForMemoryCache;
+	}
 
 	public Handler getHandler() {
 		return (handler == null ? new Handler() : handler);
@@ -190,6 +196,7 @@ public final class DisplayImageOptions {
 		private BitmapProcessor preProcessor = null;
 		private BitmapProcessor postProcessor = null;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
+		private BitmapDisplayer displayerForMemoryCache = null;
 		private Handler handler = null;
 
 		public Builder() {
@@ -315,6 +322,16 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
+		/**
+		 * Sets custom {@link BitmapDisplayer displayer} for images loaded from memory cache.
+		 * If this displayer is null, use {@link DisplayImageOptions#displayer}. 
+		 * Default value - null.
+		 */
+		public Builder displayerForMemoryCache(BitmapDisplayer displayer) {
+			this.displayerForMemoryCache = displayer;
+			return this;
+		}
+		
 		/**
 		 * Sets custom {@linkplain Handler handler} for displaying images and firing {@linkplain ImageLoadingListener
 		 * listener} events.
