@@ -359,7 +359,7 @@ public final class ImageLoaderConfiguration {
          * {@link MemoryCacheAware}.
          */
         public Builder memoryCachePercent(int memoryCachePercent) {
-            if (memoryCacheSize <= 0) throw new IllegalArgumentException("memoryCacheSize must be a positive number");
+            if (memoryCachePercent <= 0) throw new IllegalArgumentException("memoryCacheSize must be a positive number");
 
             if (memoryCache != null) {
                 L.w(WARNING_OVERLAP_MEMORY_CACHE);
