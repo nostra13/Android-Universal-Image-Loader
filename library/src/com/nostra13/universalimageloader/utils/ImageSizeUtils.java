@@ -52,14 +52,14 @@ public final class ImageSizeUtils {
 		final DisplayMetrics displayMetrics = imageView.getContext().getResources().getDisplayMetrics();
 
 		final LayoutParams params = imageView.getLayoutParams();
-		int width = params.width == LayoutParams.WRAP_CONTENT ? 0 : imageView.getWidth(); // Get actual image width
-		if (width <= 0) width = params.width; // Get layout width parameter
+		int width = (params != null && params.width == LayoutParams.WRAP_CONTENT) ? 0 : imageView.getWidth(); // Get actual image width
+		if (width <= 0) width = (params != null) ? params.width : width; // Get layout width parameter
 		if (width <= 0) width = getImageViewFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
 		if (width <= 0) width = maxImageWidth;
 		if (width <= 0) width = displayMetrics.widthPixels;
 
-		int height = params.height == LayoutParams.WRAP_CONTENT ? 0 : imageView.getHeight(); // Get actual image height
-		if (height <= 0) height = params.height; // Get layout height parameter
+		int height = (params != null && params.height == LayoutParams.WRAP_CONTENT) ? 0 : imageView.getHeight(); // Get actual image height
+		if (height <= 0) height = (params != null) ?  params.height : height; // Get layout height parameter
 		if (height <= 0) height = getImageViewFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
 		if (height <= 0) height = maxImageHeight;
 		if (height <= 0) height = displayMetrics.heightPixels;
