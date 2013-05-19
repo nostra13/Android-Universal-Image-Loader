@@ -278,7 +278,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (cacheDir == null || (!cacheDir.exists() && !cacheDir.mkdirs())) {
 			imageFile = configuration.reserveDiscCache.get(uri);
 			cacheDir = imageFile.getParentFile();
-			if (cacheDir == null || !cacheDir.exists()) {
+			if (cacheDir != null && !cacheDir.exists()) {
 				cacheDir.mkdirs();
 			}
 		}
