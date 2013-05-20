@@ -22,3 +22,6 @@ release.properties
 *.iws
 .idea/
 out/
+
+# Mac 
+.DS_Store
