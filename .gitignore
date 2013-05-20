@@ -5,6 +5,7 @@ gen/
 # Ant
 build.xml
 local.properties
+project.properties
 
 # Maven
 target/
@@ -22,3 +23,6 @@ release.properties
 *.iws
 .idea/
 out/
+
+# Mac
+.DS_Store
