@@ -365,15 +365,10 @@ public final class ImageLoaderConfiguration {
                 L.w(WARNING_OVERLAP_MEMORY_CACHE);
             }
 
-            int memClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
-
-            if (memClass == 0) {
-                memClass = 12;
-            }
             if (memoryCachePercent > 80) {
                 memoryCachePercent = 80;
             }
-            int capacity = (1024 * 1024 * (memClass * memoryCachePercent)) / 100;
+            int capacity = (int) ((Runtime.getRuntime().maxMemory() * (memoryCachePercent / 100)));
             if (capacity > 0) {
                 this.memoryCacheSize = capacity;
             }
