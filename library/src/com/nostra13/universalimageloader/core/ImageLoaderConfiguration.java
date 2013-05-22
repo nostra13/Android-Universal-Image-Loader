@@ -17,7 +17,6 @@ package com.nostra13.universalimageloader.core;
 
 import java.util.concurrent.Executor;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
