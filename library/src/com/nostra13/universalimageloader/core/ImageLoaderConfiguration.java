@@ -367,7 +367,7 @@ public final class ImageLoaderConfiguration {
             if (memoryCachePercent > 80) {
                 memoryCachePercent = 80;
             }
-            int capacity = (int) ((Runtime.getRuntime().maxMemory() * (memoryCachePercent / 100)));
+            int capacity = (int) ((Runtime.getRuntime().maxMemory() * (memoryCachePercent / 100f)));
             if (capacity > 0) {
                 this.memoryCacheSize = capacity;
             }
