@@ -25,6 +25,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.utils.L;
 
 /**
@@ -46,7 +47,7 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 	}
 
 	@Override
-	public Bitmap display(Bitmap bitmap, ImageView imageView) {
+	public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
 		Bitmap roundedBitmap = roundCorners(bitmap, imageView, roundPixels);
 		imageView.setImageBitmap(roundedBitmap);
 		return roundedBitmap;

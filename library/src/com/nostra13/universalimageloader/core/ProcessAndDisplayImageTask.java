@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -50,6 +51,6 @@ class ProcessAndDisplayImageTask implements Runnable {
 		if (engine.configuration.loggingEnabled) L.i(LOG_POSTPROCESS_IMAGE, imageLoadingInfo.memoryCacheKey);
 		BitmapProcessor processor = imageLoadingInfo.options.getPostProcessor();
 		final Bitmap processedBitmap = processor.process(bitmap);
-		handler.post(new DisplayBitmapTask(processedBitmap, imageLoadingInfo, engine));
+		handler.post(new DisplayBitmapTask(processedBitmap, imageLoadingInfo, engine, LoadedFrom.MEMORY_CACHE));
 	}
 }

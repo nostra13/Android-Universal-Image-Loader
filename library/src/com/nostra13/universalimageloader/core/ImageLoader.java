@@ -28,6 +28,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
@@ -216,7 +217,7 @@ public class ImageLoader {
 				ProcessAndDisplayImageTask displayTask = new ProcessAndDisplayImageTask(engine, bmp, imageLoadingInfo, options.getHandler());
 				engine.submit(displayTask);
 			} else {
-				options.getDisplayer().display(bmp, imageView);
+				options.getDisplayer().display(bmp, imageView, LoadedFrom.MEMORY_CACHE);
 				listener.onLoadingComplete(uri, imageView, bmp);
 			}
 		} else {
