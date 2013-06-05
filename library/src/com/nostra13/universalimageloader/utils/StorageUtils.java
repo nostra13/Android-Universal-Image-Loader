@@ -50,6 +50,10 @@ public final class StorageUtils {
 		if (appCacheDir == null) {
 			appCacheDir = context.getCacheDir();
 		}
+		if (appCacheDir == null) {
+			L.w("Can't define system cache directory!");
+			appCacheDir = context.getCacheDir(); // retry
+		}
 		return appCacheDir;
 	}
 
