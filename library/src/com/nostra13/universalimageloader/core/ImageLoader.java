@@ -62,6 +62,8 @@ public class ImageLoader {
 
 	private final ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
 	private final BitmapDisplayer fakeBitmapDisplayer = new FakeBitmapDisplayer();
+	
+	private boolean isLoadingOnMobileNetwork = true;
 
 	private volatile static ImageLoader instance;
 
@@ -107,6 +109,11 @@ public class ImageLoader {
 	 */
 	public boolean isInited() {
 		return configuration != null;
+	}
+	
+	
+	public void setIsLoadingOnMobileNetwork(boolean isLoadingOnMobileNetwork) {
+		this.isLoadingOnMobileNetwork = isLoadingOnMobileNetwork;
 	}
 
 	/**
@@ -230,7 +237,7 @@ public class ImageLoader {
 			}
 
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, memoryCacheKey, options, listener, engine.getLockForUri(uri));
-			LoadAndDisplayImageTask displayTask = new LoadAndDisplayImageTask(engine, imageLoadingInfo, options.getHandler());
+			LoadAndDisplayImageTask displayTask = new LoadAndDisplayImageTask(engine, imageLoadingInfo, options.getHandler(), isLoadingOnMobileNetwork);
 			engine.submit(displayTask);
 		}
 	}
