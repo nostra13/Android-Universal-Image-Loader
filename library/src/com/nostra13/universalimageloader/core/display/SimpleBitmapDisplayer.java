@@ -15,6 +15,8 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.display;
 
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
@@ -26,7 +28,7 @@ import android.widget.ImageView;
  */
 public final class SimpleBitmapDisplayer implements BitmapDisplayer {
 	@Override
-	public Bitmap display(Bitmap bitmap, ImageView imageView) {
+	public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
 		imageView.setImageBitmap(bitmap);
 		return bitmap;
 	}

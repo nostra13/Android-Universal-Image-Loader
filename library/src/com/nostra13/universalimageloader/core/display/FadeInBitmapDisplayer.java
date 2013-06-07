@@ -15,6 +15,8 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.display;
 
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+
 import android.graphics.Bitmap;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.DecelerateInterpolator;
@@ -35,7 +37,7 @@ public class FadeInBitmapDisplayer implements BitmapDisplayer {
 	}
 
 	@Override
-	public Bitmap display(Bitmap bitmap, ImageView imageView) {
+	public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
 		imageView.setImageBitmap(bitmap);
 
 		animate(imageView, durationMillis);

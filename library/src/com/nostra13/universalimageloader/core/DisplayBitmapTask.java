@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -32,7 +33,7 @@ import com.nostra13.universalimageloader.utils.L;
  */
 final class DisplayBitmapTask implements Runnable {
 
-	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
+	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView (loaded from %1$s) [%2$s]";
 	private static final String LOG_TASK_CANCELLED = "ImageView is reused for another image. Task is cancelled. [%s]";
 
 	private final Bitmap bitmap;
@@ -42,10 +43,11 @@ final class DisplayBitmapTask implements Runnable {
 	private final BitmapDisplayer displayer;
 	private final ImageLoadingListener listener;
 	private final ImageLoaderEngine engine;
+	private final LoadedFrom loadedFrom;
 
 	private boolean loggingEnabled;
 
-	public DisplayBitmapTask(Bitmap bitmap, ImageLoadingInfo imageLoadingInfo, ImageLoaderEngine engine) {
+	public DisplayBitmapTask(Bitmap bitmap, ImageLoadingInfo imageLoadingInfo, ImageLoaderEngine engine, LoadedFrom loadedFrom) {
 		this.bitmap = bitmap;
 		imageUri = imageLoadingInfo.uri;
 		imageView = imageLoadingInfo.imageView;
@@ -53,6 +55,7 @@ final class DisplayBitmapTask implements Runnable {
 		displayer = imageLoadingInfo.options.getDisplayer();
 		listener = imageLoadingInfo.listener;
 		this.engine = engine;
+		this.loadedFrom = loadedFrom;
 	}
 
 	public void run() {
@@ -60,8 +63,8 @@ final class DisplayBitmapTask implements Runnable {
 			if (loggingEnabled) L.i(LOG_TASK_CANCELLED, memoryCacheKey);
 			listener.onLoadingCancelled(imageUri, imageView);
 		} else {
-			if (loggingEnabled) L.i(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, memoryCacheKey);
-			Bitmap displayedBitmap = displayer.display(bitmap, imageView);
+			if (loggingEnabled) L.i(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, loadedFrom, memoryCacheKey);
+			Bitmap displayedBitmap = displayer.display(bitmap, imageView, loadedFrom);
 			listener.onLoadingComplete(imageUri, imageView, displayedBitmap);
 			engine.cancelDisplayTaskFor(imageView);
 		}

@@ -15,6 +15,8 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.display;
 
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
@@ -33,7 +35,8 @@ public interface BitmapDisplayer {
 	 * 
 	 * @param bitmap Source bitmap
 	 * @param imageView {@linkplain ImageView Image view} to display Bitmap
+	 * @param loadedFrom Source of loaded image
 	 * @return Bitmap which was displayed in {@link ImageView}
 	 */
-	Bitmap display(Bitmap bitmap, ImageView imageView);
+	Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom);
 }

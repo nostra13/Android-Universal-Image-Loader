@@ -201,15 +201,15 @@ public class BaseImageDecoder implements ImageDecoder {
 
 	protected static class ExifInfo {
 
-		final int rotation;
-		final boolean flipHorizontal;
+		protected final int rotation;
+		protected final boolean flipHorizontal;
 
-		ExifInfo() {
+		protected ExifInfo() {
 			this.rotation = 0;
 			this.flipHorizontal = false;
 		}
 
-		ExifInfo(int rotation, boolean flipHorizontal) {
+		protected ExifInfo(int rotation, boolean flipHorizontal) {
 			this.rotation = rotation;
 			this.flipHorizontal = flipHorizontal;
 		}
@@ -217,10 +217,10 @@ public class BaseImageDecoder implements ImageDecoder {
 
 	protected static class ImageFileInfo {
 
-		final ImageSize imageSize;
-		final ExifInfo exif;
+		protected final ImageSize imageSize;
+		protected final ExifInfo exif;
 
-		ImageFileInfo(ImageSize imageSize, ExifInfo exif) {
+		protected ImageFileInfo(ImageSize imageSize, ExifInfo exif) {
 			this.imageSize = imageSize;
 			this.exif = exif;
 		}

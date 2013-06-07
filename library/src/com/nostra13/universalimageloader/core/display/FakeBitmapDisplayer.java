@@ -20,6 +20,7 @@ import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 
 /**
  * Fake displayer which doesn't display Bitmap in ImageView. Should be used in {@linkplain DisplayImageOptions display
@@ -32,7 +33,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
  */
 public final class FakeBitmapDisplayer implements BitmapDisplayer {
 	@Override
-	public Bitmap display(Bitmap bitmap, ImageView imageView) {
+	public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
 		// Do nothing
 		return bitmap;
 	}
