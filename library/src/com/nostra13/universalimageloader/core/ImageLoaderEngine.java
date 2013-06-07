@@ -34,7 +34,7 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 /**
  * {@link ImageLoader} engine which responsible for {@linkplain LoadAndDisplayImageTask display task} execution.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.7.1
  */
@@ -70,9 +70,13 @@ class ImageLoaderEngine {
 				boolean isImageCachedOnDisc = configuration.discCache.get(task.getLoadingUri()).exists();
 				initExecutorsIfNeed();
 				if (isImageCachedOnDisc) {
-					taskExecutorForCachedImages.execute(task);
+                    if (taskExecutorForCachedImages != null) {
+                        taskExecutorForCachedImages.execute(task);
+                    }
 				} else {
-					taskExecutor.execute(task);
+                    if (taskExecutor != null) {
+                        taskExecutor.execute(task);
+                    }
 				}
 			}
 		});
@@ -112,7 +116,7 @@ class ImageLoaderEngine {
 
 	/**
 	 * Cancels the task of loading and displaying image for incoming <b>imageView</b>.
-	 * 
+	 *
 	 * @param imageView {@link ImageView} for which display task will be cancelled
 	 */
 	void cancelDisplayTaskFor(ImageView imageView) {
@@ -125,7 +129,7 @@ class ImageLoaderEngine {
 	 * If downloads are denied and if image isn't cached then
 	 * {@link ImageLoadingListener#onLoadingFailed(String, View, FailReason)} callback will be fired with
 	 * {@link FailReason#NETWORK_DENIED}
-	 * 
+	 *
 	 * @param denyNetworkDownloads pass <b>true</b> - to deny engine to download images from the network; <b>false</b> -
 	 *            to allow engine to download images from network.
 	 */
@@ -136,7 +140,7 @@ class ImageLoaderEngine {
 	/**
 	 * Sets option whether ImageLoader will use {@link FlushedInputStream} for network downloads to handle <a
 	 * href="http://code.google.com/p/android/issues/detail?id=6066">this known problem</a> or not.
-	 * 
+	 *
 	 * @param handleSlowNetwork pass <b>true</b> - to use {@link FlushedInputStream} for network downloads; <b>false</b>
 	 *            - otherwise.
 	 */
