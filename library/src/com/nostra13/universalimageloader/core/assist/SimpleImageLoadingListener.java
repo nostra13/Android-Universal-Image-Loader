@@ -45,4 +45,10 @@ public class SimpleImageLoadingListener implements ImageLoadingListener {
 	public void onLoadingCancelled(String imageUri, View view) {
 		// Empty implementation
 	}
+
+	@Override
+	public void onLoadingUpdate(int count, int length) {
+		// TODO Auto-generated method stub
+		
+	}
 }
