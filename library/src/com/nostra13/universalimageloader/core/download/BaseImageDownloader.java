@@ -55,7 +55,7 @@ public class BaseImageDownloader implements ImageDownloader {
 	/** {@value} */
 	protected static final String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
 
-	private static final int MAX_REDIRECT_COUNT = 5;
+	protected static final int MAX_REDIRECT_COUNT = 5;
 
 	private static final String ERROR_UNSUPPORTED_SCHEME = "UIL doesn't support scheme(protocol) by default [%s]. "
 			+ "You should implement this support yourself (BaseImageDownloader.getStreamFromOtherSource(...))";
@@ -104,26 +104,34 @@ public class BaseImageDownloader implements ImageDownloader {
 	 *            DisplayImageOptions.extraForDownloader(Object)}; can be null
 	 * @return {@link InputStream} of image
 	 * @throws IOException if some I/O error occurs during network request or if no InputStream could be created for
-	 *             URI.
+	 *             URL.
 	 */
 	protected InputStream getStreamFromNetwork(String imageUri, Object extra) throws IOException {
-		HttpURLConnection conn = connectTo(imageUri);
+		HttpURLConnection conn = createConnection(imageUri);
 
 		int redirectCount = 0;
 		while (conn.getResponseCode() / 100 == 3 && redirectCount < MAX_REDIRECT_COUNT) {
-			conn = connectTo(conn.getHeaderField("Location"));
+			conn = createConnection(conn.getHeaderField("Location"));
 			redirectCount++;
 		}
 
 		return new BufferedInputStream(conn.getInputStream(), BUFFER_SIZE);
 	}
 
-	private HttpURLConnection connectTo(String url) throws IOException {
+	/**
+	 * Create {@linkplain HttpURLConnection HTTP connection} for incoming URL
+	 * 
+	 * @param url URL to connect to
+	 * @return {@linkplain HttpURLConnection Connection} for incoming URL. Connection isn't established so it still
+	 *         configurable.
+	 * @throws IOException if some I/O error occurs during network request or if no InputStream could be created for
+	 *             URL.
+	 */
+	protected HttpURLConnection createConnection(String url) throws IOException {
 		String encodedUrl = Uri.encode(url, ALLOWED_URI_CHARS);
 		HttpURLConnection conn = (HttpURLConnection) new URL(encodedUrl).openConnection();
 		conn.setConnectTimeout(connectTimeout);
 		conn.setReadTimeout(readTimeout);
-		conn.connect();
 		return conn;
 	}
 
