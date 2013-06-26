@@ -85,10 +85,10 @@ class ImageLoaderEngine {
 	}
 
 	private void initExecutorsIfNeed() {
-		if (taskExecutor == null) {
+		if (!configuration.customExecutor && ((ExecutorService) taskExecutor).isShutdown()) {
 			taskExecutor = createTaskExecutor();
 		}
-		if (taskExecutorForCachedImages == null) {
+		if (!configuration.customExecutorForCachedImages && ((ExecutorService) taskExecutorForCachedImages).isShutdown()) {
 			taskExecutorForCachedImages = createTaskExecutor();
 		}
 	}
@@ -163,10 +163,10 @@ class ImageLoaderEngine {
 	/** Stops engine, cancels all running and scheduled display image tasks. Clears internal data. */
 	void stop() {
 		if (!configuration.customExecutor) {
-			taskExecutor = null;
+			((ExecutorService) taskExecutor).shutdownNow();
 		}
 		if (!configuration.customExecutorForCachedImages) {
-			taskExecutorForCachedImages = null;
+			((ExecutorService) taskExecutorForCachedImages).shutdownNow();
 		}
 
 		cacheKeysForImageViews.clear();
