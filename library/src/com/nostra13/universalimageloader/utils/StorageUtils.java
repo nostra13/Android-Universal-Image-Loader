@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 
 /**
@@ -44,7 +45,7 @@ public final class StorageUtils {
 	 */
 	public static File getCacheDirectory(Context context) {
 		File appCacheDir = null;
-		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) && hasExternalPermission(context)) {
 			appCacheDir = getExternalCacheDir(context);
 		}
 		if (appCacheDir == null) {
@@ -86,7 +87,7 @@ public final class StorageUtils {
 	 */
 	public static File getOwnCacheDirectory(Context context, String cacheDir) {
 		File appCacheDir = null;
-		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED) && hasExternalPermission(context)) {
 			appCacheDir = new File(Environment.getExternalStorageDirectory(), cacheDir);
 		}
 		if (appCacheDir == null || (!appCacheDir.exists() && !appCacheDir.mkdirs())) {
@@ -110,5 +111,12 @@ public final class StorageUtils {
 			}
 		}
 		return appCacheDir;
+	}
+	
+	private static boolean hasExternalPermission(Context cxt)
+	{
+	    String permission = "android.permission.WRITE_EXTERNAL_STORAGE";
+	    int res = cxt.checkCallingOrSelfPermission(permission);
+	    return (res == PackageManager.PERMISSION_GRANTED);            
 	}
 }
