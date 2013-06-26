@@ -349,6 +349,31 @@ public final class ImageLoaderConfiguration {
 			return this;
 		}
 
+        /**
+         * Sets maximum memory cache size percent in system memory for {@link android.graphics.Bitmap bitmaps} (in bytes).<br />
+         * Default value - 1/8 of available app memory.<br />
+         * <b>NOTE:</b> If you use this method then
+         * {@link com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache LruMemoryCache} will be used as
+         * memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method to set your own implementation of
+         * {@link MemoryCacheAware}.
+         */
+        public Builder memoryCachePercent(int memoryCachePercent) {
+            if (memoryCachePercent <= 0) throw new IllegalArgumentException("memoryCacheSize must be a positive number");
+
+            if (memoryCache != null) {
+                L.w(WARNING_OVERLAP_MEMORY_CACHE);
+            }
+
+            if (memoryCachePercent > 80) {
+                memoryCachePercent = 80;
+            }
+            int capacity = (int) ((Runtime.getRuntime().maxMemory() * (memoryCachePercent / 100f)));
+            if (capacity > 0) {
+                this.memoryCacheSize = capacity;
+            }
+            return this;
+        }
+
 		/**
 		 * Sets memory cache for {@link android.graphics.Bitmap bitmaps}.<br />
 		 * Default value - {@link com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache LruMemoryCache}
