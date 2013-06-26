@@ -349,30 +349,27 @@ public final class ImageLoaderConfiguration {
 			return this;
 		}
 
-        /**
-         * Sets maximum memory cache size percent in system memory for {@link android.graphics.Bitmap bitmaps} (in bytes).<br />
-         * Default value - 1/8 of available app memory.<br />
-         * <b>NOTE:</b> If you use this method then
-         * {@link com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache LruMemoryCache} will be used as
-         * memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method to set your own implementation of
-         * {@link MemoryCacheAware}.
-         */
-        public Builder memoryCachePercent(int memoryCachePercent) {
-            if (memoryCachePercent <= 0) throw new IllegalArgumentException("memoryCacheSize must be a positive number");
+		/**
+		 * Sets maximum memory cache size (in percent of available app memory) for {@link android.graphics.Bitmap
+		 * bitmaps}.<br />
+		 * Default value - 1/8 of available app memory.<br />
+		 * <b>NOTE:</b> If you use this method then
+		 * {@link com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache LruMemoryCache} will be used as
+		 * memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method to set your own implementation of
+		 * {@link MemoryCacheAware}.
+		 */
+		public Builder memoryCacheSizePercentage(int avaialbleMemoryPercent) {
+			if (avaialbleMemoryPercent <= 0 || avaialbleMemoryPercent >= 100)
+				throw new IllegalArgumentException("avaialbleMemoryPercent must be in range (0 < % < 100)");
 
-            if (memoryCache != null) {
-                L.w(WARNING_OVERLAP_MEMORY_CACHE);
-            }
+			if (memoryCache != null) {
+				L.w(WARNING_OVERLAP_MEMORY_CACHE);
+			}
 
-            if (memoryCachePercent > 80) {
-                memoryCachePercent = 80;
-            }
-            int capacity = (int) ((Runtime.getRuntime().maxMemory() * (memoryCachePercent / 100f)));
-            if (capacity > 0) {
-                this.memoryCacheSize = capacity;
-            }
-            return this;
-        }
+			long availableMemory = Runtime.getRuntime().maxMemory();
+			memoryCacheSize = (int) (availableMemory * (avaialbleMemoryPercent / 100f));
+			return this;
+		}
 
 		/**
 		 * Sets memory cache for {@link android.graphics.Bitmap bitmaps}.<br />
