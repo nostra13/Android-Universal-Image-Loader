@@ -28,7 +28,7 @@ import java.io.OutputStream;
  */
 public final class IoUtils {
 
-	private static final int BUFFER_SIZE = 8 * 1024; // 8 KB 
+	private static final int BUFFER_SIZE = 32 * 1024; // 32 KB
 
 	private IoUtils() {
 	}

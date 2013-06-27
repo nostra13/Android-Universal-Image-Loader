@@ -74,7 +74,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final String ERROR_POST_PROCESSOR_NULL = "Pre-processor returned null [%s]";
 	private static final String ERROR_PROCESSOR_FOR_DISC_CACHE_NULL = "Bitmap processor for disc cache returned null [%s]";
 
-	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
+	private static final int BUFFER_SIZE = 32 * 1024; // 32 Kb
 
 	private final ImageLoaderEngine engine;
 	private final ImageLoadingInfo imageLoadingInfo;
