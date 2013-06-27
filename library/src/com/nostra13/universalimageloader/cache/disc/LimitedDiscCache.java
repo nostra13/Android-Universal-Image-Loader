@@ -29,7 +29,7 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 /**
  * Abstract disc cache limited by some parameter. If cache exceeds specified limit then file with the most oldest last
  * usage date will be deleted.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  * @see BaseDiscCache
@@ -37,7 +37,7 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  */
 public abstract class LimitedDiscCache extends BaseDiscCache {
 
-	private static final int INVALID_READ_SIZE = -1;
+	private static final int INVALID_SIZE = -1;
 
 	private final AtomicInteger cacheSize;
 
@@ -93,7 +93,7 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 
 		while (curCacheSize + valueSize > sizeLimit) {
 			int freedSize = removeNext();
-			if (freedSize == INVALID_READ_SIZE ) break; // cache is empty (have nothing to delete)
+			if (freedSize == INVALID_SIZE) break; // cache is empty (have nothing to delete)
 			curCacheSize = cacheSize.addAndGet(-freedSize);
 		}
 		cacheSize.addAndGet(valueSize);
@@ -124,7 +124,7 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	/** Remove next file and returns it's size */
 	private int removeNext() {
 		if (lastUsageDates.isEmpty()) {
-			return INVALID_READ_SIZE;
+			return INVALID_SIZE;
 		}
 		Long oldestUsage = null;
 		File mostLongUsedFile = null;
@@ -144,15 +144,16 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 			}
 		}
 
-		int fileSize = getSize(mostLongUsedFile);
-		
-		if (!mostLongUsedFile.exists()) {
-			lastUsageDates.remove(mostLongUsedFile);
-			return 0;
-		}
-		
-		if ( mostLongUsedFile.delete()) {
-			lastUsageDates.remove(mostLongUsedFile);
+		int fileSize = 0;
+		if (mostLongUsedFile != null) {
+			if (mostLongUsedFile.exists()) {
+				fileSize = getSize(mostLongUsedFile);
+				if (mostLongUsedFile.delete()) {
+					lastUsageDates.remove(mostLongUsedFile);
+				}
+			} else {
+				lastUsageDates.remove(mostLongUsedFile);
+			}
 		}
 		return fileSize;
 	}
