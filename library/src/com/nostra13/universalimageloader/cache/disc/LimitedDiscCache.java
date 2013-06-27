@@ -37,6 +37,8 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
  */
 public abstract class LimitedDiscCache extends BaseDiscCache {
 
+	private static final int INVALID_READ_SIZE = -1;
+
 	private final AtomicInteger cacheSize;
 
 	private final int sizeLimit;
@@ -88,9 +90,10 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	public void put(String key, File file) {
 		int valueSize = getSize(file);
 		int curCacheSize = cacheSize.get();
+
 		while (curCacheSize + valueSize > sizeLimit) {
 			int freedSize = removeNext();
-			if (freedSize == 0) break; // cache is empty (have nothing to delete)
+			if (freedSize == INVALID_READ_SIZE ) break; // cache is empty (have nothing to delete)
 			curCacheSize = cacheSize.addAndGet(-freedSize);
 		}
 		cacheSize.addAndGet(valueSize);
@@ -121,9 +124,8 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	/** Remove next file and returns it's size */
 	private int removeNext() {
 		if (lastUsageDates.isEmpty()) {
-			return 0;
+			return INVALID_READ_SIZE;
 		}
-
 		Long oldestUsage = null;
 		File mostLongUsedFile = null;
 		Set<Entry<File, Long>> entries = lastUsageDates.entrySet();
@@ -143,7 +145,13 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 		}
 
 		int fileSize = getSize(mostLongUsedFile);
-		if (mostLongUsedFile.delete()) {
+		
+		if (!mostLongUsedFile.exists()) {
+			lastUsageDates.remove(mostLongUsedFile);
+			return 0;
+		}
+		
+		if ( mostLongUsedFile.delete()) {
 			lastUsageDates.remove(mostLongUsedFile);
 		}
 		return fileSize;
