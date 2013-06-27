@@ -66,11 +66,13 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final String LOG_POSTPROCESS_IMAGE = "PostProcess image before displaying [%s]";
 	private static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
 	private static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
+	private static final String LOG_PROCESS_IMAGE_BEFORE_CACHE_ON_DISC = "Process image before cache on disc [%s]";
 	private static final String LOG_TASK_CANCELLED = "ImageView is reused for another image. Task is cancelled. [%s]";
 	private static final String LOG_TASK_INTERRUPTED = "Task was interrupted [%s]";
 
-	private static final String WARNING_PRE_PROCESSOR_NULL = "Pre-processor returned null [%s]";
-	private static final String WARNING_POST_PROCESSOR_NULL = "Pre-processor returned null [%s]";
+	private static final String ERROR_PRE_PROCESSOR_NULL = "Pre-processor returned null [%s]";
+	private static final String ERROR_POST_PROCESSOR_NULL = "Pre-processor returned null [%s]";
+	private static final String ERROR_PROCESSOR_FOR_DISC_CACHE_NULL = "Bitmap processor for disc cache returned null [%s]";
 
 	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
 
@@ -132,7 +134,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 			bmp = configuration.memoryCache.get(memoryCacheKey);
 			if (bmp == null) {
 				bmp = tryLoadBitmap();
-				if (bmp == null) return;
+				if (bmp == null) return; // listener callback already was fired
 
 				if (checkTaskIsNotActual() || checkTaskIsInterrupted()) return;
 
@@ -140,7 +142,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 					log(LOG_PREPROCESS_IMAGE);
 					bmp = options.getPreProcessor().process(bmp);
 					if (bmp == null) {
-						L.w(WARNING_PRE_PROCESSOR_NULL);
+						L.e(ERROR_PRE_PROCESSOR_NULL);
 					}
 				}
 
@@ -157,7 +159,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 				log(LOG_POSTPROCESS_IMAGE);
 				bmp = options.getPostProcessor().process(bmp);
 				if (bmp == null) {
-					L.w(WARNING_POST_PROCESSOR_NULL, memoryCacheKey);
+					L.e(ERROR_POST_PROCESSOR_NULL, memoryCacheKey);
 				}
 			}
 		} finally {
@@ -210,7 +212,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	/**
 	 * Check whether the image URI of this task matches to image URI which is actual for current ImageView at this
-	 * moment and fire {@link ImageLoadingListener#onLoadingCancelled()} event if it doesn't.
+	 * moment and fire {@link ImageLoadingListener#onLoadingCancelled(String, android.view.View)}} event if it doesn't.
 	 */
 	private boolean checkTaskIsNotActual() {
 		String currentCacheKey = engine.getLoadingUriForView(imageView);
@@ -328,18 +330,25 @@ final class LoadAndDisplayImageTask implements Runnable {
 		DisplayImageOptions specialOptions = new DisplayImageOptions.Builder().cloneFrom(options).imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
 		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, uri, targetImageSize, ViewScaleType.FIT_INSIDE, getDownloader(), specialOptions);
 		Bitmap bmp = decoder.decode(decodingInfo);
-		boolean savedSuccessfully = false;
-		if (bmp != null) {
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-			try {
-				savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
-			} finally {
-				IoUtils.closeSilently(os);
-			}
-			if (savedSuccessfully) {
-				bmp.recycle();
+		if (bmp == null) return false;
+
+		if (configuration.processorForDiscCache != null) {
+			log(LOG_PROCESS_IMAGE_BEFORE_CACHE_ON_DISC);
+			bmp = configuration.processorForDiscCache.process(bmp);
+			if (bmp == null) {
+				L.e(ERROR_PROCESSOR_FOR_DISC_CACHE_NULL, memoryCacheKey);
+				return false;
 			}
 		}
+
+		OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
+		boolean savedSuccessfully;
+		try {
+			savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+		} finally {
+			IoUtils.closeSilently(os);
+		}
+		bmp.recycle();
 		return savedSuccessfully;
 	}
 

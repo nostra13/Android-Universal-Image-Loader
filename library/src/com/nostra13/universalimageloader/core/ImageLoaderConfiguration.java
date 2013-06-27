@@ -32,6 +32,7 @@ import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloader;
 import com.nostra13.universalimageloader.core.download.SlowNetworkImageDownloader;
+import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 import com.nostra13.universalimageloader.utils.L;
 
 /**
@@ -56,6 +57,7 @@ public final class ImageLoaderConfiguration {
 	final int maxImageHeightForDiscCache;
 	final CompressFormat imageCompressFormatForDiscCache;
 	final int imageQualityForDiscCache;
+	final BitmapProcessor processorForDiscCache;
 
 	final Executor taskExecutor;
 	final Executor taskExecutorForCachedImages;
@@ -85,6 +87,7 @@ public final class ImageLoaderConfiguration {
 		maxImageHeightForDiscCache = builder.maxImageHeightForDiscCache;
 		imageCompressFormatForDiscCache = builder.imageCompressFormatForDiscCache;
 		imageQualityForDiscCache = builder.imageQualityForDiscCache;
+		processorForDiscCache = builder.processorForDiscCache;
 		taskExecutor = builder.taskExecutor;
 		taskExecutorForCachedImages = builder.taskExecutorForCachedImages;
 		threadPoolSize = builder.threadPoolSize;
@@ -159,6 +162,7 @@ public final class ImageLoaderConfiguration {
 		private int maxImageHeightForDiscCache = 0;
 		private CompressFormat imageCompressFormatForDiscCache = null;
 		private int imageQualityForDiscCache = 0;
+		private BitmapProcessor processorForDiscCache = null;
 
 		private Executor taskExecutor = null;
 		private Executor taskExecutorForCachedImages = null;
@@ -211,12 +215,14 @@ public final class ImageLoaderConfiguration {
 		 *            save them at disc cache
 		 * @param compressQuality Hint to the compressor, 0-100. 0 meaning compress for small size, 100 meaning compress
 		 *            for max quality. Some formats, like PNG which is lossless, will ignore the quality setting
+		 * @param processorForDiscCache null-ok; {@linkplain BitmapProcessor Bitmap processor} which process images before saving them in disc cache
 		 */
-		public Builder discCacheExtraOptions(int maxImageWidthForDiscCache, int maxImageHeightForDiscCache, CompressFormat compressFormat, int compressQuality) {
+		public Builder discCacheExtraOptions(int maxImageWidthForDiscCache, int maxImageHeightForDiscCache, CompressFormat compressFormat, int compressQuality, BitmapProcessor processorForDiscCache) {
 			this.maxImageWidthForDiscCache = maxImageWidthForDiscCache;
 			this.maxImageHeightForDiscCache = maxImageHeightForDiscCache;
 			this.imageCompressFormatForDiscCache = compressFormat;
 			this.imageQualityForDiscCache = compressQuality;
+			this.processorForDiscCache = processorForDiscCache;
 			return this;
 		}
 
