@@ -15,12 +15,7 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -138,12 +133,17 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 				if (checkTaskIsNotActual() || checkTaskIsInterrupted()) return;
 
-				if (options.shouldPreProcess()) {
+				if (options.shouldPreProcess() && !(loadedFrom == LoadedFrom.DISC_CACHE && options.shouldCachePreProcessedImageOnDisc())) {
 					log(LOG_PREPROCESS_IMAGE);
 					bmp = options.getPreProcessor().process(bmp);
 					if (bmp == null) {
 						L.e(ERROR_PRE_PROCESSOR_NULL);
 					}
+                    else {
+                        if(options.shouldCachePreProcessedImageOnDisc()){
+                            cachePreProcessedImageOnDisc(bmp);
+                        }
+                    }
 				}
 
 				if (bmp != null && options.isCacheInMemory()) {
@@ -173,7 +173,28 @@ final class LoadAndDisplayImageTask implements Runnable {
 		handler.post(displayBitmapTask);
 	}
 
-	/**
+    private void cachePreProcessedImageOnDisc(Bitmap bmp) {
+        File targetFile = getImageFileInDiscCache();
+        OutputStream os = null;
+        try {
+            os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
+            boolean savedSuccessfully = bmp.compress(Bitmap.CompressFormat.PNG, 0, os);
+            if(savedSuccessfully){
+                configuration.discCache.put(uri, targetFile);
+            }
+
+        } catch (FileNotFoundException e) {
+            L.e(e);
+        }
+        finally {
+            if(os != null){
+                IoUtils.closeSilently(os);
+            }
+        }
+
+    }
+
+    /**
 	 * @return true - if task should be interrupted; false - otherwise
 	 */
 	private boolean waitIfPaused() {
