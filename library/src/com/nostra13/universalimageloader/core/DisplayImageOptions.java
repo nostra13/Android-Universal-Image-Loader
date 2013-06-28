@@ -39,7 +39,7 @@ import com.nostra13.universalimageloader.core.process.BitmapProcessor;
  * <li>image scale type</li>
  * <li>decoding options (including bitmap decoding configuration)</li>
  * <li>delay before loading of image</li>
- * <li>auxiliary object which will be passed to {@link ImageDownloader#getStream(java.net.URI, Object) ImageDownloader}</li>
+ * <li>auxiliary object which will be passed to {@link ImageDownloader#getStream(String, Object) ImageDownloader}</li>
  * <li>pre-processor for image Bitmap (before caching in memory)</li>
  * <li>post-processor for image Bitmap (after caching in memory, before displaying)</li>
  * <li>how decoded {@link Bitmap} will be displayed</li>
@@ -229,21 +229,51 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
-		/** {@link android.widget.ImageView ImageView} will be reset (set <b>null</b>) before image loading start */
+		/**
+		 * {@link android.widget.ImageView ImageView} will be reset (set <b>null</b>) before image loading start
+		 *
+		 * @deprecated Use {@link #resetViewBeforeLoading(boolean) resetViewBeforeLoading(true)} instead
+		 */
 		public Builder resetViewBeforeLoading() {
 			resetViewBeforeLoading = true;
 			return this;
 		}
 
-		/** Loaded image will be cached in memory */
+		/** Sets whether {@link android.widget.ImageView ImageView} will be reset (set <b>null</b>) before image loading start */
+		public Builder resetViewBeforeLoading(boolean resetViewBeforeLoading) {
+			this.resetViewBeforeLoading = resetViewBeforeLoading;
+			return this;
+		}
+
+		/**
+		 * Loaded image will be cached in memory
+		 *
+		 * @deprecated Use {@link #cacheInMemory(boolean) cacheInMemory(true)} instead
+		 */
 		public Builder cacheInMemory() {
 			cacheInMemory = true;
 			return this;
 		}
 
-		/** Loaded image will be cached on disc */
+		/** Sets whether loaded image will be cached in memory */
+		public Builder cacheInMemory(boolean cacheInMemory) {
+			this.cacheInMemory = cacheInMemory;
+			return this;
+		}
+
+		/**
+		 * Loaded image will be cached on disc
+		 *
+		 * @deprecated Use {@link #cacheOnDisc(boolean) cacheOnDisc(true)} instead
+		 */
 		public Builder cacheOnDisc() {
 			cacheOnDisc = true;
+			return this;
+		}
+
+		/** Sets whether loaded image will be cached on disc */
+		public Builder cacheOnDisc(boolean cacheOnDisc) {
+			this.cacheOnDisc = cacheOnDisc;
 			return this;
 		}
 
@@ -281,7 +311,7 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
-		/** Sets auxiliary object which will be passed to {@link ImageDownloader#getStream(java.net.URI, Object)} */
+		/** Sets auxiliary object which will be passed to {@link ImageDownloader#getStream(String, Object)} */
 		public Builder extraForDownloader(Object extra) {
 			this.extraForDownloader = extra;
 			return this;
