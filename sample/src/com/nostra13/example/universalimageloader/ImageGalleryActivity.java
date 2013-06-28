@@ -50,8 +50,8 @@ public class ImageGalleryActivity extends BaseActivity {
 			.showStubImage(R.drawable.ic_stub)
 			.showImageForEmptyUri(R.drawable.ic_empty)
 			.showImageOnFail(R.drawable.ic_error)
-			.cacheInMemory()
-			.cacheOnDisc()
+			.cacheInMemory(true)
+			.cacheOnDisc(true)
 			.bitmapConfig(Bitmap.Config.RGB_565)
 			.build();
 
