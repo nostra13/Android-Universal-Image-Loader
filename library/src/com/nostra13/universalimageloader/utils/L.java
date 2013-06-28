@@ -15,21 +15,29 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.utils;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import android.util.Log;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * "Less-word" analog of Android {@link Log logger}
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.6.4
  */
 public final class L {
 
 	private static final String LOG_FORMAT = "%1$s\n%2$s";
+	private static volatile boolean DISABLED = false;
 
 	private L() {
+	}
+
+	public static void enableLogging() {
+		DISABLED = false;
+	}
+
+	public static void disableLogging() {
+		DISABLED = true;
 	}
 
 	public static void d(String message, Object... args) {
@@ -57,6 +65,7 @@ public final class L {
 	}
 
 	private static void log(int priority, Throwable ex, String message, Object... args) {
+		if (DISABLED) return;
 		if (args.length > 0) {
 			message = String.format(message, args);
 		}
