@@ -19,7 +19,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
 import android.os.Handler;
 import android.widget.ImageView;
-
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
@@ -44,7 +43,7 @@ import com.nostra13.universalimageloader.core.process.BitmapProcessor;
  * <li>post-processor for image Bitmap (after caching in memory, before displaying)</li>
  * <li>how decoded {@link Bitmap} will be displayed</li>
  * </ul>
- * 
+ * <p/>
  * You can create instance:
  * <ul>
  * <li>with {@link Builder}:<br />
@@ -53,7 +52,7 @@ import com.nostra13.universalimageloader.core.process.BitmapProcessor;
  * {@link Builder#showStubImage(int) showStubImage()}.{@link Builder#build() build()}</code><br />
  * </li>
  * <li>or by static method: {@link #createSimple()}</li> <br />
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */
@@ -173,7 +172,7 @@ public final class DisplayImageOptions {
 
 	/**
 	 * Builder for {@link DisplayImageOptions}
-	 * 
+	 *
 	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
 	 */
 	public static class Builder {
@@ -199,7 +198,7 @@ public final class DisplayImageOptions {
 
 		/**
 		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
-		 * 
+		 *
 		 * @param stubImageRes Stub image resource
 		 */
 		public Builder showStubImage(int stubImageRes) {
@@ -210,7 +209,7 @@ public final class DisplayImageOptions {
 		/**
 		 * Incoming image will be displayed in {@link android.widget.ImageView ImageView} if empty URI (null or empty
 		 * string) will be passed to <b>ImageLoader.displayImage(...)</b> method.
-		 * 
+		 *
 		 * @param imageRes Image resource
 		 */
 		public Builder showImageForEmptyUri(int imageRes) {
@@ -221,7 +220,7 @@ public final class DisplayImageOptions {
 		/**
 		 * Incoming image will be displayed in {@link android.widget.ImageView ImageView} if some error occurs during
 		 * requested image loading/decoding.
-		 * 
+		 *
 		 * @param imageRes Image resource
 		 */
 		public Builder showImageOnFail(int imageRes) {
@@ -288,6 +287,7 @@ public final class DisplayImageOptions {
 
 		/** Sets {@link Bitmap.Config bitmap config} for image decoding. Default value - {@link Bitmap.Config#ARGB_8888} */
 		public Builder bitmapConfig(Bitmap.Config bitmapConfig) {
+			if (bitmapConfig == null) throw new IllegalArgumentException("bitmapConfig can't be null");
 			decodingOptions.inPreferredConfig = bitmapConfig;
 			return this;
 		}
@@ -301,6 +301,7 @@ public final class DisplayImageOptions {
 		 * option.
 		 */
 		public Builder decodingOptions(Options decodingOptions) {
+			if (decodingOptions == null) throw new IllegalArgumentException("decodingOptions can't be null");
 			this.decodingOptions = decodingOptions;
 			return this;
 		}
@@ -341,6 +342,7 @@ public final class DisplayImageOptions {
 		 * {@link DefaultConfigurationFactory#createBitmapDisplayer()}
 		 */
 		public Builder displayer(BitmapDisplayer displayer) {
+			if (displayer == null) throw new IllegalArgumentException("displayer can't be null");
 			this.displayer = displayer;
 			return this;
 		}
@@ -389,7 +391,7 @@ public final class DisplayImageOptions {
 	 * <li>{@link Bitmap.Config#ARGB_8888} bitmap config will be used for image decoding</li>
 	 * <li>{@link SimpleBitmapDisplayer} will be used for image displaying</li>
 	 * </ul>
-	 * 
+	 * <p/>
 	 * These option are appropriate for simple single-use image (from drawables or from Internet) displaying.
 	 */
 	public static DisplayImageOptions createSimple() {
