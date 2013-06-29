@@ -15,14 +15,13 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.assist;
 
+import android.graphics.Bitmap;
+import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import android.graphics.Bitmap;
-
-import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 /**
  * Utility for generating of keys for memory cache, key comparing and other work with memory cache
@@ -40,8 +39,7 @@ public final class MemoryCacheUtil {
 
 	/**
 	 * Generates key for memory cache for incoming image (URI + size).<br />
-	 * Pattern for cache key - {@value #MEMORY_CACHE_KEY_FORMAT}, where (1) - image URI, (2) - image size
-	 * ([width]x[height]).
+	 * Pattern for cache key - <b>[imageUri]_[width]x[height]</b>.
 	 */
 	public static String generateKey(String imageUri, ImageSize targetSize) {
 		return new StringBuilder(imageUri).append(URI_AND_SIZE_SEPARATOR).append(targetSize.getWidth()).append(WIDTH_AND_HEIGHT_SEPARATOR)
