@@ -127,8 +127,8 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 					x = (bw - srcWidth) / 2;
 					y = 0;
 				}
-				width = Math.min(vw, bw);
-				height = Math.min(vh, bh);
+				width = srcWidth;// Math.min(vw, bw);
+				height = srcHeight;//Math.min(vh, bh);
 				srcRect = new Rect(x, y, x + srcWidth, y + srcHeight);
 				destRect = new Rect(0, 0, width, height);
 				break;
