@@ -195,7 +195,7 @@ public class ImageLoader {
 			if (options.shouldShowImageForEmptyUri()) {
 				imageView.setImageResource(options.getImageForEmptyUri());
 			} else {
-				imageView.setImageBitmap(null);
+				imageView.setImageDrawable(null);
 			}
 			listener.onLoadingComplete(uri, imageView, null);
 			return;
@@ -225,7 +225,7 @@ public class ImageLoader {
 				imageView.setImageResource(options.getStubImage());
 			} else {
 				if (options.isResetViewBeforeLoading()) {
-					imageView.setImageBitmap(null);
+					imageView.setImageDrawable(null);
 				}
 			}
 
