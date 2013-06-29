@@ -15,32 +15,24 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.download;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Provides retrieving of {@link InputStream} of image by URI from network or file system or app resources.<br />
  * {@link URLConnection} is used to retrieve image stream from network.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * 
  * @see HttpClientImageDownloader
  * @since 1.8.0
  */
@@ -98,13 +90,13 @@ public class BaseImageDownloader implements ImageDownloader {
 
 	/**
 	 * Retrieves {@link InputStream} of image by URI (image is located in the network).
-	 * 
+	 *
 	 * @param imageUri Image URI
-	 * @param extra Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
-	 *            DisplayImageOptions.extraForDownloader(Object)}; can be null
+	 * @param extra    Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
+	 *                 DisplayImageOptions.extraForDownloader(Object)}; can be null
 	 * @return {@link InputStream} of image
 	 * @throws IOException if some I/O error occurs during network request or if no InputStream could be created for
-	 *             URL.
+	 *                     URL.
 	 */
 	protected InputStream getStreamFromNetwork(String imageUri, Object extra) throws IOException {
 		HttpURLConnection conn = createConnection(imageUri);
@@ -120,12 +112,12 @@ public class BaseImageDownloader implements ImageDownloader {
 
 	/**
 	 * Create {@linkplain HttpURLConnection HTTP connection} for incoming URL
-	 * 
+	 *
 	 * @param url URL to connect to
 	 * @return {@linkplain HttpURLConnection Connection} for incoming URL. Connection isn't established so it still
 	 *         configurable.
 	 * @throws IOException if some I/O error occurs during network request or if no InputStream could be created for
-	 *             URL.
+	 *                     URL.
 	 */
 	protected HttpURLConnection createConnection(String url) throws IOException {
 		String encodedUrl = Uri.encode(url, ALLOWED_URI_CHARS);
@@ -137,10 +129,10 @@ public class BaseImageDownloader implements ImageDownloader {
 
 	/**
 	 * Retrieves {@link InputStream} of image by URI (image is located on the local file system or SD card).
-	 * 
+	 *
 	 * @param imageUri Image URI
-	 * @param extra Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
-	 *            DisplayImageOptions.extraForDownloader(Object)}; can be null
+	 * @param extra    Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
+	 *                 DisplayImageOptions.extraForDownloader(Object)}; can be null
 	 * @return {@link InputStream} of image
 	 * @throws IOException if some I/O error occurs reading from file system
 	 */
@@ -151,10 +143,10 @@ public class BaseImageDownloader implements ImageDownloader {
 
 	/**
 	 * Retrieves {@link InputStream} of image by URI (image is accessed using {@link ContentResolver}).
-	 * 
+	 *
 	 * @param imageUri Image URI
-	 * @param extra Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
-	 *            DisplayImageOptions.extraForDownloader(Object)}; can be null
+	 * @param extra    Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
+	 *                 DisplayImageOptions.extraForDownloader(Object)}; can be null
 	 * @return {@link InputStream} of image
 	 * @throws FileNotFoundException if the provided URI could not be opened
 	 */
@@ -166,10 +158,10 @@ public class BaseImageDownloader implements ImageDownloader {
 
 	/**
 	 * Retrieves {@link InputStream} of image by URI (image is located in assets of application).
-	 * 
+	 *
 	 * @param imageUri Image URI
-	 * @param extra Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
-	 *            DisplayImageOptions.extraForDownloader(Object)}; can be null
+	 * @param extra    Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
+	 *                 DisplayImageOptions.extraForDownloader(Object)}; can be null
 	 * @return {@link InputStream} of image
 	 * @throws IOException if some I/O error occurs file reading
 	 */
@@ -180,10 +172,10 @@ public class BaseImageDownloader implements ImageDownloader {
 
 	/**
 	 * Retrieves {@link InputStream} of image by URI (image is located in drawable resources of application).
-	 * 
+	 *
 	 * @param imageUri Image URI
-	 * @param extra Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
-	 *            DisplayImageOptions.extraForDownloader(Object)}; can be null
+	 * @param extra    Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
+	 *                 DisplayImageOptions.extraForDownloader(Object)}; can be null
 	 * @return {@link InputStream} of image
 	 */
 	protected InputStream getStreamFromDrawable(String imageUri, Object extra) {
@@ -202,12 +194,12 @@ public class BaseImageDownloader implements ImageDownloader {
 	 * successors to implement image downloading from special sources.<br />
 	 * This method is called only if image URI has unsupported scheme. Throws {@link UnsupportedOperationException} by
 	 * default.
-	 * 
+	 *
 	 * @param imageUri Image URI
-	 * @param extra Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
-	 *            DisplayImageOptions.extraForDownloader(Object)}; can be null
+	 * @param extra    Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
+	 *                 DisplayImageOptions.extraForDownloader(Object)}; can be null
 	 * @return {@link InputStream} of image
-	 * @throws IOException if some I/O error occurs
+	 * @throws IOException                   if some I/O error occurs
 	 * @throws UnsupportedOperationException if image URI has unsupported scheme(protocol)
 	 */
 	protected InputStream getStreamFromOtherSource(String imageUri, Object extra) throws IOException {

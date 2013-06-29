@@ -15,21 +15,21 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc.impl;
 
+import com.nostra13.universalimageloader.cache.disc.BaseDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
+import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.nostra13.universalimageloader.cache.disc.BaseDiscCache;
-import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
-import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
-
 /**
  * Cache which deletes files which were loaded more than defined time. Cache size is unlimited.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.3.1
  * @see BaseDiscCache
+ * @since 1.3.1
  */
 public class LimitedAgeDiscCache extends BaseDiscCache {
 
@@ -39,18 +39,18 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 
 	/**
 	 * @param cacheDir Directory for file caching
-	 * @param maxAge Max file age (in seconds). If file age will exceed this value then it'll be removed on next
-	 *            treatment (and therefore be reloaded).
+	 * @param maxAge   Max file age (in seconds). If file age will exceed this value then it'll be removed on next
+	 *                 treatment (and therefore be reloaded).
 	 */
 	public LimitedAgeDiscCache(File cacheDir, long maxAge) {
 		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxAge);
 	}
 
 	/**
-	 * @param cacheDir Directory for file caching
+	 * @param cacheDir          Directory for file caching
 	 * @param fileNameGenerator Name generator for cached files
-	 * @param maxAge Max file age (in seconds). If file age will exceed this value then it'll be removed on next
-	 *            treatment (and therefore be reloaded).
+	 * @param maxAge            Max file age (in seconds). If file age will exceed this value then it'll be removed on next
+	 *                          treatment (and therefore be reloaded).
 	 */
 	public LimitedAgeDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, long maxAge) {
 		super(cacheDir, fileNameGenerator);

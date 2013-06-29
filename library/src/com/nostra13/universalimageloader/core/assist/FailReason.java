@@ -17,7 +17,7 @@ package com.nostra13.universalimageloader.core.assist;
 
 /**
  * Presents the reason why image loading and displaying was failed
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */
@@ -32,16 +32,12 @@ public class FailReason {
 		this.cause = cause;
 	}
 
-	/**
-	 * @return {@linkplain FailType Fail type}
-	 */
+	/** @return {@linkplain FailType Fail type} */
 	public FailType getType() {
 		return type;
 	}
 
-	/**
-	 * @return Thrown exception/error, can be <b>null</b>
-	 */
+	/** @return Thrown exception/error, can be <b>null</b> */
 	public Throwable getCause() {
 		return cause;
 	}

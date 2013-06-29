@@ -15,20 +15,20 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.memory.impl;
 
+import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
-
 /**
  * Decorator for {@link MemoryCacheAware}. Provides special feature for cache: if some cached object age exceeds defined
  * value then this object will be removed from cache.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.3.1
  * @see MemoryCacheAware
+ * @since 1.3.1
  */
 public class LimitedAgeMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 
@@ -38,9 +38,9 @@ public class LimitedAgeMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 	private final Map<K, Long> loadingDates = Collections.synchronizedMap(new HashMap<K, Long>());
 
 	/**
-	 * @param cache Wrapped memory cache
+	 * @param cache  Wrapped memory cache
 	 * @param maxAge Max object age <b>(in seconds)</b>. If object age will exceed this value then it'll be removed from
-	 *            cache on next treatment (and therefore be reloaded).
+	 *               cache on next treatment (and therefore be reloaded).
 	 */
 	public LimitedAgeMemoryCache(MemoryCacheAware<K, V> cache, long maxAge) {
 		this.cache = cache;

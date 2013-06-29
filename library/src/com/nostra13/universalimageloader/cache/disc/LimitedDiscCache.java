@@ -15,6 +15,9 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc;
 
+import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
+import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,17 +26,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
-import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
-
 /**
  * Abstract disc cache limited by some parameter. If cache exceeds specified limit then file with the most oldest last
  * usage date will be deleted.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.0.0
  * @see BaseDiscCache
  * @see FileNameGenerator
+ * @since 1.0.0
  */
 public abstract class LimitedDiscCache extends BaseDiscCache {
 
@@ -46,21 +46,21 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	private final Map<File, Long> lastUsageDates = Collections.synchronizedMap(new HashMap<File, Long>());
 
 	/**
-	 * @param cacheDir Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
-	 *            needed for right cache limit work.
+	 * @param cacheDir  Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
+	 *                  needed for right cache limit work.
 	 * @param sizeLimit Cache limit value. If cache exceeds this limit then file with the most oldest last usage date
-	 *            will be deleted.
+	 *                  will be deleted.
 	 */
 	public LimitedDiscCache(File cacheDir, int sizeLimit) {
 		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), sizeLimit);
 	}
 
 	/**
-	 * @param cacheDir Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
-	 *            needed for right cache limit work.
+	 * @param cacheDir          Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
+	 *                          needed for right cache limit work.
 	 * @param fileNameGenerator Name generator for cached files
-	 * @param sizeLimit Cache limit value. If cache exceeds this limit then file with the most oldest last usage date
-	 *            will be deleted.
+	 * @param sizeLimit         Cache limit value. If cache exceeds this limit then file with the most oldest last usage date
+	 *                          will be deleted.
 	 */
 	public LimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int sizeLimit) {
 		super(cacheDir, fileNameGenerator);

@@ -15,27 +15,12 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
-
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.widget.ImageView;
-
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.*;
 import com.nostra13.universalimageloader.core.assist.FailReason.FailType;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.assist.LoadedFrom;
-import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.decode.ImageDecodingInfo;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
@@ -43,14 +28,18 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
+import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Presents load'n'display image task. Used to load image from Internet or file system, decode it to {@link Bitmap}, and
  * display it in {@link ImageView} using {@link DisplayBitmapTask}.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.3.1
  * @see ImageLoaderConfiguration
  * @see ImageLoadingInfo
+ * @since 1.3.1
  */
 final class LoadAndDisplayImageTask implements Runnable {
 
@@ -173,9 +162,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		handler.post(displayBitmapTask);
 	}
 
-	/**
-	 * @return true - if task should be interrupted; false - otherwise
-	 */
+	/** @return true - if task should be interrupted; false - otherwise */
 	private boolean waitIfPaused() {
 		AtomicBoolean pause = engine.getPause();
 		if (pause.get()) {
@@ -193,9 +180,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return checkTaskIsNotActual();
 	}
 
-	/**
-	 * @return true - if task should be interrupted; false - otherwise
-	 */
+	/** @return true - if task should be interrupted; false - otherwise */
 	private boolean delayIfNeed() {
 		if (options.shouldDelayBeforeLoading()) {
 			log(LOG_DELAY_BEFORE_LOADING, options.getDelayBeforeLoading(), memoryCacheKey);
@@ -299,9 +284,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return decoder.decode(decodingInfo);
 	}
 
-	/**
-	 * @return Cached image URI; or original image URI if caching failed
-	 */
+	/** @return Cached image URI; or original image URI if caching failed */
 	private String tryCacheImageOnDisc(File targetFile) {
 		log(LOG_CACHE_IMAGE_ON_DISC);
 

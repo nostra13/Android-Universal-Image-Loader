@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * Utility for generating of keys for memory cache, key comparing and other work with memory cache
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.6.3
  */
@@ -42,8 +42,7 @@ public final class MemoryCacheUtil {
 	 * Pattern for cache key - <b>[imageUri]_[width]x[height]</b>.
 	 */
 	public static String generateKey(String imageUri, ImageSize targetSize) {
-		return new StringBuilder(imageUri).append(URI_AND_SIZE_SEPARATOR).append(targetSize.getWidth()).append(WIDTH_AND_HEIGHT_SEPARATOR)
-				.append(targetSize.getHeight()).toString();
+		return new StringBuilder(imageUri).append(URI_AND_SIZE_SEPARATOR).append(targetSize.getWidth()).append(WIDTH_AND_HEIGHT_SEPARATOR).append(targetSize.getHeight()).toString();
 	}
 
 	public static Comparator<String> createFuzzyKeyComparator() {

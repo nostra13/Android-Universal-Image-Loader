@@ -15,15 +15,15 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.download;
 
+import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
-
-import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 
 /**
  * Decorator. Handles <a href="http://code.google.com/p/android/issues/detail?id=6066">this problem</a> on slow networks
  * using {@link FlushedInputStream}.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.1
  */

@@ -15,19 +15,18 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.utils;
 
-import java.lang.reflect.Field;
-
 import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
-
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 
+import java.lang.reflect.Field;
+
 /**
  * Provides calculations with image sizes, scales
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.3
  */
@@ -89,22 +88,22 @@ public final class ImageSizeUtils {
 	 * decoding image} to bitmap.<br />
 	 * <br />
 	 * <b>Examples:</b><br />
-	 * 
+	 * <p/>
 	 * <pre>
 	 * srcSize(100x100), targetSize(10x10), powerOf2Scale = true -> sampleSize = 8
 	 * srcSize(100x100), targetSize(10x10), powerOf2Scale = false -> sampleSize = 10
-	 * 
+	 *
 	 * srcSize(100x100), targetSize(20x40), viewScaleType = FIT_INSIDE -> sampleSize = 5
 	 * srcSize(100x100), targetSize(20x40), viewScaleType = CROP       -> sampleSize = 2
 	 * </pre>
-	 * 
+	 * <p/>
 	 * <br />
 	 * The sample size is the number of pixels in either dimension that correspond to a single pixel in the decoded
 	 * bitmap. For example, inSampleSize == 4 returns an image that is 1/4 the width/height of the original, and 1/16
 	 * the number of pixels. Any value <= 1 is treated the same as 1.
-	 * 
-	 * @param srcSize Original (image) size
-	 * @param targetSize Target (view) size
+	 *
+	 * @param srcSize       Original (image) size
+	 * @param targetSize    Target (view) size
 	 * @param viewScaleType {@linkplain ViewScaleType Scale type} for placing image in view
 	 * @param powerOf2Scale <i>true</i> - if sample size be a power of 2 (1, 2, 4, 8, ...)
 	 * @return Computed sample size
@@ -156,22 +155,22 @@ public final class ImageSizeUtils {
 	 * Computes scale of target size (<b>targetSize</b>) to source size (<b>srcSize</b>).<br />
 	 * <br />
 	 * <b>Examples:</b><br />
-	 * 
+	 * <p/>
 	 * <pre>
 	 * srcSize(40x40), targetSize(10x10) -> scale = 0.25
-	 * 
+	 *
 	 * srcSize(10x10), targetSize(20x20), stretch = false -> scale = 1
 	 * srcSize(10x10), targetSize(20x20), stretch = true  -> scale = 2
-	 * 
+	 *
 	 * srcSize(100x100), targetSize(20x40), viewScaleType = FIT_INSIDE -> scale = 0.2
 	 * srcSize(100x100), targetSize(20x40), viewScaleType = CROP       -> scale = 0.4
 	 * </pre>
-	 * 
-	 * @param srcSize Source (image) size
-	 * @param targetSize Target (view) size
+	 *
+	 * @param srcSize       Source (image) size
+	 * @param targetSize    Target (view) size
 	 * @param viewScaleType {@linkplain ViewScaleType Scale type} for placing image in view
-	 * @param stretch Whether source size should be stretched if target size is larger than source size. If <b>false</b>
-	 *            then result scale value can't be greater than 1.
+	 * @param stretch       Whether source size should be stretched if target size is larger than source size. If <b>false</b>
+	 *                      then result scale value can't be greater than 1.
 	 * @return Computed scale
 	 */
 	public static float computeImageScale(ImageSize srcSize, ImageSize targetSize, ViewScaleType viewScaleType, boolean stretch) {

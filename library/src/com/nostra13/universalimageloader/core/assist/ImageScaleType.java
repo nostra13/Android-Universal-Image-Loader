@@ -17,7 +17,7 @@ package com.nostra13.universalimageloader.core.assist;
 
 /**
  * Type of image scaling during decoding.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.5.0
  */

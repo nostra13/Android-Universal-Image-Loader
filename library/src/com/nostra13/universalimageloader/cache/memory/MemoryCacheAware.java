@@ -19,14 +19,14 @@ import java.util.Collection;
 
 /**
  * Interface for memory cache
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */
 public interface MemoryCacheAware<K, V> {
 	/**
 	 * Puts value into cache by key
-	 * 
+	 *
 	 * @return <b>true</b> - if value was put into cache successfully, <b>false</b> - if value was <b>not</b> put into
 	 *         cache
 	 */

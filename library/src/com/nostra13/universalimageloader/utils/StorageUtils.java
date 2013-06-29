@@ -15,18 +15,18 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.utils;
 
-import static android.os.Environment.MEDIA_MOUNTED;
-
-import java.io.File;
-import java.io.IOException;
-
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 
+import java.io.File;
+import java.io.IOException;
+
+import static android.os.Environment.MEDIA_MOUNTED;
+
 /**
  * Provides application storage paths
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */
@@ -42,7 +42,7 @@ public final class StorageUtils {
 	 * Returns application cache directory. Cache directory will be created on SD card
 	 * <i>("/Android/data/[app_package_name]/cache")</i> if card is mounted and app has appropriate permission. Else -
 	 * Android defines cache directory on device's file system.
-	 * 
+	 *
 	 * @param context Application context
 	 * @return Cache {@link File directory}
 	 */
@@ -65,7 +65,7 @@ public final class StorageUtils {
 	 * Returns individual application cache directory (for only image caching from ImageLoader). Cache directory will be
 	 * created on SD card <i>("/Android/data/[app_package_name]/cache/uil-images")</i> if card is mounted and app has
 	 * appropriate permission. Else - Android defines cache directory on device's file system.
-	 * 
+	 *
 	 * @param context Application context
 	 * @return Cache {@link File directory}
 	 */
@@ -83,8 +83,8 @@ public final class StorageUtils {
 	/**
 	 * Returns specified application cache directory. Cache directory will be created on SD card by defined path if card
 	 * is mounted and app has appropriate permission. Else - Android defines cache directory on device's file system.
-	 * 
-	 * @param context Application context
+	 *
+	 * @param context  Application context
 	 * @param cacheDir Cache directory path (e.g.: "AppCacheDir", "AppDir/cache/images")
 	 * @return Cache {@link File directory}
 	 */
