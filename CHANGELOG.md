@@ -3,19 +3,19 @@ Change Log
 
 v1.8.5 *(30.06.2013)*
 ---
- * Introduce `ImageLoaderConfiguration.memoryCacheSizePercentage(int)`
- * Introduced `DisplayImageOptions.cacheInMemory(boolean)`, `.cacheOnDisc(boolean)`, `.resetViewBeforeLoading(boolean)`
+ * Introduce `ImageLoaderConfiguration.memoryCacheSizePercentage(int)` ([#279](https://github.com/nostra13/Android-Universal-Image-Loader/issues/279))
+ * Introduced `DisplayImageOptions.cacheInMemory(boolean)`, `.cacheOnDisc(boolean)`, `.resetViewBeforeLoading(boolean)` ([#252](https://github.com/nostra13/Android-Universal-Image-Loader/issues/252))
  * Added `LoadedFrom` flag to `BitmapDisplayer.display(..., LoadedFrom)` about image source  ([#149](https://github.com/nostra13/Android-Universal-Image-Loader/issues/149), [#239](https://github.com/nostra13/Android-Universal-Image-Loader/issues/239))
- * Added possibility to set bitmap processor for disc cache (`ImageLoaderConfiguration.discCacheExtraOptions(..., BitmapProcessor)`
- * Added `L.disableLogging()` and `L.enableLogging()` to off/on logs completely
+ * Added possibility to set bitmap processor for disc cache (`ImageLoaderConfiguration.discCacheExtraOptions(..., BitmapProcessor)` ([#314](https://github.com/nostra13/Android-Universal-Image-Loader/issues/314))
+ * Added `L.disableLogging()` and `L.enableLogging()` to off/on logs completely ([#270](https://github.com/nostra13/Android-Universal-Image-Loader/issues/270))
  * Prevent image decoding if image is reused ([#247](https://github.com/nostra13/Android-Universal-Image-Loader/issues/247))
- * Not set cache dir on SD card if no appropriate permission
- * Increased buffer size for image downlaods (8 KB -> 32 KB)
+ * Not set cache dir on SD card if no appropriate permission ([#311](https://github.com/nostra13/Android-Universal-Image-Loader/issues/311))
+ * Increased buffer size for image downlaods (8 KB -> 32 KB) ([#249](https://github.com/nostra13/Android-Universal-Image-Loader/issues/249))
  * Fixed bugs:
    * Prevent recycling of cached in memory images ([#259](https://github.com/nostra13/Android-Universal-Image-Loader/issues/259))
    * ConcurrentModificationException in `LruMemoryCache` ([#265](https://github.com/nostra13/Android-Universal-Image-Loader/issues/265))
-   * File counting if cached files disappeared `LimitedDiscCache`    
-   * NPE for ImageView without LayoutParams
+   * File counting if cached files disappeared `LimitedDiscCache` ([#316](https://github.com/nostra13/Android-Universal-Image-Loader/issues/316))    
+   * NPE for ImageView without LayoutParams ([#272](https://github.com/nostra13/Android-Universal-Image-Loader/issues/272))
    * NPE in `LoadAndDisplayImageTask` ([#271](https://github.com/nostra13/Android-Universal-Image-Loader/issues/271))
    * NPE in ImageLoaderEngine ([#301](https://github.com/nostra13/Android-Universal-Image-Loader/issues/301))
    * RoundedBitmapDisplayer doesn't display round corner correctly for CENTER_CROP ([#315](https://github.com/nostra13/Android-Universal-Image-Loader/issues/315))
