@@ -15,15 +15,15 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc.naming;
 
+import com.nostra13.universalimageloader.utils.L;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.nostra13.universalimageloader.utils.L;
-
 /**
  * Names image file as MD5 hash of image URI
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.4.0
  */

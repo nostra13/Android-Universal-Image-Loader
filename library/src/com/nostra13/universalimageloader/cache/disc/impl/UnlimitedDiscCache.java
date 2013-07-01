@@ -15,19 +15,19 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc.impl;
 
-import java.io.File;
-
 import com.nostra13.universalimageloader.cache.disc.BaseDiscCache;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 
+import java.io.File;
+
 /**
  * Default implementation of {@linkplain DiscCacheAware disc cache}. Cache size is unlimited.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.0.0
  * @see BaseDiscCache
+ * @since 1.0.0
  */
 public class UnlimitedDiscCache extends BaseDiscCache {
 
@@ -37,7 +37,7 @@ public class UnlimitedDiscCache extends BaseDiscCache {
 	}
 
 	/**
-	 * @param cacheDir Directory for file caching
+	 * @param cacheDir          Directory for file caching
 	 * @param fileNameGenerator Name generator for cached files
 	 */
 	public UnlimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator) {

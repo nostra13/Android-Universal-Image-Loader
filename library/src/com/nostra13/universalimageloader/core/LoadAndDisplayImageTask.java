@@ -15,34 +15,16 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
-
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.widget.ImageView;
-
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifThumbnailDirectory;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.*;
 import com.nostra13.universalimageloader.core.assist.FailReason.FailType;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.assist.LoadedFrom;
-import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.decode.ImageDecodingInfo;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
@@ -50,15 +32,19 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
+import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Presents load'n'display image task. Used to load image from Internet or file
  * system, decode it to {@link Bitmap}, and display it in {@link ImageView}
  * using {@link DisplayBitmapTask}.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.3.1
  * @see ImageLoaderConfiguration
  * @see ImageLoadingInfo
+ * @since 1.3.1
  */
 final class LoadAndDisplayImageTask implements Runnable {
 
@@ -74,13 +60,15 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final String LOG_POSTPROCESS_IMAGE = "PostProcess image before displaying [%s]";
 	private static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
 	private static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
+	private static final String LOG_PROCESS_IMAGE_BEFORE_CACHE_ON_DISC = "Process image before cache on disc [%s]";
 	private static final String LOG_TASK_CANCELLED = "ImageView is reused for another image. Task is cancelled. [%s]";
 	private static final String LOG_TASK_INTERRUPTED = "Task was interrupted [%s]";
 
-	private static final String WARNING_PRE_PROCESSOR_NULL = "Pre-processor returned null [%s]";
-	private static final String WARNING_POST_PROCESSOR_NULL = "Pre-processor returned null [%s]";
+	private static final String ERROR_PRE_PROCESSOR_NULL = "Pre-processor returned null [%s]";
+	private static final String ERROR_POST_PROCESSOR_NULL = "Pre-processor returned null [%s]";
+	private static final String ERROR_PROCESSOR_FOR_DISC_CACHE_NULL = "Bitmap processor for disc cache returned null [%s]";
 
-	private static final int BUFFER_SIZE = 8 * 1024; // 8 Kb
+	private static final int BUFFER_SIZE = 32 * 1024; // 32 Kb
 
 	private final ImageLoaderEngine engine;
 	private final ImageLoadingInfo imageLoadingInfo;
@@ -143,8 +131,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 			bmp = configuration.memoryCache.get(memoryCacheKey);
 			if (bmp == null) {
 				bmp = tryLoadBitmap();
-				if (bmp == null)
-					return;
+				if (bmp == null) return; // listener callback already was fired
 
 				if (checkTaskIsNotActual() || checkTaskIsInterrupted())
 					return;
@@ -153,7 +140,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 					log(LOG_PREPROCESS_IMAGE);
 					bmp = options.getPreProcessor().process(bmp);
 					if (bmp == null) {
-						L.w(WARNING_PRE_PROCESSOR_NULL);
+						L.e(ERROR_PRE_PROCESSOR_NULL);
 					}
 				}
 
@@ -170,7 +157,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 				log(LOG_POSTPROCESS_IMAGE);
 				bmp = options.getPostProcessor().process(bmp);
 				if (bmp == null) {
-					L.w(WARNING_POST_PROCESSOR_NULL, memoryCacheKey);
+					L.e(ERROR_POST_PROCESSOR_NULL, memoryCacheKey);
 				}
 			}
 		} finally {
@@ -185,9 +172,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		handler.post(displayBitmapTask);
 	}
 
-	/**
-	 * @return true - if task should be interrupted; false - otherwise
-	 */
+	/** @return true - if task should be interrupted; false - otherwise */
 	private boolean waitIfPaused() {
 		AtomicBoolean pause = engine.getPause();
 		if (pause.get()) {
@@ -205,9 +190,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return checkTaskIsNotActual();
 	}
 
-	/**
-	 * @return true - if task should be interrupted; false - otherwise
-	 */
+	/** @return true - if task should be interrupted; false - otherwise */
 	private boolean delayIfNeed() {
 		if (options.shouldDelayBeforeLoading()) {
 			log(LOG_DELAY_BEFORE_LOADING, options.getDelayBeforeLoading(), memoryCacheKey);
@@ -223,9 +206,8 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	/**
-	 * Check whether the image URI of this task matches to image URI which is
-	 * actual for current ImageView at this moment and fire
-	 * {@link ImageLoadingListener#onLoadingCancelled()} event if it doesn't.
+	 * Check whether the image URI of this task matches to image URI which is actual for current ImageView at this
+	 * moment and fire {@link ImageLoadingListener#onLoadingCancelled(String, android.view.View)}} event if it doesn't.
 	 */
 	private boolean checkTaskIsNotActual() {
 		String currentCacheKey = engine.getLoadingUriForView(imageView);
@@ -325,9 +307,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return decoder.decode(decodingInfo);
 	}
 
-	/**
-	 * @return Cached image URI; or original image URI if caching failed
-	 */
+	/** @return Cached image URI; or original image URI if caching failed */
 	private String tryCacheImageOnDisc(File targetFile) {
 		log(LOG_CACHE_IMAGE_ON_DISC);
 
@@ -363,19 +343,25 @@ final class LoadAndDisplayImageTask implements Runnable {
 		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, uri, targetImageSize,
 				ViewScaleType.FIT_INSIDE, getDownloader(), specialOptions);
 		Bitmap bmp = decoder.decode(decodingInfo);
-		boolean savedSuccessfully = false;
-		if (bmp != null) {
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-			try {
-				savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache,
-						configuration.imageQualityForDiscCache, os);
-			} finally {
-				IoUtils.closeSilently(os);
-			}
-			if (savedSuccessfully) {
-				bmp.recycle();
+		if (bmp == null) return false;
+
+		if (configuration.processorForDiscCache != null) {
+			log(LOG_PROCESS_IMAGE_BEFORE_CACHE_ON_DISC);
+			bmp = configuration.processorForDiscCache.process(bmp);
+			if (bmp == null) {
+				L.e(ERROR_PROCESSOR_FOR_DISC_CACHE_NULL, memoryCacheKey);
+				return false;
 			}
 		}
+
+		OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
+		boolean savedSuccessfully;
+		try {
+			savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+		} finally {
+			IoUtils.closeSilently(os);
+		}
+		bmp.recycle();
 		return savedSuccessfully;
 	}
 

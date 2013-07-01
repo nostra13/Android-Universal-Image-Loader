@@ -15,16 +15,12 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.decode;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.os.Build;
-
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
@@ -32,12 +28,15 @@ import com.nostra13.universalimageloader.utils.ImageSizeUtils;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * Decodes images to {@link Bitmap}, scales them to needed size
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.8.3
  * @see ImageDecodingInfo
+ * @since 1.8.3
  */
 public class BaseImageDecoder implements ImageDecoder {
 
@@ -59,11 +58,10 @@ public class BaseImageDecoder implements ImageDecoder {
 	/**
 	 * Decodes image from URI into {@link Bitmap}. Image is scaled close to incoming {@linkplain ImageSize target size}
 	 * during decoding (depend on incoming parameters).
-	 * 
+	 *
 	 * @param decodingInfo Needed data for decoding image
-	 * 
 	 * @return Decoded bitmap
-	 * @throws IOException if some I/O exception occurs during image reading
+	 * @throws IOException                   if some I/O exception occurs during image reading
 	 * @throws UnsupportedOperationException if image URI has unsupported scheme(protocol)
 	 */
 	public Bitmap decode(ImageDecodingInfo decodingInfo) throws IOException {
@@ -167,8 +165,7 @@ public class BaseImageDecoder implements ImageDecoder {
 		ImageScaleType scaleType = decodingInfo.getImageScaleType();
 		if (scaleType == ImageScaleType.EXACTLY || scaleType == ImageScaleType.EXACTLY_STRETCHED) {
 			ImageSize srcSize = new ImageSize(subsampledBitmap.getWidth(), subsampledBitmap.getHeight(), rotation);
-			float scale = ImageSizeUtils.computeImageScale(srcSize, decodingInfo.getTargetSize(), decodingInfo.getViewScaleType(),
-					scaleType == ImageScaleType.EXACTLY_STRETCHED);
+			float scale = ImageSizeUtils.computeImageScale(srcSize, decodingInfo.getTargetSize(), decodingInfo.getViewScaleType(), scaleType == ImageScaleType.EXACTLY_STRETCHED);
 			if (Float.compare(scale, 1f) != 0) {
 				m.setScale(scale, scale);
 

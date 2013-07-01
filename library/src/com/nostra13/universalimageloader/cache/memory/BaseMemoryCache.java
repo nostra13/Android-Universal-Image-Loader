@@ -16,16 +16,12 @@
 package com.nostra13.universalimageloader.cache.memory;
 
 import java.lang.ref.Reference;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Base memory cache. Implements common functionality for memory cache. Provides object references (
  * {@linkplain Reference not strong}) storing.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */

@@ -21,7 +21,7 @@ import java.io.InputStream;
 /**
  * Decorator. Prevents downloads from network (throws {@link IllegalStateException exception}).<br />
  * In most cases this downloader shouldn't be used directly.
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.0
  */

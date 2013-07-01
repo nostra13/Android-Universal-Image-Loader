@@ -19,7 +19,7 @@ import java.io.File;
 
 /**
  * Interface for disc cache
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */

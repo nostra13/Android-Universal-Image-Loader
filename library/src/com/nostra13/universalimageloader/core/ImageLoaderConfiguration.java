@@ -32,6 +32,7 @@ import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloader;
 import com.nostra13.universalimageloader.core.download.SlowNetworkImageDownloader;
+import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 import com.nostra13.universalimageloader.utils.L;
 
 /**
@@ -56,6 +57,7 @@ public final class ImageLoaderConfiguration {
 	final int maxImageHeightForDiscCache;
 	final CompressFormat imageCompressFormatForDiscCache;
 	final int imageQualityForDiscCache;
+	final BitmapProcessor processorForDiscCache;
 
 	final Executor taskExecutor;
 	final Executor taskExecutorForCachedImages;
@@ -85,6 +87,7 @@ public final class ImageLoaderConfiguration {
 		maxImageHeightForDiscCache = builder.maxImageHeightForDiscCache;
 		imageCompressFormatForDiscCache = builder.imageCompressFormatForDiscCache;
 		imageQualityForDiscCache = builder.imageQualityForDiscCache;
+		processorForDiscCache = builder.processorForDiscCache;
 		taskExecutor = builder.taskExecutor;
 		taskExecutorForCachedImages = builder.taskExecutorForCachedImages;
 		threadPoolSize = builder.threadPoolSize;
@@ -159,6 +162,7 @@ public final class ImageLoaderConfiguration {
 		private int maxImageHeightForDiscCache = 0;
 		private CompressFormat imageCompressFormatForDiscCache = null;
 		private int imageQualityForDiscCache = 0;
+		private BitmapProcessor processorForDiscCache = null;
 
 		private Executor taskExecutor = null;
 		private Executor taskExecutorForCachedImages = null;
@@ -211,12 +215,14 @@ public final class ImageLoaderConfiguration {
 		 *            save them at disc cache
 		 * @param compressQuality Hint to the compressor, 0-100. 0 meaning compress for small size, 100 meaning compress
 		 *            for max quality. Some formats, like PNG which is lossless, will ignore the quality setting
+		 * @param processorForDiscCache null-ok; {@linkplain BitmapProcessor Bitmap processor} which process images before saving them in disc cache
 		 */
-		public Builder discCacheExtraOptions(int maxImageWidthForDiscCache, int maxImageHeightForDiscCache, CompressFormat compressFormat, int compressQuality) {
+		public Builder discCacheExtraOptions(int maxImageWidthForDiscCache, int maxImageHeightForDiscCache, CompressFormat compressFormat, int compressQuality, BitmapProcessor processorForDiscCache) {
 			this.maxImageWidthForDiscCache = maxImageWidthForDiscCache;
 			this.maxImageHeightForDiscCache = maxImageHeightForDiscCache;
 			this.imageCompressFormatForDiscCache = compressFormat;
 			this.imageQualityForDiscCache = compressQuality;
+			this.processorForDiscCache = processorForDiscCache;
 			return this;
 		}
 
@@ -346,6 +352,28 @@ public final class ImageLoaderConfiguration {
 			}
 
 			this.memoryCacheSize = memoryCacheSize;
+			return this;
+		}
+
+		/**
+		 * Sets maximum memory cache size (in percent of available app memory) for {@link android.graphics.Bitmap
+		 * bitmaps}.<br />
+		 * Default value - 1/8 of available app memory.<br />
+		 * <b>NOTE:</b> If you use this method then
+		 * {@link com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache LruMemoryCache} will be used as
+		 * memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method to set your own implementation of
+		 * {@link MemoryCacheAware}.
+		 */
+		public Builder memoryCacheSizePercentage(int avaialbleMemoryPercent) {
+			if (avaialbleMemoryPercent <= 0 || avaialbleMemoryPercent >= 100)
+				throw new IllegalArgumentException("avaialbleMemoryPercent must be in range (0 < % < 100)");
+
+			if (memoryCache != null) {
+				L.w(WARNING_OVERLAP_MEMORY_CACHE);
+			}
+
+			long availableMemory = Runtime.getRuntime().maxMemory();
+			memoryCacheSize = (int) (availableMemory * (avaialbleMemoryPercent / 100f));
 			return this;
 		}
 

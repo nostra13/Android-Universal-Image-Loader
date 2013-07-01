@@ -15,14 +15,13 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.display;
 
-import com.nostra13.universalimageloader.core.assist.LoadedFrom;
-
 import android.graphics.Bitmap;
 import android.widget.ImageView;
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 
 /**
  * Just displays {@link Bitmap} in {@link ImageView}
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.5.6
  */

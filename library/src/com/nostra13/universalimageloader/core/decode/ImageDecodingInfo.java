@@ -18,7 +18,6 @@ package com.nostra13.universalimageloader.core.decode;
 import android.annotation.TargetApi;
 import android.graphics.BitmapFactory.Options;
 import android.os.Build;
-
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -28,7 +27,7 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
 /**
  * Contains needed information for decoding image to Bitmap
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.3
  */
@@ -88,16 +87,12 @@ public class ImageDecodingInfo {
 		destOptions.inMutable = srcOptions.inMutable;
 	}
 
-	/**
-	 * @return Original {@linkplain MemoryCacheUtil#generateKey(String, ImageSize) image key} (used in memory cache).
-	 */
+	/** @return Original {@linkplain MemoryCacheUtil#generateKey(String, ImageSize) image key} (used in memory cache). */
 	public String getImageKey() {
 		return imageKey;
 	}
 
-	/**
-	 * @return Image URI for decoding (usually image from disc cache)
-	 */
+	/** @return Image URI for decoding (usually image from disc cache) */
 	public String getImageUri() {
 		return imageUri;
 	}
@@ -118,30 +113,22 @@ public class ImageDecodingInfo {
 		return imageScaleType;
 	}
 
-	/**
-	 * @return {@linkplain ViewScaleType View scale type}. This parameter affects result size of decoded bitmap.
-	 */
+	/** @return {@linkplain ViewScaleType View scale type}. This parameter affects result size of decoded bitmap. */
 	public ViewScaleType getViewScaleType() {
 		return viewScaleType;
 	}
 
-	/**
-	 * @return Downloader for image loading
-	 */
+	/** @return Downloader for image loading */
 	public ImageDownloader getDownloader() {
 		return downloader;
 	}
 
-	/**
-	 * @return Auxiliary object for downloader
-	 */
+	/** @return Auxiliary object for downloader */
 	public Object getExtraForDownloader() {
 		return extraForDownloader;
 	}
 
-	/**
-	 * @return Decoding options
-	 */
+	/** @return Decoding options */
 	public Options getDecodingOptions() {
 		return decodingOptions;
 	}

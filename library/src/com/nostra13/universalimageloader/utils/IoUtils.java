@@ -24,13 +24,13 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 /**
  * Provides I/O operations
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */
 public final class IoUtils {
 
-	private static final int BUFFER_SIZE = 8 * 1024; // 8 KB 
+	private static final int BUFFER_SIZE = 32 * 1024; // 32 KB
 
 	private IoUtils() {
 	}

@@ -89,6 +89,7 @@ public final class Constants {
 			"http://c.wrzuta.pl/wm16596/a32f1a47002ab3a949afeb4f",
 			"http://macprovid.vo.llnwd.net/o43/hub/media/1090/6882/01_headline_Muse.jpg",
 			// Special cases
+			"http://cdn.urbanislandz.com/wp-content/uploads/2011/10/MMSposter-large.jpg", // very large image
 			"file:///sdcard/Universal Image Loader @#&=+-_.,!()~'%20.png", // Image from SD card with encoded symbols
 			"assets://Living Things @#&=+-_.,!()~'%20.jpg", // Image from assets
 			"drawable://" + R.drawable.ic_launcher, // Image from drawables
