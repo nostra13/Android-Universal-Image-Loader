@@ -3,10 +3,10 @@ Change Log
 
 v1.8.5 *(30.06.2013)*
 ---
+ * **Changed API:** `ImageLoaderConfiguration.discCacheExtraOptions(...)` -> `ImageLoaderConfiguration.discCacheExtraOptions(..., BitmapProcessor)` ([#314](https://github.com/nostra13/Android-Universal-Image-Loader/issues/314))
  * Introduce `ImageLoaderConfiguration.memoryCacheSizePercentage(int)` ([#279](https://github.com/nostra13/Android-Universal-Image-Loader/issues/279))
  * Introduced `DisplayImageOptions.cacheInMemory(boolean)`, `.cacheOnDisc(boolean)`, `.resetViewBeforeLoading(boolean)` ([#252](https://github.com/nostra13/Android-Universal-Image-Loader/issues/252))
  * Added `LoadedFrom` flag to `BitmapDisplayer.display(..., LoadedFrom)` about image source  ([#149](https://github.com/nostra13/Android-Universal-Image-Loader/issues/149), [#239](https://github.com/nostra13/Android-Universal-Image-Loader/issues/239))
- * Added possibility to set bitmap processor for disc cache (`ImageLoaderConfiguration.discCacheExtraOptions(..., BitmapProcessor)` ([#314](https://github.com/nostra13/Android-Universal-Image-Loader/issues/314))
  * Added `L.disableLogging()` and `L.enableLogging()` to off/on logs completely ([#270](https://github.com/nostra13/Android-Universal-Image-Loader/issues/270))
  * Prevent image decoding if image is reused ([#247](https://github.com/nostra13/Android-Universal-Image-Loader/issues/247))
  * Not set cache dir on SD card if no appropriate permission ([#311](https://github.com/nostra13/Android-Universal-Image-Loader/issues/311))
