@@ -79,7 +79,7 @@ or
 </manifest>
 ```
 
-### 3. Application class
+#### 3. Application class
 ``` java
 public class MyApplication extends Application {
 	@Override
@@ -124,7 +124,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
 		.imageDownloader(new BaseImageDownloader(context)) // default
 		.imageDecoder(new BaseImageDecoder()) // default
 		.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
-		.enableLogging()
+		.writeDebugLogs()
 		.build();
 ```
 
