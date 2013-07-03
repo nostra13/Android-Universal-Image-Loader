@@ -54,7 +54,7 @@ public class UILApplication extends Application {
 				.denyCacheImageMultipleSizesInMemory()
 				.discCacheFileNameGenerator(new Md5FileNameGenerator())
 				.tasksProcessingOrder(QueueProcessingType.LIFO)
-				.enableLogging() // Not necessary in common
+				.writeDebugLogs() // Remove for release app
 				.build();
 		// Initialize ImageLoader with configuration.
 		ImageLoader.getInstance().init(config);
