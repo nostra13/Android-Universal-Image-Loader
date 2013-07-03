@@ -75,7 +75,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private final ImageDownloader networkDeniedDownloader;
 	private final ImageDownloader slowNetworkDownloader;
 	private final ImageDecoder decoder;
-	private final boolean loggingEnabled;
+	private final boolean writeLogs;
 	final String uri;
 	private final String memoryCacheKey;
 	final ImageView imageView;
@@ -95,7 +95,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		networkDeniedDownloader = configuration.networkDeniedDownloader;
 		slowNetworkDownloader = configuration.slowNetworkDownloader;
 		decoder = configuration.decoder;
-		loggingEnabled = configuration.loggingEnabled;
+		writeLogs = configuration.writeLogs;
 		uri = imageLoadingInfo.uri;
 		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
 		imageView = imageLoadingInfo.imageView;
@@ -158,7 +158,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (checkTaskIsNotActual() || checkTaskIsInterrupted()) return;
 
 		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine, loadedFrom);
-		displayBitmapTask.setLoggingEnabled(loggingEnabled);
+		displayBitmapTask.setLoggingEnabled(writeLogs);
 		handler.post(displayBitmapTask);
 	}
 
@@ -380,10 +380,10 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private void log(String message) {
-		if (loggingEnabled) L.i(message, memoryCacheKey);
+		if (writeLogs) L.d(message, memoryCacheKey);
 	}
 
 	private void log(String message, Object... args) {
-		if (loggingEnabled) L.i(message, args);
+		if (writeLogs) L.d(message, args);
 	}
 }

@@ -59,10 +59,10 @@ final class DisplayBitmapTask implements Runnable {
 
 	public void run() {
 		if (isViewWasReused()) {
-			if (loggingEnabled) L.i(LOG_TASK_CANCELLED, memoryCacheKey);
+			if (loggingEnabled) L.d(LOG_TASK_CANCELLED, memoryCacheKey);
 			listener.onLoadingCancelled(imageUri, imageView);
 		} else {
-			if (loggingEnabled) L.i(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, loadedFrom, memoryCacheKey);
+			if (loggingEnabled) L.d(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, loadedFrom, memoryCacheKey);
 			Bitmap displayedBitmap = displayer.display(bitmap, imageView, loadedFrom);
 			listener.onLoadingComplete(imageUri, imageView, displayedBitmap);
 			engine.cancelDisplayTaskFor(imageView);
