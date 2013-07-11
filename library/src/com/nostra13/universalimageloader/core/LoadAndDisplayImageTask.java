@@ -33,6 +33,8 @@ import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
