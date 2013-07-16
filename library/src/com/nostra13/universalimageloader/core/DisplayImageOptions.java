@@ -72,6 +72,8 @@ public final class DisplayImageOptions {
 	private final BitmapProcessor postProcessor;
 	private final BitmapDisplayer displayer;
 	private final Handler handler;
+	
+	private final boolean thumbnail;
 
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
@@ -88,6 +90,7 @@ public final class DisplayImageOptions {
 		postProcessor = builder.postProcessor;
 		displayer = builder.displayer;
 		handler = builder.handler;
+		thumbnail = builder.thumbnail;
 	}
 
 	public boolean shouldShowStubImage() {
@@ -190,6 +193,7 @@ public final class DisplayImageOptions {
 		private BitmapProcessor postProcessor = null;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 		private Handler handler = null;
+		private boolean thumbnail = false;
 
 		public Builder() {
 			decodingOptions.inPurgeable = true;
@@ -251,6 +255,11 @@ public final class DisplayImageOptions {
 		 */
 		public Builder cacheInMemory() {
 			cacheInMemory = true;
+			return this;
+		}
+		
+		public Builder thumbnail() {
+			thumbnail = true;
 			return this;
 		}
 
@@ -396,5 +405,9 @@ public final class DisplayImageOptions {
 	 */
 	public static DisplayImageOptions createSimple() {
 		return new Builder().build();
+	}
+
+	public boolean isThumbnail() {
+		return thumbnail;
 	}
 }

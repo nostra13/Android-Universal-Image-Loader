@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+
 /**
  * Provides I/O operations
  *
@@ -33,14 +35,19 @@ public final class IoUtils {
 	private IoUtils() {
 	}
 
-	public static void copyStream(InputStream is, OutputStream os) throws IOException {
+	public static void copyStream(InputStream is, OutputStream os, int length, ImageLoadingListener listener) throws IOException {
 		byte[] bytes = new byte[BUFFER_SIZE];
+		int total = 0;
+		
 		while (true) {
 			int count = is.read(bytes, 0, BUFFER_SIZE);
 			if (count == -1) {
 				break;
 			}
+			
+			total += count;
 			os.write(bytes, 0, count);
+			listener.onLoadingUpdate(total, length);
 		}
 	}
 

@@ -62,4 +62,6 @@ public interface ImageLoadingListener {
 	 * @param view     View for image. Can be <b>null</b>.
 	 */
 	void onLoadingCancelled(String imageUri, View view);
+
+	void onLoadingUpdate(int count, int length);
 }
