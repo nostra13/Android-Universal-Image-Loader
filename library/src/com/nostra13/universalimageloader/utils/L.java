@@ -32,10 +32,12 @@ public final class L {
 	private L() {
 	}
 
+	/** Enables logger (if {@link #disableLogging()} was called before) */
 	public static void enableLogging() {
 		DISABLED = false;
 	}
 
+	/** Disables logger, no logs will be passed to LogCat, all log methods will do nothing */
 	public static void disableLogging() {
 		DISABLED = true;
 	}

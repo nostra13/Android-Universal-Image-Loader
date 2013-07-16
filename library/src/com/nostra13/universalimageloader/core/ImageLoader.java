@@ -86,7 +86,7 @@ public class ImageLoader {
 			throw new IllegalArgumentException(ERROR_INIT_CONFIG_WITH_NULL);
 		}
 		if (this.configuration == null) {
-			if (configuration.loggingEnabled) L.d(LOG_INIT_CONFIG);
+			if (configuration.writeLogs) L.d(LOG_INIT_CONFIG);
 			engine = new ImageLoaderEngine(configuration);
 			this.configuration = configuration;
 		} else {
@@ -197,7 +197,7 @@ public class ImageLoader {
 		listener.onLoadingStarted(uri, imageView);
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
-			if (configuration.loggingEnabled) L.i(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey);
+			if (configuration.writeLogs) L.d(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey);
 
 			if (options.shouldPostProcess()) {
 				ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, memoryCacheKey, options, listener, engine.getLockForUri(uri));
@@ -432,7 +432,7 @@ public class ImageLoader {
 	 * method.
 	 */
 	public void destroy() {
-		if (configuration != null && configuration.loggingEnabled) L.d(LOG_DESTROY);
+		if (configuration != null && configuration.writeLogs) L.d(LOG_DESTROY);
 		stop();
 		engine = null;
 		configuration = null;

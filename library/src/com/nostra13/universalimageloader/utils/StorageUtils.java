@@ -48,15 +48,14 @@ public final class StorageUtils {
 	 */
 	public static File getCacheDirectory(Context context) {
 		File appCacheDir = null;
-		if (Environment.getExternalStorageState().equals(MEDIA_MOUNTED) && hasExternalStoragePermission(context)) {
+		if (MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) && hasExternalStoragePermission(context)) {
 			appCacheDir = getExternalCacheDir(context);
 		}
 		if (appCacheDir == null) {
 			appCacheDir = context.getCacheDir();
 		}
 		if (appCacheDir == null) {
-			L.w("Can't define system cache directory!");
-			appCacheDir = context.getCacheDir(); // retry
+			L.w("Can't define system cache directory! The app should be re-installed.");
 		}
 		return appCacheDir;
 	}
@@ -90,7 +89,7 @@ public final class StorageUtils {
 	 */
 	public static File getOwnCacheDirectory(Context context, String cacheDir) {
 		File appCacheDir = null;
-		if (Environment.getExternalStorageState().equals(MEDIA_MOUNTED) && hasExternalStoragePermission(context)) {
+		if (MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) && hasExternalStoragePermission(context)) {
 			appCacheDir = new File(Environment.getExternalStorageDirectory(), cacheDir);
 		}
 		if (appCacheDir == null || (!appCacheDir.exists() && !appCacheDir.mkdirs())) {

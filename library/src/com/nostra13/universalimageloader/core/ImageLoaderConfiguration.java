@@ -37,7 +37,7 @@ import com.nostra13.universalimageloader.utils.L;
 
 /**
  * Presents configuration for {@link ImageLoader}
- * 
+ *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  * @see ImageLoader
@@ -73,7 +73,7 @@ public final class ImageLoaderConfiguration {
 	final ImageDownloader downloader;
 	final ImageDecoder decoder;
 	final DisplayImageOptions defaultDisplayImageOptions;
-	final boolean loggingEnabled;
+	final boolean writeLogs;
 
 	final DiscCacheAware reserveDiscCache;
 	final ImageDownloader networkDeniedDownloader;
@@ -96,7 +96,7 @@ public final class ImageLoaderConfiguration {
 		discCache = builder.discCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
-		loggingEnabled = builder.loggingEnabled;
+		writeLogs = builder.writeLogs;
 		downloader = builder.downloader;
 		decoder = builder.decoder;
 
@@ -136,7 +136,7 @@ public final class ImageLoaderConfiguration {
 
 	/**
 	 * Builder for {@link ImageLoaderConfiguration}
-	 * 
+	 *
 	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
 	 */
 	public static class Builder {
@@ -185,7 +185,7 @@ public final class ImageLoaderConfiguration {
 		private ImageDecoder decoder;
 		private DisplayImageOptions defaultDisplayImageOptions = null;
 
-		private boolean loggingEnabled = false;
+		private boolean writeLogs = false;
 
 		public Builder(Context context) {
 			this.context = context.getApplicationContext();
@@ -193,7 +193,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets options for memory cache
-		 * 
+		 *
 		 * @param maxImageWidthForMemoryCache Maximum image width which will be used for memory saving during decoding
 		 *            an image to {@link android.graphics.Bitmap Bitmap}. <b>Default value - device's screen width</b>
 		 * @param maxImageHeightForMemoryCache Maximum image height which will be used for memory saving during decoding
@@ -208,7 +208,7 @@ public final class ImageLoaderConfiguration {
 		/**
 		 * Sets options for resizing/compressing of downloaded images before saving to disc cache.<br />
 		 * <b>NOTE: Use this option only when you have appropriate needs. It can make ImageLoader slower.</b>
-		 * 
+		 *
 		 * @param maxImageWidthForDiscCache Maximum width of downloaded images for saving at disc cache
 		 * @param maxImageHeightForDiscCache Maximum height of downloaded images for saving at disc cache
 		 * @param compressFormat {@link android.graphics.Bitmap.CompressFormat Compress format} downloaded images to
@@ -236,7 +236,7 @@ public final class ImageLoaderConfiguration {
 		 * <li>{@link #threadPriority(int)}</li>
 		 * <li>{@link #tasksProcessingOrder(QueueProcessingType)}</li>
 		 * </ul>
-		 * 
+		 *
 		 * @see #taskExecutorForCachedImages(Executor)
 		 */
 		public Builder taskExecutor(Executor executor) {
@@ -263,7 +263,7 @@ public final class ImageLoaderConfiguration {
 		 * <li>{@link #threadPriority(int)}</li>
 		 * <li>{@link #tasksProcessingOrder(QueueProcessingType)}</li>
 		 * </ul>
-		 * 
+		 *
 		 * @see #taskExecutor(Executor)
 		 */
 		public Builder taskExecutorForCachedImages(Executor executorForCachedImages) {
@@ -509,19 +509,22 @@ public final class ImageLoaderConfiguration {
 			return this;
 		}
 
-		/** Enabled detail logging of {@link ImageLoader} work */
-		public Builder enableLogging() {
-			this.loggingEnabled = true;
+		/**
+		 * Enables detail logging of {@link ImageLoader} work. To prevent detail logs don't call this method.
+		 * Consider {@link com.nostra13.universalimageloader.utils.L#disableLogging()} to disable ImageLoader logging completely (even error logs)
+		 */
+		public Builder writeDebugLogs() {
+			this.writeLogs = true;
 			return this;
 		}
 
 		/** Builds configured {@link ImageLoaderConfiguration} object */
 		public ImageLoaderConfiguration build() {
-			initEmptyFiledsWithDefaultValues();
+			initEmptyFieldsWithDefaultValues();
 			return new ImageLoaderConfiguration(this);
 		}
 
-		private void initEmptyFiledsWithDefaultValues() {
+		private void initEmptyFieldsWithDefaultValues() {
 			if (taskExecutor == null) {
 				taskExecutor = DefaultConfigurationFactory.createExecutor(threadPoolSize, threadPriority, tasksProcessingType);
 			} else {
@@ -548,7 +551,7 @@ public final class ImageLoaderConfiguration {
 				downloader = DefaultConfigurationFactory.createImageDownloader(context);
 			}
 			if (decoder == null) {
-				decoder = DefaultConfigurationFactory.createImageDecoder(loggingEnabled);
+				decoder = DefaultConfigurationFactory.createImageDecoder(writeLogs);
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();
