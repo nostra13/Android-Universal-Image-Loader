@@ -42,10 +42,10 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 
 	public BaseDiscCache(File cacheDir, FileNameGenerator fileNameGenerator) {
 		if (cacheDir == null) {
-			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);
+			throw new IllegalArgumentException(String.format(ERROR_ARG_NULL, "cacheDir"));
 		}
 		if (fileNameGenerator == null) {
-			throw new IllegalArgumentException("fileNameGenerator" + ERROR_ARG_NULL);
+			throw new IllegalArgumentException(String.format(ERROR_ARG_NULL, "fileNameGenerator"));
 		}
 
 		this.cacheDir = cacheDir;
