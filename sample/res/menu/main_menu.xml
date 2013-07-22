@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/item_clear_memory_cache"
+        android:title="@string/menu_item_clear_memory_cache"/>
+    <item
+        android:id="@+id/item_clear_disc_cache"
+        android:title="@string/menu_item_clear_disc_cache"/>
+    <item
+        android:id="@+id/item_pause_on_scroll"
+        android:checkable="true"
+        android:title="@string/menu_item_pause_on_scroll"
+        android:visible="false"/>
+    <item
+        android:id="@+id/item_pause_on_fling"
+        android:checkable="true"
+        android:title="@string/menu_item_pause_on_fling"
+        android:visible="false"/>
+
+</menu>

@@ -1,7 +1,27 @@
-*/bin
-*/gen
-.project
-/UniversalImageLoader/.classpath
-*/.externalToolBuilders
+# Android generated
+bin/
+gen/
+
+# Ant
 build.xml
 local.properties
+
+# Maven
+target/
+pom.xml.*
+release.properties
+
+# Eclipse
+.classpath
+.project
+.externalToolBuilders/
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
+# Mac 
+.DS_Store
