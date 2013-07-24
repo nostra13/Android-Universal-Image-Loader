@@ -1,6 +1,11 @@
 Change Log
 ===
 
+v1.8.6 *(25.07.2013)*
+---
+ * **Changed API:** `ImageLoaderConfiguration.enableLogging()` -> `ImageLoaderConfiguration.writeDebugLogs()`
+ * **Fixed memory leak** ([#263](https://github.com/nostra13/Android-Universal-Image-Loader/issues/263))
+
 v1.8.5 *(30.06.2013)*
 ---
  * **Changed API:** `ImageLoaderConfiguration.discCacheExtraOptions(...)` -> `ImageLoaderConfiguration.discCacheExtraOptions(..., BitmapProcessor)` ([#314](https://github.com/nostra13/Android-Universal-Image-Loader/issues/314))
