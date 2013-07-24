@@ -21,6 +21,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +67,8 @@ class ImageLoaderEngine {
 		taskDistributor.execute(new Runnable() {
 			@Override
 			public void run() {
-				boolean isImageCachedOnDisc = configuration.discCache.get(task.getLoadingUri()).exists();
+				File image = configuration.discCache.get(task.getLoadingUri());
+				boolean isImageCachedOnDisc = image != null && image.exists();
 				initExecutorsIfNeed();
 				if (isImageCachedOnDisc) {
 					taskExecutorForCachedImages.execute(task);

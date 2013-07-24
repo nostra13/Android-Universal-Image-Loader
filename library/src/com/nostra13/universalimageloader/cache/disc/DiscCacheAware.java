@@ -15,7 +15,11 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc;
 
+import android.graphics.Bitmap;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Interface for disc cache
@@ -24,20 +28,16 @@ import java.io.File;
  * @since 1.0.0
  */
 public interface DiscCacheAware {
-	/**
-	 * This method must not to save file on file system in fact. It is called after image was cached in cache directory
-	 * and it was decoded to bitmap in memory. Such order is required to prevent possible deletion of file after it was
-	 * cached on disc and before it was tried to decode to bitmap.
-	 */
-	void put(String key, File file);
 
-	/**
-	 * Returns {@linkplain File file object} appropriate incoming key.<br />
-	 * <b>NOTE:</b> Must <b>not to return</b> a null. Method must return specific {@linkplain File file object} for
-	 * incoming key whether file exists or not.
-	 */
-	File get(String key);
+	File getDirectory();
 
-	/** Clears cache directory */
+	File get(String imageUri);
+
+	boolean save(String imageUri, InputStream imageStream) throws IOException;
+
+	boolean save(String imageUri, Bitmap bitmap, Bitmap.CompressFormat format, int quality) throws IOException;
+
+	boolean remove(String imageUri);
+
 	void clear();
 }
