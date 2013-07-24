@@ -29,7 +29,7 @@
 		<connection>scm:git:git://github.com/nostra13/Android-Universal-Image-Loader.git</connection>
 		<developerConnection>scm:git:git@github.com:nostra13/Android-Universal-Image-Loader.git</developerConnection>
 		<url>https://github.com/nostra13/Android-Universal-Image-Loader</url>
-	  <tag>v1.8.6</tag>
+	    <tag>HEAD</tag>
   </scm>
 
 	<developers>
