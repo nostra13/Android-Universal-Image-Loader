@@ -19,6 +19,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 /**
  * Provides retrieving of {@link InputStream} of image by URI.<br />
@@ -70,7 +71,7 @@ public interface ImageDownloader {
 		}
 
 		private boolean belongsTo(String uri) {
-			return uri.startsWith(uriPrefix);
+			return uri.toLowerCase(Locale.US).startsWith(uriPrefix);
 		}
 
 		/** Appends scheme to incoming path */
