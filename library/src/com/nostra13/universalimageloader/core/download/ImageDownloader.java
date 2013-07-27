@@ -71,7 +71,7 @@ public interface ImageDownloader {
 		}
 
 		private boolean belongsTo(String uri) {
-			return uri.toLowerCase(Locale.getDefault()).startsWith(uriPrefix);
+			return uri.toLowerCase(Locale.US).startsWith(uriPrefix);
 		}
 
 		/** Appends scheme to incoming path */
