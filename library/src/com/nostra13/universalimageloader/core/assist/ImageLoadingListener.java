@@ -62,4 +62,6 @@ public interface ImageLoadingListener {
 	 * @param view     View for image
 	 */
 	void onLoadingCancelled(String imageUri, View view);
+
+	void onLoadingUpdate(int currentBytes, int totalBytes);
 }

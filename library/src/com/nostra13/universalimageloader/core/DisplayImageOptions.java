@@ -72,6 +72,7 @@ public final class DisplayImageOptions {
 	private final BitmapProcessor postProcessor;
 	private final BitmapDisplayer displayer;
 	private final Handler handler;
+	private boolean thumbnail;
 
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
@@ -88,6 +89,7 @@ public final class DisplayImageOptions {
 		postProcessor = builder.postProcessor;
 		displayer = builder.displayer;
 		handler = builder.handler;
+		thumbnail = builder.thumbnail ;
 	}
 
 	public boolean shouldShowStubImage() {
@@ -176,6 +178,7 @@ public final class DisplayImageOptions {
 	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
 	 */
 	public static class Builder {
+		public boolean thumbnail = false;;
 		private int stubImage = 0;
 		private int imageForEmptyUri = 0;
 		private int imageOnFail = 0;
@@ -355,7 +358,12 @@ public final class DisplayImageOptions {
 			this.handler = handler;
 			return this;
 		}
-
+		
+		public Builder thumbnail() {
+			thumbnail = true;
+			return this;
+		}
+		
 		/** Sets all options equal to incoming options */
 		public Builder cloneFrom(DisplayImageOptions options) {
 			stubImage = options.stubImage;
@@ -396,5 +404,9 @@ public final class DisplayImageOptions {
 	 */
 	public static DisplayImageOptions createSimple() {
 		return new Builder().build();
+	}
+
+	public boolean isThumbnail() {
+		return thumbnail;
 	}
 }
