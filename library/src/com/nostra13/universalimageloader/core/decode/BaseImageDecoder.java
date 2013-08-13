@@ -15,21 +15,22 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.decode;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.os.Build;
+
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import com.nostra13.universalimageloader.utils.ImageSizeUtils;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Decodes images to {@link Bitmap}, scales them to needed size
@@ -68,7 +69,7 @@ public class BaseImageDecoder implements ImageDecoder {
 		InputStream imageStream = getImageStream(decodingInfo);
 		ImageFileInfo imageInfo = defineImageSizeAndRotation(imageStream, decodingInfo.getImageUri());
 		Options decodingOptions = prepareDecodingOptions(imageInfo.imageSize, decodingInfo);
-		imageStream = getImageStream(decodingInfo);
+		
 		Bitmap decodedBitmap = decodeStream(imageStream, decodingOptions);
 		if (decodedBitmap == null) {
 			L.e(ERROR_CANT_DECODE_IMAGE, decodingInfo.getImageKey());
@@ -85,11 +86,7 @@ public class BaseImageDecoder implements ImageDecoder {
 	protected ImageFileInfo defineImageSizeAndRotation(InputStream imageStream, String imageUri) throws IOException {
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
-		try {
-			BitmapFactory.decodeStream(imageStream, null, options);
-		} finally {
-			IoUtils.closeSilently(imageStream);
-		}
+		BitmapFactory.decodeStream(imageStream, null, options);
 
 		ExifInfo exif;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
@@ -97,6 +94,8 @@ public class BaseImageDecoder implements ImageDecoder {
 		} else {
 			exif = new ExifInfo();
 		}
+		
+		imageStream.reset();
 		return new ImageFileInfo(new ImageSize(options.outWidth, options.outHeight, exif.rotation), exif);
 	}
 
