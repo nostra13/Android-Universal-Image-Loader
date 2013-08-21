@@ -49,7 +49,7 @@ import com.nostra13.universalimageloader.core.process.BitmapProcessor;
  * <li>with {@link Builder}:<br />
  * <b>i.e.</b> :
  * <code>new {@link DisplayImageOptions}.{@link Builder#Builder() Builder()}.{@link Builder#cacheInMemory() cacheInMemory()}.
- * {@link Builder#showStubImage(int) showStubImage()}.{@link Builder#build() build()}</code><br />
+ * {@link Builder#showImageOnLoading(int)} showImageOnLoading()}.{@link Builder#build() build()}</code><br />
  * </li>
  * <li>or by static method: {@link #createSimple()}</li> <br />
  *
