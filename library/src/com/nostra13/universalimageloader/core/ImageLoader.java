@@ -181,8 +181,10 @@ public class ImageLoader {
 		if (TextUtils.isEmpty(uri)) {
 			engine.cancelDisplayTaskFor(imageView);
 			listener.onLoadingStarted(uri, imageView);
-			if (options.shouldShowImageForEmptyUri()) {
-				imageView.setImageResource(options.getImageForEmptyUri());
+			if (options.shouldShowImageResForEmptyUri()) {
+				imageView.setImageResource(options.getImageResForEmptyUri());
+			} else if (options.shouldShowBitmapForEmptyUri()) {
+				imageView.setImageBitmap(options.getBitmapForEmptyUri());
 			} else {
 				imageView.setImageDrawable(null);
 			}
@@ -208,8 +210,10 @@ public class ImageLoader {
 				listener.onLoadingComplete(uri, imageView, bmp);
 			}
 		} else {
-			if (options.shouldShowStubImage()) {
-				imageView.setImageResource(options.getStubImage());
+			if (options.shouldShowImageResOnLoading()) {
+				imageView.setImageResource(options.getImageResOnLoading());
+			} else if (options.shouldShowBitmapOnLoading()) {
+				imageView.setImageBitmap(options.getBitmapOnLoading());
 			} else {
 				if (options.isResetViewBeforeLoading()) {
 					imageView.setImageDrawable(null);
