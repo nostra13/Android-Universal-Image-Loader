@@ -17,6 +17,7 @@ package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
@@ -61,9 +62,9 @@ public final class DisplayImageOptions {
 	private final int imageResOnLoading;
 	private final int imageResForEmptyUri;
 	private final int imageResOnFail;
-	private final Bitmap bitmapOnLoading;
-	private final Bitmap bitmapForEmptyUri;
-	private final Bitmap bitmapOnFail;
+	private final Drawable imageOnLoading;
+	private final Drawable imageForEmptyUri;
+	private final Drawable imageOnFail;
 	private final boolean resetViewBeforeLoading;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
@@ -80,9 +81,9 @@ public final class DisplayImageOptions {
 		imageResOnLoading = builder.imageResOnLoading;
 		imageResForEmptyUri = builder.imageResForEmptyUri;
 		imageResOnFail = builder.imageResOnFail;
-		bitmapOnLoading = builder.bitmapOnLoading;
-		bitmapForEmptyUri = builder.bitmapForEmptyUri;
-		bitmapOnFail = builder.bitmapOnFail;
+		imageOnLoading = builder.imageOnLoading;
+		imageForEmptyUri = builder.imageForEmptyUri;
+		imageOnFail = builder.imageOnFail;
 		resetViewBeforeLoading = builder.resetViewBeforeLoading;
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
@@ -100,24 +101,24 @@ public final class DisplayImageOptions {
 		return imageResOnLoading != 0;
 	}
 
-	public boolean shouldShowBitmapOnLoading() {
-		return bitmapOnLoading != null;
+	public boolean shouldShowImageOnLoading() {
+		return imageOnLoading != null;
 	}
 
 	public boolean shouldShowImageResForEmptyUri() {
 		return imageResForEmptyUri != 0;
 	}
 
-	public boolean shouldShowBitmapForEmptyUri() {
-		return bitmapForEmptyUri != null;
+	public boolean shouldShowImageForEmptyUri() {
+		return imageForEmptyUri != null;
 	}
 
 	public boolean shouldShowImageResOnFail() {
 		return imageResOnFail != 0;
 	}
 
-	public boolean shouldShowBitmapOnFail() {
-		return bitmapOnFail != null;
+	public boolean shouldShowImageOnFail() {
+		return imageOnFail != null;
 	}
 
 	public boolean shouldPreProcess() {
@@ -136,24 +137,24 @@ public final class DisplayImageOptions {
 		return imageResOnLoading;
 	}
 
-	public Bitmap getBitmapOnLoading() {
-		return bitmapOnLoading;
+	public Drawable getImageOnLoading() {
+		return imageOnLoading;
 	}
 
 	public int getImageResForEmptyUri() {
 		return imageResForEmptyUri;
 	}
 
-	public Bitmap getBitmapForEmptyUri() {
-		return bitmapForEmptyUri;
+	public Drawable getImageForEmptyUri() {
+		return imageForEmptyUri;
 	}
 
 	public int getImageResOnFail() {
 		return imageResOnFail;
 	}
 
-	public Bitmap getBitmapOnFail() {
-		return bitmapOnFail;
+	public Drawable getImageOnFail() {
+		return imageOnFail;
 	}
 
 	public boolean isResetViewBeforeLoading() {
@@ -209,9 +210,9 @@ public final class DisplayImageOptions {
 		private int imageResOnLoading = 0;
 		private int imageResForEmptyUri = 0;
 		private int imageResOnFail = 0;
-		private Bitmap bitmapOnLoading = null;
-		private Bitmap bitmapForEmptyUri = null;
-		private Bitmap bitmapOnFail = null;
+		private Drawable imageOnLoading = null;
+		private Drawable imageForEmptyUri = null;
+		private Drawable imageOnFail = null;
 		private boolean resetViewBeforeLoading = false;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
@@ -252,13 +253,11 @@ public final class DisplayImageOptions {
 		}
 
 		/**
-		 * Incoming image will be displayed in {@link android.widget.ImageView ImageView} during image loading.
+		 * Incoming drawable will be displayed in {@link android.widget.ImageView ImageView} during image loading.
 		 * This option will be ignored if {@link DisplayImageOptions.Builder#showImageOnLoading(int)} is set.
-		 *
-		 * @param bitmap Image bitmap
 		 */
-		public Builder showImageOnLoading(Bitmap bitmap) {
-			bitmapOnLoading = bitmap;
+		public Builder showImageOnLoading(Drawable drawable) {
+			imageOnLoading = drawable;
 			return this;
 		}
 
@@ -274,14 +273,12 @@ public final class DisplayImageOptions {
 		}
 
 		/**
-		 * Incoming image will be displayed in {@link android.widget.ImageView ImageView} if empty URI (null or empty
+		 * Incoming drawable will be displayed in {@link android.widget.ImageView ImageView} if empty URI (null or empty
 		 * string) will be passed to <b>ImageLoader.displayImage(...)</b> method.
 		 * This option will be ignored if {@link DisplayImageOptions.Builder#showImageForEmptyUri(int)} is set.
-		 *
-		 * @param bitmap Image bitmap
 		 */
-		public Builder showImageForEmptyUri(Bitmap bitmap) {
-			bitmapForEmptyUri = bitmap;
+		public Builder showImageForEmptyUri(Drawable drawable) {
+			imageForEmptyUri = drawable;
 			return this;
 		}
 
@@ -297,14 +294,12 @@ public final class DisplayImageOptions {
 		}
 
 		/**
-		 * Incoming image will be displayed in {@link android.widget.ImageView ImageView} if some error occurs during
+		 * Incoming drawable will be displayed in {@link android.widget.ImageView ImageView} if some error occurs during
 		 * requested image loading/decoding.
 		 * This option will be ignored if {@link DisplayImageOptions.Builder#showImageOnFail(int)} is set.
-		 *
-		 * @param bitmap Image bitmap
 		 */
-		public Builder showImageOnFail(Bitmap bitmap) {
-			bitmapOnFail = bitmap;
+		public Builder showImageOnFail(Drawable drawable) {
+			imageOnFail = drawable;
 			return this;
 		}
 
@@ -441,9 +436,9 @@ public final class DisplayImageOptions {
 			imageResOnLoading = options.imageResOnLoading;
 			imageResForEmptyUri = options.imageResForEmptyUri;
 			imageResOnFail = options.imageResOnFail;
-			bitmapOnLoading = options.bitmapOnLoading;
-			bitmapForEmptyUri = options.bitmapForEmptyUri;
-			bitmapOnFail = options.bitmapOnFail;
+			imageOnLoading = options.imageOnLoading;
+			imageForEmptyUri = options.imageForEmptyUri;
+			imageOnFail = options.imageOnFail;
 			resetViewBeforeLoading = options.resetViewBeforeLoading;
 			cacheInMemory = options.cacheInMemory;
 			cacheOnDisc = options.cacheOnDisc;

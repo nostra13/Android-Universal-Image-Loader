@@ -135,9 +135,9 @@ Display Options can be applied to every display task (`ImageLoader.displayImage(
 ``` java
 // DON'T COPY THIS CODE TO YOUR PROJECT! This is just example of ALL options using.
 DisplayImageOptions options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_stub) // resource or bitmap
-		.showImageForEmptyUri(R.drawable.ic_empty) // resource or bitmap
-		.showImageOnFail(R.drawable.ic_error) // resource or bitmap
+		.showImageOnLoading(R.drawable.ic_stub) // resource or drawable
+		.showImageForEmptyUri(R.drawable.ic_empty) // resource or drawable
+		.showImageOnFail(R.drawable.ic_error) // resource or drawable
 		.resetViewBeforeLoading(false)  // default
 		.delayBeforeLoading(1000)
 		.cacheInMemory(false) // default

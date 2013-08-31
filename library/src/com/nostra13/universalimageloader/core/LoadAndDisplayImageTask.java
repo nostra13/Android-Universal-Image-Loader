@@ -379,8 +379,8 @@ final class LoadAndDisplayImageTask implements Runnable {
 					if (imageView != null) {
 						if (options.shouldShowImageResOnFail()) {
 							imageView.setImageResource(options.getImageResOnFail());
-						} else if (options.shouldShowBitmapOnFail()) {
-							imageView.setImageBitmap(options.getBitmapOnFail());
+						} else if (options.shouldShowImageOnFail()) {
+							imageView.setImageDrawable(options.getImageOnFail());
 						}
 					}
 					listener.onLoadingFailed(uri, imageView, new FailReason(failType, failCause));
