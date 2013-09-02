@@ -18,17 +18,17 @@ package com.nostra13.universalimageloader.core;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.widget.ImageView;
-import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.core.assist.*;
 import com.nostra13.universalimageloader.core.assist.FailReason.FailType;
 import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.decode.ImageDecodingInfo;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
-import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.Reference;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
@@ -64,8 +64,6 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final String ERROR_PRE_PROCESSOR_NULL = "Pre-processor returned null [%s]";
 	private static final String ERROR_POST_PROCESSOR_NULL = "Pre-processor returned null [%s]";
 	private static final String ERROR_PROCESSOR_FOR_DISC_CACHE_NULL = "Bitmap processor for disc cache returned null [%s]";
-
-	private static final int BUFFER_SIZE = 32 * 1024; // 32 Kb
 
 	private final ImageLoaderEngine engine;
 	private final ImageLoadingInfo imageLoadingInfo;
@@ -240,11 +238,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private Bitmap tryLoadBitmap() {
-		File imageFile = getImageFileInDiscCache();
+		File imageFile = configuration.discCache.get(uri);
 
 		Bitmap bitmap = null;
 		try {
-			if (imageFile.exists()) {
+			if (imageFile != null && imageFile.exists()) {
 				log(LOG_LOAD_IMAGE_FROM_DISC_CACHE);
 
 				loadedFrom = LoadedFrom.DISC_CACHE;
@@ -255,7 +253,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 				log(LOG_LOAD_IMAGE_FROM_NETWORK);
 
 				loadedFrom = LoadedFrom.NETWORK;
-				String imageUriForDecoding = options.isCacheOnDisc() ? tryCacheImageOnDisc(imageFile) : uri;
+				String imageUriForDecoding = options.isCacheOnDisc() ? tryCacheImageOnDisc() : uri;
 				if (!checkTaskIsNotActual()) {
 					bitmap = decodeImage(imageUriForDecoding);
 					if (imageViewCollected) return null;
@@ -269,7 +267,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		} catch (IOException e) {
 			L.e(e);
 			fireFailEvent(FailType.IO_ERROR, e);
-			if (imageFile.exists()) {
+			if (imageFile != null && imageFile.exists()) {
 				imageFile.delete();
 			}
 		} catch (OutOfMemoryError e) {
@@ -282,20 +280,6 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return bitmap;
 	}
 
-	private File getImageFileInDiscCache() {
-		DiscCacheAware discCache = configuration.discCache;
-		File imageFile = discCache.get(uri);
-		File cacheDir = imageFile.getParentFile();
-		if (cacheDir == null || (!cacheDir.exists() && !cacheDir.mkdirs())) {
-			imageFile = configuration.reserveDiscCache.get(uri);
-			cacheDir = imageFile.getParentFile();
-			if (cacheDir != null && !cacheDir.exists()) {
-				cacheDir.mkdirs();
-			}
-		}
-		return imageFile;
-	}
-
 	private Bitmap decodeImage(String imageUri) throws IOException {
 		ImageView imageView = checkImageViewRef();
 		if (imageView == null) return null;
@@ -306,7 +290,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	/** @return Cached image URI; or original image URI if caching failed */
-	private String tryCacheImageOnDisc(File targetFile) {
+	private String tryCacheImageOnDisc() {
 		log(LOG_CACHE_IMAGE_ON_DISC);
 
 		try {
@@ -314,21 +298,22 @@ final class LoadAndDisplayImageTask implements Runnable {
 			int height = configuration.maxImageHeightForDiscCache;
 			boolean saved = false;
 			if (width > 0 || height > 0) {
-				saved = downloadSizedImage(targetFile, width, height);
+				saved = downloadSizedImage(width, height);
 			}
 			if (!saved) {
-				downloadImage(targetFile);
+				downloadImage();
 			}
-
-			configuration.discCache.put(uri, targetFile);
-			return Scheme.FILE.wrap(targetFile.getAbsolutePath());
+			File imageFile = configuration.discCache.get(uri);
+			if (imageFile != null && imageFile.exists()) {
+				return Scheme.FILE.wrap(imageFile.getAbsolutePath());
+			}
 		} catch (IOException e) {
 			L.e(e);
-			return uri;
 		}
+		return uri;
 	}
 
-	private boolean downloadSizedImage(File targetFile, int maxWidth, int maxHeight) throws IOException {
+	private boolean downloadSizedImage(int maxWidth, int maxHeight) throws IOException {
 		// Download, decode, compress and save image
 		ImageSize targetImageSize = new ImageSize(maxWidth, maxHeight);
 		DisplayImageOptions specialOptions = new DisplayImageOptions.Builder().cloneFrom(options).imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
@@ -345,29 +330,14 @@ final class LoadAndDisplayImageTask implements Runnable {
 			}
 		}
 
-		OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-		boolean savedSuccessfully;
-		try {
-			savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
-		} finally {
-			IoUtils.closeSilently(os);
-		}
+		boolean saved = configuration.discCache.save(uri, bmp, configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache);
 		bmp.recycle();
-		return savedSuccessfully;
+		return saved;
 	}
 
-	private void downloadImage(File targetFile) throws IOException {
+	private void downloadImage() throws IOException {
 		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
-		try {
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-			try {
-				IoUtils.copyStream(is, os);
-			} finally {
-				IoUtils.closeSilently(os);
-			}
-		} finally {
-			IoUtils.closeSilently(is);
-		}
+		configuration.discCache.save(uri, is);
 	}
 
 	private void fireFailEvent(final FailType failType, final Throwable failCause) {

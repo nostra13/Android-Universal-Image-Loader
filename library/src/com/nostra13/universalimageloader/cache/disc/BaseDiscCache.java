@@ -15,10 +15,12 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc;
 
+import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
+import com.nostra13.universalimageloader.utils.IoUtils;
 
-import java.io.File;
+import java.io.*;
 
 /**
  * Base disc cache. Implements common functionality for disc cache.
@@ -30,6 +32,7 @@ import java.io.File;
  */
 public abstract class BaseDiscCache implements DiscCacheAware {
 
+	private static final int BUFFER_SIZE = 32 * 1024; // 32 Kb
 	private static final String ERROR_ARG_NULL = "\"%s\" argument must be not null";
 
 	protected File cacheDir;
@@ -53,9 +56,49 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 	}
 
 	@Override
-	public File get(String key) {
-		String fileName = fileNameGenerator.generate(key);
-		return new File(cacheDir, fileName);
+	public File getDirectory() {
+		return cacheDir;
+	}
+
+	@Override
+	public File get(String imageUri) {
+		File file = getFile(imageUri); // TODO : Maybe check root dir if it not available. Think about reserve cache dir
+		return file.exists() ? file : null;
+	}
+
+	@Override
+	public boolean save(String imageUri, InputStream imageStream) throws IOException {
+		File imageFile = getFile(imageUri);
+		try {
+			OutputStream os = new BufferedOutputStream(new FileOutputStream(imageFile), BUFFER_SIZE);
+			try {
+				IoUtils.copyStream(imageStream, os, BUFFER_SIZE);
+			} finally {
+				IoUtils.closeSilently(os);
+			}
+		} finally {
+			IoUtils.closeSilently(imageStream);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean save(String imageUri, Bitmap bitmap, Bitmap.CompressFormat format, int quality) throws IOException {
+		File imageFile = getFile(imageUri);
+		OutputStream os = new BufferedOutputStream(new FileOutputStream(imageFile), BUFFER_SIZE);
+		boolean savedSuccessfully;
+		try {
+			savedSuccessfully = bitmap.compress(format, quality, os);
+		} finally {
+			IoUtils.closeSilently(os);
+		}
+		bitmap.recycle();
+		return savedSuccessfully;
+	}
+
+	@Override
+	public boolean remove(String imageUri) {
+		return getFile(imageUri).delete();
 	}
 
 	@Override
@@ -66,5 +109,10 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 				f.delete();
 			}
 		}
+	}
+
+	protected File getFile(String imageUri) {
+		String fileName = fileNameGenerator.generate(imageUri);
+		return new File(cacheDir, fileName);
 	}
 }
