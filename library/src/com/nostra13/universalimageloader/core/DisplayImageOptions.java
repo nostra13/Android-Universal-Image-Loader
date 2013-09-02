@@ -17,6 +17,7 @@ package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
@@ -49,7 +50,7 @@ import com.nostra13.universalimageloader.core.process.BitmapProcessor;
  * <li>with {@link Builder}:<br />
  * <b>i.e.</b> :
  * <code>new {@link DisplayImageOptions}.{@link Builder#Builder() Builder()}.{@link Builder#cacheInMemory() cacheInMemory()}.
- * {@link Builder#showStubImage(int) showStubImage()}.{@link Builder#build() build()}</code><br />
+ * {@link Builder#showImageOnLoading(int)} showImageOnLoading()}.{@link Builder#build() build()}</code><br />
  * </li>
  * <li>or by static method: {@link #createSimple()}</li> <br />
  *
@@ -58,9 +59,12 @@ import com.nostra13.universalimageloader.core.process.BitmapProcessor;
  */
 public final class DisplayImageOptions {
 
-	private final int stubImage;
-	private final int imageForEmptyUri;
-	private final int imageOnFail;
+	private final int imageResOnLoading;
+	private final int imageResForEmptyUri;
+	private final int imageResOnFail;
+	private final Drawable imageOnLoading;
+	private final Drawable imageForEmptyUri;
+	private final Drawable imageOnFail;
 	private final boolean resetViewBeforeLoading;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
@@ -74,7 +78,10 @@ public final class DisplayImageOptions {
 	private final Handler handler;
 
 	private DisplayImageOptions(Builder builder) {
-		stubImage = builder.stubImage;
+		imageResOnLoading = builder.imageResOnLoading;
+		imageResForEmptyUri = builder.imageResForEmptyUri;
+		imageResOnFail = builder.imageResOnFail;
+		imageOnLoading = builder.imageOnLoading;
 		imageForEmptyUri = builder.imageForEmptyUri;
 		imageOnFail = builder.imageOnFail;
 		resetViewBeforeLoading = builder.resetViewBeforeLoading;
@@ -90,16 +97,28 @@ public final class DisplayImageOptions {
 		handler = builder.handler;
 	}
 
-	public boolean shouldShowStubImage() {
-		return stubImage != 0;
+	public boolean shouldShowImageResOnLoading() {
+		return imageResOnLoading != 0;
+	}
+
+	public boolean shouldShowImageOnLoading() {
+		return imageOnLoading != null;
+	}
+
+	public boolean shouldShowImageResForEmptyUri() {
+		return imageResForEmptyUri != 0;
 	}
 
 	public boolean shouldShowImageForEmptyUri() {
-		return imageForEmptyUri != 0;
+		return imageForEmptyUri != null;
+	}
+
+	public boolean shouldShowImageResOnFail() {
+		return imageResOnFail != 0;
 	}
 
 	public boolean shouldShowImageOnFail() {
-		return imageOnFail != 0;
+		return imageOnFail != null;
 	}
 
 	public boolean shouldPreProcess() {
@@ -114,15 +133,27 @@ public final class DisplayImageOptions {
 		return delayBeforeLoading > 0;
 	}
 
-	public int getStubImage() {
-		return stubImage;
+	public int getImageResOnLoading() {
+		return imageResOnLoading;
 	}
 
-	public int getImageForEmptyUri() {
+	public Drawable getImageOnLoading() {
+		return imageOnLoading;
+	}
+
+	public int getImageResForEmptyUri() {
+		return imageResForEmptyUri;
+	}
+
+	public Drawable getImageForEmptyUri() {
 		return imageForEmptyUri;
 	}
 
-	public int getImageOnFail() {
+	public int getImageResOnFail() {
+		return imageResOnFail;
+	}
+
+	public Drawable getImageOnFail() {
 		return imageOnFail;
 	}
 
@@ -176,9 +207,12 @@ public final class DisplayImageOptions {
 	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
 	 */
 	public static class Builder {
-		private int stubImage = 0;
-		private int imageForEmptyUri = 0;
-		private int imageOnFail = 0;
+		private int imageResOnLoading = 0;
+		private int imageResForEmptyUri = 0;
+		private int imageResOnFail = 0;
+		private Drawable imageOnLoading = null;
+		private Drawable imageForEmptyUri = null;
+		private Drawable imageOnFail = null;
 		private boolean resetViewBeforeLoading = false;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
@@ -199,10 +233,31 @@ public final class DisplayImageOptions {
 		/**
 		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
 		 *
-		 * @param stubImageRes Stub image resource
+		 * @param imageRes Stub image resource
+		 * @deprecated Use {@link #showImageOnLoading(int)} instead
 		 */
-		public Builder showStubImage(int stubImageRes) {
-			stubImage = stubImageRes;
+		@Deprecated
+		public Builder showStubImage(int imageRes) {
+			imageResOnLoading = imageRes;
+			return this;
+		}
+
+		/**
+		 * Incoming image will be displayed in {@link android.widget.ImageView ImageView} during image loading
+		 *
+		 * @param imageRes Image resource
+		 */
+		public Builder showImageOnLoading(int imageRes) {
+			imageResOnLoading = imageRes;
+			return this;
+		}
+
+		/**
+		 * Incoming drawable will be displayed in {@link android.widget.ImageView ImageView} during image loading.
+		 * This option will be ignored if {@link DisplayImageOptions.Builder#showImageOnLoading(int)} is set.
+		 */
+		public Builder showImageOnLoading(Drawable drawable) {
+			imageOnLoading = drawable;
 			return this;
 		}
 
@@ -213,7 +268,17 @@ public final class DisplayImageOptions {
 		 * @param imageRes Image resource
 		 */
 		public Builder showImageForEmptyUri(int imageRes) {
-			imageForEmptyUri = imageRes;
+			imageResForEmptyUri = imageRes;
+			return this;
+		}
+
+		/**
+		 * Incoming drawable will be displayed in {@link android.widget.ImageView ImageView} if empty URI (null or empty
+		 * string) will be passed to <b>ImageLoader.displayImage(...)</b> method.
+		 * This option will be ignored if {@link DisplayImageOptions.Builder#showImageForEmptyUri(int)} is set.
+		 */
+		public Builder showImageForEmptyUri(Drawable drawable) {
+			imageForEmptyUri = drawable;
 			return this;
 		}
 
@@ -224,7 +289,17 @@ public final class DisplayImageOptions {
 		 * @param imageRes Image resource
 		 */
 		public Builder showImageOnFail(int imageRes) {
-			imageOnFail = imageRes;
+			imageResOnFail = imageRes;
+			return this;
+		}
+
+		/**
+		 * Incoming drawable will be displayed in {@link android.widget.ImageView ImageView} if some error occurs during
+		 * requested image loading/decoding.
+		 * This option will be ignored if {@link DisplayImageOptions.Builder#showImageOnFail(int)} is set.
+		 */
+		public Builder showImageOnFail(Drawable drawable) {
+			imageOnFail = drawable;
 			return this;
 		}
 
@@ -358,7 +433,10 @@ public final class DisplayImageOptions {
 
 		/** Sets all options equal to incoming options */
 		public Builder cloneFrom(DisplayImageOptions options) {
-			stubImage = options.stubImage;
+			imageResOnLoading = options.imageResOnLoading;
+			imageResForEmptyUri = options.imageResForEmptyUri;
+			imageResOnFail = options.imageResOnFail;
+			imageOnLoading = options.imageOnLoading;
 			imageForEmptyUri = options.imageForEmptyUri;
 			imageOnFail = options.imageOnFail;
 			resetViewBeforeLoading = options.resetViewBeforeLoading;

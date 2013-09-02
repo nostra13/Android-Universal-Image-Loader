@@ -68,7 +68,6 @@ public class BaseImageDecoder implements ImageDecoder {
 		InputStream imageStream = getImageStream(decodingInfo);
 		ImageFileInfo imageInfo = defineImageSizeAndRotation(imageStream, decodingInfo.getImageUri());
 		Options decodingOptions = prepareDecodingOptions(imageInfo.imageSize, decodingInfo);
-		imageStream = getImageStream(decodingInfo);
 		Bitmap decodedBitmap = decodeStream(imageStream, decodingOptions);
 		if (decodedBitmap == null) {
 			L.e(ERROR_CANT_DECODE_IMAGE, decodingInfo.getImageKey());
@@ -85,11 +84,8 @@ public class BaseImageDecoder implements ImageDecoder {
 	protected ImageFileInfo defineImageSizeAndRotation(InputStream imageStream, String imageUri) throws IOException {
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
-		try {
-			BitmapFactory.decodeStream(imageStream, null, options);
-		} finally {
-			IoUtils.closeSilently(imageStream);
-		}
+		BitmapFactory.decodeStream(imageStream, null, options);
+		imageStream.reset();
 
 		ExifInfo exif;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
