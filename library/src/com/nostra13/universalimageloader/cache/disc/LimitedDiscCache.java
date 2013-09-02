@@ -15,13 +15,10 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc;
 
-import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,48 +87,31 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	}
 
 	@Override
+	public void put(String key, File file) {
+		int valueSize = getSize(file);
+		int curCacheSize = cacheSize.get();
+
+		while (curCacheSize + valueSize > sizeLimit) {
+			int freedSize = removeNext();
+			if (freedSize == INVALID_SIZE) break; // cache is empty (have nothing to delete)
+			curCacheSize = cacheSize.addAndGet(-freedSize);
+		}
+		cacheSize.addAndGet(valueSize);
+
+		Long currentTime = System.currentTimeMillis();
+		file.setLastModified(currentTime);
+		lastUsageDates.put(file, currentTime);
+	}
+
+	@Override
 	public File get(String key) {
 		File file = super.get(key);
 
-		if (file != null && file.exists()) {
-			Long currentTime = System.currentTimeMillis();
-			file.setLastModified(currentTime);
-			lastUsageDates.put(file, currentTime);
-		}
+		Long currentTime = System.currentTimeMillis();
+		file.setLastModified(currentTime);
+		lastUsageDates.put(file, currentTime);
 
 		return file;
-	}
-
-	@Override
-	public boolean save(String uri, InputStream imageStream) throws IOException {
-		boolean saved = super.save(uri, imageStream);
-		if (saved) {
-			rememberUsage(uri);
-			trimCacheSize();
-		}
-		return saved;
-	}
-
-	@Override
-	public boolean save(String uri, Bitmap bitmap, Bitmap.CompressFormat format, int quality) throws IOException {
-		boolean saved = super.save(uri, bitmap, format, quality);
-		if (saved) {
-			rememberUsage(uri);
-			trimCacheSize();
-		}
-		return saved;
-	}
-
-	@Override
-	public boolean remove(String uri) {
-		File file = getFile(uri);
-		int valueSize = getSize(file);
-		boolean removed = super.remove(uri);
-		if (removed) {
-			cacheSize.addAndGet(-valueSize);
-			lastUsageDates.remove(uri);
-		}
-		return removed;
 	}
 
 	@Override
@@ -139,25 +119,6 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 		lastUsageDates.clear();
 		cacheSize.set(0);
 		super.clear();
-	}
-
-	private void rememberUsage(String uri) {
-		File file = getFile(uri);
-		int valueSize = getSize(file);
-
-		cacheSize.addAndGet(valueSize);
-		Long currentTime = System.currentTimeMillis();
-		file.setLastModified(currentTime);
-		lastUsageDates.put(file, currentTime);
-	}
-
-	private void trimCacheSize() {
-		int curCacheSize = cacheSize.get();
-		while (curCacheSize > sizeLimit) {
-			int freedSize = removeNext();
-			if (freedSize == INVALID_SIZE) break; // cache is empty (have nothing to delete)
-			curCacheSize = cacheSize.addAndGet(-freedSize);
-		}
 	}
 
 	/** Remove next file and returns it's size */

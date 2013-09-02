@@ -28,13 +28,15 @@ import java.io.OutputStream;
  */
 public final class IoUtils {
 
+	private static final int BUFFER_SIZE = 32 * 1024; // 32 KB
+
 	private IoUtils() {
 	}
 
-	public static void copyStream(InputStream is, OutputStream os, int bufferSize) throws IOException {
-		byte[] bytes = new byte[bufferSize];
+	public static void copyStream(InputStream is, OutputStream os) throws IOException {
+		byte[] bytes = new byte[BUFFER_SIZE];
 		while (true) {
-			int count = is.read(bytes, 0, bufferSize);
+			int count = is.read(bytes, 0, BUFFER_SIZE);
 			if (count == -1) {
 				break;
 			}

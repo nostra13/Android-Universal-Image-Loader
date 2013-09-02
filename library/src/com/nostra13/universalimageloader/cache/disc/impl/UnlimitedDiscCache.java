@@ -43,4 +43,9 @@ public class UnlimitedDiscCache extends BaseDiscCache {
 	public UnlimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator) {
 		super(cacheDir, fileNameGenerator);
 	}
+
+	@Override
+	public void put(String key, File file) {
+		// Do nothing
+	}
 }

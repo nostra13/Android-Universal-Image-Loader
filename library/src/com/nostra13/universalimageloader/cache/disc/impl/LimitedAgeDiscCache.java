@@ -15,14 +15,11 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc.impl;
 
-import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.cache.disc.BaseDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,9 +58,16 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	}
 
 	@Override
-	public File get(String imageUri) {
-		File file = super.get(imageUri);
-		if (file != null && file.exists()) {
+	public void put(String key, File file) {
+		long currentTime = System.currentTimeMillis();
+		file.setLastModified(currentTime);
+		loadingDates.put(file, currentTime);
+	}
+
+	@Override
+	public File get(String key) {
+		File file = super.get(key);
+		if (file.exists()) {
 			boolean cached;
 			Long loadingDate = loadingDates.get(file);
 			if (loadingDate == null) {
@@ -81,38 +85,5 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 			}
 		}
 		return file;
-	}
-
-	@Override
-	public boolean save(String imageUri, InputStream imageStream) throws IOException {
-		boolean saved = super.save(imageUri, imageStream);
-		rememberUsage(imageUri);
-		return saved;
-	}
-
-	@Override
-	public boolean save(String imageUri, Bitmap bitmap, Bitmap.CompressFormat format, int quality) throws IOException {
-		boolean saved = super.save(imageUri, bitmap, format, quality);
-		rememberUsage(imageUri);
-		return saved;
-	}
-
-	@Override
-	public boolean remove(String imageUri) {
-		loadingDates.remove(getFile(imageUri));
-		return super.remove(imageUri);
-	}
-
-	@Override
-	public void clear() {
-		super.clear();
-		loadingDates.clear();
-	}
-
-	private void rememberUsage(String imageUri) {
-		File file = getFile(imageUri);
-		long currentTime = System.currentTimeMillis();
-		file.setLastModified(currentTime);
-		loadingDates.put(file, currentTime);
 	}
 }
