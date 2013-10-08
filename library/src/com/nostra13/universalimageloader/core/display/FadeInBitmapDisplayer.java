@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2013 Daniel Martí
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,16 +31,33 @@ import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 public class FadeInBitmapDisplayer implements BitmapDisplayer {
 
 	private final int durationMillis;
+	private final boolean fromNetwork;
+	private final boolean fromDisc;
+	private final boolean fromMemory;
 
 	public FadeInBitmapDisplayer(int durationMillis) {
 		this.durationMillis = durationMillis;
+		this.fromNetwork = true;
+		this.fromDisc = true;
+		this.fromMemory = true;
+	}
+
+	public FadeInBitmapDisplayer(int durationMillis,
+			boolean fromNetwork, boolean fromDisc, boolean fromMemory) {
+		this.durationMillis = durationMillis;
+		this.fromNetwork = fromNetwork;
+		this.fromDisc = fromDisc;
+		this.fromMemory = fromMemory;
 	}
 
 	@Override
 	public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
 		imageView.setImageBitmap(bitmap);
 
-		animate(imageView, durationMillis);
+		if ((fromNetwork && loadedFrom == LoadedFrom.NETWORK) ||
+				(fromDisc && loadedFrom == LoadedFrom.DISC_CACHE) ||
+				(fromMemory && loadedFrom == LoadedFrom.MEMORY_CACHE))
+			animate(imageView, durationMillis);
 
 		return bitmap;
 	}
