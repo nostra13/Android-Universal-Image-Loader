@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
- * Copyright 2013 Daniel Martí
+ * Copyright 2011-2013 Sergey Tarasevich, Daniel Martí
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,39 +24,46 @@ import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 /**
  * Displays image with "fade in" animation
  *
- * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com), Daniel Martí
  * @since 1.6.4
  */
 public class FadeInBitmapDisplayer implements BitmapDisplayer {
 
 	private final int durationMillis;
-	private final boolean fromNetwork;
-	private final boolean fromDisc;
-	private final boolean fromMemory;
 
+	private final boolean animateFromNetwork;
+	private final boolean animateFromDisc;
+	private final boolean animateFromMemory;
+
+	/**
+	 * @param durationMillis Duration of "fade-in" animation (in milliseconds)
+	 */
 	public FadeInBitmapDisplayer(int durationMillis) {
-		this.durationMillis = durationMillis;
-		this.fromNetwork = true;
-		this.fromDisc = true;
-		this.fromMemory = true;
+		this(durationMillis, true, true, true);
 	}
 
-	public FadeInBitmapDisplayer(int durationMillis,
-			boolean fromNetwork, boolean fromDisc, boolean fromMemory) {
+	/**
+	 * @param durationMillis     Duration of "fade-in" animation (in milliseconds)
+	 * @param animateFromNetwork Whether animation should be played if image is loaded from network
+	 * @param animateFromDisc    Whether animation should be played if image is loaded from disc cache
+	 * @param animateFromMemory  Whether animation should be played if image is loaded from memory cache
+	 */
+	public FadeInBitmapDisplayer(int durationMillis, boolean animateFromNetwork, boolean animateFromDisc, boolean animateFromMemory) {
 		this.durationMillis = durationMillis;
-		this.fromNetwork = fromNetwork;
-		this.fromDisc = fromDisc;
-		this.fromMemory = fromMemory;
+		this.animateFromNetwork = animateFromNetwork;
+		this.animateFromDisc = animateFromDisc;
+		this.animateFromMemory = animateFromMemory;
 	}
 
 	@Override
 	public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
 		imageView.setImageBitmap(bitmap);
 
-		if ((fromNetwork && loadedFrom == LoadedFrom.NETWORK) ||
-				(fromDisc && loadedFrom == LoadedFrom.DISC_CACHE) ||
-				(fromMemory && loadedFrom == LoadedFrom.MEMORY_CACHE))
+		if ((animateFromNetwork && loadedFrom == LoadedFrom.NETWORK) ||
+				(animateFromDisc && loadedFrom == LoadedFrom.DISC_CACHE) ||
+				(animateFromMemory && loadedFrom == LoadedFrom.MEMORY_CACHE)) {
 			animate(imageView, durationMillis);
+		}
 
 		return bitmap;
 	}
