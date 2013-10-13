@@ -47,7 +47,7 @@ public class BaseImageDecoder implements ImageDecoder {
 	protected static final String LOG_FLIP_IMAGE = "Flip image horizontally [%s]";
 	protected static final String ERROR_CANT_DECODE_IMAGE = "Image can't be decoded [%s]";
 
-	protected static final int MARKER = 65536;
+	protected static final int MARKER = 128 * 1024; // 65536 is not enough for some images. Not sure 131072 is enough for any image.
 
 	protected final boolean loggingEnabled;
 
