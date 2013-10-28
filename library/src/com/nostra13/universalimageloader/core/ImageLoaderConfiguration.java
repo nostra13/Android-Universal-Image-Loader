@@ -70,12 +70,12 @@ public final class ImageLoaderConfiguration {
 
 	final MemoryCacheAware<String, Bitmap> memoryCache;
 	final DiscCacheAware discCache;
+	final DiscCacheAware reserveDiscCache;
 	final ImageDownloader downloader;
 	final ImageDecoder decoder;
 	final DisplayImageOptions defaultDisplayImageOptions;
 	final boolean writeLogs;
 
-	final DiscCacheAware reserveDiscCache;
 	final ImageDownloader networkDeniedDownloader;
 	final ImageDownloader slowNetworkDownloader;
 
@@ -94,6 +94,7 @@ public final class ImageLoaderConfiguration {
 		threadPriority = builder.threadPriority;
 		tasksProcessingType = builder.tasksProcessingType;
 		discCache = builder.discCache;
+		reserveDiscCache = builder.reserveDiscCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
 		writeLogs = builder.writeLogs;
@@ -105,8 +106,6 @@ public final class ImageLoaderConfiguration {
 
 		networkDeniedDownloader = new NetworkDeniedImageDownloader(downloader);
 		slowNetworkDownloader = new SlowNetworkImageDownloader(downloader);
-
-		reserveDiscCache = DefaultConfigurationFactory.createReserveDiscCache(context);
 	}
 
 	/**
@@ -122,6 +121,7 @@ public final class ImageLoaderConfiguration {
 	 * <li>allow to cache different sizes of image in memory</li>
 	 * <li>memoryCache = {@link DefaultConfigurationFactory#createMemoryCache(int)}</li>
 	 * <li>discCache = {@link UnlimitedDiscCache}</li>
+	 * <li>reserveDiscCache = {@link TotalSizeLimitedDiscCache}</li>
 	 * <li>imageDownloader = {@link DefaultConfigurationFactory#createImageDownloader(Context)}</li>
 	 * <li>imageDecoder = {@link DefaultConfigurationFactory#createImageDecoder(boolean)}</li>
 	 * <li>discCacheFileNameGenerator = {@link DefaultConfigurationFactory#createFileNameGenerator()}</li>
@@ -180,6 +180,7 @@ public final class ImageLoaderConfiguration {
 
 		private MemoryCacheAware<String, Bitmap> memoryCache = null;
 		private DiscCacheAware discCache = null;
+		private DiscCacheAware reserveDiscCache = null;
 		private FileNameGenerator discCacheFileNameGenerator = null;
 		private ImageDownloader downloader = null;
 		private ImageDecoder decoder;
@@ -497,6 +498,18 @@ public final class ImageLoaderConfiguration {
 			this.discCache = discCache;
 			return this;
 		}
+		
+		/**
+		 * Sets reserve disc cache for images.<br />
+		 * Default value - {@link   com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache
+		 * TotalSizeLimitedDiscCache}. Cache directory is defined by
+		 * {@link android.content.Context#getCacheDir()
+		 * Context.getCacheDir()}.<br />
+		 */
+		public Builder reserveDiscCache(DiscCacheAware reserveDiscCache) {
+			this.reserveDiscCache = reserveDiscCache;
+			return this;
+		}
 
 		/**
 		 * Sets default {@linkplain DisplayImageOptions display image options} for image displaying. These options will
@@ -540,6 +553,9 @@ public final class ImageLoaderConfiguration {
 					discCacheFileNameGenerator = DefaultConfigurationFactory.createFileNameGenerator();
 				}
 				discCache = DefaultConfigurationFactory.createDiscCache(context, discCacheFileNameGenerator, discCacheSize, discCacheFileCount);
+			}
+			if (reserveDiscCache == null) {
+				reserveDiscCache = DefaultConfigurationFactory.createReserveDiscCache(context);
 			}
 			if (memoryCache == null) {
 				memoryCache = DefaultConfigurationFactory.createMemoryCache(memoryCacheSize);
