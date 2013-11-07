@@ -64,7 +64,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final String ERROR_PRE_PROCESSOR_NULL = "Pre-processor returned null [%s]";
 	private static final String ERROR_POST_PROCESSOR_NULL = "Pre-processor returned null [%s]";
 	private static final String ERROR_PROCESSOR_FOR_DISC_CACHE_NULL = "Bitmap processor for disc cache returned null [%s]";
-	private static final String ERROR_SAVING_FILE_FAIL = "Saving downloading image fail [%s] -> [%s] : {%s} ";
+	private static final String ERROR_SAVING_FILE_FAILED = "Saving downloading image failed [%s] -> [%s] : {%s} ";
 
 	private static final int BUFFER_SIZE = 32 * 1024; // 32 Kb
 
@@ -346,14 +346,30 @@ final class LoadAndDisplayImageTask implements Runnable {
 			}
 		}
 
-		OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 		boolean savedSuccessfully;
 		try {
-			savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+			boolean compressOk = false;
+			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
+			try {
+				savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+			} finally {
+				if (compressOk) {
+					// Check the exception during saving
+					try {
+						os.close();
+					} catch (IOException e) {
+						// Maybe no left space
+						String msg = String.format(ERROR_SAVING_FILE_FAIL, uri, targetFile, e.getMessage());
+						IOException wrapped = new IOException(msg);
+						throw wrapped;
+					}
+				} else {
+					IoUtils.closeSilently(os);
+				}
+			}
 		} finally {
-			IoUtils.closeSilently(os);
+			bmp.recycle();
 		}
-		bmp.recycle();
 		return savedSuccessfully;
 	}
 
@@ -366,16 +382,18 @@ final class LoadAndDisplayImageTask implements Runnable {
 				IoUtils.copyStream(is, os);
 				copyOk = true;
 			} finally {
-				if (!copyOk) {
-					IoUtils.closeSilently(os);
-				} else {
+				if (copyOk) {
+					// Check the exception during saving
 					try {
 						os.close();
 					} catch (IOException e) {
+						// Maybe no left space
 						String msg = String.format(ERROR_SAVING_FILE_FAIL, uri, targetFile, e.getMessage());
 						IOException wrapped = new IOException(msg);
 						throw wrapped;
 					}
+				} else {
+					IoUtils.closeSilently(os);
 				}
 			}
 		} finally {
