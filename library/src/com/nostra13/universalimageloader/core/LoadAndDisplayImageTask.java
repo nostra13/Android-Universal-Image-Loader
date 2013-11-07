@@ -64,6 +64,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final String ERROR_PRE_PROCESSOR_NULL = "Pre-processor returned null [%s]";
 	private static final String ERROR_POST_PROCESSOR_NULL = "Pre-processor returned null [%s]";
 	private static final String ERROR_PROCESSOR_FOR_DISC_CACHE_NULL = "Bitmap processor for disc cache returned null [%s]";
+	private static final String ERROR_SAVING_FILE_FAIL = "Saving downloading image fail [%s] -> [%s] : {%s} ";
 
 	private static final int BUFFER_SIZE = 32 * 1024; // 32 Kb
 
@@ -357,13 +358,25 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private void downloadImage(File targetFile) throws IOException {
+		boolean copyOk = false;
 		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 			try {
 				IoUtils.copyStream(is, os);
+				copyOk = true;
 			} finally {
-				IoUtils.closeSilently(os);
+				if (!copyOk) {
+					IoUtils.closeSilently(os);
+				} else {
+					try {
+						os.close();
+					} catch (IOException e) {
+						String msg = String.format(ERROR_SAVING_FILE_FAIL, uri, targetFile, e.getMessage());
+						IOException wrapped = new IOException(msg);
+						throw wrapped;
+					}
+				}
 			}
 		} finally {
 			IoUtils.closeSilently(is);
