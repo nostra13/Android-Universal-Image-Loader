@@ -23,7 +23,6 @@ import android.media.ExifInterface;
 import android.os.Build;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.assist.MarkableInputStream;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import com.nostra13.universalimageloader.utils.ImageSizeUtils;
 import com.nostra13.universalimageloader.utils.IoUtils;
@@ -47,8 +46,6 @@ public class BaseImageDecoder implements ImageDecoder {
 	protected static final String LOG_FLIP_IMAGE = "Flip image horizontally [%s]";
 	protected static final String ERROR_CANT_DECODE_IMAGE = "Image can't be decoded [%s]";
 
-	protected static final int MARKER = 128 * 1024; // 65536 is not enough for some images. Not sure 131072 is enough for any image.
-
 	protected final boolean loggingEnabled;
 
 	/**
@@ -69,13 +66,10 @@ public class BaseImageDecoder implements ImageDecoder {
 	 * @throws UnsupportedOperationException if image URI has unsupported scheme(protocol)
 	 */
 	public Bitmap decode(ImageDecodingInfo decodingInfo) throws IOException {
-		MarkableInputStream imageStream = new MarkableInputStream(getImageStream(decodingInfo));
-		long mark = imageStream.savePosition(MARKER);
-
+		InputStream imageStream = getImageStream(decodingInfo);
 		ImageFileInfo imageInfo = defineImageSizeAndRotation(imageStream, decodingInfo.getImageUri());
 		Options decodingOptions = prepareDecodingOptions(imageInfo.imageSize, decodingInfo);
-
-		imageStream.reset(mark);
+		imageStream = resetStream(imageStream, decodingInfo);
 		Bitmap decodedBitmap = decodeStream(imageStream, decodingOptions);
 		if (decodedBitmap == null) {
 			L.e(ERROR_CANT_DECODE_IMAGE, decodingInfo.getImageKey());
@@ -109,7 +103,8 @@ public class BaseImageDecoder implements ImageDecoder {
 		if ("image/jpeg".equalsIgnoreCase(mimeType) && Scheme.ofUri(imageUri) == Scheme.FILE) {
 			try {
 				ExifInterface exif = new ExifInterface(Scheme.FILE.crop(imageUri));
-				int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+				int exifOrientation = exif
+						.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
 				switch (exifOrientation) {
 					case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
 						flip = true;
@@ -145,13 +140,25 @@ public class BaseImageDecoder implements ImageDecoder {
 		int scale = 1;
 		if (scaleType != ImageScaleType.NONE) {
 			boolean powerOf2 = scaleType == ImageScaleType.IN_SAMPLE_POWER_OF_2;
-			scale = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, decodingInfo.getViewScaleType(), powerOf2);
+			scale = ImageSizeUtils
+					.computeImageSampleSize(imageSize, targetSize, decodingInfo.getViewScaleType(), powerOf2);
 
-			if (loggingEnabled) L.d(LOG_SABSAMPLE_IMAGE, imageSize, imageSize.scaleDown(scale), scale, decodingInfo.getImageKey());
+			if (loggingEnabled) {
+				L.d(LOG_SABSAMPLE_IMAGE, imageSize, imageSize.scaleDown(scale), scale, decodingInfo.getImageKey());
+			}
 		}
 		Options decodingOptions = decodingInfo.getDecodingOptions();
 		decodingOptions.inSampleSize = scale;
 		return decodingOptions;
+	}
+
+	protected InputStream resetStream(InputStream imageStream, ImageDecodingInfo decodingInfo) throws IOException {
+		try {
+			imageStream.reset();
+		} catch (IOException e) {
+			imageStream = getImageStream(decodingInfo);
+		}
+		return imageStream;
 	}
 
 	protected Bitmap decodeStream(InputStream imageStream, Options decodingOptions) throws IOException {
@@ -162,8 +169,8 @@ public class BaseImageDecoder implements ImageDecoder {
 		}
 	}
 
-	protected Bitmap considerExactScaleAndOrientaiton(Bitmap subsampledBitmap, ImageDecodingInfo decodingInfo, int rotation,
-													  boolean flipHorizontal) {
+	protected Bitmap considerExactScaleAndOrientaiton(Bitmap subsampledBitmap, ImageDecodingInfo decodingInfo,
+													  int rotation, boolean flipHorizontal) {
 		Matrix m = new Matrix();
 		// Scale to exact size if need
 		ImageScaleType scaleType = decodingInfo.getImageScaleType();
@@ -174,7 +181,9 @@ public class BaseImageDecoder implements ImageDecoder {
 			if (Float.compare(scale, 1f) != 0) {
 				m.setScale(scale, scale);
 
-				if (loggingEnabled) L.d(LOG_SCALE_IMAGE, srcSize, srcSize.scale(scale), scale, decodingInfo.getImageKey());
+				if (loggingEnabled) {
+					L.d(LOG_SCALE_IMAGE, srcSize, srcSize.scale(scale), scale, decodingInfo.getImageKey());
+				}
 			}
 		}
 		// Flip bitmap if need
@@ -190,8 +199,8 @@ public class BaseImageDecoder implements ImageDecoder {
 			if (loggingEnabled) L.d(LOG_ROTATE_IMAGE, rotation, decodingInfo.getImageKey());
 		}
 
-		Bitmap finalBitmap = Bitmap
-				.createBitmap(subsampledBitmap, 0, 0, subsampledBitmap.getWidth(), subsampledBitmap.getHeight(), m, true);
+		Bitmap finalBitmap = Bitmap.createBitmap(subsampledBitmap, 0, 0, subsampledBitmap.getWidth(), subsampledBitmap
+				.getHeight(), m, true);
 		if (finalBitmap != subsampledBitmap) {
 			subsampledBitmap.recycle();
 		}
