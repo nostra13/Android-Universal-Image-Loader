@@ -359,7 +359,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 						os.close();
 					} catch (IOException e) {
 						// Maybe no left space
-						String msg = String.format(ERROR_SAVING_FILE_FAIL, uri, targetFile, e.getMessage());
+						String msg = String.format(ERROR_SAVING_FILE_FAILED, uri, targetFile, e.getMessage());
 						IOException wrapped = new IOException(msg);
 						throw wrapped;
 					}
@@ -388,7 +388,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 						os.close();
 					} catch (IOException e) {
 						// Maybe no left space
-						String msg = String.format(ERROR_SAVING_FILE_FAIL, uri, targetFile, e.getMessage());
+						String msg = String.format(ERROR_SAVING_FILE_FAILED, uri, targetFile, e.getMessage());
 						IOException wrapped = new IOException(msg);
 						throw wrapped;
 					}
