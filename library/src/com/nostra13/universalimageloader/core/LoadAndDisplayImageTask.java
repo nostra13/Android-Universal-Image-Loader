@@ -348,11 +348,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 		boolean savedSuccessfully;
 		try {
-			boolean thrown = true;
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-			thrown = false;
+			boolean thrown = true;
 			try {
 				savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+				thrown = false;
 			} finally {
 				if (!thrown) {
 					// Check the exception during saving
