@@ -348,12 +348,13 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 		boolean savedSuccessfully;
 		try {
-			boolean compressOk = false;
+			boolean thrown = true;
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
+			thrown = false;
 			try {
 				savedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
 			} finally {
-				if (compressOk) {
+				if (!thrown) {
 					// Check the exception during saving
 					try {
 						os.close();
@@ -374,15 +375,15 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private void downloadImage(File targetFile) throws IOException {
-		boolean copyOk = false;
 		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
+			boolean thrown = true;
 			try {
 				IoUtils.copyStream(is, os);
-				copyOk = true;
+				thrown = false;
 			} finally {
-				if (copyOk) {
+				if (!thrown) {
 					// Check the exception during saving
 					try {
 						os.close();
