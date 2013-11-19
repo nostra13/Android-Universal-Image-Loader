@@ -65,6 +65,7 @@ public class ImagePagerActivity extends BaseActivity {
 			.cacheOnDisc(true)
 			.imageScaleType(ImageScaleType.EXACTLY)
 			.bitmapConfig(Bitmap.Config.RGB_565)
+			.considerExifParams(true)
 			.displayer(new FadeInBitmapDisplayer(300))
 			.build();
 

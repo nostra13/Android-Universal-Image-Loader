@@ -52,6 +52,7 @@ public class ImageGalleryActivity extends BaseActivity {
 			.showImageOnFail(R.drawable.ic_error)
 			.cacheInMemory(true)
 			.cacheOnDisc(true)
+			.considerExifParams(true)
 			.bitmapConfig(Bitmap.Config.RGB_565)
 			.build();
 
