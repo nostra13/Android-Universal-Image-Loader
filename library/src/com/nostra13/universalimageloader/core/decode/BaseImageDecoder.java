@@ -67,7 +67,7 @@ public class BaseImageDecoder implements ImageDecoder {
 	 */
 	public Bitmap decode(ImageDecodingInfo decodingInfo) throws IOException {
 		InputStream imageStream = getImageStream(decodingInfo);
-		ImageFileInfo imageInfo = defineImageSizeAndRotation(imageStream, decodingInfo.getImageUri());
+		ImageFileInfo imageInfo = defineImageSizeAndRotation(imageStream, decodingInfo);
 		Options decodingOptions = prepareDecodingOptions(imageInfo.imageSize, decodingInfo);
 		imageStream = resetStream(imageStream, decodingInfo);
 		Bitmap decodedBitmap = decodeStream(imageStream, decodingOptions);
@@ -83,53 +83,57 @@ public class BaseImageDecoder implements ImageDecoder {
 		return decodingInfo.getDownloader().getStream(decodingInfo.getImageUri(), decodingInfo.getExtraForDownloader());
 	}
 
-	protected ImageFileInfo defineImageSizeAndRotation(InputStream imageStream, String imageUri) throws IOException {
+	protected ImageFileInfo defineImageSizeAndRotation(InputStream imageStream, ImageDecodingInfo decodingInfo)
+			throws IOException {
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
 		BitmapFactory.decodeStream(imageStream, null, options);
 
 		ExifInfo exif;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
-			exif = defineExifOrientation(imageUri, options.outMimeType);
+		String imageUri = decodingInfo.getImageUri();
+		if (decodingInfo.shouldConsiderExifParams() && canDefineExifParams(imageUri, options.outMimeType)) {
+			exif = defineExifOrientation(imageUri);
 		} else {
 			exif = new ExifInfo();
 		}
 		return new ImageFileInfo(new ImageSize(options.outWidth, options.outHeight, exif.rotation), exif);
 	}
 
-	protected ExifInfo defineExifOrientation(String imageUri, String mimeType) {
+	private boolean canDefineExifParams(String imageUri, String mimeType) {
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR && "image/jpeg".equalsIgnoreCase(mimeType) && Scheme
+				.ofUri(imageUri) == Scheme.FILE;
+	}
+
+	protected ExifInfo defineExifOrientation(String imageUri) {
 		int rotation = 0;
 		boolean flip = false;
-		if ("image/jpeg".equalsIgnoreCase(mimeType) && Scheme.ofUri(imageUri) == Scheme.FILE) {
-			try {
-				ExifInterface exif = new ExifInterface(Scheme.FILE.crop(imageUri));
-				int exifOrientation = exif
-						.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-				switch (exifOrientation) {
-					case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
-						flip = true;
-					case ExifInterface.ORIENTATION_NORMAL:
-						rotation = 0;
-						break;
-					case ExifInterface.ORIENTATION_TRANSVERSE:
-						flip = true;
-					case ExifInterface.ORIENTATION_ROTATE_90:
-						rotation = 90;
-						break;
-					case ExifInterface.ORIENTATION_FLIP_VERTICAL:
-						flip = true;
-					case ExifInterface.ORIENTATION_ROTATE_180:
-						rotation = 180;
-						break;
-					case ExifInterface.ORIENTATION_TRANSPOSE:
-						flip = true;
-					case ExifInterface.ORIENTATION_ROTATE_270:
-						rotation = 270;
-						break;
-				}
-			} catch (IOException e) {
-				L.w("Can't read EXIF tags from file [%s]", imageUri);
+		try {
+			ExifInterface exif = new ExifInterface(Scheme.FILE.crop(imageUri));
+			int exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+			switch (exifOrientation) {
+				case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+					flip = true;
+				case ExifInterface.ORIENTATION_NORMAL:
+					rotation = 0;
+					break;
+				case ExifInterface.ORIENTATION_TRANSVERSE:
+					flip = true;
+				case ExifInterface.ORIENTATION_ROTATE_90:
+					rotation = 90;
+					break;
+				case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+					flip = true;
+				case ExifInterface.ORIENTATION_ROTATE_180:
+					rotation = 180;
+					break;
+				case ExifInterface.ORIENTATION_TRANSPOSE:
+					flip = true;
+				case ExifInterface.ORIENTATION_ROTATE_270:
+					rotation = 270;
+					break;
 			}
+		} catch (IOException e) {
+			L.w("Can't read EXIF tags from file [%s]", imageUri);
 		}
 		return new ExifInfo(rotation, flip);
 	}
