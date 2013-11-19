@@ -78,17 +78,9 @@ public class ImageSizeTest {
 	}
 
 	@Test
-	public void testGetImageSizeScaleTo_useImageCacheMaxSize() throws Exception {
+	public void testGetImageSizeScaleTo_useImageConfigMaxSize() throws Exception {
 		ImageSize expected = new ImageSize(500, 500);
 		ImageSize result = ImageSizeUtils.defineTargetSizeForView(mImageAware, new ImageSize(500, 500));
-		Assertions.assertThat(result).isNotNull().isEqualsToByComparingFields(expected);
-	}
-
-	@Test
-	public void testGetImageSizeScaleTo_useDisplayMetrics() throws Exception {
-		//The default Robolectic disp metrics are 480x800 normal hdpi device basically
-		ImageSize expected = new ImageSize(480, 800);
-		ImageSize result = ImageSizeUtils.defineTargetSizeForView(mImageAware, new ImageSize(0, 0));
 		Assertions.assertThat(result).isNotNull().isEqualsToByComparingFields(expected);
 	}
 
