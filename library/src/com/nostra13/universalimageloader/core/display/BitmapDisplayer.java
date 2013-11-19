@@ -16,26 +16,31 @@
 package com.nostra13.universalimageloader.core.display;
 
 import android.graphics.Bitmap;
-import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 
 /**
- * Displays {@link Bitmap} in {@link ImageView}. Implementations can apply some changes to Bitmap or any animation for
- * displaying Bitmap.<br />
+ * Displays {@link Bitmap} in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}. Implementations can
+ * apply some changes to Bitmap or any animation for displaying Bitmap.<br />
  * Implementations have to be thread-safe.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @see com.nostra13.universalimageloader.core.imageaware.ImageAware
+ * @see com.nostra13.universalimageloader.core.assist.LoadedFrom
  * @since 1.5.6
  */
 public interface BitmapDisplayer {
 	/**
-	 * Display bitmap in {@link ImageView}. Displayed bitmap should be returned.<br />
+	 * Display bitmap in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}. Displayed bitmap should
+	 * be returned.<br />
 	 * <b>NOTE:</b> This method is called on UI thread so it's strongly recommended not to do any heavy work in it.
 	 *
 	 * @param bitmap     Source bitmap
-	 * @param imageView  {@linkplain ImageView Image view} to display Bitmap
+	 * @param imageAware {@linkplain com.nostra13.universalimageloader.core.imageaware.ImageAware Image aware view} to
+	 *                   display Bitmap
 	 * @param loadedFrom Source of loaded image
-	 * @return Bitmap which was displayed in {@link ImageView}
+	 * @return Bitmap which was displayed in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware
+	 * ImageAware}
 	 */
-	Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom);
+	Bitmap display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom);
 }

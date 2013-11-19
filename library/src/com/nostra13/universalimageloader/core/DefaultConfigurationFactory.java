@@ -76,8 +76,7 @@ public class DefaultConfigurationFactory {
 	}
 
 	/** Creates reserve disc cache which will be used if primary disc cache becomes unavailable */
-	public static DiscCacheAware createReserveDiscCache(Context context) {
-		File cacheDir = context.getCacheDir();
+	public static DiscCacheAware createReserveDiscCache(File cacheDir) {
 		File individualDir = new File(cacheDir, "uil-images");
 		if (individualDir.exists() || individualDir.mkdir()) {
 			cacheDir = individualDir;

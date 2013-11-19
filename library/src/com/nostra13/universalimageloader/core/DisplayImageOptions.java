@@ -15,6 +15,7 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.Drawable;
@@ -97,28 +98,16 @@ public final class DisplayImageOptions {
 		handler = builder.handler;
 	}
 
-	public boolean shouldShowImageResOnLoading() {
-		return imageResOnLoading != 0;
-	}
-
 	public boolean shouldShowImageOnLoading() {
-		return imageOnLoading != null;
-	}
-
-	public boolean shouldShowImageResForEmptyUri() {
-		return imageResForEmptyUri != 0;
+		return imageOnLoading != null || imageResOnLoading != 0;
 	}
 
 	public boolean shouldShowImageForEmptyUri() {
-		return imageForEmptyUri != null;
-	}
-
-	public boolean shouldShowImageResOnFail() {
-		return imageResOnFail != 0;
+		return imageForEmptyUri != null || imageResForEmptyUri != 0;
 	}
 
 	public boolean shouldShowImageOnFail() {
-		return imageOnFail != null;
+		return imageOnFail != null || imageResOnFail != 0;
 	}
 
 	public boolean shouldPreProcess() {
@@ -133,28 +122,16 @@ public final class DisplayImageOptions {
 		return delayBeforeLoading > 0;
 	}
 
-	public int getImageResOnLoading() {
-		return imageResOnLoading;
+	public Drawable getImageOnLoading(Resources res) {
+		return imageResOnFail != 0 ? res.getDrawable(imageResOnLoading) : imageOnLoading;
 	}
 
-	public Drawable getImageOnLoading() {
-		return imageOnLoading;
+	public Drawable getImageForEmptyUri(Resources res) {
+		return imageResForEmptyUri != 0 ? res.getDrawable(imageResForEmptyUri) : imageForEmptyUri;
 	}
 
-	public int getImageResForEmptyUri() {
-		return imageResForEmptyUri;
-	}
-
-	public Drawable getImageForEmptyUri() {
-		return imageForEmptyUri;
-	}
-
-	public int getImageResOnFail() {
-		return imageResOnFail;
-	}
-
-	public Drawable getImageOnFail() {
-		return imageOnFail;
+	public Drawable getImageOnFail(Resources res) {
+		return imageResOnFail != 0 ? res.getDrawable(imageResOnFail) : imageOnFail;
 	}
 
 	public boolean isResetViewBeforeLoading() {

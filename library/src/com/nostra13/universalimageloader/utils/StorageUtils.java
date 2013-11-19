@@ -55,7 +55,7 @@ public final class StorageUtils {
 			appCacheDir = context.getCacheDir();
 		}
 		if (appCacheDir == null) {
-			L.w("Can't define system cache directory! The app should be re-installed.");
+			L.w("Can't define system cache directory! The app should be restarted.");
 		}
 		return appCacheDir;
 	}

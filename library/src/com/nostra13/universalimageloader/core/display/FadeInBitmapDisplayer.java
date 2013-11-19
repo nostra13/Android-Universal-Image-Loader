@@ -16,10 +16,12 @@
 package com.nostra13.universalimageloader.core.display;
 
 import android.graphics.Bitmap;
+import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 
 /**
  * Displays image with "fade in" animation
@@ -48,7 +50,8 @@ public class FadeInBitmapDisplayer implements BitmapDisplayer {
 	 * @param animateFromDisc    Whether animation should be played if image is loaded from disc cache
 	 * @param animateFromMemory  Whether animation should be played if image is loaded from memory cache
 	 */
-	public FadeInBitmapDisplayer(int durationMillis, boolean animateFromNetwork, boolean animateFromDisc, boolean animateFromMemory) {
+	public FadeInBitmapDisplayer(int durationMillis, boolean animateFromNetwork, boolean animateFromDisc,
+								 boolean animateFromMemory) {
 		this.durationMillis = durationMillis;
 		this.animateFromNetwork = animateFromNetwork;
 		this.animateFromDisc = animateFromDisc;
@@ -56,13 +59,13 @@ public class FadeInBitmapDisplayer implements BitmapDisplayer {
 	}
 
 	@Override
-	public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
-		imageView.setImageBitmap(bitmap);
+	public Bitmap display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
+		imageAware.setImageBitmap(bitmap);
 
 		if ((animateFromNetwork && loadedFrom == LoadedFrom.NETWORK) ||
 				(animateFromDisc && loadedFrom == LoadedFrom.DISC_CACHE) ||
 				(animateFromMemory && loadedFrom == LoadedFrom.MEMORY_CACHE)) {
-			animate(imageView, durationMillis);
+			animate(imageAware.getWrappedView(), durationMillis);
 		}
 
 		return bitmap;
@@ -74,10 +77,12 @@ public class FadeInBitmapDisplayer implements BitmapDisplayer {
 	 * @param imageView      {@link ImageView} which display image in
 	 * @param durationMillis The length of the animation in milliseconds
 	 */
-	public static void animate(ImageView imageView, int durationMillis) {
-		AlphaAnimation fadeImage = new AlphaAnimation(0, 1);
-		fadeImage.setDuration(durationMillis);
-		fadeImage.setInterpolator(new DecelerateInterpolator());
-		imageView.startAnimation(fadeImage);
+	public static void animate(View imageView, int durationMillis) {
+		if (imageView != null) {
+			AlphaAnimation fadeImage = new AlphaAnimation(0, 1);
+			fadeImage.setDuration(durationMillis);
+			fadeImage.setInterpolator(new DecelerateInterpolator());
+			imageView.startAnimation(fadeImage);
+		}
 	}
 }

@@ -17,8 +17,10 @@ package com.nostra13.universalimageloader.core.display;
 
 import android.graphics.*;
 import android.graphics.Bitmap.Config;
+import android.view.View;
 import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.utils.L;
 
 /**
@@ -40,9 +42,13 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 	}
 
 	@Override
-	public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
-		Bitmap roundedBitmap = roundCorners(bitmap, imageView, roundPixels);
-		imageView.setImageBitmap(roundedBitmap);
+	public Bitmap display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
+		View imageView = imageAware.getWrappedView();
+		if (!(imageView instanceof ImageView)) {
+			throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
+		}
+		Bitmap roundedBitmap = roundCorners(bitmap, (ImageView) imageView, roundPixels);
+		imageAware.setImageBitmap(roundedBitmap);
 		return roundedBitmap;
 	}
 
@@ -52,10 +58,15 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 	 *
 	 * @param bitmap      Incoming Bitmap to process
 	 * @param imageView   Target {@link ImageView} to display bitmap in
-	 * @param roundPixels
+	 * @param roundPixels Rounded pixels of corner
 	 * @return Result bitmap with rounded corners
 	 */
 	public static Bitmap roundCorners(Bitmap bitmap, ImageView imageView, int roundPixels) {
+		if (imageView == null) {
+			L.w("View is collected probably. Can't round bitmap corners without view parameters.");
+			return bitmap;
+		}
+
 		Bitmap roundBitmap;
 
 		int bw = bitmap.getWidth();
@@ -65,10 +76,15 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		if (vw <= 0) vw = bw;
 		if (vh <= 0) vh = bh;
 
+		final ImageView.ScaleType scaleType = imageView.getScaleType();
+		if (scaleType == null) {
+			return bitmap;
+		}
+
 		int width, height;
 		Rect srcRect;
 		Rect destRect;
-		switch (imageView.getScaleType()) {
+		switch (scaleType) {
 			case CENTER_INSIDE:
 				float vRation = (float) vw / vh;
 				float bRation = (float) bw / bh;
@@ -152,7 +168,8 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		return roundBitmap;
 	}
 
-	private static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int roundPixels, Rect srcRect, Rect destRect, int width, int height) {
+	private static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int roundPixels, Rect srcRect, Rect destRect, int width,
+												 int height) {
 		Bitmap output = Bitmap.createBitmap(width, height, Config.ARGB_8888);
 		Canvas canvas = new Canvas(output);
 
