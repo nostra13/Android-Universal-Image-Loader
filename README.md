@@ -354,7 +354,7 @@ listView.setOnScrollListener(listener);
 ## Donation
 You can support the project and thank the author for his hard work :)
 
-<a href='http://www.pledgie.com/campaigns/19144'><img alt='Click here to lend your support to: Universal Image Loader for Android and make a donation at www.pledgie.com !' src='http://www.pledgie.com/campaigns/19144.png?skin_name=chrome' border='0' /></a> <a href="http://flattr.com/thing/1110177/nostra13Android-Universal-Image-Loader-on-GitHub" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a>
+<a href='https://pledgie.com/campaigns/19144'><img alt='Click here to lend your support to: Universal Image Loader for Android and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/19144.png?skin_name=chrome' border='0' ></a> <a href="http://flattr.com/thing/1110177/nostra13Android-Universal-Image-Loader-on-GitHub" target="_blank"><img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" /></a>
 * **PayPal** - nostra.uil[at]gmail[dot]com
 * **[WebMoney](http://www.webmoney.ru/)** - Z417203268219
 * **[GitTip](https://www.gittip.com/nostra13/)** - nostra13
