@@ -35,13 +35,15 @@ import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 public interface ImageAware {
 	/**
 	 * Returns width of image aware view. This value is used to define scale size for original image.
-	 * Can return 0 if width is undefined.
+	 * Can return 0 if width is undefined.<br />
+	 * Called on UI thread.
 	 */
 	int getWidth();
 
 	/**
 	 * Returns height of image aware view. This value is used to define scale size for original image.
-	 * Can return 0 if height is undefined.
+	 * Can return 0 if height is undefined.<br />
+	 * Called on UI thread.
 	 */
 	int getHeight();
 
@@ -51,14 +53,18 @@ public interface ImageAware {
 	 */
 	ViewScaleType getScaleType();
 
-	/** Returns wrapped Android {@link android.view.View View}. Can return <b>null</b> if no view is wrapped. */
+	/**
+	 * Returns wrapped Android {@link android.view.View View}. Can return <b>null</b> if no view is wrapped.<br />
+	 * Called on UI thread.
+	 */
 	View getWrappedView();
 
 	/**
 	 * Returns a flag whether image aware view is collected by GC or whatsoever. If so then ImageLoader stop processing
 	 * of task for this image aware view and fires
 	 * {@link com.nostra13.universalimageloader.core.assist.ImageLoadingListener#onLoadingCancelled(String,
-	 * android.view.View) ImageLoadingListener#onLoadingCancelled(String, View)} callback.
+	 * android.view.View) ImageLoadingListener#onLoadingCancelled(String, View)} callback.<br />
+	 * May be called on UI thread.
 	 *
 	 * @return <b>true</b> - if view is collected by GC and ImageLoader should stop processing this image aware view;
 	 * <b>false</b> - otherwise
@@ -77,12 +83,27 @@ public interface ImageAware {
 	int getId();
 
 	/**
-	 * Sets image drawable into this image aware view
+	 * Sets image drawable into this image aware view.<br />
+	 * Called on UI thread to display drawable in this image aware view
+	 * {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions.Builder#showImageForEmptyUri(
+	 *android.graphics.drawable.Drawable) for empty Uri},
+	 * {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions.Builder#showImageOnLoading(
+	 *android.graphics.drawable.Drawable) on loading} or
+	 * {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions.Builder#showImageOnFail(
+	 *android.graphics.drawable.Drawable) on loading fail}. These drawables can be specified in
+	 * {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions display options}.
 	 *
-	 * @return
+	 * @return <b>true</b> if drawable was set successfully; <b>false</b> - otherwise
 	 */
 	boolean setImageDrawable(Drawable drawable);
 
-	/** Sets image bitmap into this image aware view */
+	/**
+	 * Sets image bitmap into this image aware view.<br />
+	 * Called on UI thread to display loaded and decoded image {@link android.graphics.Bitmap} in this image view aware.
+	 * Actually it's used only in
+	 * {@link com.nostra13.universalimageloader.core.display.BitmapDisplayer BitmapDisplayer}.
+	 *
+	 * @return <b>true</b> if bitmap was set successfully; <b>false</b> - otherwise
+	 */
 	boolean setImageBitmap(Bitmap bitmap);
 }

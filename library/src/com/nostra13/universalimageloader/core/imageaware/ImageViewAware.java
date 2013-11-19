@@ -42,7 +42,9 @@ public class ImageViewAware implements ImageAware {
 	}
 
 	/**
-	 * Defines width. Size is defined by target {@link ImageView view} parameters, configuration
+	 * {@inheritDoc}
+	 * <p/>
+	 * Width is defined by target {@link ImageView view} parameters, configuration
 	 * parameters or device display dimensions.<br />
 	 * Size computing algorithm:<br />
 	 * 1) Get the actual drawn <b>getWidth()</b> of the View. If view haven't drawn yet then go
@@ -66,7 +68,9 @@ public class ImageViewAware implements ImageAware {
 	}
 
 	/**
-	 * Defines height. Size is defined by target {@link ImageView view} parameters, configuration
+	 * {@inheritDoc}
+	 * <p/>
+	 * Height is defined by target {@link ImageView view} parameters, configuration
 	 * parameters or device display dimensions.<br />
 	 * Size computing algorithm:<br />
 	 * 1) Get the actual drawn <b>getHeight()</b> of the View. If view haven't drawn yet then go
