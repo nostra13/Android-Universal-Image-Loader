@@ -16,15 +16,14 @@
 package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
-import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
-import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.utils.L;
 
 /**
- * Displays bitmap in {@link ImageView}. Must be called on UI thread.
+ * Displays bitmap in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}. Must be called on UI thread.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see ImageLoadingListener
@@ -33,9 +32,9 @@ import com.nostra13.universalimageloader.utils.L;
  */
 final class DisplayBitmapTask implements Runnable {
 
-	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageAware (loaded from %1$s) [%2$s]";
-	private static final String LOG_TASK_CANCELLED_IMAGEVIEW_REUSED = "ImageAware is reused for another image. Task is cancelled. [%s]";
-	private static final String LOG_TASK_CANCELLED_IMAGEVIEW_LOST = "ImageAware was collected by GC. Task is cancelled. [%s]";
+	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEAWARE = "Display image in ImageAware (loaded from %1$s) [%2$s]";
+	private static final String LOG_TASK_CANCELLED_IMAGEAWARE_REUSED = "ImageAware is reused for another image. Task is cancelled. [%s]";
+	private static final String LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED = "ImageAware was collected by GC. Task is cancelled. [%s]";
 
 	private final Bitmap bitmap;
 	private final String imageUri;
@@ -62,13 +61,13 @@ final class DisplayBitmapTask implements Runnable {
 
 	public void run() {
 		if (imageAware.isCollected()) {
-			if (loggingEnabled) L.d(LOG_TASK_CANCELLED_IMAGEVIEW_LOST, memoryCacheKey);
+			if (loggingEnabled) L.d(LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED, memoryCacheKey);
 			listener.onLoadingCancelled(imageUri, imageAware.getWrappedView());
 		} else if (isViewWasReused()) {
-			if (loggingEnabled) L.d(LOG_TASK_CANCELLED_IMAGEVIEW_REUSED, memoryCacheKey);
+			if (loggingEnabled) L.d(LOG_TASK_CANCELLED_IMAGEAWARE_REUSED, memoryCacheKey);
 			listener.onLoadingCancelled(imageUri, imageAware.getWrappedView());
 		} else {
-			if (loggingEnabled) L.d(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, loadedFrom, memoryCacheKey);
+			if (loggingEnabled) L.d(LOG_DISPLAY_IMAGE_IN_IMAGEAWARE, loadedFrom, memoryCacheKey);
 			Bitmap displayedBitmap = displayer.display(bitmap, imageAware, loadedFrom);
 			listener.onLoadingComplete(imageUri, imageAware.getWrappedView(), displayedBitmap);
 			engine.cancelDisplayTaskFor(imageAware);
