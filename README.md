@@ -145,6 +145,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
 		.preProcessor(...)
 		.postProcessor(...)
 		.extraForDownloader(...)
+		.considerExifParams(false) // default
 		.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2) // default
 		.bitmapConfig(Bitmap.Config.ARGB_8888) // default
 		.decodingOptions(...)
