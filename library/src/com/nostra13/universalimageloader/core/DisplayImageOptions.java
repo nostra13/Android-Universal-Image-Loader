@@ -82,6 +82,7 @@ public final class DisplayImageOptions {
 	private final BitmapProcessor postProcessor;
 	private final BitmapDisplayer displayer;
 	private final Handler handler;
+	private final boolean isSyncLoading;
 
 	private DisplayImageOptions(Builder builder) {
 		imageResOnLoading = builder.imageResOnLoading;
@@ -102,6 +103,7 @@ public final class DisplayImageOptions {
 		postProcessor = builder.postProcessor;
 		displayer = builder.displayer;
 		handler = builder.handler;
+		isSyncLoading = builder.isSyncLoading;
 	}
 
 	public boolean shouldShowImageOnLoading() {
@@ -185,7 +187,11 @@ public final class DisplayImageOptions {
 	}
 
 	public Handler getHandler() {
-		return (handler == null ? new Handler() : handler);
+		return isSyncLoading ? null : (handler == null ? new Handler() : handler);
+	}
+
+	boolean isSyncLoading() {
+		return isSyncLoading;
 	}
 
 	/**
@@ -212,6 +218,7 @@ public final class DisplayImageOptions {
 		private BitmapProcessor postProcessor = null;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 		private Handler handler = null;
+		private boolean isSyncLoading = false;
 
 		public Builder() {
 			decodingOptions.inPurgeable = true;
@@ -428,6 +435,11 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
+		Builder syncLoading(boolean isSyncLoading) {
+			this.isSyncLoading = isSyncLoading;
+			return this;
+		}
+
 		/**
 		 * Sets custom {@linkplain Handler handler} for displaying images and firing {@linkplain ImageLoadingListener
 		 * listener} events.
@@ -457,6 +469,7 @@ public final class DisplayImageOptions {
 			postProcessor = options.postProcessor;
 			displayer = options.displayer;
 			handler = options.handler;
+			isSyncLoading = options.isSyncLoading;
 			return this;
 		}
 

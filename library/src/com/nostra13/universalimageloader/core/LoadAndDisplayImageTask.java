@@ -163,7 +163,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine, loadedFrom);
 		displayBitmapTask.setLoggingEnabled(writeLogs);
-		handler.post(displayBitmapTask);
+		if (options.isSyncLoading()) {
+			displayBitmapTask.run();
+		} else {
+			handler.post(displayBitmapTask);
+		}
 	}
 
 	/** @return true - if task should be interrupted; false - otherwise */
@@ -372,26 +376,34 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	private void fireFailEvent(final FailType failType, final Throwable failCause) {
 		if (!Thread.interrupted()) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					if (options.shouldShowImageOnFail()) {
-						imageAware.setImageDrawable(options.getImageOnFail(configuration.resources));
+			if (options.isSyncLoading()) {
+				listener.onLoadingFailed(uri, imageAware.getWrappedView(), new FailReason(failType, failCause));
+			} else {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						if (options.shouldShowImageOnFail()) {
+							imageAware.setImageDrawable(options.getImageOnFail(configuration.resources));
+						}
+						listener.onLoadingFailed(uri, imageAware.getWrappedView(), new FailReason(failType, failCause));
 					}
-					listener.onLoadingFailed(uri, imageAware.getWrappedView(), new FailReason(failType, failCause));
-				}
-			});
+				});
+			}
 		}
 	}
 
 	private void fireCancelEvent() {
 		if (!Thread.interrupted()) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					listener.onLoadingCancelled(uri, imageAware.getWrappedView());
-				}
-			});
+			if (options.isSyncLoading()) {
+				listener.onLoadingCancelled(uri, imageAware.getWrappedView());
+			} else {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						listener.onLoadingCancelled(uri, imageAware.getWrappedView());
+					}
+				});
+			}
 		}
 	}
 
