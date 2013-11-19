@@ -22,7 +22,7 @@ import android.widget.ImageView;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.*;
-import com.nostra13.universalimageloader.core.imageaware.FakeImageAware;
+import com.nostra13.universalimageloader.core.imageaware.ImageNonViewAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.utils.ImageSizeUtils;
@@ -373,7 +373,7 @@ public class ImageLoader {
 			options = configuration.defaultDisplayImageOptions;
 		}
 
-		FakeImageAware imageAware = new FakeImageAware(targetImageSize, ViewScaleType.CROP);
+		ImageNonViewAware imageAware = new ImageNonViewAware(targetImageSize, ViewScaleType.CROP);
 		displayImage(uri, imageAware, options, listener);
 	}
 

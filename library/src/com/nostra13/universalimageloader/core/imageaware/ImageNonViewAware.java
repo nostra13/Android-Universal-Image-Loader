@@ -30,12 +30,12 @@ import com.nostra13.universalimageloader.core.assist.ViewScaleType;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.9.0
  */
-public class FakeImageAware implements ImageAware {
+public class ImageNonViewAware implements ImageAware {
 
 	protected final ImageSize imageSize;
 	protected final ViewScaleType scaleType;
 
-	public FakeImageAware(ImageSize imageSize, ViewScaleType scaleType) {
+	public ImageNonViewAware(ImageSize imageSize, ViewScaleType scaleType) {
 		this.imageSize = imageSize;
 		this.scaleType = scaleType;
 	}

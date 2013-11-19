@@ -29,7 +29,7 @@ import com.nostra13.universalimageloader.core.assist.ViewScaleType;
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see ImageViewAware
- * @see FakeImageAware
+ * @see ImageNonViewAware
  * @since 1.9.0
  */
 public interface ImageAware {
