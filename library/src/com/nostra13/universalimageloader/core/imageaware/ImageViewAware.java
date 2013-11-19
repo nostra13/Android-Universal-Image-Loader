@@ -35,7 +35,7 @@ import java.lang.reflect.Field;
  */
 public class ImageViewAware implements ImageAware {
 
-	private Reference<ImageView> imageViewRef;
+	protected Reference<ImageView> imageViewRef;
 
 	public ImageViewAware(ImageView imageView) {
 		this.imageViewRef = new WeakReference<ImageView>(imageView);
