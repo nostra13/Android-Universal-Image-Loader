@@ -131,7 +131,7 @@ public final class DisplayImageOptions {
 	}
 
 	public Drawable getImageOnLoading(Resources res) {
-		return imageResOnFail != 0 ? res.getDrawable(imageResOnLoading) : imageOnLoading;
+		return imageResOnLoading != 0 ? res.getDrawable(imageResOnLoading) : imageOnLoading;
 	}
 
 	public Drawable getImageForEmptyUri(Resources res) {
