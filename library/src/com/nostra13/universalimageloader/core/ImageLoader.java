@@ -513,20 +513,39 @@ public class ImageLoader {
 
 	/**
 	 * Returns URI of image which is loading at this moment into passed
-	 * {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}
+	 * {@link com.nostra13.universalimageloader.core.imageaware.ImageAware ImageAware}
 	 */
 	public String getLoadingUriForView(ImageAware imageAware) {
 		return engine.getLoadingUriForView(imageAware);
 	}
 
 	/**
+	 * Returns URI of image which is loading at this moment into passed
+	 * {@link android.widget.ImageView ImageView}
+	 */
+	public String getLoadingUriForView(ImageView imageView) {
+		return engine.getLoadingUriForView(new ImageViewAware(imageView));
+	}
+
+	/**
 	 * Cancel the task of loading and displaying image for passed
-	 * {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}.
+	 * {@link com.nostra13.universalimageloader.core.imageaware.ImageAware ImageAware}.
 	 *
-	 * @param imageAware {@link ImageView} for which display task will be cancelled
+	 * @param imageAware {@link com.nostra13.universalimageloader.core.imageaware.ImageAware ImageAware} for
+	 *                   which display task will be cancelled
 	 */
 	public void cancelDisplayTask(ImageAware imageAware) {
 		engine.cancelDisplayTaskFor(imageAware);
+	}
+
+	/**
+	 * Cancel the task of loading and displaying image for passed
+	 * {@link android.widget.ImageView ImageView}.
+	 *
+	 * @param imageView {@link android.widget.ImageView ImageView} for which display task will be cancelled
+	 */
+	public void cancelDisplayTask(ImageView imageView) {
+		engine.cancelDisplayTaskFor(new ImageViewAware(imageView));
 	}
 
 	/**
