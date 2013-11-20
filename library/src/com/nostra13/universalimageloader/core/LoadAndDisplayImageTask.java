@@ -326,6 +326,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 			return Scheme.FILE.wrap(targetFile.getAbsolutePath());
 		} catch (IOException e) {
 			L.e(e);
+			if (targetFile.exists()) {
+				targetFile.delete();
+			}
 			return uri;
 		}
 	}
