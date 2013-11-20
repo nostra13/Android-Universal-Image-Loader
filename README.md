@@ -168,7 +168,8 @@ String imageUri = "drawable://" + R.drawable.image; // from drawables (only imag
 
 ### Simple
 ``` java
-// Load image, decode it to Bitmap and display Bitmap in ImageView (or any other view which implements ImageAware interface)
+// Load image, decode it to Bitmap and display Bitmap in ImageView (or any other view 
+//	which implements ImageAware interface)
 imageLoader.displayImage(imageUri, imageView);
 ```
 ``` java
@@ -183,7 +184,8 @@ imageLoader.loadImage(imageUri, new SimpleImageLoadingListener() {
 
 ### Complete
 ``` java
-// Load image, decode it to Bitmap and display Bitmap in ImageView (or any other view which implements ImageAware interface)
+// Load image, decode it to Bitmap and display Bitmap in ImageView (or any other view 
+//	which implements ImageAware interface)
 imageLoader.displayImage(imageUri, imageView, displayOptions, new ImageLoadingListener() {
 	@Override
 	public void onLoadingStarted(String imageUri, View view) {
