@@ -44,7 +44,9 @@ public final class StorageUtils {
 	 * Android defines cache directory on device's file system.
 	 *
 	 * @param context Application context
-	 * @return Cache {@link File directory}
+	 * @return Cache {@link File directory}.<br />
+	 * <b>NOTE:</b> Can be null in some unpredictable cases (if SD card is unmounted and
+	 * {@link android.content.Context#getCacheDir() Context.getCacheDir()} returns null).
 	 */
 	public static File getCacheDirectory(Context context) {
 		File appCacheDir = null;
@@ -55,7 +57,9 @@ public final class StorageUtils {
 			appCacheDir = context.getCacheDir();
 		}
 		if (appCacheDir == null) {
-			L.w("Can't define system cache directory! The app should be restarted.");
+			String cacheDirPath = "/data/data/" + context.getPackageName() + "/cache/";
+			L.w("Can't define system cache directory! '%s' will be used.", cacheDirPath);
+			appCacheDir = new File(cacheDirPath);
 		}
 		return appCacheDir;
 	}
