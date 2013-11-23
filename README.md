@@ -231,7 +231,7 @@ imageLoader.loadImage(imageUri, targetSize, displayOptions, new SimpleImageLoadi
 ``` java
 // Load image, decode it to Bitmap and return Bitmap synchronously
 ImageSize targetSize = new ImageSize(120, 80); // result Bitmap will be fit to this size
-Bitmap bmp = imageLoader.loadImage(imageUri, targetSize, displayOptions);
+Bitmap bmp = imageLoader.loadImageSync(imageUri, targetSize, displayOptions);
 ```
 
 ### ImageLoader Helpers
@@ -253,16 +253,6 @@ ImageLoader |
 			| - cancelDisplayTask(ImageView)
 			| - cancelDisplayTask(ImageAware)
 
-ImageAware |
-		   | - getWidth()
-		   | - getHeight()
-		   | - getScaleType()
-		   | - getWrappedView()
-		   | - isCollected()
-		   | - getId()
-		   | - setImageDrawable(Drawable)
-		   | - setImageBitmap(Bitmap)
-
 MemoryCacheUtil |
 				| - findCachedBitmapsForImageUri(...)
 				| - findCacheKeysForImageUri(...)
@@ -278,6 +268,16 @@ StorageUtils |
 			 | - getOwnCacheDirectory(Context, String)
 
 PauseOnScrollListener
+
+ImageAware |
+		   | - getWidth()
+		   | - getHeight()
+		   | - getScaleType()
+		   | - getWrappedView()
+		   | - isCollected()
+		   | - getId()
+		   | - setImageDrawable(Drawable)
+		   | - setImageBitmap(Bitmap)
 </pre>
 Also look into more detailed **[Library Map](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Library-Map)**
 
