@@ -34,7 +34,9 @@ import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloa
 import com.nostra13.universalimageloader.core.download.SlowNetworkImageDownloader;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 import com.nostra13.universalimageloader.utils.L;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 
+import java.io.File;
 import java.util.concurrent.Executor;
 
 /**
@@ -108,7 +110,8 @@ public final class ImageLoaderConfiguration {
 		networkDeniedDownloader = new NetworkDeniedImageDownloader(downloader);
 		slowNetworkDownloader = new SlowNetworkImageDownloader(downloader);
 
-		reserveDiscCache = DefaultConfigurationFactory.createReserveDiscCache(builder.context.getCacheDir());
+		File reserveCacheDir = StorageUtils.getCacheDirectory(builder.context, false);
+		reserveDiscCache = DefaultConfigurationFactory.createReserveDiscCache(reserveCacheDir);
 	}
 
 	/**
