@@ -4,10 +4,16 @@ This project aims to provide a reusable instrument for asynchronous image loadin
 
 ![Screenshot](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/UniversalImageLoader.png)
 
+## Project News
+ **27.11 UIL celebrates 2 years of development :)**
+ * **#1** of Android libraries for loading and caching images on GitHub
+ * **#3** of Android libraries on GitHub (according [gitrep](https://www.gitrep.com/search?utf8=%E2%9C%93&omni_search=android+library&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
+ * **#6** of Java repositories on GitHub (according [gitrep](https://www.gitrep.com/search?utf8=%E2%9C%93&omni_search=&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
+
 ## Features
  * Multithread image loading
  * Possibility of wide tuning ImageLoader's configuration (thread executors, downloader, decoder, memory and disc cache, display image options, and others)
- * Possibility of image caching in memory and/or on device's file sysytem (or SD card)
+ * Possibility of image caching in memory and/or on device's file system (or SD card)
  * Possibility to "listen" loading process
  * Possibility to customize every display image call with separated options
  * Widget support
@@ -15,24 +21,13 @@ This project aims to provide a reusable instrument for asynchronous image loadin
 Android 2.0+ support
 
 ## Downloads
- * **[universal-image-loader-1.8.6.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.8.6.jar)** (library; contains *.class files)
- * **[universal-image-loader-1.8.6-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.8.6-sources.jar)** (sources; contains *.java files)
- * **[universal-image-loader-1.8.6-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.8.6-javadoc.jar)** (Java docs; contains *.html files)
- * **[universal-image-loader-1.8.6-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.8.6-with-sources.jar)** (library with sources inside; contains *.class and *.java files)<br />_Prefer to use this JAR so you can see Java docs in Eclipse tooltips._
- * **[universal-image-loader-sample-1.8.6.apk](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.8.6.apk)** (sample application)
+ * **[universal-image-loader-1.9.0.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.0.jar)** (library; contains *.class files)
+ * **[universal-image-loader-1.9.0-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.0-sources.jar)** (sources; contains *.java files)
+ * **[universal-image-loader-1.9.0-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.0-javadoc.jar)** (Java docs; contains *.html files)
+ * **[universal-image-loader-1.9.0-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.0-with-sources.jar)** (library with sources inside; contains *.class and *.java files)<br />_Prefer to use this JAR so you can see Java docs in Eclipse tooltips._
+ * **[universal-image-loader-sample-1.9.0.apk](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.9.0.apk)** (sample application)
 
 Latest snapshot of the library - **[here](https://github.com/nostra13/Android-Universal-Image-Loader/tree/master/sample/libs)**
-
-## Project News
- **Upcoming changes in new UIL version (1.9.0)**
- * Fixed the bug of `loadImage(...)` (always onLoadingCancelled())
- * Prevented double-request on image loading ("get image info" + "load image"). ImageLoader will reuse existing stream.
- * Prevented creating of fake `ImageView` instance in `ImageLoader.loadImage(...)`.
- * ImageLoader will can process any view (or any other object) which implements `ImageAware` interface - `ImageLoader.displayImage(..., ImageAware, ...)`.
- E.g. `ImageViewAware` is adapter of `ImageView` for `ImageAware`.
- * ImageLoader will have methods for synchronous image loading - `ImageLoader.loadImageSync(...) : Bitmap`.
- * `DisplayImageOptions.showImageOnLoading(...)` will replace `.showStubImage(...)`. `DisplayImageOptions.showImageOn...()` methods can take `Drawable`.
- * EXIF parameters of image won't be considered by default. It can be enabled by `DisplayImageOptions.considerExifParams(true)`.
 
 ## Documentation (outdated)
  * Universal Image Loader. Part 1 - Introduction [[RU](http://nostra13android.blogspot.com/2012/03/4-universal-image-loader-part-1.html) | [EN](http://www.intexsoft.com/blog/item/68-universal-image-loader-part-1.html)]
@@ -46,7 +41,7 @@ Latest snapshot of the library - **[here](https://github.com/nostra13/Android-Un
  2. Search problem solution on **[StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)**
  3. Ask your own question on **[StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)**.<br />
     Be sure to mention following information in your question:
-   - UIL version (e.g. 1.8.6)
+   - UIL version (e.g. 1.9.0)
    - Android version tested on (e.g. 2.1)
    - your configuration (`ImageLoaderConfiguration`)
    - display options (`DisplayImageOptions`)
@@ -61,7 +56,7 @@ If you have some **issues on migration** to newer library version - be sure to a
 #### 1. Include library
 
 **Manual:**
- * [Download JAR](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.8.6-with-sources.jar)
+ * [Download JAR](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.0-with-sources.jar)
  * Put the JAR in the **libs** subfolder of your Android project
 
 or
@@ -71,7 +66,7 @@ or
 <dependency>
 	<groupId>com.nostra13.universalimageloader</groupId>
 	<artifactId>universal-image-loader</artifactId>
-	<version>1.8.6</version>
+	<version>1.9.0</version>
 </dependency>
 ```
 
