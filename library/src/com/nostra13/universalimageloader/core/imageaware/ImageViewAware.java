@@ -36,9 +36,34 @@ import java.lang.reflect.Field;
 public class ImageViewAware implements ImageAware {
 
 	protected Reference<ImageView> imageViewRef;
+	protected boolean checkActualViewSize;
 
+	/**
+	 * Constructor.
+	 * References {@link #ImageViewAware(android.widget.ImageView, boolean) ImageViewAware(imageView, true)}.
+	 *
+	 * @param imageView {@link android.widget.ImageView ImageView} to work with
+	 */
 	public ImageViewAware(ImageView imageView) {
+		this(imageView, true);
+	}
+
+	/**
+	 * Constructor
+	 *
+	 * @param imageView           {@link android.widget.ImageView ImageView} to work with
+	 * @param checkActualViewSize <b>true</b> - then {@link #getWidth()} and {@link #getHeight()} will check actual
+	 *                            size of ImageView. It can cause known issues like
+	 *                            <a href="https://github.com/nostra13/Android-Universal-Image-Loader/issues/376">this</a>.
+	 *                            But it helps to save memory because memory cache keeps bitmaps of actual (less in
+	 *                            general) size.
+	 *                            <p/>
+	 *                            <b>false</b> - then {@link #getWidth()} and {@link #getHeight()} will <b>NOT</b>
+	 *                            consider actual size of ImageView, just layout parameters.
+	 */
+	public ImageViewAware(ImageView imageView, boolean checkActualViewSize) {
 		this.imageViewRef = new WeakReference<ImageView>(imageView);
+		this.checkActualViewSize = checkActualViewSize;
 	}
 
 	/**
@@ -57,8 +82,10 @@ public class ImageViewAware implements ImageAware {
 		ImageView imageView = imageViewRef.get();
 		if (imageView != null) {
 			final ViewGroup.LayoutParams params = imageView.getLayoutParams();
-			int width = (params != null && params.width == ViewGroup.LayoutParams.WRAP_CONTENT) ? 0 :
-					imageView.getWidth(); // Get actual image width
+			int width = 0;
+			if (checkActualViewSize && params != null && params.width != ViewGroup.LayoutParams.WRAP_CONTENT) {
+				width = imageView.getWidth(); // Get actual image width
+			}
 			if (width <= 0 && params != null) width = params.width; // Get layout width parameter
 			if (width <= 0) width = getImageViewFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
 			L.w("width = " + width);
@@ -83,8 +110,10 @@ public class ImageViewAware implements ImageAware {
 		ImageView imageView = imageViewRef.get();
 		if (imageView != null) {
 			final ViewGroup.LayoutParams params = imageView.getLayoutParams();
-			int height = (params != null && params.height == ViewGroup.LayoutParams.WRAP_CONTENT) ? 0 :
-					imageView.getHeight(); // Get actual image height
+			int height = 0;
+			if (checkActualViewSize && params != null && params.height != ViewGroup.LayoutParams.WRAP_CONTENT) {
+				height = imageView.getHeight(); // Get actual image height
+			}
 			if (height <= 0 && params != null) height = params.height; // Get layout height parameter
 			if (height <= 0) height = getImageViewFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
 			L.w("height = " + height);
