@@ -45,4 +45,9 @@ public class SimpleImageLoadingListener implements ImageLoadingListener {
 	public void onLoadingCancelled(String imageUri, View view) {
 		// Empty implementation
 	}
+
+	@Override
+	public void onLoadingProgressChanged(String imageUri, View view, int current, int total) {
+		// Empty implementation
+	}
 }

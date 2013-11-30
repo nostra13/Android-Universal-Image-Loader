@@ -17,6 +17,7 @@ package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.view.View;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.core.assist.*;
 import com.nostra13.universalimageloader.core.assist.FailReason.FailType;
@@ -27,6 +28,7 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
+import com.nostra13.universalimageloader.utils.IoUtils.StreamCopyListener;
 
 import java.io.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -83,6 +85,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private final ImageSize targetSize;
 	final DisplayImageOptions options;
 	final ImageLoadingListener listener;
+	final StreamCopyListener copyListener;
 
 	// State vars
 	private LoadedFrom loadedFrom = LoadedFrom.NETWORK;
@@ -105,6 +108,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		targetSize = imageLoadingInfo.targetSize;
 		options = imageLoadingInfo.options;
 		listener = imageLoadingInfo.listener;
+		copyListener = new StreamCopyListenerImpl(this);
 	}
 
 	@Override
@@ -368,7 +372,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 			try {
-				IoUtils.copyStream(is, os);
+				if (listener != null) {
+					IoUtils.copyStream(is, os, copyListener);
+				} else {
+					IoUtils.copyStream(is, os);
+				}
 			} finally {
 				IoUtils.closeSilently(os);
 			}
@@ -432,5 +440,55 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	private void log(String message, Object... args) {
 		if (writeLogs) L.d(message, args);
+	}
+	
+
+	private static class StreamCopyListenerImpl implements IoUtils.StreamCopyListener {
+
+		private final LoadAndDisplayImageTask task;
+		private final Handler handler;
+		private final ImageLoadingListener listener;
+		private final String uri;
+		private final ImageAware imageAware;
+
+		StreamCopyListenerImpl(final LoadAndDisplayImageTask task) {
+			this.task = task;
+			handler = task.handler;
+			listener = task.listener;
+			uri = task.uri;
+			imageAware = task.imageAware;
+		}
+
+		@Override
+		public void onUpdate(final int current, final int total) {
+			if (task.checkViewReused() || task.checkTaskIsInterrupted()) return;
+			handler.post(new UpdateRunnable(listener, uri, imageAware.getWrappedView(), current, total));
+		}
+
+		private static class UpdateRunnable implements Runnable {
+
+			private final ImageLoadingListener listener;
+			private final String uri;
+			private final View view;
+			private final int current, total;
+
+			UpdateRunnable(final ImageLoadingListener listener, final String uri, final View view,
+					final int current, final int total) {
+				this.listener = listener;
+				this.uri = uri;
+				this.view = view;
+				this.current = current;
+				this.total = total;
+			}
+
+			@Override
+			public void run() {
+				if (listener != null) {
+					listener.onLoadingProgressChanged(uri, view, current, total);
+				}
+			}
+
+		}
+
 	}
 }

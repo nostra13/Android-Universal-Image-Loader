@@ -62,4 +62,14 @@ public interface ImageLoadingListener {
 	 * @param view     View for image. Can be <b>null</b>.
 	 */
 	void onLoadingCancelled(String imageUri, View view);
+	
+	/**
+	 * Is called when image loading progress changed
+	 * 
+	 * @param imageUri    Loaded image URI
+	 * @param view        View for image. Can be <b>null</b>.
+	 * @param current     Downloaded size in bytes
+	 * @param total       Total size in bytes
+	 */
+	void onLoadingProgressChanged(String imageUri, View view, int current, int total);
 }
