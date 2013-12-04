@@ -309,7 +309,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
 ImageLoader.getInstance().displayImage(imageUrl, imageView, options); // Incoming options will be used
 ```
 
-2. If you enabled disc caching then UIL try to cache images on external storage (/sdcard/Android/data/[package_name]/cache). If external storage is not available then images are cached on device's filesytem.
+2. If you enabled disc caching then UIL try to cache images on external storage (/sdcard/Android/data/[package_name]/cache). If external storage is not available then images are cached on device's filesystem.
 To provide caching on external storage (SD card) add following permission to AndroidManifest.xml:
 ``` java
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
