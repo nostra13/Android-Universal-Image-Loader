@@ -29,6 +29,8 @@ import java.io.OutputStream;
 public final class IoUtils {
 
 	private static final int BUFFER_SIZE = 32 * 1024; // 32 KB
+	
+	private static final int BUFFER_SIZE_WITH_LISTENER = 1024; // 1 KB
 
 	private IoUtils() {
 	}
@@ -44,11 +46,35 @@ public final class IoUtils {
 		}
 	}
 
+	public static void copyStream(final InputStream is, final OutputStream os, final StreamCopyListener listener)
+			throws IOException {
+		final byte[] bytes = new byte[BUFFER_SIZE_WITH_LISTENER];
+		final int total = is.available();
+		int current = 0;
+		int count = 0;
+		if (listener != null) {
+			listener.onUpdate(current, total);
+		}
+		while ((count = is.read(bytes, 0, BUFFER_SIZE_WITH_LISTENER)) != -1) {
+			os.write(bytes, 0, count);
+			current += count;
+			if (listener != null) {
+				listener.onUpdate(current, total);
+			}
+		}
+	}
+
 	public static void closeSilently(Closeable closeable) {
 		try {
 			closeable.close();
 		} catch (Exception e) {
 			// Do nothing
 		}
+	}
+
+	public static interface StreamCopyListener {
+
+		void onUpdate(int current, int total);
+
 	}
 }
