@@ -18,8 +18,13 @@ package com.nostra13.universalimageloader.core;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.core.assist.*;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.FailReason.FailType;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.decode.ImageDecodingInfo;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
@@ -28,7 +33,12 @@ import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -51,6 +61,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private static final String LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING = "...Get cached bitmap from memory after waiting. [%s]";
 	private static final String LOG_LOAD_IMAGE_FROM_NETWORK = "Load image from network [%s]";
 	private static final String LOG_LOAD_IMAGE_FROM_DISC_CACHE = "Load image from disc cache [%s]";
+	private static final String LOG_RESIZE_CACHED_IMAGE_FILE = "Resize image in disc cache [%s]";
 	private static final String LOG_PREPROCESS_IMAGE = "PreProcess image before caching in memory [%s]";
 	private static final String LOG_POSTPROCESS_IMAGE = "PostProcess image before displaying [%s]";
 	private static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
@@ -86,7 +97,6 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	// State vars
 	private LoadedFrom loadedFrom = LoadedFrom.NETWORK;
-	private boolean imageAwareCollected = false;
 
 	public LoadAndDisplayImageTask(ImageLoaderEngine engine, ImageLoadingInfo imageLoadingInfo, Handler handler) {
 		this.engine = engine;
@@ -121,21 +131,21 @@ final class LoadAndDisplayImageTask implements Runnable {
 		loadFromUriLock.lock();
 		Bitmap bmp;
 		try {
-			if (checkTaskIsNotActual()) return;
+			checkTaskNotActual();
 
 			bmp = configuration.memoryCache.get(memoryCacheKey);
 			if (bmp == null) {
 				bmp = tryLoadBitmap();
-				if (imageAwareCollected) return; // listener callback already was fired
 				if (bmp == null) return; // listener callback already was fired
 
-				if (checkTaskIsNotActual() || checkTaskIsInterrupted()) return;
+				checkTaskNotActual();
+				checkTaskInterrupted();
 
 				if (options.shouldPreProcess()) {
 					log(LOG_PREPROCESS_IMAGE);
 					bmp = options.getPreProcessor().process(bmp);
 					if (bmp == null) {
-						L.e(ERROR_PRE_PROCESSOR_NULL);
+						L.e(ERROR_PRE_PROCESSOR_NULL, memoryCacheKey);
 					}
 				}
 
@@ -155,11 +165,14 @@ final class LoadAndDisplayImageTask implements Runnable {
 					L.e(ERROR_POST_PROCESSOR_NULL, memoryCacheKey);
 				}
 			}
+			checkTaskNotActual();
+			checkTaskInterrupted();
+		} catch (TaskCancelledException e) {
+			fireCancelEvent();
+			return;
 		} finally {
 			loadFromUriLock.unlock();
 		}
-
-		if (checkTaskIsNotActual() || checkTaskIsInterrupted()) return;
 
 		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine, loadedFrom);
 		displayBitmapTask.setLoggingEnabled(writeLogs);
@@ -185,7 +198,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 				log(LOG_RESUME_AFTER_PAUSE);
 			}
 		}
-		return checkTaskIsNotActual();
+		return isTaskNotActual();
 	}
 
 	/** @return true - if task should be interrupted; false - otherwise */
@@ -198,76 +211,42 @@ final class LoadAndDisplayImageTask implements Runnable {
 				L.e(LOG_TASK_INTERRUPTED, memoryCacheKey);
 				return true;
 			}
-			return checkTaskIsNotActual();
+			return isTaskNotActual();
 		}
 		return false;
 	}
 
-	/**
-	 * Check whether target ImageAware wasn't collected by GC and the image URI of this task matches to image URI which is actual
-	 * for current ImageAware at this moment and fire {@link ImageLoadingListener#onLoadingCancelled(String, android.view.View)}}
-	 * event if it doesn't.
-	 */
-	private boolean checkTaskIsNotActual() {
-		return checkViewCollected() || checkViewReused();
-	}
-
-	private boolean checkViewCollected() {
-		if (imageAware.isCollected()) {
-			imageAwareCollected = true;
-			log(LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED);
-			fireCancelEvent();
-			return true;
-		}
-		return false;
-	}
-
-	private boolean checkViewReused() {
-		String currentCacheKey = engine.getLoadingUriForView(imageAware);
-		// Check whether memory cache key (image URI) for current ImageAware is actual.
-		// If ImageAware is reused for another task then current task should be cancelled.
-		boolean imageAwareWasReused = !memoryCacheKey.equals(currentCacheKey);
-		if (imageAwareWasReused) {
-			log(LOG_TASK_CANCELLED_IMAGEAWARE_REUSED);
-			fireCancelEvent();
-		}
-		return imageAwareWasReused;
-	}
-
-	/** Check whether the current task was interrupted */
-	private boolean checkTaskIsInterrupted() {
-		boolean interrupted = Thread.interrupted();
-		if (interrupted) log(LOG_TASK_INTERRUPTED);
-		return interrupted;
-	}
-
-	private Bitmap tryLoadBitmap() {
+	private Bitmap tryLoadBitmap() throws TaskCancelledException {
 		File imageFile = getImageFileInDiscCache();
 
 		Bitmap bitmap = null;
 		try {
+			String cacheFileUri = Scheme.FILE.wrap(imageFile.getAbsolutePath());
 			if (imageFile.exists()) {
 				log(LOG_LOAD_IMAGE_FROM_DISC_CACHE);
-
 				loadedFrom = LoadedFrom.DISC_CACHE;
-				bitmap = decodeImage(Scheme.FILE.wrap(imageFile.getAbsolutePath()));
-				if (imageAwareCollected) return null;
+
+				checkTaskNotActual();
+				bitmap = decodeImage(cacheFileUri);
 			}
 			if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
 				log(LOG_LOAD_IMAGE_FROM_NETWORK);
-
 				loadedFrom = LoadedFrom.NETWORK;
-				String imageUriForDecoding = options.isCacheOnDisc() ? tryCacheImageOnDisc(imageFile) : uri;
-				if (!checkTaskIsNotActual()) {
-					bitmap = decodeImage(imageUriForDecoding);
-					if (imageAwareCollected) return null;
-					if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
-						fireFailEvent(FailType.DECODING_ERROR, null);
-					}
+
+				String imageUriForDecoding = options.isCacheOnDisc() && tryCacheImageOnDisc(
+						imageFile) ? cacheFileUri : uri;
+
+				checkTaskNotActual();
+				bitmap = decodeImage(imageUriForDecoding);
+
+				if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
+					fireFailEvent(FailType.DECODING_ERROR, null);
 				}
 			}
 		} catch (IllegalStateException e) {
 			fireFailEvent(FailType.NETWORK_DENIED, null);
+		} catch (TaskCancelledException e) {
+			throw e;
 		} catch (IOException e) {
 			L.e(e);
 			fireFailEvent(FailType.IO_ERROR, e);
@@ -299,68 +278,68 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private Bitmap decodeImage(String imageUri) throws IOException {
-		if (checkViewCollected()) return null;
-
 		ViewScaleType viewScaleType = imageAware.getScaleType();
-		if (viewScaleType == null) return null;
-		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, imageUri, targetSize, viewScaleType, getDownloader(), options);
+		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, imageUri, targetSize, viewScaleType,
+															   getDownloader(), options);
 		return decoder.decode(decodingInfo);
 	}
 
-	/** @return Cached image URI; or original image URI if caching failed */
-	private String tryCacheImageOnDisc(File targetFile) {
+	/** @return <b>true</b> - if image was downloaded successfully; <b>false</b> - otherwise */
+	private boolean tryCacheImageOnDisc(File targetFile) throws TaskCancelledException {
 		log(LOG_CACHE_IMAGE_ON_DISC);
 
 		try {
+			downloadImage(targetFile);
+
 			int width = configuration.maxImageWidthForDiscCache;
 			int height = configuration.maxImageHeightForDiscCache;
-			boolean saved = false;
 			if (width > 0 || height > 0) {
-				saved = downloadSizedImage(targetFile, width, height);
-			}
-			if (!saved) {
-				downloadImage(targetFile);
+				log(LOG_RESIZE_CACHED_IMAGE_FILE);
+				resizeAndSaveImage(targetFile, width, height);
 			}
 
 			configuration.discCache.put(uri, targetFile);
-			return Scheme.FILE.wrap(targetFile.getAbsolutePath());
 		} catch (IOException e) {
 			L.e(e);
 			if (targetFile.exists()) {
 				targetFile.delete();
 			}
-			return uri;
+			return false;
 		}
+		return true;
 	}
 
-	private boolean downloadSizedImage(File targetFile, int maxWidth, int maxHeight) throws IOException {
-		// Download, decode, compress and save image
+	/** Decodes image file into Bitmap, resize it and save it back */
+	private void resizeAndSaveImage(File targetFile, int maxWidth, int maxHeight) throws IOException {
+		// Decode image file, compress and re-save it
 		ImageSize targetImageSize = new ImageSize(maxWidth, maxHeight);
-		DisplayImageOptions specialOptions = new DisplayImageOptions.Builder().cloneFrom(options)
-				.imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
-		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, uri, targetImageSize, ViewScaleType.FIT_INSIDE, getDownloader(), specialOptions);
+		DisplayImageOptions specialOptions = new DisplayImageOptions.Builder()
+				.cloneFrom(options)
+				.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+				.build();
+		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey,
+															   Scheme.FILE.wrap(targetFile.getAbsolutePath()),
+															   targetImageSize, ViewScaleType.FIT_INSIDE,
+															   getDownloader(), specialOptions);
 		Bitmap bmp = decoder.decode(decodingInfo);
-		if (bmp == null) return false;
+		if (bmp == null) return;
 
 		if (configuration.processorForDiscCache != null) {
 			log(LOG_PROCESS_IMAGE_BEFORE_CACHE_ON_DISC);
 			bmp = configuration.processorForDiscCache.process(bmp);
 			if (bmp == null) {
 				L.e(ERROR_PROCESSOR_FOR_DISC_CACHE_NULL, memoryCacheKey);
-				return false;
+				return;
 			}
 		}
 
 		OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-		boolean savedSuccessfully;
 		try {
-			savedSuccessfully = bmp
-					.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+			bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
 		} finally {
 			IoUtils.closeSilently(os);
 		}
 		bmp.recycle();
-		return savedSuccessfully;
 	}
 
 	private void downloadImage(File targetFile) throws IOException {
@@ -378,36 +357,26 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private void fireFailEvent(final FailType failType, final Throwable failCause) {
-		if (!Thread.interrupted()) {
-			if (options.isSyncLoading()) {
+		if (options.isSyncLoading() || isTaskInterrupted() || isTaskNotActual()) return;
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				if (options.shouldShowImageOnFail()) {
+					imageAware.setImageDrawable(options.getImageOnFail(configuration.resources));
+				}
 				listener.onLoadingFailed(uri, imageAware.getWrappedView(), new FailReason(failType, failCause));
-			} else {
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						if (options.shouldShowImageOnFail()) {
-							imageAware.setImageDrawable(options.getImageOnFail(configuration.resources));
-						}
-						listener.onLoadingFailed(uri, imageAware.getWrappedView(), new FailReason(failType, failCause));
-					}
-				});
 			}
-		}
+		});
 	}
 
 	private void fireCancelEvent() {
-		if (!Thread.interrupted()) {
-			if (options.isSyncLoading()) {
+		if (options.isSyncLoading() || isTaskInterrupted()) return;
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
 				listener.onLoadingCancelled(uri, imageAware.getWrappedView());
-			} else {
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						listener.onLoadingCancelled(uri, imageAware.getWrappedView());
-					}
-				});
 			}
-		}
+		});
 	}
 
 	private ImageDownloader getDownloader() {
@@ -422,6 +391,76 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return d;
 	}
 
+	/**
+	 * @throws TaskCancelledException if task is not actual (target ImageAware is collected by GC or the image URI of
+	 *                                this task doesn't match to image URI which is actual for current ImageAware at
+	 *                                this moment)
+	 */
+	private void checkTaskNotActual() throws TaskCancelledException {
+		checkViewCollected();
+		checkViewReused();
+	}
+
+	/**
+	 * @return <b>true</b> - if task is not actual (target ImageAware is collected by GC or the image URI of this task
+	 * doesn't match to image URI which is actual for current ImageAware at this moment)); <b>false</b> - otherwise
+	 */
+	private boolean isTaskNotActual() {
+		return isViewCollected() || isViewReused();
+	}
+
+	/** @throws TaskCancelledException if target ImageAware is collected */
+	private void checkViewCollected() throws TaskCancelledException {
+		if (isViewCollected()) {
+			throw new TaskCancelledException();
+		}
+	}
+
+	/** @return <b>true</b> - if target ImageAware is collected by GC; <b>false</b> - otherwise */
+	private boolean isViewCollected() {
+		if (imageAware.isCollected()) {
+			log(LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED);
+			return true;
+		}
+		return false;
+	}
+
+	/** @throws TaskCancelledException if target ImageAware is collected by GC */
+	private void checkViewReused() throws TaskCancelledException {
+		if (isViewReused()) {
+			throw new TaskCancelledException();
+		}
+	}
+
+	/** @return <b>true</b> - if current ImageAware is reused for displaying another image; <b>false</b> - otherwise */
+	private boolean isViewReused() {
+		String currentCacheKey = engine.getLoadingUriForView(imageAware);
+		// Check whether memory cache key (image URI) for current ImageAware is actual.
+		// If ImageAware is reused for another task then current task should be cancelled.
+		boolean imageAwareWasReused = !memoryCacheKey.equals(currentCacheKey);
+		if (imageAwareWasReused) {
+			log(LOG_TASK_CANCELLED_IMAGEAWARE_REUSED);
+			return true;
+		}
+		return false;
+	}
+
+	/** @throws TaskCancelledException if current task was interrupted */
+	private void checkTaskInterrupted() throws TaskCancelledException {
+		if (isTaskInterrupted()) {
+			throw new TaskCancelledException();
+		}
+	}
+
+	/** @return <b>true</b> - if current task was interrupted; <b>false</b> - otherwise */
+	private boolean isTaskInterrupted() {
+		if (Thread.interrupted()) {
+			log(LOG_TASK_INTERRUPTED);
+			return true;
+		}
+		return false;
+	}
+
 	String getLoadingUri() {
 		return uri;
 	}
@@ -432,5 +471,15 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	private void log(String message, Object... args) {
 		if (writeLogs) L.d(message, args);
+	}
+
+	/**
+	 * Exceptions for case when task is cancelled (thread is interrupted, image view is reused for another task, view is
+	 * collected by GC).
+	 *
+	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+	 * @since 1.9.1
+	 */
+	class TaskCancelledException extends Exception {
 	}
 }
