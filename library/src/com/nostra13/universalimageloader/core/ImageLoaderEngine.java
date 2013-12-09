@@ -53,6 +53,8 @@ class ImageLoaderEngine {
 	private final AtomicBoolean networkDenied = new AtomicBoolean(false);
 	private final AtomicBoolean slowNetwork = new AtomicBoolean(false);
 
+	private final Object pauseLock = new Object();
+
 	ImageLoaderEngine(ImageLoaderConfiguration configuration) {
 		this.configuration = configuration;
 
@@ -96,20 +98,20 @@ class ImageLoaderEngine {
 
 	private Executor createTaskExecutor() {
 		return DefaultConfigurationFactory
-				.createExecutor(configuration.threadPoolSize, configuration.threadPriority, configuration.tasksProcessingType);
+				.createExecutor(configuration.threadPoolSize, configuration.threadPriority,
+								configuration.tasksProcessingType);
 	}
 
 	/**
-	 * Returns URI of image which is loading at this moment into passed
-	 * {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}
+	 * Returns URI of image which is loading at this moment into passed {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}
 	 */
 	String getLoadingUriForView(ImageAware imageAware) {
 		return cacheKeysForImageAwares.get(imageAware.getId());
 	}
 
 	/**
-	 * Associates <b>memoryCacheKey</b> with <b>imageAware</b>. Then it helps to define image URI is loaded into
-	 * View at exact moment.
+	 * Associates <b>memoryCacheKey</b> with <b>imageAware</b>. Then it helps to define image URI is loaded into View at
+	 * exact moment.
 	 */
 	void prepareDisplayTaskFor(ImageAware imageAware, String memoryCacheKey) {
 		cacheKeysForImageAwares.put(imageAware.getId(), memoryCacheKey);
@@ -126,11 +128,9 @@ class ImageLoaderEngine {
 	}
 
 	/**
-	 * Denies or allows engine to download images from the network.<br />
-	 * <br />
-	 * If downloads are denied and if image isn't cached then
-	 * {@link ImageLoadingListener#onLoadingFailed(String, View, FailReason)} callback will be fired with
-	 * {@link FailReason.FailType#NETWORK_DENIED}
+	 * Denies or allows engine to download images from the network.<br /> <br /> If downloads are denied and if image
+	 * isn't cached then {@link ImageLoadingListener#onLoadingFailed(String, View, FailReason)} callback will be fired
+	 * with {@link FailReason.FailType#NETWORK_DENIED}
 	 *
 	 * @param denyNetworkDownloads pass <b>true</b> - to deny engine to download images from the network; <b>false</b> -
 	 *                             to allow engine to download images from network.
@@ -151,8 +151,8 @@ class ImageLoaderEngine {
 	}
 
 	/**
-	 * Pauses engine. All new "load&display" tasks won't be executed until ImageLoader is {@link #resume() resumed}.<br />
-	 * Already running tasks are not paused.
+	 * Pauses engine. All new "load&display" tasks won't be executed until ImageLoader is {@link #resume() resumed}.<br
+	 * /> Already running tasks are not paused.
 	 */
 	void pause() {
 		paused.set(true);
@@ -160,9 +160,9 @@ class ImageLoaderEngine {
 
 	/** Resumes engine work. Paused "load&display" tasks will continue its work. */
 	void resume() {
-		synchronized (paused) {
-			paused.set(false);
-			paused.notifyAll();
+		paused.set(false);
+		synchronized (pauseLock) {
+			pauseLock.notifyAll();
 		}
 	}
 
@@ -190,6 +190,10 @@ class ImageLoaderEngine {
 
 	AtomicBoolean getPause() {
 		return paused;
+	}
+
+	Object getPauseLock() {
+		return pauseLock;
 	}
 
 	boolean isNetworkDenied() {

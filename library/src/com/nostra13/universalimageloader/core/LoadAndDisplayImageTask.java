@@ -183,25 +183,27 @@ final class LoadAndDisplayImageTask implements Runnable {
 		}
 	}
 
-	/** @return true - if task should be interrupted; false - otherwise */
+	/** @return <b>true</b> - if task should be interrupted; <b>false</b> - otherwise */
 	private boolean waitIfPaused() {
 		AtomicBoolean pause = engine.getPause();
-		synchronized (pause) {
-			if (pause.get()) {
-				log(LOG_WAITING_FOR_RESUME);
-				try {
-					pause.wait();
-				} catch (InterruptedException e) {
-					L.e(LOG_TASK_INTERRUPTED, memoryCacheKey);
-					return true;
+		if (pause.get()) {
+			synchronized (engine.getPauseLock()) {
+				if (pause.get()) {
+					log(LOG_WAITING_FOR_RESUME);
+					try {
+						engine.getPauseLock().wait();
+					} catch (InterruptedException e) {
+						L.e(LOG_TASK_INTERRUPTED, memoryCacheKey);
+						return true;
+					}
+					log(LOG_RESUME_AFTER_PAUSE);
 				}
-				log(LOG_RESUME_AFTER_PAUSE);
 			}
 		}
 		return isTaskNotActual();
 	}
 
-	/** @return true - if task should be interrupted; false - otherwise */
+	/** @return <b>true</b> - if task should be interrupted; <b>false</b> - otherwise */
 	private boolean delayIfNeed() {
 		if (options.shouldDelayBeforeLoading()) {
 			log(LOG_DELAY_BEFORE_LOADING, options.getDelayBeforeLoading(), memoryCacheKey);
