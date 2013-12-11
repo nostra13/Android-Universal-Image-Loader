@@ -28,17 +28,46 @@ import java.io.OutputStream;
  */
 public final class IoUtils {
 
-	private static final int BUFFER_SIZE = 32 * 1024; // 32 KB
+	private static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 KB
 
 	private IoUtils() {
 	}
 
 	public static void copyStream(InputStream is, OutputStream os) throws IOException {
-		final byte[] bytes = new byte[BUFFER_SIZE];
+		copyStream(is, os, null);
+	}
+
+	public static boolean copyStream(InputStream is, OutputStream os, CopyingListener listener)
+			throws IOException {
+		return copyStream(is, os, listener, DEFAULT_BUFFER_SIZE);
+	}
+
+	public static boolean copyStream(InputStream is, OutputStream os, CopyingListener listener, int bufferSize)
+			throws IOException {
+		int current = 0;
+		final int total = is.available();
+
+		final byte[] bytes = new byte[bufferSize];
 		int count;
-		while ((count = is.read(bytes, 0, BUFFER_SIZE)) != -1) {
+		if (shouldStopLoading(listener, current, total)) return false;
+		while ((count = is.read(bytes, 0, bufferSize)) != -1) {
 			os.write(bytes, 0, count);
+			current += count;
+			if (shouldStopLoading(listener, current, total)) return false;
 		}
+		return true;
+	}
+
+	private static boolean shouldStopLoading(CopyingListener listener, int current, int total) {
+		if (listener != null) {
+			boolean shouldContinue = listener.onBytesCopied(current, total);
+			if (!shouldContinue) {
+				if ((float) current / total < 0.75) {
+					return true; // if loaded more than 75% then continue loading anyway
+				}
+			}
+		}
+		return false;
 	}
 
 	public static void closeSilently(Closeable closeable) {
@@ -47,5 +76,15 @@ public final class IoUtils {
 		} catch (Exception e) {
 			// Do nothing
 		}
+	}
+
+	public static interface CopyingListener {
+		/**
+		 * @param current Loaded bytes
+		 * @param total   Total bytes for loading
+		 *
+		 * @return <b>true</b> - if loading should be continued; <b>false</b> - if loading should be interrupted
+		 */
+		boolean onBytesCopied(int current, int total);
 	}
 }

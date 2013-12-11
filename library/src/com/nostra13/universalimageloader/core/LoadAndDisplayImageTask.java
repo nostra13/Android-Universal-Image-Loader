@@ -24,6 +24,7 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+import com.nostra13.universalimageloader.core.assist.LoadingProgressListener;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.decode.ImageDecodingInfo;
@@ -51,7 +52,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @see ImageLoadingInfo
  * @since 1.3.1
  */
-final class LoadAndDisplayImageTask implements Runnable {
+final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyingListener {
 
 	private static final String LOG_WAITING_FOR_RESUME = "ImageLoader is paused. Waiting...  [%s]";
 	private static final String LOG_RESUME_AFTER_PAUSE = ".. Resume loading [%s]";
@@ -94,6 +95,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private final ImageSize targetSize;
 	final DisplayImageOptions options;
 	final ImageLoadingListener listener;
+	final LoadingProgressListener progressListener;
 
 	// State vars
 	private LoadedFrom loadedFrom = LoadedFrom.NETWORK;
@@ -115,6 +117,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		targetSize = imageLoadingInfo.targetSize;
 		options = imageLoadingInfo.options;
 		listener = imageLoadingInfo.listener;
+		progressListener = imageLoadingInfo.progressListener;
 	}
 
 	@Override
@@ -344,18 +347,41 @@ final class LoadAndDisplayImageTask implements Runnable {
 		bmp.recycle();
 	}
 
-	private void downloadImage(File targetFile) throws IOException {
+	private boolean downloadImage(File targetFile) throws IOException {
 		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
+		boolean loaded;
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
 			try {
-				IoUtils.copyStream(is, os);
+				if (progressListener != null) {
+					loaded = IoUtils.copyStream(is, os, this);
+				} else {
+					IoUtils.copyStream(is, os);
+					loaded = true;
+				}
 			} finally {
 				IoUtils.closeSilently(os);
 			}
 		} finally {
 			IoUtils.closeSilently(is);
 		}
+		return loaded;
+	}
+
+	@Override
+	public boolean onBytesCopied(int current, int total) {
+		return fireProgressEvent(current, total);
+	}
+
+	private boolean fireProgressEvent(final int current, final int total) {
+		if (options.isSyncLoading() || isTaskInterrupted() || isTaskNotActual()) return false;
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				progressListener.onProgressUpdate(uri, imageAware.getWrappedView(), current, total);
+			}
+		});
+		return true;
 	}
 
 	private void fireFailEvent(final FailType failType, final Throwable failCause) {
