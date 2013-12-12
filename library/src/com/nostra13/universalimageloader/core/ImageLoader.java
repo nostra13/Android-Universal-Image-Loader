@@ -381,7 +381,7 @@ public class ImageLoader {
 			options = configuration.defaultDisplayImageOptions;
 		}
 
-		ImageNonViewAware imageAware = new ImageNonViewAware(targetImageSize, ViewScaleType.CROP);
+		ImageNonViewAware imageAware = new ImageNonViewAware(uri, targetImageSize, ViewScaleType.CROP);
 		displayImage(uri, imageAware, options, listener);
 	}
 
