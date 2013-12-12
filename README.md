@@ -187,7 +187,7 @@ imageLoader.loadImage(imageUri, new SimpleImageLoadingListener() {
 ```
 ``` java
 // Load image, decode it to Bitmap and return Bitmap synchronously
-Bitmap bmp = imageLoader.loadImage(imageUri);
+Bitmap bmp = imageLoader.loadImageSync(imageUri);
 ```
 
 ### Complete
