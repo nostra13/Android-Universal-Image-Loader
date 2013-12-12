@@ -59,7 +59,7 @@ public class FadeInBitmapDisplayer implements BitmapDisplayer {
 	}
 
 	@Override
-	public Bitmap display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
+	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
 		imageAware.setImageBitmap(bitmap);
 
 		if ((animateFromNetwork && loadedFrom == LoadedFrom.NETWORK) ||
@@ -67,8 +67,6 @@ public class FadeInBitmapDisplayer implements BitmapDisplayer {
 				(animateFromMemory && loadedFrom == LoadedFrom.MEMORY_CACHE)) {
 			animate(imageAware.getWrappedView(), durationMillis);
 		}
-
-		return bitmap;
 	}
 
 	/**

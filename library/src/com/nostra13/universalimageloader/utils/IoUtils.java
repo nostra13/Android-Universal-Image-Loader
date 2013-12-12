@@ -34,12 +34,9 @@ public final class IoUtils {
 	}
 
 	public static void copyStream(InputStream is, OutputStream os) throws IOException {
-		byte[] bytes = new byte[BUFFER_SIZE];
-		while (true) {
-			int count = is.read(bytes, 0, BUFFER_SIZE);
-			if (count == -1) {
-				break;
-			}
+		final byte[] bytes = new byte[BUFFER_SIZE];
+		int count;
+		while ((count = is.read(bytes, 0, BUFFER_SIZE)) != -1) {
 			os.write(bytes, 0, count);
 		}
 	}

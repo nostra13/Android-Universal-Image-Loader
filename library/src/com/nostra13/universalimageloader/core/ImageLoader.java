@@ -212,7 +212,7 @@ public class ImageLoader {
 					engine.submit(displayTask);
 				}
 			} else {
-				bmp = options.getDisplayer().display(bmp, imageAware, LoadedFrom.MEMORY_CACHE);
+				options.getDisplayer().display(bmp, imageAware, LoadedFrom.MEMORY_CACHE);
 				listener.onLoadingComplete(uri, imageAware.getWrappedView(), bmp);
 			}
 		} else {
@@ -368,7 +368,7 @@ public class ImageLoader {
 	 *                        {@linkplain ImageLoaderConfiguration.Builder#defaultDisplayImageOptions(DisplayImageOptions) from
 	 *                        configuration} will be used.<br />
 	 * @param listener        {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires events on UI
-	 *                        THREAD.
+	 *                        thread.
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(String uri, ImageSize targetImageSize, DisplayImageOptions options,

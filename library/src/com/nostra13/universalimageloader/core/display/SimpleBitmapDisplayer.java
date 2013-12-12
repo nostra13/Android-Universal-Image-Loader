@@ -27,8 +27,7 @@ import com.nostra13.universalimageloader.core.imageaware.ImageAware;
  */
 public final class SimpleBitmapDisplayer implements BitmapDisplayer {
 	@Override
-	public Bitmap display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
+	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
 		imageAware.setImageBitmap(bitmap);
-		return bitmap;
 	}
 }

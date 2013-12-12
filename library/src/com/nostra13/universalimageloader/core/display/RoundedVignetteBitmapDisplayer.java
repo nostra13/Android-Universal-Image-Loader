@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2013 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 package com.nostra13.universalimageloader.core.display;
 
 import android.graphics.*;
-import android.graphics.drawable.Drawable;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
 /**
- * Can display bitmap with rounded corners. This implementation works only with ImageViews wrapped
+ * Can display bitmap with rounded corners and vignette effect. This implementation works only with ImageViews wrapped
  * in ImageViewAware.
  * <br />
  * This implementation is inspired by
@@ -34,20 +33,12 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
  * <a href="https://github.com/vinc3m1/RoundedImageView">this project</a> for usage.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.5.6
+ * @since 1.9.1
  */
-public class RoundedBitmapDisplayer implements BitmapDisplayer {
+public class RoundedVignetteBitmapDisplayer extends RoundedBitmapDisplayer {
 
-	protected final int cornerRadius;
-	protected final int margin;
-
-	public RoundedBitmapDisplayer(int cornerRadiusPixels) {
-		this(cornerRadiusPixels, 0);
-	}
-
-	public RoundedBitmapDisplayer(int cornerRadiusPixels, int marginPixels) {
-		this.cornerRadius = cornerRadiusPixels;
-		this.margin = marginPixels;
+	public RoundedVignetteBitmapDisplayer(int cornerRadiusPixels, int marginPixels) {
+		super(cornerRadiusPixels, marginPixels);
 	}
 
 	@Override
@@ -56,53 +47,28 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 			throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
 		}
 
-		imageAware.setImageDrawable(new RoundedDrawable(bitmap, cornerRadius, margin));
+		imageAware.setImageDrawable(new RoundedVignetteDrawable(bitmap, cornerRadius, margin));
 	}
 
-	protected static class RoundedDrawable extends Drawable {
+	protected static class RoundedVignetteDrawable extends RoundedDrawable {
 
-		protected final float cornerRadius;
-		protected final int margin;
-
-		protected final RectF mRect = new RectF();
-		protected final BitmapShader bitmapShader;
-		protected final Paint paint;
-
-		RoundedDrawable(Bitmap bitmap, int cornerRadius, int margin) {
-			this.cornerRadius = cornerRadius;
-			this.margin = margin;
-
-			bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-
-			paint = new Paint();
-			paint.setAntiAlias(true);
-			paint.setShader(bitmapShader);
+		RoundedVignetteDrawable(Bitmap bitmap, int cornerRadius, int margin) {
+			super(bitmap, cornerRadius, margin);
 		}
 
 		@Override
 		protected void onBoundsChange(Rect bounds) {
 			super.onBoundsChange(bounds);
-			mRect.set(margin, margin, bounds.width() - margin, bounds.height() - margin);
-		}
+			RadialGradient vignette = new RadialGradient(
+					mRect.centerX(), mRect.centerY() * 1.0f / 0.7f, mRect.centerX() * 1.3f,
+					new int[]{0, 0, 0x7f000000}, new float[]{0.0f, 0.7f, 1.0f},
+					Shader.TileMode.CLAMP);
 
-		@Override
-		public void draw(Canvas canvas) {
-			canvas.drawRoundRect(mRect, cornerRadius, cornerRadius, paint);
-		}
+			Matrix oval = new Matrix();
+			oval.setScale(1.0f, 0.7f);
+			vignette.setLocalMatrix(oval);
 
-		@Override
-		public int getOpacity() {
-			return PixelFormat.TRANSLUCENT;
-		}
-
-		@Override
-		public void setAlpha(int alpha) {
-			paint.setAlpha(alpha);
-		}
-
-		@Override
-		public void setColorFilter(ColorFilter cf) {
-			paint.setColorFilter(cf);
+			paint.setShader(new ComposeShader(bitmapShader, vignette, PorterDuff.Mode.SRC_OVER));
 		}
 	}
 }

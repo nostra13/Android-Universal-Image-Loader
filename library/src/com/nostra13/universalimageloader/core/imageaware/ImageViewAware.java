@@ -88,7 +88,6 @@ public class ImageViewAware implements ImageAware {
 			}
 			if (width <= 0 && params != null) width = params.width; // Get layout width parameter
 			if (width <= 0) width = getImageViewFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
-			L.w("width = " + width);
 			return width;
 		}
 		return 0;
@@ -116,7 +115,6 @@ public class ImageViewAware implements ImageAware {
 			}
 			if (height <= 0 && params != null) height = params.height; // Get layout height parameter
 			if (height <= 0) height = getImageViewFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
-			L.w("height = " + height);
 			return height;
 		}
 		return 0;
