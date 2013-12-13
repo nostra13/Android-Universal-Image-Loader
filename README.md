@@ -6,10 +6,11 @@ This project aims to provide a reusable instrument for asynchronous image loadin
 
 ## Project News
  **Upcoming changes in new UIL version (1.9.1)**
- * Non-effective `RoundedBitmapDisplayer` is completely re-designed. New implementation is inspired by [this article](http://www.curious-creature.org/2012/12/11/android-recipe-1-image-with-rounded-corners). 
-   ** NOTE:**New `RoundedBitmapDisplayer`'s behaviour can vary from old one. Also consider ["RoundedImageView" project](https://github.com/vinc3m1/RoundedImageView) for usage if new `RoundedBitmapDisplayer` doesn't work for you.
+ * Added possibility to listen image loading progress by separate listener - `ImageLoadingProgressListener`.
+ * Non-actual downloads will be interrupted (if loaded less than 75%)
+ * Non-effective `RoundedBitmapDisplayer` is completely re-designed. New implementation is inspired by [this article](http://www.curious-creature.org/2012/12/11/android-recipe-1-image-with-rounded-corners).
+  **NOTE:** New `RoundedBitmapDisplayer`'s behaviour can vary from old one. Also consider ["RoundedImageView" project](https://github.com/vinc3m1/RoundedImageView) for usage if new `RoundedBitmapDisplayer` doesn't work for you.
  * Added `RoundedVignetteBitmapDisplayer` which can apply "vignette effect" to images.
- * **Branch:** Added possibility to listen image loading progress by separate listener - `LoadingProgressListener`.
  * **Changed API:** `BitmapDisplayer.display(...) : Bitmap` -> `BitmapDisplayer.display(...) : void`
 
 ## Features
@@ -211,6 +212,11 @@ imageLoader.displayImage(imageUri, imageView, displayOptions, new ImageLoadingLi
 	}
 	@Override
 	public void onLoadingCancelled(String imageUri, View view) {
+		...
+	}
+}, new ImageLoadingProgressListener() {
+	@Override
+	public void onProgressUpdate(String imageUri, View view, int current, int total) {
 		...
 	}
 });
