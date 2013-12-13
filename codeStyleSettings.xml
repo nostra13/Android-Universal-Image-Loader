@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectCodeStyleSettingsManager">
+    <option name="PER_PROJECT_SETTINGS">
+      <value>
+        <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
+        <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
+        <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
+          <value />
+        </option>
+        <option name="IMPORT_LAYOUT_TABLE">
+          <value>
+            <package name="android" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="com" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="junit" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="net" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="org" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="java" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="javax" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="" withSubpackages="true" static="false" />
+            <emptyLine />
+            <package name="" withSubpackages="true" static="true" />
+            <emptyLine />
+          </value>
+        </option>
+        <option name="RIGHT_MARGIN" value="100" />
+        <AndroidXmlCodeStyleSettings>
+          <option name="USE_CUSTOM_SETTINGS" value="true" />
+        </AndroidXmlCodeStyleSettings>
+        <XML>
+          <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
+        </XML>
+      </value>
+    </option>
+    <option name="PREFERRED_PROJECT_CODE_STYLE" value="Default (1)" />
+  </component>
+</project>
+
