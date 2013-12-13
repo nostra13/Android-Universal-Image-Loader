@@ -23,7 +23,7 @@ import android.view.View;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.9.1
  */
-public interface LoadingProgressListener {
+public interface ImageLoadingProgressListener {
 
 	/**
 	 * Is called when image loading progress changed.
