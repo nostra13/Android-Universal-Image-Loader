@@ -24,6 +24,7 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+import com.nostra13.universalimageloader.core.assist.LoadingProgressListener;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.decode.ImageDecodingInfo;
@@ -51,7 +52,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @see ImageLoadingInfo
  * @since 1.3.1
  */
-final class LoadAndDisplayImageTask implements Runnable {
+final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	private static final String LOG_WAITING_FOR_RESUME = "ImageLoader is paused. Waiting...  [%s]";
 	private static final String LOG_RESUME_AFTER_PAUSE = ".. Resume loading [%s]";
@@ -94,6 +95,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private final ImageSize targetSize;
 	final DisplayImageOptions options;
 	final ImageLoadingListener listener;
+	final LoadingProgressListener progressListener;
 
 	// State vars
 	private LoadedFrom loadedFrom = LoadedFrom.NETWORK;
@@ -115,6 +117,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		targetSize = imageLoadingInfo.targetSize;
 		options = imageLoadingInfo.options;
 		listener = imageLoadingInfo.listener;
+		progressListener = imageLoadingInfo.progressListener;
 	}
 
 	@Override
@@ -235,8 +238,8 @@ final class LoadAndDisplayImageTask implements Runnable {
 				log(LOG_LOAD_IMAGE_FROM_NETWORK);
 				loadedFrom = LoadedFrom.NETWORK;
 
-				String imageUriForDecoding = options.isCacheOnDisc() && tryCacheImageOnDisc(
-						imageFile) ? cacheFileUri : uri;
+				String imageUriForDecoding =
+						options.isCacheOnDisc() && tryCacheImageOnDisc(imageFile) ? cacheFileUri : uri;
 
 				checkTaskNotActual();
 				bitmap = decodeImage(imageUriForDecoding);
@@ -282,7 +285,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 	private Bitmap decodeImage(String imageUri) throws IOException {
 		ViewScaleType viewScaleType = imageAware.getScaleType();
 		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, imageUri, targetSize, viewScaleType,
-															   getDownloader(), options);
+				getDownloader(), options);
 		return decoder.decode(decodingInfo);
 	}
 
@@ -311,18 +314,31 @@ final class LoadAndDisplayImageTask implements Runnable {
 		return true;
 	}
 
+	private boolean downloadImage(File targetFile) throws IOException {
+		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
+		boolean loaded;
+		try {
+			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
+			try {
+				loaded = IoUtils.copyStream(is, os, this);
+			} finally {
+				IoUtils.closeSilently(os);
+			}
+		} finally {
+			IoUtils.closeSilently(is);
+		}
+		return loaded;
+	}
+
 	/** Decodes image file into Bitmap, resize it and save it back */
 	private void resizeAndSaveImage(File targetFile, int maxWidth, int maxHeight) throws IOException {
 		// Decode image file, compress and re-save it
 		ImageSize targetImageSize = new ImageSize(maxWidth, maxHeight);
-		DisplayImageOptions specialOptions = new DisplayImageOptions.Builder()
-				.cloneFrom(options)
-				.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
-				.build();
+		DisplayImageOptions specialOptions = new DisplayImageOptions.Builder().cloneFrom(options)
+				.imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
 		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey,
-															   Scheme.FILE.wrap(targetFile.getAbsolutePath()),
-															   targetImageSize, ViewScaleType.FIT_INSIDE,
-															   getDownloader(), specialOptions);
+				Scheme.FILE.wrap(targetFile.getAbsolutePath()), targetImageSize, ViewScaleType.FIT_INSIDE,
+				getDownloader(), specialOptions);
 		Bitmap bmp = decoder.decode(decodingInfo);
 		if (bmp == null) return;
 
@@ -344,18 +360,21 @@ final class LoadAndDisplayImageTask implements Runnable {
 		bmp.recycle();
 	}
 
-	private void downloadImage(File targetFile) throws IOException {
-		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
-		try {
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile), BUFFER_SIZE);
-			try {
-				IoUtils.copyStream(is, os);
-			} finally {
-				IoUtils.closeSilently(os);
+	@Override
+	public boolean onBytesCopied(int current, int total) {
+		return progressListener == null || fireProgressEvent(current, total);
+	}
+
+	/** @return <b>true</b> - if loading should be continued; <b>false</b> - if loading should be interrupted */
+	private boolean fireProgressEvent(final int current, final int total) {
+		if (options.isSyncLoading() || isTaskInterrupted() || isTaskNotActual()) return false;
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				progressListener.onProgressUpdate(uri, imageAware.getWrappedView(), current, total);
 			}
-		} finally {
-			IoUtils.closeSilently(is);
-		}
+		});
+		return true;
 	}
 
 	private void fireFailEvent(final FailType failType, final Throwable failCause) {
