@@ -28,21 +28,40 @@ import java.io.OutputStream;
  */
 public final class IoUtils {
 
-	private static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 KB
+	/** {@value} */
+	public static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 KB
+	/** {@value} */
+	public static final int CONTINUE_LOADING_PERCENTAGE = 75;
 
 	private IoUtils() {
 	}
 
-	public static void copyStream(InputStream is, OutputStream os) throws IOException {
-		copyStream(is, os, null);
-	}
-
-	public static boolean copyStream(InputStream is, OutputStream os, CopyingListener listener)
-			throws IOException {
+	/**
+	 * Copies stream, fires progress events by listener, can be interrupted by listener. Uses buffer size =
+	 * {@value #DEFAULT_BUFFER_SIZE} bytes.
+	 *
+	 * @param is       Input stream
+	 * @param os       Output stream
+	 * @param listener Listener of copying progress and controller of copying interrupting
+	 * @return <b>true</b> - if stream copied successfully; <b>false</b> - if copying was interrupted by listener
+	 * @throws IOException
+	 */
+	public static boolean copyStream(InputStream is, OutputStream os, CopyListener listener) throws IOException {
 		return copyStream(is, os, listener, DEFAULT_BUFFER_SIZE);
 	}
 
-	public static boolean copyStream(InputStream is, OutputStream os, CopyingListener listener, int bufferSize)
+	/**
+	 * Copies stream, fires progress events by listener, can be interrupted by listener.
+	 *
+	 * @param is         Input stream
+	 * @param os         Output stream
+	 * @param listener   Listener of copying progress and controller of copying interrupting
+	 * @param bufferSize Buffer size for copying, also represents a step for firing progress listener callback, i.e.
+	 *                   progress event will be fired after every copied <b>bufferSize</b> bytes
+	 * @return <b>true</b> - if stream copied successfully; <b>false</b> - if copying was interrupted by listener
+	 * @throws IOException
+	 */
+	public static boolean copyStream(InputStream is, OutputStream os, CopyListener listener, int bufferSize)
 			throws IOException {
 		int current = 0;
 		final int total = is.available();
@@ -58,11 +77,11 @@ public final class IoUtils {
 		return true;
 	}
 
-	private static boolean shouldStopLoading(CopyingListener listener, int current, int total) {
+	private static boolean shouldStopLoading(CopyListener listener, int current, int total) {
 		if (listener != null) {
 			boolean shouldContinue = listener.onBytesCopied(current, total);
 			if (!shouldContinue) {
-				if ((float) current / total < 0.75) {
+				if (100 * current / total < CONTINUE_LOADING_PERCENTAGE) {
 					return true; // if loaded more than 75% then continue loading anyway
 				}
 			}
@@ -78,12 +97,12 @@ public final class IoUtils {
 		}
 	}
 
-	public static interface CopyingListener {
+	/** Listener and controller for copy process */
+	public static interface CopyListener {
 		/**
 		 * @param current Loaded bytes
 		 * @param total   Total bytes for loading
-		 *
-		 * @return <b>true</b> - if loading should be continued; <b>false</b> - if loading should be interrupted
+		 * @return <b>true</b> - if copying should be continued; <b>false</b> - if copying should be interrupted
 		 */
 		boolean onBytesCopied(int current, int total);
 	}
