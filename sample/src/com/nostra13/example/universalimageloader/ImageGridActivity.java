@@ -29,7 +29,7 @@ import android.widget.ProgressBar;
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.LoadingProgressListener;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 /**
@@ -124,7 +124,7 @@ public class ImageGridActivity extends AbsListViewBaseActivity {
 										 public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 											 holder.progressBar.setVisibility(View.GONE);
 										 }
-									 }, new LoadingProgressListener() {
+									 }, new ImageLoadingProgressListener() {
 										 @Override
 										 public void onProgressUpdate(String imageUri, View view, int current,
 												 int total) {
