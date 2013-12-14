@@ -43,9 +43,11 @@ public class ImageDecodingInfo {
 	private final ImageDownloader downloader;
 	private final Object extraForDownloader;
 
+	private final boolean considerExifParams;
 	private final Options decodingOptions;
 
-	public ImageDecodingInfo(String imageKey, String imageUri, ImageSize targetSize, ViewScaleType viewScaleType, ImageDownloader downloader, DisplayImageOptions displayOptions) {
+	public ImageDecodingInfo(String imageKey, String imageUri, ImageSize targetSize, ViewScaleType viewScaleType,
+							 ImageDownloader downloader, DisplayImageOptions displayOptions) {
 		this.imageKey = imageKey;
 		this.imageUri = imageUri;
 		this.targetSize = targetSize;
@@ -56,6 +58,7 @@ public class ImageDecodingInfo {
 		this.downloader = downloader;
 		this.extraForDownloader = displayOptions.getExtraForDownloader();
 
+		considerExifParams = displayOptions.isConsiderExifParams();
 		decodingOptions = new Options();
 		copyOptions(displayOptions.getDecodingOptions(), decodingOptions);
 	}
@@ -99,7 +102,7 @@ public class ImageDecodingInfo {
 
 	/**
 	 * @return Target size for image. Decoded bitmap should close to this size according to {@linkplain ImageScaleType
-	 *         image scale type} and {@linkplain ViewScaleType view scale type}.
+	 * image scale type} and {@linkplain ViewScaleType view scale type}.
 	 */
 	public ImageSize getTargetSize() {
 		return targetSize;
@@ -107,7 +110,7 @@ public class ImageDecodingInfo {
 
 	/**
 	 * @return {@linkplain ImageScaleType Scale type for image sampling and scaling}. This parameter affects result size
-	 *         of decoded bitmap.
+	 * of decoded bitmap.
 	 */
 	public ImageScaleType getImageScaleType() {
 		return imageScaleType;
@@ -126,6 +129,11 @@ public class ImageDecodingInfo {
 	/** @return Auxiliary object for downloader */
 	public Object getExtraForDownloader() {
 		return extraForDownloader;
+	}
+
+	/** @return <b>true</b> - if EXIF params of image should be considered; <b>false</b> - otherwise */
+	public boolean shouldConsiderExifParams() {
+		return considerExifParams;
 	}
 
 	/** @return Decoding options */

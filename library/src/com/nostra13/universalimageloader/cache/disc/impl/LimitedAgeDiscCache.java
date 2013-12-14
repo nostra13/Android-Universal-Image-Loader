@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.cache.disc.BaseDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
+import com.nostra13.universalimageloader.utils.IoUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,8 +85,8 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	}
 
 	@Override
-	public boolean save(String imageUri, InputStream imageStream) throws IOException {
-		boolean saved = super.save(imageUri, imageStream);
+	public boolean save(String imageUri, InputStream imageStream, IoUtils.CopyListener listener) throws IOException {
+		boolean saved = super.save(imageUri, imageStream, listener);
 		rememberUsage(imageUri);
 		return saved;
 	}

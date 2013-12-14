@@ -15,28 +15,23 @@
  *******************************************************************************/
 package com.nostra13.example.universalimageloader;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-
 import com.nostra13.example.universalimageloader.Constants.Extra;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -56,11 +51,12 @@ public class ImageListActivity extends AbsListViewBaseActivity {
 		imageUrls = bundle.getStringArray(Extra.IMAGES);
 
 		options = new DisplayImageOptions.Builder()
-			.showStubImage(R.drawable.ic_stub)
+			.showImageOnLoading(R.drawable.ic_stub)
 			.showImageForEmptyUri(R.drawable.ic_empty)
 			.showImageOnFail(R.drawable.ic_error)
 			.cacheInMemory(true)
 			.cacheOnDisc(true)
+			.considerExifParams(true)
 			.displayer(new RoundedBitmapDisplayer(20))
 			.build();
 

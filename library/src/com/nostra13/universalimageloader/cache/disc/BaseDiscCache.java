@@ -20,7 +20,12 @@ import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 import com.nostra13.universalimageloader.utils.IoUtils;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Base disc cache. Implements common functionality for disc cache.
@@ -67,19 +72,24 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 	}
 
 	@Override
-	public boolean save(String imageUri, InputStream imageStream) throws IOException {
+	public boolean save(String imageUri, InputStream imageStream, final IoUtils.CopyListener listener)
+			throws IOException {
 		File imageFile = getFile(imageUri);
+		boolean loaded = false;
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(imageFile), BUFFER_SIZE);
 			try {
-				IoUtils.copyStream(imageStream, os, BUFFER_SIZE);
+				loaded = IoUtils.copyStream(imageStream, os, listener, BUFFER_SIZE);
 			} finally {
 				IoUtils.closeSilently(os);
 			}
 		} finally {
 			IoUtils.closeSilently(imageStream);
+			if (!loaded) {
+				imageFile.delete();
+			}
 		}
-		return true;
+		return loaded;
 	}
 
 	@Override

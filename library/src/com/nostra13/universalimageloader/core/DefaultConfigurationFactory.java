@@ -38,7 +38,12 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import java.io.File;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -50,10 +55,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DefaultConfigurationFactory {
 
 	/** Creates default implementation of task executor */
-	public static Executor createExecutor(int threadPoolSize, int threadPriority, QueueProcessingType tasksProcessingType) {
+	public static Executor createExecutor(int threadPoolSize, int threadPriority,
+			QueueProcessingType tasksProcessingType) {
 		boolean lifo = tasksProcessingType == QueueProcessingType.LIFO;
-		BlockingQueue<Runnable> taskQueue = lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
-		return new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue, createThreadFactory(threadPriority));
+		BlockingQueue<Runnable> taskQueue =
+				lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
+		return new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue,
+				createThreadFactory(threadPriority));
 	}
 
 	/** Creates {@linkplain HashCodeFileNameGenerator default implementation} of FileNameGenerator */
@@ -62,7 +70,8 @@ public class DefaultConfigurationFactory {
 	}
 
 	/** Creates default implementation of {@link DiscCacheAware} depends on incoming parameters */
-	public static DiscCacheAware createDiscCache(Context context, FileNameGenerator discCacheFileNameGenerator, int discCacheSize, int discCacheFileCount) {
+	public static DiscCacheAware createDiscCache(Context context, FileNameGenerator discCacheFileNameGenerator,
+			int discCacheSize, int discCacheFileCount) {
 		if (discCacheSize > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
 			return new TotalSizeLimitedDiscCache(individualCacheDir, discCacheFileNameGenerator, discCacheSize);
@@ -76,8 +85,7 @@ public class DefaultConfigurationFactory {
 	}
 
 	/** Creates reserve disc cache which will be used if primary disc cache becomes unavailable */
-	public static DiscCacheAware createReserveDiscCache(Context context) {
-		File cacheDir = context.getCacheDir();
+	public static DiscCacheAware createReserveDiscCache(File cacheDir) {
 		File individualDir = new File(cacheDir, "uil-images");
 		if (individualDir.exists() || individualDir.mkdir()) {
 			cacheDir = individualDir;
@@ -136,9 +144,10 @@ public class DefaultConfigurationFactory {
 			this.threadPriority = threadPriority;
 			SecurityManager s = System.getSecurityManager();
 			group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-			namePrefix = "pool-" + poolNumber.getAndIncrement() + "-thread-";
+			namePrefix = "uil-pool-" + poolNumber.getAndIncrement() + "-thread-";
 		}
 
+		@Override
 		public Thread newThread(Runnable r) {
 			Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
 			if (t.isDaemon()) t.setDaemon(false);

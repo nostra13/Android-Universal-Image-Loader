@@ -16,6 +16,7 @@
 package com.nostra13.universalimageloader.cache.disc;
 
 import android.graphics.Bitmap;
+import com.nostra13.universalimageloader.utils.IoUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public interface DiscCacheAware {
 
 	File get(String imageUri);
 
-	boolean save(String imageUri, InputStream imageStream) throws IOException;
+	boolean save(String imageUri, InputStream imageStream, IoUtils.CopyListener listener) throws IOException;
 
 	boolean save(String imageUri, Bitmap bitmap, Bitmap.CompressFormat format, int quality) throws IOException;
 

@@ -56,16 +56,16 @@ public class LruDiscCache implements DiscCacheAware {
 	}
 
 	@Override
-	public boolean save(String imageUri, InputStream imageStream) throws IOException {
+	public boolean save(String imageUri, InputStream imageStream, IoUtils.CopyListener listener) throws IOException {
 		DiskLruCache.Editor editor = cache.edit(getKey(imageUri));
 		if (editor == null) {
 			return false;
 		}
 
 		OutputStream os = new BufferedOutputStream(editor.newOutputStream(0), BUFFER_SIZE);
-		IoUtils.copyStream(imageStream, os, BUFFER_SIZE);
+	 	boolean copied = IoUtils.copyStream(imageStream, os, listener, BUFFER_SIZE);
 		editor.commit();
-		return true;
+		return copied;
 	}
 
 	@Override

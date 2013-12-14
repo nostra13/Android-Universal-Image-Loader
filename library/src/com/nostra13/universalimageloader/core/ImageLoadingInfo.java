@@ -15,13 +15,12 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
-import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -31,24 +30,29 @@ import java.util.concurrent.locks.ReentrantLock;
  * @see MemoryCacheUtil
  * @see DisplayImageOptions
  * @see ImageLoadingListener
+ * @see com.nostra13.universalimageloader.core.assist.ImageLoadingProgressListener
  * @since 1.3.1
  */
 final class ImageLoadingInfo {
 
 	final String uri;
 	final String memoryCacheKey;
-	final Reference<ImageView> imageViewRef;
+	final ImageAware imageAware;
 	final ImageSize targetSize;
 	final DisplayImageOptions options;
 	final ImageLoadingListener listener;
+	final ImageLoadingProgressListener progressListener;
 	final ReentrantLock loadFromUriLock;
 
-	public ImageLoadingInfo(String uri, ImageView imageView, ImageSize targetSize, String memoryCacheKey, DisplayImageOptions options, ImageLoadingListener listener, ReentrantLock loadFromUriLock) {
+	public ImageLoadingInfo(String uri, ImageAware imageAware, ImageSize targetSize, String memoryCacheKey,
+			DisplayImageOptions options, ImageLoadingListener listener, ImageLoadingProgressListener progressListener,
+			ReentrantLock loadFromUriLock) {
 		this.uri = uri;
-		this.imageViewRef = new WeakReference<ImageView>(imageView);
+		this.imageAware = imageAware;
 		this.targetSize = targetSize;
 		this.options = options;
 		this.listener = listener;
+		this.progressListener = progressListener;
 		this.loadFromUriLock = loadFromUriLock;
 		this.memoryCacheKey = memoryCacheKey;
 	}
