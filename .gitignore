@@ -25,3 +25,7 @@ out/
 
 # Mac 
 .DS_Store
+
+# Ignore gradle files
+.gradle/
+build/

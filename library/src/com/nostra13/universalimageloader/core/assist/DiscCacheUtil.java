@@ -34,7 +34,7 @@ public final class DiscCacheUtil {
 	/** Returns {@link File} of cached image or <b>null</b> if image was not cached in disc cache */
 	public static File findInCache(String imageUri, DiscCacheAware discCache) {
 		File image = discCache.get(imageUri);
-		return image != null && image.exists() ? image : null;
+		return image.exists() ? image : null;
 	}
 
 	/**
@@ -44,6 +44,6 @@ public final class DiscCacheUtil {
 	 */
 	public static boolean removeFromCache(String imageUri, DiscCacheAware discCache) {
 		File image = discCache.get(imageUri);
-		return image != null && image.exists() && image.delete();
+		return image.delete();
 	}
 }
