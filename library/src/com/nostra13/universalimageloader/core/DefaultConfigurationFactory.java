@@ -38,12 +38,7 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import java.io.File;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -55,13 +50,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DefaultConfigurationFactory {
 
 	/** Creates default implementation of task executor */
-	public static Executor createExecutor(int threadPoolSize, int threadPriority,
-			QueueProcessingType tasksProcessingType) {
+	public static Executor createExecutor(int threadPoolSize, int threadPriority, QueueProcessingType tasksProcessingType) {
 		boolean lifo = tasksProcessingType == QueueProcessingType.LIFO;
-		BlockingQueue<Runnable> taskQueue =
-				lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
-		return new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue,
-				createThreadFactory(threadPriority));
+		BlockingQueue<Runnable> taskQueue = lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
+		return new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue, createThreadFactory(threadPriority));
 	}
 
 	/** Creates {@linkplain HashCodeFileNameGenerator default implementation} of FileNameGenerator */
@@ -70,8 +62,7 @@ public class DefaultConfigurationFactory {
 	}
 
 	/** Creates default implementation of {@link DiscCacheAware} depends on incoming parameters */
-	public static DiscCacheAware createDiscCache(Context context, FileNameGenerator discCacheFileNameGenerator,
-			int discCacheSize, int discCacheFileCount) {
+	public static DiscCacheAware createDiscCache(Context context, FileNameGenerator discCacheFileNameGenerator, int discCacheSize, int discCacheFileCount) {
 		if (discCacheSize > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
 			return new TotalSizeLimitedDiscCache(individualCacheDir, discCacheFileNameGenerator, discCacheSize);

@@ -213,10 +213,10 @@ public final class ImageLoaderConfiguration {
 		/**
 		 * Sets options for memory cache
 		 *
-		 * @param maxImageWidthForMemoryCache Maximum image width which will be used for memory saving during decoding
-		 *            an image to {@link android.graphics.Bitmap Bitmap}. <b>Default value - device's screen width</b>
+		 * @param maxImageWidthForMemoryCache  Maximum image width which will be used for memory saving during decoding
+		 *                                     an image to {@link android.graphics.Bitmap Bitmap}. <b>Default value - device's screen width</b>
 		 * @param maxImageHeightForMemoryCache Maximum image height which will be used for memory saving during decoding
-		 *            an image to {@link android.graphics.Bitmap Bitmap}. <b>Default value</b> - device's screen height
+		 *                                     an image to {@link android.graphics.Bitmap Bitmap}. <b>Default value</b> - device's screen height
 		 */
 		public Builder memoryCacheExtraOptions(int maxImageWidthForMemoryCache, int maxImageHeightForMemoryCache) {
 			this.maxImageWidthForMemoryCache = maxImageWidthForMemoryCache;
@@ -228,13 +228,13 @@ public final class ImageLoaderConfiguration {
 		 * Sets options for resizing/compressing of downloaded images before saving to disc cache.<br />
 		 * <b>NOTE: Use this option only when you have appropriate needs. It can make ImageLoader slower.</b>
 		 *
-		 * @param maxImageWidthForDiscCache Maximum width of downloaded images for saving at disc cache
+		 * @param maxImageWidthForDiscCache  Maximum width of downloaded images for saving at disc cache
 		 * @param maxImageHeightForDiscCache Maximum height of downloaded images for saving at disc cache
-		 * @param compressFormat {@link android.graphics.Bitmap.CompressFormat Compress format} downloaded images to
-		 *            save them at disc cache
-		 * @param compressQuality Hint to the compressor, 0-100. 0 meaning compress for small size, 100 meaning compress
-		 *            for max quality. Some formats, like PNG which is lossless, will ignore the quality setting
-		 * @param processorForDiscCache null-ok; {@linkplain BitmapProcessor Bitmap processor} which process images before saving them in disc cache
+		 * @param compressFormat             {@link android.graphics.Bitmap.CompressFormat Compress format} downloaded images to
+		 *                                   save them at disc cache
+		 * @param compressQuality            Hint to the compressor, 0-100. 0 meaning compress for small size, 100 meaning compress
+		 *                                   for max quality. Some formats, like PNG which is lossless, will ignore the quality setting
+		 * @param processorForDiscCache      null-ok; {@linkplain BitmapProcessor Bitmap processor} which process images before saving them in disc cache
 		 */
 		public Builder discCacheExtraOptions(int maxImageWidthForDiscCache, int maxImageHeightForDiscCache,
 											 CompressFormat compressFormat, int compressQuality,
@@ -274,7 +274,7 @@ public final class ImageLoaderConfiguration {
 		 * are executed quickly so UIL prefer to use separate executor for them).<br />
 		 * <br />
 		 * If you set the same executor for {@linkplain #taskExecutor(Executor) general tasks} and
-		 * this method tasks about cached images} then these tasks will be in the
+		 * tasks about cached images (this method) then these tasks will be in the
 		 * same thread pool. So short-lived tasks can wait a long time for their turn.<br />
 		 * <br />
 		 * <b>NOTE:</b> If you set custom executor then following configuration options will not be considered for this

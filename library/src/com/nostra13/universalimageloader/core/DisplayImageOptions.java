@@ -193,8 +193,7 @@ public final class DisplayImageOptions {
 		} else {
 			if (handler == null) {
 				if (Looper.myLooper() != Looper.getMainLooper()) {
-					throw new IllegalStateException(
-							"ImageLoader.displayImage(...) must be invoked from the main thread or from Looper thread");
+					throw new IllegalStateException("ImageLoader.displayImage(...) must be invoked from the main thread or from Looper thread");
 				}
 				return new Handler();
 			} else {

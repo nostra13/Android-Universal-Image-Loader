@@ -45,8 +45,8 @@ final class ImageLoadingInfo {
 	final ReentrantLock loadFromUriLock;
 
 	public ImageLoadingInfo(String uri, ImageAware imageAware, ImageSize targetSize, String memoryCacheKey,
-			DisplayImageOptions options, ImageLoadingListener listener, ImageLoadingProgressListener progressListener,
-			ReentrantLock loadFromUriLock) {
+			DisplayImageOptions options, ImageLoadingListener listener,
+			ImageLoadingProgressListener progressListener, ReentrantLock loadFromUriLock) {
 		this.uri = uri;
 		this.imageAware = imageAware;
 		this.targetSize = targetSize;
