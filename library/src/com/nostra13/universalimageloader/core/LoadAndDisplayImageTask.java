@@ -73,7 +73,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	private static final String LOG_TASK_INTERRUPTED = "Task was interrupted [%s]";
 
 	private static final String ERROR_PRE_PROCESSOR_NULL = "Pre-processor returned null [%s]";
-	private static final String ERROR_POST_PROCESSOR_NULL = "Pre-processor returned null [%s]";
+	private static final String ERROR_POST_PROCESSOR_NULL = "Post-processor returned null [%s]";
 	private static final String ERROR_PROCESSOR_FOR_DISC_CACHE_NULL = "Bitmap processor for disc cache returned null [%s]";
 
 	private static final int BUFFER_SIZE = 32 * 1024; // 32 Kb
