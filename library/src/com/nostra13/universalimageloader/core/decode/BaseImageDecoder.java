@@ -49,8 +49,9 @@ public class BaseImageDecoder implements ImageDecoder {
 	protected final boolean loggingEnabled;
 
 	/**
-	 * @param loggingEnabled Whether debug logs will be written to LogCat.
-	 *                       Usually should match {@link com.nostra13.universalimageloader.core.ImageLoaderConfiguration.Builder#writeDebugLogs() ImageLoaderConfiguration.writeDebugLogs()}
+	 * @param loggingEnabled Whether debug logs will be written to LogCat. Usually should match {@link
+	 *                       com.nostra13.universalimageloader.core.ImageLoaderConfiguration.Builder#writeDebugLogs()
+	 *                       ImageLoaderConfiguration.writeDebugLogs()}
 	 */
 	public BaseImageDecoder(boolean loggingEnabled) {
 		this.loggingEnabled = loggingEnabled;
@@ -66,15 +67,24 @@ public class BaseImageDecoder implements ImageDecoder {
 	 * @throws UnsupportedOperationException if image URI has unsupported scheme(protocol)
 	 */
 	public Bitmap decode(ImageDecodingInfo decodingInfo) throws IOException {
+		Bitmap decodedBitmap;
+		ImageFileInfo imageInfo;
+
 		InputStream imageStream = getImageStream(decodingInfo);
-		ImageFileInfo imageInfo = defineImageSizeAndRotation(imageStream, decodingInfo);
-		Options decodingOptions = prepareDecodingOptions(imageInfo.imageSize, decodingInfo);
-		imageStream = resetStream(imageStream, decodingInfo);
-		Bitmap decodedBitmap = decodeStream(imageStream, decodingOptions);
+		try {
+			imageInfo = defineImageSizeAndRotation(imageStream, decodingInfo);
+			imageStream = resetStream(imageStream, decodingInfo);
+			Options decodingOptions = prepareDecodingOptions(imageInfo.imageSize, decodingInfo);
+			decodedBitmap = BitmapFactory.decodeStream(imageStream, null, decodingOptions);
+		} finally {
+			IoUtils.closeSilently(imageStream);
+		}
+
 		if (decodedBitmap == null) {
 			L.e(ERROR_CANT_DECODE_IMAGE, decodingInfo.getImageKey());
 		} else {
-			decodedBitmap = considerExactScaleAndOrientaiton(decodedBitmap, decodingInfo, imageInfo.exif.rotation, imageInfo.exif.flipHorizontal);
+			decodedBitmap = considerExactScaleAndOrientaiton(decodedBitmap, decodingInfo, imageInfo.exif.rotation,
+															 imageInfo.exif.flipHorizontal);
 		}
 		return decodedBitmap;
 	}
@@ -160,21 +170,14 @@ public class BaseImageDecoder implements ImageDecoder {
 		try {
 			imageStream.reset();
 		} catch (IOException e) {
+			IoUtils.closeSilently(imageStream);
 			imageStream = getImageStream(decodingInfo);
 		}
 		return imageStream;
 	}
 
-	protected Bitmap decodeStream(InputStream imageStream, Options decodingOptions) throws IOException {
-		try {
-			return BitmapFactory.decodeStream(imageStream, null, decodingOptions);
-		} finally {
-			IoUtils.closeSilently(imageStream);
-		}
-	}
-
 	protected Bitmap considerExactScaleAndOrientaiton(Bitmap subsampledBitmap, ImageDecodingInfo decodingInfo,
-													  int rotation, boolean flipHorizontal) {
+			int rotation, boolean flipHorizontal) {
 		Matrix m = new Matrix();
 		// Scale to exact size if need
 		ImageScaleType scaleType = decodingInfo.getImageScaleType();
