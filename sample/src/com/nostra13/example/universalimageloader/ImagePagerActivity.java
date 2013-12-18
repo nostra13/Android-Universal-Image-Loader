@@ -50,6 +50,7 @@ public class ImagePagerActivity extends BaseActivity {
 		setContentView(R.layout.ac_image_pager);
 
 		Bundle bundle = getIntent().getExtras();
+		assert bundle != null;
 		String[] imageUrls = bundle.getStringArray(Extra.IMAGES);
 		int pagerPosition = bundle.getInt(Extra.IMAGE_POSITION, 0);
 
@@ -64,6 +65,7 @@ public class ImagePagerActivity extends BaseActivity {
 			.cacheOnDisc(true)
 			.imageScaleType(ImageScaleType.EXACTLY)
 			.bitmapConfig(Bitmap.Config.RGB_565)
+			.considerExifParams(true)
 			.displayer(new FadeInBitmapDisplayer(300))
 			.build();
 
@@ -89,11 +91,7 @@ public class ImagePagerActivity extends BaseActivity {
 
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
-			((ViewPager) container).removeView((View) object);
-		}
-
-		@Override
-		public void finishUpdate(View container) {
+			container.removeView((View) object);
 		}
 
 		@Override
@@ -104,6 +102,7 @@ public class ImagePagerActivity extends BaseActivity {
 		@Override
 		public Object instantiateItem(ViewGroup view, int position) {
 			View imageLayout = inflater.inflate(R.layout.item_pager_image, view, false);
+			assert imageLayout != null;
 			ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
 			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 
@@ -144,7 +143,7 @@ public class ImagePagerActivity extends BaseActivity {
 				}
 			});
 
-			((ViewPager) view).addView(imageLayout, 0);
+			view.addView(imageLayout, 0);
 			return imageLayout;
 		}
 
@@ -160,10 +159,6 @@ public class ImagePagerActivity extends BaseActivity {
 		@Override
 		public Parcelable saveState() {
 			return null;
-		}
-
-		@Override
-		public void startUpdate(View container) {
 		}
 	}
 }

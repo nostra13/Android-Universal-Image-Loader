@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2013 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.universalimageloader.core.display;
+package com.nostra13.universalimageloader.core.assist;
 
 import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.core.assist.LoadedFrom;
-import com.nostra13.universalimageloader.core.imageaware.ImageAware;
+import android.view.View;
 
 /**
- * Just displays {@link Bitmap} in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}
+ * Listener which is designed for synchronous image loading.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.5.6
+ * @since 1.9.0
  */
-public final class SimpleBitmapDisplayer implements BitmapDisplayer {
+public class SyncImageLoadingListener extends SimpleImageLoadingListener {
+
+	private Bitmap loadedImage;
+
 	@Override
-	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
-		imageAware.setImageBitmap(bitmap);
+	public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+		this.loadedImage = loadedImage;
+	}
+
+	public Bitmap getLoadedBitmap() {
+		return loadedImage;
 	}
 }

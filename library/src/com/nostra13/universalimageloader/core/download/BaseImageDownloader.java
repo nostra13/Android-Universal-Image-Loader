@@ -22,6 +22,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -107,7 +108,8 @@ public class BaseImageDownloader implements ImageDownloader {
 			redirectCount++;
 		}
 
-		return new BufferedInputStream(conn.getInputStream(), BUFFER_SIZE);
+		return new ContentLengthInputStream(new BufferedInputStream(conn.getInputStream(), BUFFER_SIZE),
+											conn.getContentLength());
 	}
 
 	/**
@@ -139,7 +141,8 @@ public class BaseImageDownloader implements ImageDownloader {
 	 */
 	protected InputStream getStreamFromFile(String imageUri, Object extra) throws IOException {
 		String filePath = Scheme.FILE.crop(imageUri);
-		return new BufferedInputStream(new FileInputStream(filePath), BUFFER_SIZE);
+		return new ContentLengthInputStream(new BufferedInputStream(new FileInputStream(filePath), BUFFER_SIZE),
+											new File(filePath).length());
 	}
 
 	/**

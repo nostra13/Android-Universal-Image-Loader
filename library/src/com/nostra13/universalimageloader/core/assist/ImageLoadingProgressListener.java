@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2013 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.universalimageloader.core.display;
+package com.nostra13.universalimageloader.core.assist;
 
-import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.core.assist.LoadedFrom;
-import com.nostra13.universalimageloader.core.imageaware.ImageAware;
+import android.view.View;
 
 /**
- * Just displays {@link Bitmap} in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}
+ * Listener for image loading progress.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.5.6
+ * @since 1.9.1
  */
-public final class SimpleBitmapDisplayer implements BitmapDisplayer {
-	@Override
-	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
-		imageAware.setImageBitmap(bitmap);
-	}
+public interface ImageLoadingProgressListener {
+
+	/**
+	 * Is called when image loading progress changed.
+	 *
+	 * @param imageUri Image URI
+	 * @param view     View for image. Can be <b>null</b>.
+	 * @param current  Downloaded size in bytes
+	 * @param total    Total size in bytes
+	 */
+	void onProgressUpdate(String imageUri, View view, int current, int total);
 }
