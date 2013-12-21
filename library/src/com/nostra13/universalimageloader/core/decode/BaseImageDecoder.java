@@ -84,7 +84,7 @@ public class BaseImageDecoder implements ImageDecoder {
 			L.e(ERROR_CANT_DECODE_IMAGE, decodingInfo.getImageKey());
 		} else {
 			decodedBitmap = considerExactScaleAndOrientaiton(decodedBitmap, decodingInfo, imageInfo.exif.rotation,
-															 imageInfo.exif.flipHorizontal);
+					imageInfo.exif.flipHorizontal);
 		}
 		return decodedBitmap;
 	}
@@ -150,17 +150,18 @@ public class BaseImageDecoder implements ImageDecoder {
 
 	protected Options prepareDecodingOptions(ImageSize imageSize, ImageDecodingInfo decodingInfo) {
 		ImageScaleType scaleType = decodingInfo.getImageScaleType();
-		ImageSize targetSize = decodingInfo.getTargetSize();
-		int scale = 1;
-		if (scaleType != ImageScaleType.NONE) {
+		int scale;
+		if (scaleType == ImageScaleType.NONE) {
+			scale = ImageSizeUtils.computeMinImageSampleSize(imageSize);
+		} else {
+			ImageSize targetSize = decodingInfo.getTargetSize();
 			boolean powerOf2 = scaleType == ImageScaleType.IN_SAMPLE_POWER_OF_2;
-			scale = ImageSizeUtils
-					.computeImageSampleSize(imageSize, targetSize, decodingInfo.getViewScaleType(), powerOf2);
-
-			if (loggingEnabled) {
-				L.d(LOG_SABSAMPLE_IMAGE, imageSize, imageSize.scaleDown(scale), scale, decodingInfo.getImageKey());
-			}
+			scale = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, decodingInfo.getViewScaleType(), powerOf2);
 		}
+		if (scale > 1 && loggingEnabled) {
+			L.d(LOG_SABSAMPLE_IMAGE, imageSize, imageSize.scaleDown(scale), scale, decodingInfo.getImageKey());
+		}
+
 		Options decodingOptions = decodingInfo.getDecodingOptions();
 		decodingOptions.inSampleSize = scale;
 		return decodingOptions;
