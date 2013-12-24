@@ -91,7 +91,8 @@ public interface ImageAware {
 	 *android.graphics.drawable.Drawable) on loading} or
 	 * {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions.Builder#showImageOnFail(
 	 *android.graphics.drawable.Drawable) on loading fail}. These drawables can be specified in
-	 * {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions display options}.
+	 * {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions display options}.<br />
+	 * Also can be called in {@link com.nostra13.universalimageloader.core.display.BitmapDisplayer BitmapDisplayer}.
 	 *
 	 * @return <b>true</b> if drawable was set successfully; <b>false</b> - otherwise
 	 */
