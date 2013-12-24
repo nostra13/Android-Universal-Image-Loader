@@ -39,7 +39,7 @@ public class ImageViewAware implements ImageAware {
 	protected boolean checkActualViewSize;
 
 	/**
-	 * Constructor.
+	 * Constructor. <br />
 	 * References {@link #ImageViewAware(android.widget.ImageView, boolean) ImageViewAware(imageView, true)}.
 	 *
 	 * @param imageView {@link android.widget.ImageView ImageView} to work with
@@ -59,7 +59,11 @@ public class ImageViewAware implements ImageAware {
 	 *                            general) size.
 	 *                            <p/>
 	 *                            <b>false</b> - then {@link #getWidth()} and {@link #getHeight()} will <b>NOT</b>
-	 *                            consider actual size of ImageView, just layout parameters.
+	 *                            consider actual size of ImageView, just layout parameters. <br /> If you set 'false'
+	 *                            it's recommended 'android:layout_width' and 'android:layout_height' (or
+	 *                            'android:maxWidth' and 'android:maxHeight') are set with concrete values. It helps to
+	 *                            save memory.
+	 *                            <p/>
 	 */
 	public ImageViewAware(ImageView imageView, boolean checkActualViewSize) {
 		this.imageViewRef = new WeakReference<ImageView>(imageView);

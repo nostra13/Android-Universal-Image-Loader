@@ -16,9 +16,12 @@
 package com.nostra13.universalimageloader.utils;
 
 import android.graphics.BitmapFactory;
+import android.opengl.GLES10;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
+
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Provides calculations with image sizes, scales
@@ -27,6 +30,17 @@ import com.nostra13.universalimageloader.core.imageaware.ImageAware;
  * @since 1.8.3
  */
 public final class ImageSizeUtils {
+
+	private static final int DEFAULT_MAX_BITMAP_DIMENSION = 2048;
+
+	private static ImageSize maxBitmapSize;
+
+	static {
+		int[] maxTextureSize = new int[1];
+		GLES10.glGetIntegerv(GL10.GL_MAX_TEXTURE_SIZE, maxTextureSize, 0);
+		int maxBitmapDimension = Math.max(maxTextureSize[0], DEFAULT_MAX_BITMAP_DIMENSION);
+		maxBitmapSize = new ImageSize(maxBitmapDimension, maxBitmapDimension);
+	}
 
 	private ImageSizeUtils() {
 	}
@@ -74,7 +88,7 @@ public final class ImageSizeUtils {
 	 * @return Computed sample size
 	 */
 	public static int computeImageSampleSize(ImageSize srcSize, ImageSize targetSize, ViewScaleType viewScaleType,
-											 boolean powerOf2Scale) {
+			boolean powerOf2Scale) {
 		int srcWidth = srcSize.getWidth();
 		int srcHeight = srcSize.getHeight();
 		int targetWidth = targetSize.getWidth();
@@ -118,6 +132,27 @@ public final class ImageSizeUtils {
 	}
 
 	/**
+	 * Computes minimal sample size for downscaling image so result image size won't exceed max acceptable OpenGL
+	 * texture size.<br />
+	 * We can't create Bitmap in memory with size exceed max texture size (usually this is 2048x2048) so this method
+	 * calculate minimal sample size which should be applied to image to fit into these limits.
+	 *
+	 * @param srcSize Original image size
+	 * @return Minimal sample size
+	 */
+	public static int computeMinImageSampleSize(ImageSize srcSize) {
+		int srcWidth = srcSize.getWidth();
+		int srcHeight = srcSize.getHeight();
+		int targetWidth = maxBitmapSize.getWidth();
+		int targetHeight = maxBitmapSize.getHeight();
+
+		int widthScale = (int) Math.ceil((float) srcWidth / targetWidth);
+		int heightScale = (int) Math.ceil((float) srcHeight / targetHeight);
+
+		return Math.max(widthScale, heightScale); // max
+	}
+
+	/**
 	 * Computes scale of target size (<b>targetSize</b>) to source size (<b>srcSize</b>).<br />
 	 * <br />
 	 * <b>Examples:</b><br />
@@ -140,7 +175,7 @@ public final class ImageSizeUtils {
 	 * @return Computed scale
 	 */
 	public static float computeImageScale(ImageSize srcSize, ImageSize targetSize, ViewScaleType viewScaleType,
-										  boolean stretch) {
+			boolean stretch) {
 		int srcWidth = srcSize.getWidth();
 		int srcHeight = srcSize.getHeight();
 		int targetWidth = targetSize.getWidth();
