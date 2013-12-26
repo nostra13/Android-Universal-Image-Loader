@@ -6,7 +6,7 @@
 	<artifactId>parent</artifactId>
 	<packaging>pom</packaging>
 	<name>Universal Image Loader Project</name>
-	<version>1.9.1</version>
+	<version>1.9.2-SNAPSHOT</version>
 	<description>Powerful and flexible instrument for asynchronous image loading, caching and displaying on Android</description>
 	<url>https://github.com/nostra13/Android-Universal-Image-Loader</url>
 	<inceptionYear>2011</inceptionYear>
