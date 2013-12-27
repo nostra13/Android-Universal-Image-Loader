@@ -1,6 +1,20 @@
 Change Log
 ===
 
+v1.9.1 *(27.12.2013)*
+---
+ * **Changed API:**
+   * `BitmapDisplayer.display(...) : Bitmap` -> `BitmapDisplayer.display(...) : void`
+ * **New API:**
+   * Added possibility to listen image loading progress by listener - `ImageLoadingProgressListener`
+ * Non-actual downloads are interrupted (if loaded less than 75%)
+ * Re-designed `RoundedBitmapDisplayer`. Added `RoundedVignetteBitmapDisplayer`.
+   **NOTE:** New `RoundedBitmapDisplayer`'s behaviour can vary from old one. Also consider ["RoundedImageView" project](https://github.com/vinc3m1/RoundedImageView) for usage if new `RoundedBitmapDisplayer` doesn't work for you.
+ * Maximum GL texture size is considered while decode images [#281](https://github.com/nostra13/Android-Universal-Image-Loader/issues/281)
+ * `loadImage(...)` call cancels previous task for the same image URI [#475](https://github.com/nostra13/Android-Universal-Image-Loader/issues/475)
+ * Fixed StrictMode warning `Explicit termination method 'close' not called` [#482](https://github.com/nostra13/Android-Universal-Image-Loader/issues/482)
+ * `LruMemoryCache` is default memory cache for Android < 2.3 too.
+
 v1.9.0 *(27.11.2013)*
 ---
  * **Changed API:**
