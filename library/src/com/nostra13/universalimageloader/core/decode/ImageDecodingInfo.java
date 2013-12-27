@@ -21,7 +21,6 @@ import android.os.Build;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 
@@ -90,7 +89,7 @@ public class ImageDecodingInfo {
 		destOptions.inMutable = srcOptions.inMutable;
 	}
 
-	/** @return Original {@linkplain MemoryCacheUtil#generateKey(String, ImageSize) image key} (used in memory cache). */
+	/** @return Original {@linkplain com.nostra13.universalimageloader.utils.MemoryCacheUtils#generateKey(String, ImageSize) image key} (used in memory cache). */
 	public String getImageKey() {
 		return imageKey;
 	}

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.universalimageloader.core.assist;
+package com.nostra13.universalimageloader.core.listener;
 
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -56,10 +56,11 @@ public class PauseOnScrollListener implements OnScrollListener {
 	 * @param imageLoader    {@linkplain ImageLoader} instance for controlling
 	 * @param pauseOnScroll  Whether {@linkplain ImageLoader#pause() pause ImageLoader} during touch scrolling
 	 * @param pauseOnFling   Whether {@linkplain ImageLoader#pause() pause ImageLoader} during fling
-	 * @param customListener Your custom {@link OnScrollListener} for {@linkplain AbsListView list view} which also will
-	 *                       be get scroll events
+	 * @param customListener Your custom {@link OnScrollListener} for {@linkplain AbsListView list view} which also
+	 *                       will be get scroll events
 	 */
-	public PauseOnScrollListener(ImageLoader imageLoader, boolean pauseOnScroll, boolean pauseOnFling, OnScrollListener customListener) {
+	public PauseOnScrollListener(ImageLoader imageLoader, boolean pauseOnScroll, boolean pauseOnFling,
+			OnScrollListener customListener) {
 		this.imageLoader = imageLoader;
 		this.pauseOnScroll = pauseOnScroll;
 		this.pauseOnFling = pauseOnFling;

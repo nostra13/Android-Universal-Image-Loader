@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.universalimageloader.core.assist;
+package com.nostra13.universalimageloader.utils;
 
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 
@@ -26,9 +26,9 @@ import java.io.File;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.0
  */
-public final class DiscCacheUtil {
+public final class DiscCacheUtils {
 
-	private DiscCacheUtil() {
+	private DiscCacheUtils() {
 	}
 
 	/** Returns {@link File} of cached image or <b>null</b> if image was not cached in disc cache */

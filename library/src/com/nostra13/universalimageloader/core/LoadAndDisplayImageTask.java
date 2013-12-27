@@ -19,8 +19,8 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.FailReason.FailType;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingProgressListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
@@ -173,11 +173,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine, loadedFrom);
 		displayBitmapTask.setLoggingEnabled(writeLogs);
-		if (options.isSyncLoading()) {
-			displayBitmapTask.run();
-		} else {
-			handler.post(displayBitmapTask);
-		}
+		runTask(displayBitmapTask, options.isSyncLoading(), handler);
 	}
 
 	/** @return <b>true</b> - if task should be interrupted; <b>false</b> - otherwise */
@@ -333,18 +329,19 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	/** @return <b>true</b> - if loading should be continued; <b>false</b> - if loading should be interrupted */
 	private boolean fireProgressEvent(final int current, final int total) {
 		if (options.isSyncLoading() || isTaskInterrupted() || isTaskNotActual()) return false;
-		handler.post(new Runnable() {
+		Runnable r = new Runnable() {
 			@Override
 			public void run() {
 				progressListener.onProgressUpdate(uri, imageAware.getWrappedView(), current, total);
 			}
-		});
+		};
+		runTask(r, false, handler);
 		return true;
 	}
 
 	private void fireFailEvent(final FailType failType, final Throwable failCause) {
 		if (options.isSyncLoading() || isTaskInterrupted() || isTaskNotActual()) return;
-		handler.post(new Runnable() {
+		Runnable r = new Runnable() {
 			@Override
 			public void run() {
 				if (options.shouldShowImageOnFail()) {
@@ -352,17 +349,19 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 				}
 				listener.onLoadingFailed(uri, imageAware.getWrappedView(), new FailReason(failType, failCause));
 			}
-		});
+		};
+		runTask(r, false, handler);
 	}
 
 	private void fireCancelEvent() {
 		if (options.isSyncLoading() || isTaskInterrupted()) return;
-		handler.post(new Runnable() {
+		Runnable r = new Runnable() {
 			@Override
 			public void run() {
 				listener.onLoadingCancelled(uri, imageAware.getWrappedView());
 			}
-		});
+		};
+		runTask(r, false, handler);
 	}
 
 	private ImageDownloader getDownloader() {
@@ -457,6 +456,16 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	private void log(String message, Object... args) {
 		if (writeLogs) L.d(message, args);
+	}
+
+	static void runTask(Runnable r, boolean sync, Handler handler) {
+		if (sync) {
+			r.run();
+		} else if (handler == null) {
+			new Thread(r).start();
+		} else {
+			handler.post(r);
+		}
 	}
 
 	/**
