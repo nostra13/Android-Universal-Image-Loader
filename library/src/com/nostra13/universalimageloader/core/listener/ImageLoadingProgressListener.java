@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.universalimageloader.core.assist;
+package com.nostra13.universalimageloader.core.listener;
 
 import android.view.View;
 

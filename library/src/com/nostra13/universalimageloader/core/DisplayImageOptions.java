@@ -20,8 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.os.Looper;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
@@ -188,18 +187,7 @@ public final class DisplayImageOptions {
 	}
 
 	public Handler getHandler() {
-		if (isSyncLoading) {
-			return null;
-		} else {
-			if (handler == null) {
-				if (Looper.myLooper() != Looper.getMainLooper()) {
-					throw new IllegalStateException("ImageLoader.displayImage(...) must be invoked from the main thread or from Looper thread");
-				}
-				return new Handler();
-			} else {
-				return handler;
-			}
-		}
+		return handler;
 	}
 
 	boolean isSyncLoading() {

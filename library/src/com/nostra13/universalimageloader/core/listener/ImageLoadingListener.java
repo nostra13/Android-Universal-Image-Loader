@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.universalimageloader.core.assist;
+package com.nostra13.universalimageloader.core.listener;
 
 import android.graphics.Bitmap;
 import android.view.View;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 
 /**
  * Listener for image loading process.<br />
@@ -24,7 +25,7 @@ import android.view.View;
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see SimpleImageLoadingListener
- * @see FailReason
+ * @see com.nostra13.universalimageloader.core.assist.FailReason
  * @since 1.0.0
  */
 public interface ImageLoadingListener {
@@ -42,7 +43,8 @@ public interface ImageLoadingListener {
 	 *
 	 * @param imageUri   Loading image URI
 	 * @param view       View for image. Can be <b>null</b>.
-	 * @param failReason {@linkplain FailReason The reason} why image loading was failed
+	 * @param failReason {@linkplain com.nostra13.universalimageloader.core.assist.FailReason The reason} why image
+	 *                   loading was failed
 	 */
 	void onLoadingFailed(String imageUri, View view, FailReason failReason);
 

@@ -17,6 +17,7 @@ package com.nostra13.universalimageloader.core.imageaware;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Looper;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
@@ -34,6 +35,9 @@ import java.lang.reflect.Field;
  * @since 1.9.0
  */
 public class ImageViewAware implements ImageAware {
+
+	public static final String WARN_CANT_SET_DRAWABLE = "Can't set a drawable into view. You should call ImageLoader on UI thread for it.";
+	public static final String WARN_CANT_SET_BITMAP = "Can't set a bitmap into view. You should call ImageLoader on UI thread for it.";
 
 	protected Reference<ImageView> imageViewRef;
 	protected boolean checkActualViewSize;
@@ -166,20 +170,28 @@ public class ImageViewAware implements ImageAware {
 
 	@Override
 	public boolean setImageDrawable(Drawable drawable) {
-		ImageView imageView = imageViewRef.get();
-		if (imageView != null) {
-			imageView.setImageDrawable(drawable);
-			return true;
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			ImageView imageView = imageViewRef.get();
+			if (imageView != null) {
+				imageView.setImageDrawable(drawable);
+				return true;
+			}
+		} else {
+			L.w(WARN_CANT_SET_DRAWABLE);
 		}
 		return false;
 	}
 
 	@Override
 	public boolean setImageBitmap(Bitmap bitmap) {
-		ImageView imageView = imageViewRef.get();
-		if (imageView != null) {
-			imageView.setImageBitmap(bitmap);
-			return true;
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			ImageView imageView = imageViewRef.get();
+			if (imageView != null) {
+				imageView.setImageBitmap(bitmap);
+				return true;
+			}
+		} else {
+			L.w(WARN_CANT_SET_BITMAP);
 		}
 		return false;
 	}

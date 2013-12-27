@@ -39,7 +39,7 @@ class ProcessAndDisplayImageTask implements Runnable {
 	private final Handler handler;
 
 	public ProcessAndDisplayImageTask(ImageLoaderEngine engine, Bitmap bitmap, ImageLoadingInfo imageLoadingInfo,
-									  Handler handler) {
+			Handler handler) {
 		this.engine = engine;
 		this.bitmap = bitmap;
 		this.imageLoadingInfo = imageLoadingInfo;
@@ -49,14 +49,12 @@ class ProcessAndDisplayImageTask implements Runnable {
 	@Override
 	public void run() {
 		if (engine.configuration.writeLogs) L.d(LOG_POSTPROCESS_IMAGE, imageLoadingInfo.memoryCacheKey);
+
 		BitmapProcessor processor = imageLoadingInfo.options.getPostProcessor();
-		final Bitmap processedBitmap = processor.process(bitmap);
-		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(processedBitmap, imageLoadingInfo, engine, LoadedFrom.MEMORY_CACHE);
+		Bitmap processedBitmap = processor.process(bitmap);
+		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(processedBitmap, imageLoadingInfo, engine,
+				LoadedFrom.MEMORY_CACHE);
 		displayBitmapTask.setLoggingEnabled(engine.configuration.writeLogs);
-		if (imageLoadingInfo.options.isSyncLoading()) {
-			displayBitmapTask.run();
-		} else {
-			handler.post(displayBitmapTask);
-		}
+		LoadAndDisplayImageTask.runTask(displayBitmapTask, imageLoadingInfo.options.isSyncLoading(), handler);
 	}
 }

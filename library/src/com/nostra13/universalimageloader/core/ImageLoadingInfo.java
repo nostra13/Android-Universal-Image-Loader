@@ -15,10 +15,9 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingProgressListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -27,10 +26,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * Information for load'n'display image task
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @see MemoryCacheUtil
+ * @see com.nostra13.universalimageloader.utils.MemoryCacheUtils
  * @see DisplayImageOptions
  * @see ImageLoadingListener
- * @see com.nostra13.universalimageloader.core.assist.ImageLoadingProgressListener
+ * @see com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener
  * @since 1.3.1
  */
 final class ImageLoadingInfo {

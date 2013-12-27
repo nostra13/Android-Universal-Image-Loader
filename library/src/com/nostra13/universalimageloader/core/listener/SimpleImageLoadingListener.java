@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.universalimageloader.core.assist;
+package com.nostra13.universalimageloader.core.listener;
 
 import android.graphics.Bitmap;
 import android.view.View;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 
 /**
  * A convenient class to extend when you only want to listen for a subset of all the image loading events. This
- * implements all methods in the {@link ImageLoadingListener} but does nothing.
+ * implements all methods in the {@link com.nostra13.universalimageloader.core.listener.ImageLoadingListener} but does
+ * nothing.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.4.0
