@@ -8,17 +8,31 @@ import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /** Created by Sergey.Tarasevich on 13.07.13. */
 public class LruDiscCache implements DiscCacheAware {
+	/** {@value */
+	public static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 Kb
+	/** {@value */
+	public static final Bitmap.CompressFormat DEFAULT_COMPRESS_FORMAT = Bitmap.CompressFormat.PNG;
+	/** {@value */
+	public static final int DEFAULT_COMPRESS_QUALITY = 100;
 
-	private static final int BUFFER_SIZE = 32 * 1024; // 32 Kb
 	private static final String ERROR_ARG_NULL = "\"%s\" argument must be not null";
 
 	private DiskLruCache cache;
 
 	private final FileNameGenerator fileNameGenerator;
+
+	protected int bufferSize = DEFAULT_BUFFER_SIZE;
+
+	protected Bitmap.CompressFormat compressFormat = DEFAULT_COMPRESS_FORMAT;
+	protected int compressQuality = DEFAULT_COMPRESS_QUALITY;
 
 	public LruDiscCache(File cacheDir, int cacheMaxSize) {
 		this(cacheDir, cacheMaxSize, DefaultConfigurationFactory.createFileNameGenerator());
@@ -48,7 +62,8 @@ public class LruDiscCache implements DiscCacheAware {
 	@Override
 	public File get(String imageUri) {
 		try {
-			return cache.get(getKey(imageUri)).getFile(0);
+			DiskLruCache.Snapshot snapshot = cache.get(getKey(imageUri));
+			return snapshot == null ? null : snapshot.getFile(0);
 		} catch (IOException e) {
 			L.e(e);
 			return null;
@@ -62,23 +77,23 @@ public class LruDiscCache implements DiscCacheAware {
 			return false;
 		}
 
-		OutputStream os = new BufferedOutputStream(editor.newOutputStream(0), BUFFER_SIZE);
-	 	boolean copied = IoUtils.copyStream(imageStream, os, listener, BUFFER_SIZE);
+		OutputStream os = new BufferedOutputStream(editor.newOutputStream(0), bufferSize);
+		boolean copied = IoUtils.copyStream(imageStream, os, listener, bufferSize);
 		editor.commit();
 		return copied;
 	}
 
 	@Override
-	public boolean save(String imageUri, Bitmap bitmap, Bitmap.CompressFormat format, int quality) throws IOException {
+	public boolean save(String imageUri, Bitmap bitmap) throws IOException {
 		DiskLruCache.Editor editor = cache.edit(getKey(imageUri));
 		if (editor == null) {
 			return false;
 		}
 
-		OutputStream os = new BufferedOutputStream(editor.newOutputStream(0), BUFFER_SIZE);
+		OutputStream os = new BufferedOutputStream(editor.newOutputStream(0), bufferSize);
 		boolean savedSuccessfully = false;
 		try {
-			savedSuccessfully = bitmap.compress(format, quality, os);
+			savedSuccessfully = bitmap.compress(compressFormat, compressQuality, os);
 		} finally {
 			IoUtils.closeSilently(os);
 		}
@@ -111,5 +126,17 @@ public class LruDiscCache implements DiscCacheAware {
 
 	private String getKey(String imageUri) {
 		return fileNameGenerator.generate(imageUri);
+	}
+
+	public void setBufferSize(int bufferSize) {
+		this.bufferSize = bufferSize;
+	}
+
+	public void setCompressFormat(Bitmap.CompressFormat compressFormat) {
+		this.compressFormat = compressFormat;
+	}
+
+	public void setCompressQuality(int compressQuality) {
+		this.compressQuality = compressQuality;
 	}
 }

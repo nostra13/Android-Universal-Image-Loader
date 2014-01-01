@@ -18,15 +18,12 @@ package com.nostra13.universalimageloader.core;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.util.DisplayMetrics;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
@@ -34,9 +31,8 @@ import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloa
 import com.nostra13.universalimageloader.core.download.SlowNetworkImageDownloader;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 import com.nostra13.universalimageloader.utils.L;
-import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
-import java.io.File;
 import java.util.concurrent.Executor;
 
 /**
@@ -59,8 +55,6 @@ public final class ImageLoaderConfiguration {
 	final int maxImageHeightForMemoryCache;
 	final int maxImageWidthForDiscCache;
 	final int maxImageHeightForDiscCache;
-	final CompressFormat imageCompressFormatForDiscCache;
-	final int imageQualityForDiscCache;
 	final BitmapProcessor processorForDiscCache;
 
 	final Executor taskExecutor;
@@ -79,7 +73,6 @@ public final class ImageLoaderConfiguration {
 	final DisplayImageOptions defaultDisplayImageOptions;
 	final boolean writeLogs;
 
-	final DiscCacheAware reserveDiscCache;
 	final ImageDownloader networkDeniedDownloader;
 	final ImageDownloader slowNetworkDownloader;
 
@@ -89,8 +82,6 @@ public final class ImageLoaderConfiguration {
 		maxImageHeightForMemoryCache = builder.maxImageHeightForMemoryCache;
 		maxImageWidthForDiscCache = builder.maxImageWidthForDiscCache;
 		maxImageHeightForDiscCache = builder.maxImageHeightForDiscCache;
-		imageCompressFormatForDiscCache = builder.imageCompressFormatForDiscCache;
-		imageQualityForDiscCache = builder.imageQualityForDiscCache;
 		processorForDiscCache = builder.processorForDiscCache;
 		taskExecutor = builder.taskExecutor;
 		taskExecutorForCachedImages = builder.taskExecutorForCachedImages;
@@ -109,9 +100,6 @@ public final class ImageLoaderConfiguration {
 
 		networkDeniedDownloader = new NetworkDeniedImageDownloader(downloader);
 		slowNetworkDownloader = new SlowNetworkImageDownloader(downloader);
-
-		File reserveCacheDir = StorageUtils.getCacheDirectory(builder.context, false);
-		reserveDiscCache = DefaultConfigurationFactory.createReserveDiscCache(reserveCacheDir);
 	}
 
 	/**
@@ -126,7 +114,7 @@ public final class ImageLoaderConfiguration {
 	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
 	 * <li>allow to cache different sizes of image in memory</li>
 	 * <li>memoryCache = {@link DefaultConfigurationFactory#createMemoryCache(int)}</li>
-	 * <li>discCache = {@link UnlimitedDiscCache}</li>
+	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.BaseDiscCache}</li>
 	 * <li>imageDownloader = {@link DefaultConfigurationFactory#createImageDownloader(Context)}</li>
 	 * <li>imageDecoder = {@link DefaultConfigurationFactory#createImageDecoder(boolean)}</li>
 	 * <li>discCacheFileNameGenerator = {@link DefaultConfigurationFactory#createFileNameGenerator()}</li>
@@ -179,8 +167,6 @@ public final class ImageLoaderConfiguration {
 		private int maxImageHeightForMemoryCache = 0;
 		private int maxImageWidthForDiscCache = 0;
 		private int maxImageHeightForDiscCache = 0;
-		private CompressFormat imageCompressFormatForDiscCache = null;
-		private int imageQualityForDiscCache = 0;
 		private BitmapProcessor processorForDiscCache = null;
 
 		private Executor taskExecutor = null;
@@ -230,19 +216,12 @@ public final class ImageLoaderConfiguration {
 		 *
 		 * @param maxImageWidthForDiscCache  Maximum width of downloaded images for saving at disc cache
 		 * @param maxImageHeightForDiscCache Maximum height of downloaded images for saving at disc cache
-		 * @param compressFormat             {@link android.graphics.Bitmap.CompressFormat Compress format} downloaded images to
-		 *                                   save them at disc cache
-		 * @param compressQuality            Hint to the compressor, 0-100. 0 meaning compress for small size, 100 meaning compress
-		 *                                   for max quality. Some formats, like PNG which is lossless, will ignore the quality setting
 		 * @param processorForDiscCache      null-ok; {@linkplain BitmapProcessor Bitmap processor} which process images before saving them in disc cache
 		 */
 		public Builder discCacheExtraOptions(int maxImageWidthForDiscCache, int maxImageHeightForDiscCache,
-											 CompressFormat compressFormat, int compressQuality,
-											 BitmapProcessor processorForDiscCache) {
+				BitmapProcessor processorForDiscCache) {
 			this.maxImageWidthForDiscCache = maxImageWidthForDiscCache;
 			this.maxImageHeightForDiscCache = maxImageHeightForDiscCache;
-			this.imageCompressFormatForDiscCache = compressFormat;
-			this.imageQualityForDiscCache = compressQuality;
 			this.processorForDiscCache = processorForDiscCache;
 			return this;
 		}
@@ -496,8 +475,8 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets disc cache for images.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache
-		 * UnlimitedDiscCache}. Cache directory is defined by
+		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.BaseDiscCache
+		 * BaseDiscCache}. Cache directory is defined by
 		 * {@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context)
 		 * StorageUtils.getCacheDirectory(Context)}.<br />
 		 * <br />
@@ -570,8 +549,8 @@ public final class ImageLoaderConfiguration {
 				memoryCache = DefaultConfigurationFactory.createMemoryCache(memoryCacheSize);
 			}
 			if (denyCacheImageMultipleSizesInMemory) {
-				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheUtils
-						.createFuzzyKeyComparator());
+				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache,
+						MemoryCacheUtils.createFuzzyKeyComparator());
 			}
 			if (downloader == null) {
 				downloader = DefaultConfigurationFactory.createImageDownloader(context);

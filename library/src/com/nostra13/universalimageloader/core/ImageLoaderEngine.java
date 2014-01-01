@@ -99,7 +99,8 @@ class ImageLoaderEngine {
 	}
 
 	private Executor createTaskExecutor() {
-		return DefaultConfigurationFactory.createExecutor(configuration.threadPoolSize, configuration.threadPriority,
+		return DefaultConfigurationFactory
+				.createExecutor(configuration.threadPoolSize, configuration.threadPriority,
 				configuration.tasksProcessingType);
 	}
 

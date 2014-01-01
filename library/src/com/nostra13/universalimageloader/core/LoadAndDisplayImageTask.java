@@ -313,8 +313,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 				}
 			}
 			if (bmp != null) {
-				saved = configuration.discCache.save(uri, bmp, configuration.imageCompressFormatForDiscCache,
-						configuration.imageQualityForDiscCache);
+				saved = configuration.discCache.save(uri, bmp);
 				bmp.recycle();
 			}
 		}

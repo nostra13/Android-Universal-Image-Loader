@@ -30,13 +30,43 @@ import java.io.InputStream;
  */
 public interface DiscCacheAware {
 
+	/**
+	 * Returns root directory of disk cache
+	 *
+	 * @return Root directory of disk cache
+	 */
 	File getDirectory();
 
+	/**
+	 * Returns file of cached image
+	 *
+	 * @param imageUri Original image URI
+	 * @return File of cached image or <b>null</b> if image wasn't cached
+	 */
 	File get(String imageUri);
 
+	/**
+	 * Saves image stream in disk cache.
+	 *
+	 * @param imageUri    Original image URI
+	 * @param imageStream Input stream of image
+	 * @param listener    Listener for saving progress, can be ignored if you don't use
+	 *                    {@linkplain com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener
+	 *                    progress listener} in ImageLoader calls
+	 * @return <b>true</b> - if image was saved successfully; <b>false</b> - if image wasn't saved in disk cache.
+	 * @throws IOException
+	 */
 	boolean save(String imageUri, InputStream imageStream, IoUtils.CopyListener listener) throws IOException;
 
-	boolean save(String imageUri, Bitmap bitmap, Bitmap.CompressFormat format, int quality) throws IOException;
+	/**
+	 * Saves image bitmap in disk cache.
+	 *
+	 * @param imageUri Original image URI
+	 * @param bitmap   Image bitmap
+	 * @return <b>true</b> - if bitmap was saved successfully; <b>false</b> - if bitmap wasn't saved in disk cache.
+	 * @throws IOException
+	 */
+	boolean save(String imageUri, Bitmap bitmap) throws IOException;
 
 	boolean remove(String imageUri);
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.universalimageloader.cache.disc;
+package com.nostra13.universalimageloader.cache.disc.impl;
 
 import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
@@ -47,7 +47,8 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 
 	private final int sizeLimit;
 
-	private final Map<File, Long> lastUsageDates = Collections.synchronizedMap(new HashMap<File, Long>());
+	/** File path - Last usage date timestamp */
+	private final Map<String, Long> lastUsageDates = Collections.synchronizedMap(new HashMap<String, Long>());
 
 	/**
 	 * @param cacheDir  Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
@@ -56,18 +57,30 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	 *                  will be deleted.
 	 */
 	public LimitedDiscCache(File cacheDir, int sizeLimit) {
-		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), sizeLimit);
+		this(cacheDir, null, DefaultConfigurationFactory.createFileNameGenerator(), sizeLimit);
+	}
+
+	/**
+	 * @param cacheDir        Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
+	 *                        needed for right cache limit work.
+	 * @param reserveCacheDir null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
+	 * @param sizeLimit       Cache limit value. If cache exceeds this limit then file with the most oldest last usage date
+	 *                        will be deleted.
+	 */
+	public LimitedDiscCache(File cacheDir, File reserveCacheDir, int sizeLimit) {
+		this(cacheDir, reserveCacheDir, DefaultConfigurationFactory.createFileNameGenerator(), sizeLimit);
 	}
 
 	/**
 	 * @param cacheDir          Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
 	 *                          needed for right cache limit work.
+	 * @param reserveCacheDir   null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
 	 * @param fileNameGenerator Name generator for cached files
 	 * @param sizeLimit         Cache limit value. If cache exceeds this limit then file with the most oldest last usage date
 	 *                          will be deleted.
 	 */
-	public LimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int sizeLimit) {
-		super(cacheDir, fileNameGenerator);
+	public LimitedDiscCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator, int sizeLimit) {
+		super(cacheDir, reserveCacheDir, fileNameGenerator);
 		this.sizeLimit = sizeLimit;
 		cacheSize = new AtomicInteger();
 		calculateCacheSizeAndFillUsageMap();
@@ -82,7 +95,7 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 				if (cachedFiles != null) { // rarely but it can happen, don't know why
 					for (File cachedFile : cachedFiles) {
 						size += getSize(cachedFile);
-						lastUsageDates.put(cachedFile, cachedFile.lastModified());
+						lastUsageDates.put(cachedFile.getAbsolutePath(), cachedFile.lastModified());
 					}
 					cacheSize.set(size);
 				}
@@ -91,33 +104,33 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	}
 
 	@Override
-	public File get(String key) {
-		File file = super.get(key);
+	public File get(String imageUri) {
+		File file = super.get(imageUri);
 
 		if (file != null && file.exists()) {
 			Long currentTime = System.currentTimeMillis();
 			file.setLastModified(currentTime);
-			lastUsageDates.put(file, currentTime);
+			lastUsageDates.put(imageUri, currentTime);
 		}
 
 		return file;
 	}
 
 	@Override
-	public boolean save(String uri, InputStream imageStream, IoUtils.CopyListener listener) throws IOException {
-		boolean saved = super.save(uri, imageStream, listener);
+	public boolean save(String imageUri, InputStream imageStream, IoUtils.CopyListener listener) throws IOException {
+		boolean saved = super.save(imageUri, imageStream, listener);
 		if (saved) {
-			rememberUsage(uri);
+			rememberUsage(imageUri);
 			trimCacheSize();
 		}
 		return saved;
 	}
 
 	@Override
-	public boolean save(String uri, Bitmap bitmap, Bitmap.CompressFormat format, int quality) throws IOException {
-		boolean saved = super.save(uri, bitmap, format, quality);
+	public boolean save(String imageUri, Bitmap bitmap) throws IOException {
+		boolean saved = super.save(imageUri, bitmap);
 		if (saved) {
-			rememberUsage(uri);
+			rememberUsage(imageUri);
 			trimCacheSize();
 		}
 		return saved;
@@ -142,14 +155,14 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 		super.clear();
 	}
 
-	private void rememberUsage(String uri) {
-		File file = getFile(uri);
+	private void rememberUsage(String imageUri) {
+		File file = getFile(imageUri);
 		int valueSize = getSize(file);
 
 		cacheSize.addAndGet(valueSize);
 		Long currentTime = System.currentTimeMillis();
 		file.setLastModified(currentTime);
-		lastUsageDates.put(file, currentTime);
+		lastUsageDates.put(file.getAbsolutePath(), currentTime);
 	}
 
 	private void trimCacheSize() {
@@ -167,32 +180,33 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 			return INVALID_SIZE;
 		}
 		Long oldestUsage = null;
-		File mostLongUsedFile = null;
-		Set<Entry<File, Long>> entries = lastUsageDates.entrySet();
+		String mostLongUsedFilePath = null;
+		Set<Entry<String, Long>> entries = lastUsageDates.entrySet();
 		synchronized (lastUsageDates) {
-			for (Entry<File, Long> entry : entries) {
-				if (mostLongUsedFile == null) {
-					mostLongUsedFile = entry.getKey();
+			for (Entry<String, Long> entry : entries) {
+				if (mostLongUsedFilePath == null) {
+					mostLongUsedFilePath = entry.getKey();
 					oldestUsage = entry.getValue();
 				} else {
 					Long lastValueUsage = entry.getValue();
 					if (lastValueUsage < oldestUsage) {
 						oldestUsage = lastValueUsage;
-						mostLongUsedFile = entry.getKey();
+						mostLongUsedFilePath = entry.getKey();
 					}
 				}
 			}
 		}
 
 		int fileSize = 0;
-		if (mostLongUsedFile != null) {
+		if (mostLongUsedFilePath != null) {
+			File mostLongUsedFile = new File(mostLongUsedFilePath);
 			if (mostLongUsedFile.exists()) {
 				fileSize = getSize(mostLongUsedFile);
 				if (mostLongUsedFile.delete()) {
-					lastUsageDates.remove(mostLongUsedFile);
+					lastUsageDates.remove(mostLongUsedFilePath);
 				}
 			} else {
-				lastUsageDates.remove(mostLongUsedFile);
+				lastUsageDates.remove(mostLongUsedFilePath);
 			}
 		}
 		return fileSize;

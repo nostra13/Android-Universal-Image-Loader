@@ -18,9 +18,9 @@ package com.nostra13.universalimageloader.core;
 import android.content.Context;
 import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
+import com.nostra13.universalimageloader.cache.disc.impl.BaseDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
@@ -53,10 +53,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DefaultConfigurationFactory {
 
 	/** Creates default implementation of task executor */
-	public static Executor createExecutor(int threadPoolSize, int threadPriority, QueueProcessingType tasksProcessingType) {
+	public static Executor createExecutor(int threadPoolSize, int threadPriority,
+			QueueProcessingType tasksProcessingType) {
 		boolean lifo = tasksProcessingType == QueueProcessingType.LIFO;
-		BlockingQueue<Runnable> taskQueue = lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
-		return new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue, createThreadFactory(threadPriority));
+		BlockingQueue<Runnable> taskQueue =
+				lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
+		return new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue,
+				createThreadFactory(threadPriority));
 	}
 
 	/** Creates {@linkplain HashCodeFileNameGenerator default implementation} of FileNameGenerator */
@@ -65,26 +68,31 @@ public class DefaultConfigurationFactory {
 	}
 
 	/** Creates default implementation of {@link DiscCacheAware} depends on incoming parameters */
-	public static DiscCacheAware createDiscCache(Context context, FileNameGenerator discCacheFileNameGenerator, int discCacheSize, int discCacheFileCount) {
+	public static DiscCacheAware createDiscCache(Context context, FileNameGenerator discCacheFileNameGenerator,
+			int discCacheSize, int discCacheFileCount) {
+		File reserveCacheDir = createReserveDiscCacheDir(context);
 		if (discCacheSize > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
-			return new TotalSizeLimitedDiscCache(individualCacheDir, discCacheFileNameGenerator, discCacheSize);
+			return new TotalSizeLimitedDiscCache(individualCacheDir, reserveCacheDir, discCacheFileNameGenerator,
+					discCacheSize);
 		} else if (discCacheFileCount > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
-			return new FileCountLimitedDiscCache(individualCacheDir, discCacheFileNameGenerator, discCacheFileCount);
+			return new FileCountLimitedDiscCache(individualCacheDir, reserveCacheDir, discCacheFileNameGenerator,
+					discCacheFileCount);
 		} else {
 			File cacheDir = StorageUtils.getCacheDirectory(context);
-			return new UnlimitedDiscCache(cacheDir, discCacheFileNameGenerator);
+			return new BaseDiscCache(cacheDir, reserveCacheDir, discCacheFileNameGenerator);
 		}
 	}
 
-	/** Creates reserve disc cache which will be used if primary disc cache becomes unavailable */
-	public static DiscCacheAware createReserveDiscCache(File cacheDir) {
+	/** Creates reserve disc cache folder which will be used if primary disc cache folder becomes unavailable */
+	private static File createReserveDiscCacheDir(Context context) {
+		File cacheDir = StorageUtils.getCacheDirectory(context, false);
 		File individualDir = new File(cacheDir, "uil-images");
 		if (individualDir.exists() || individualDir.mkdir()) {
 			cacheDir = individualDir;
 		}
-		return new TotalSizeLimitedDiscCache(cacheDir, 2 * 1024 * 1024); // limit - 2 Mb
+		return cacheDir;
 	}
 
 	/**

@@ -16,7 +16,6 @@
 package com.nostra13.universalimageloader.cache.disc.impl;
 
 import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.cache.disc.BaseDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 import com.nostra13.universalimageloader.utils.IoUtils;
@@ -47,17 +46,27 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	 *                 treatment (and therefore be reloaded).
 	 */
 	public LimitedAgeDiscCache(File cacheDir, long maxAge) {
-		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxAge);
+		this(cacheDir, null, DefaultConfigurationFactory.createFileNameGenerator(), maxAge);
+	}
+
+	/**
+	 * @param cacheDir Directory for file caching
+	 * @param maxAge   Max file age (in seconds). If file age will exceed this value then it'll be removed on next
+	 *                 treatment (and therefore be reloaded).
+	 */
+	public LimitedAgeDiscCache(File cacheDir, File reserveCacheDir, long maxAge) {
+		this(cacheDir, reserveCacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxAge);
 	}
 
 	/**
 	 * @param cacheDir          Directory for file caching
+	 * @param reserveCacheDir   null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
 	 * @param fileNameGenerator Name generator for cached files
 	 * @param maxAge            Max file age (in seconds). If file age will exceed this value then it'll be removed on next
 	 *                          treatment (and therefore be reloaded).
 	 */
-	public LimitedAgeDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, long maxAge) {
-		super(cacheDir, fileNameGenerator);
+	public LimitedAgeDiscCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator, long maxAge) {
+		super(cacheDir, reserveCacheDir, fileNameGenerator);
 		this.maxFileAge = maxAge * 1000; // to milliseconds
 	}
 
@@ -92,8 +101,8 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	}
 
 	@Override
-	public boolean save(String imageUri, Bitmap bitmap, Bitmap.CompressFormat format, int quality) throws IOException {
-		boolean saved = super.save(imageUri, bitmap, format, quality);
+	public boolean save(String imageUri, Bitmap bitmap) throws IOException {
+		boolean saved = super.save(imageUri, bitmap);
 		rememberUsage(imageUri);
 		return saved;
 	}

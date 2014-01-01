@@ -15,9 +15,7 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc.impl;
 
-import com.nostra13.universalimageloader.cache.disc.LimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
-import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 
 import java.io.File;
 
@@ -31,24 +29,16 @@ import java.io.File;
  */
 public class FileCountLimitedDiscCache extends LimitedDiscCache {
 	/**
-	 * @param cacheDir     Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
-	 *                     needed for right cache limit work.
-	 * @param maxFileCount Maximum file count for cache. If file count in cache directory exceeds this limit then file
-	 *                     with the most oldest last usage date will be deleted.
-	 */
-	public FileCountLimitedDiscCache(File cacheDir, int maxFileCount) {
-		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxFileCount);
-	}
-
-	/**
 	 * @param cacheDir          Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
 	 *                          needed for right cache limit work.
+	 * @param reserveCacheDir   null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
 	 * @param fileNameGenerator Name generator for cached files
 	 * @param maxFileCount      Maximum file count for cache. If file count in cache directory exceeds this limit then file
 	 *                          with the most oldest last usage date will be deleted.
 	 */
-	public FileCountLimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int maxFileCount) {
-		super(cacheDir, fileNameGenerator, maxFileCount);
+	public FileCountLimitedDiscCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator,
+			int maxFileCount) {
+		super(cacheDir, reserveCacheDir, fileNameGenerator, maxFileCount);
 	}
 
 	@Override
