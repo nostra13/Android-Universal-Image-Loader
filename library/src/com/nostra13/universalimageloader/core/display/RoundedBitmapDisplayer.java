@@ -60,7 +60,7 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		imageAware.setImageDrawable(new RoundedDrawable(bitmap, cornerRadius, margin));
 	}
 
-	protected static class RoundedDrawable extends Drawable {
+	public static class RoundedDrawable extends Drawable {
 
 		protected final float cornerRadius;
 		protected final int margin;
@@ -70,7 +70,7 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		protected final BitmapShader bitmapShader;
 		protected final Paint paint;
 
-		RoundedDrawable(Bitmap bitmap, int cornerRadius, int margin) {
+		public RoundedDrawable(Bitmap bitmap, int cornerRadius, int margin) {
 			this.cornerRadius = cornerRadius;
 			this.margin = margin;
 
