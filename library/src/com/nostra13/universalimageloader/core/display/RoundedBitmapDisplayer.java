@@ -17,6 +17,7 @@ package com.nostra13.universalimageloader.core.display;
 
 import android.graphics.*;
 import android.graphics.drawable.Drawable;
+
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
@@ -59,21 +60,23 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		imageAware.setImageDrawable(new RoundedDrawable(bitmap, cornerRadius, margin));
 	}
 
-	protected static class RoundedDrawable extends Drawable {
+	public static class RoundedDrawable extends Drawable {
 
 		protected final float cornerRadius;
 		protected final int margin;
 
-		protected final RectF mRect = new RectF();
+		protected final RectF mRect = new RectF(),
+				mBitmapRect;
 		protected final BitmapShader bitmapShader;
 		protected final Paint paint;
 
-		RoundedDrawable(Bitmap bitmap, int cornerRadius, int margin) {
+		public RoundedDrawable(Bitmap bitmap, int cornerRadius, int margin) {
 			this.cornerRadius = cornerRadius;
 			this.margin = margin;
 
 			bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-
+			mBitmapRect = new RectF (margin, margin, bitmap.getWidth() - margin, bitmap.getHeight() - margin);
+			
 			paint = new Paint();
 			paint.setAntiAlias(true);
 			paint.setShader(bitmapShader);
@@ -83,6 +86,12 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		protected void onBoundsChange(Rect bounds) {
 			super.onBoundsChange(bounds);
 			mRect.set(margin, margin, bounds.width() - margin, bounds.height() - margin);
+			
+			// Resize the original bitmap to fit the new bound
+			Matrix shaderMatrix = new Matrix();
+			shaderMatrix.setRectToRect(mBitmapRect, mRect, Matrix.ScaleToFit.FILL);
+			bitmapShader.setLocalMatrix(shaderMatrix);
+			
 		}
 
 		@Override
