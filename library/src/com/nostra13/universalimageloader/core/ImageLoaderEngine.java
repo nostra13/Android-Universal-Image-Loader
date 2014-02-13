@@ -44,7 +44,7 @@ class ImageLoaderEngine {
 
 	private Executor taskExecutor;
 	private Executor taskExecutorForCachedImages;
-	private ExecutorService taskDistributor;
+	private Executor taskDistributor;
 
 	private final Map<Integer, String> cacheKeysForImageAwares = Collections
 			.synchronizedMap(new HashMap<Integer, String>());
@@ -179,6 +179,10 @@ class ImageLoaderEngine {
 
 		cacheKeysForImageAwares.clear();
 		uriLocks.clear();
+	}
+
+	void fireCallback(Runnable r) {
+		taskDistributor.execute(r);
 	}
 
 	ReentrantLock getLockForUri(String uri) {
