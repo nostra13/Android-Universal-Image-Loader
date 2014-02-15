@@ -679,6 +679,9 @@ public class ImageLoader {
 
 	/**
 	 * Cancels all running and scheduled display image tasks.<br />
+	 * <b>NOTE:</b> This method doesn't shutdown
+	 * {@linkplain com.nostra13.universalimageloader.core.ImageLoaderConfiguration.Builder#taskExecutor(java.util.concurrent.Executor)
+	 * custom task executors} if you set them.<br />
 	 * ImageLoader still can be used after calling this method.
 	 */
 	public void stop() {

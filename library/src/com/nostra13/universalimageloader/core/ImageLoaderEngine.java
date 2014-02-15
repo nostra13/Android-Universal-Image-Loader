@@ -168,7 +168,13 @@ class ImageLoaderEngine {
 		}
 	}
 
-	/** Stops engine, cancels all running and scheduled display image tasks. Clears internal data. */
+	/**
+	 * Stops engine, cancels all running and scheduled display image tasks. Clears internal data.
+	 * <br />
+	 * <b>NOTE:</b> This method doesn't shutdown
+	 * {@linkplain com.nostra13.universalimageloader.core.ImageLoaderConfiguration.Builder#taskExecutor(java.util.concurrent.Executor)
+	 * custom task executors} if you set them.
+	 */
 	void stop() {
 		if (!configuration.customExecutor) {
 			((ExecutorService) taskExecutor).shutdownNow();

@@ -68,7 +68,15 @@ public interface DiscCacheAware {
 	 */
 	boolean save(String imageUri, Bitmap bitmap) throws IOException;
 
+	/**
+	 * Removes image file associated with incoming URI
+	 *
+	 * @param imageUri Image URI
+	 * @return <b>true</b> - if image file is deleted successfully; <b>false</b> - if image file doesn't exist for
+	 * incoming URI or image file can't be deleted.
+	 */
 	boolean remove(String imageUri);
 
+	/** Clears disc cache. */
 	void clear();
 }
