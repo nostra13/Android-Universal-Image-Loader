@@ -23,7 +23,7 @@ public class LruDiscCache implements DiscCacheAware {
 	/** {@value */
 	public static final int DEFAULT_COMPRESS_QUALITY = 100;
 
-	private static final String ERROR_ARG_NULL = "\"%s\" argument must be not null";
+	private static final String ERROR_ARG_NULL = " argument must be not null";
 
 	private DiskLruCache cache;
 
@@ -48,7 +48,7 @@ public class LruDiscCache implements DiscCacheAware {
 
 		this.fileNameGenerator = fileNameGenerator;
 		try {
-			this.cache = DiskLruCache.open(cacheDir, 1, 1, cacheMaxSize);
+			cache = DiskLruCache.open(cacheDir, 1, 1, cacheMaxSize);
 		} catch (IOException e) {
 			L.e(e);
 		}
@@ -78,7 +78,12 @@ public class LruDiscCache implements DiscCacheAware {
 		}
 
 		OutputStream os = new BufferedOutputStream(editor.newOutputStream(0), bufferSize);
-		boolean copied = IoUtils.copyStream(imageStream, os, listener, bufferSize);
+		boolean copied;
+		try {
+			copied = IoUtils.copyStream(imageStream, os, listener, bufferSize);
+		} finally {
+			IoUtils.closeSilently(os);
+		}
 		editor.commit();
 		return copied;
 	}
@@ -119,6 +124,7 @@ public class LruDiscCache implements DiscCacheAware {
 	public void clear() {
 		try {
 			cache.delete();
+			cache = DiskLruCache.open(cache.getDirectory(), 1, 1, cache.getMaxSize());
 		} catch (IOException e) {
 			L.e(e);
 		}
