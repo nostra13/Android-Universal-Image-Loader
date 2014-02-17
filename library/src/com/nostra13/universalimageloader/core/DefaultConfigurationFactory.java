@@ -18,9 +18,9 @@ package com.nostra13.universalimageloader.core;
 import android.content.Context;
 import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.cache.disc.impl.BaseDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
@@ -38,6 +38,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 import java.io.File;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -59,7 +60,12 @@ public class DefaultConfigurationFactory {
 		BlockingQueue<Runnable> taskQueue =
 				lifo ? new LIFOLinkedBlockingDeque<Runnable>() : new LinkedBlockingQueue<Runnable>();
 		return new ThreadPoolExecutor(threadPoolSize, threadPoolSize, 0L, TimeUnit.MILLISECONDS, taskQueue,
-				createThreadFactory(threadPriority));
+				createThreadFactory(threadPriority, "uil-pool-"));
+	}
+
+	/** Creates default implementation of task distributor */
+	public static Executor createTaskDistributor() {
+		return Executors.newCachedThreadPool(createThreadFactory(Thread.NORM_PRIORITY, "uil-pool-d-"));
 	}
 
 	/** Creates {@linkplain HashCodeFileNameGenerator default implementation} of FileNameGenerator */
@@ -81,7 +87,7 @@ public class DefaultConfigurationFactory {
 					discCacheFileCount);
 		} else {
 			File cacheDir = StorageUtils.getCacheDirectory(context);
-			return new BaseDiscCache(cacheDir, reserveCacheDir, discCacheFileNameGenerator);
+			return new UnlimitedDiscCache(cacheDir, reserveCacheDir, discCacheFileNameGenerator);
 		}
 	}
 
@@ -122,8 +128,8 @@ public class DefaultConfigurationFactory {
 	}
 
 	/** Creates default implementation of {@linkplain ThreadFactory thread factory} for task executor */
-	private static ThreadFactory createThreadFactory(int threadPriority) {
-		return new DefaultThreadFactory(threadPriority);
+	private static ThreadFactory createThreadFactory(int threadPriority, String threadNamePrefix) {
+		return new DefaultThreadFactory(threadPriority, threadNamePrefix);
 	}
 
 	private static class DefaultThreadFactory implements ThreadFactory {
@@ -135,11 +141,11 @@ public class DefaultConfigurationFactory {
 		private final String namePrefix;
 		private final int threadPriority;
 
-		DefaultThreadFactory(int threadPriority) {
+		DefaultThreadFactory(int threadPriority, String threadNamePrefix) {
 			this.threadPriority = threadPriority;
 			SecurityManager s = System.getSecurityManager();
 			group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-			namePrefix = "uil-pool-" + poolNumber.getAndIncrement() + "-thread-";
+			namePrefix = threadNamePrefix + poolNumber.getAndIncrement() + "-thread-";
 		}
 
 		@Override

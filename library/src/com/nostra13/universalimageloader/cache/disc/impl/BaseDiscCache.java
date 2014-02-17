@@ -36,7 +36,7 @@ import java.io.OutputStream;
  * @see FileNameGenerator
  * @since 1.0.0
  */
-public class BaseDiscCache implements DiscCacheAware {
+public abstract class BaseDiscCache implements DiscCacheAware {
 	/** {@value */
 	public static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 Kb
 	/** {@value */
@@ -44,7 +44,7 @@ public class BaseDiscCache implements DiscCacheAware {
 	/** {@value */
 	public static final int DEFAULT_COMPRESS_QUALITY = 100;
 
-	private static final String ERROR_ARG_NULL = "\"%s\" argument must be not null";
+	private static final String ERROR_ARG_NULL = " argument must be not null";
 
 	protected final File cacheDir;
 	protected final File reserveCacheDir;
