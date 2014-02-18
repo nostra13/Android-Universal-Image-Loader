@@ -186,6 +186,10 @@ class ImageLoaderEngine {
 		uriLocks.clear();
 	}
 
+	void fireCallback(Runnable r) {
+		taskDistributor.execute(r);
+	}
+
 	ReentrantLock getLockForUri(String uri) {
 		ReentrantLock lock = uriLocks.get(uri);
 		if (lock == null) {

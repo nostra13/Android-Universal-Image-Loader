@@ -59,6 +59,7 @@ final class DisplayBitmapTask implements Runnable {
 		this.loadedFrom = loadedFrom;
 	}
 
+	@Override
 	public void run() {
 		if (imageAware.isCollected()) {
 			if (loggingEnabled) L.d(LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED, memoryCacheKey);

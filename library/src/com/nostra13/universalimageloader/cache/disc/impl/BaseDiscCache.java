@@ -45,6 +45,7 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 	public static final int DEFAULT_COMPRESS_QUALITY = 100;
 
 	private static final String ERROR_ARG_NULL = " argument must be not null";
+	private static final String TEMP_IMAGE_POSTFIX = ".tmp";
 
 	protected final File cacheDir;
 	protected final File reserveCacheDir;
@@ -101,9 +102,10 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 	@Override
 	public boolean save(String imageUri, InputStream imageStream, IoUtils.CopyListener listener) throws IOException {
 		File imageFile = getFile(imageUri);
+		File tmpFile = new File(imageFile.getAbsolutePath() + TEMP_IMAGE_POSTFIX);
 		boolean loaded = false;
 		try {
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(imageFile), bufferSize);
+			OutputStream os = new BufferedOutputStream(new FileOutputStream(tmpFile), bufferSize);
 			try {
 				loaded = IoUtils.copyStream(imageStream, os, listener, bufferSize);
 			} finally {
@@ -111,8 +113,11 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 			}
 		} finally {
 			IoUtils.closeSilently(imageStream);
+			if (loaded && !tmpFile.renameTo(imageFile)) {
+				loaded = false;
+			}
 			if (!loaded) {
-				imageFile.delete();
+				tmpFile.delete();
 			}
 		}
 		return loaded;
@@ -121,12 +126,19 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 	@Override
 	public boolean save(String imageUri, Bitmap bitmap) throws IOException {
 		File imageFile = getFile(imageUri);
-		OutputStream os = new BufferedOutputStream(new FileOutputStream(imageFile), bufferSize);
-		boolean savedSuccessfully;
+		File tmpFile = new File(imageFile.getAbsolutePath() + TEMP_IMAGE_POSTFIX);
+		OutputStream os = new BufferedOutputStream(new FileOutputStream(tmpFile), bufferSize);
+		boolean savedSuccessfully = false;
 		try {
 			savedSuccessfully = bitmap.compress(compressFormat, compressQuality, os);
 		} finally {
 			IoUtils.closeSilently(os);
+			if (savedSuccessfully && !tmpFile.renameTo(imageFile)) {
+				savedSuccessfully = false;
+			}
+			if (!savedSuccessfully) {
+				tmpFile.delete();
+			}
 		}
 		bitmap.recycle();
 		return savedSuccessfully;
