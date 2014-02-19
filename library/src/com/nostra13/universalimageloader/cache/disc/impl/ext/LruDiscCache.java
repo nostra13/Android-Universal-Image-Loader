@@ -1,8 +1,22 @@
-package com.nostra13.universalimageloader.cache.disc.impl;
+/*******************************************************************************
+ * Copyright 2014 Sergey Tarasevich
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
+package com.nostra13.universalimageloader.cache.disc.impl.ext;
 
 import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.cache.disc.impl.ext.DiskLruCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 import com.nostra13.universalimageloader.utils.IoUtils;
@@ -14,7 +28,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/** Created by Sergey.Tarasevich on 13.07.13. */
+/**
+ * Disc cache based on "Least-Recently Used" principle. Adapter pattern, adapts
+ * {@link com.nostra13.universalimageloader.cache.disc.impl.ext.DiskLruCache DiskLruCache} to
+ * {@link com.nostra13.universalimageloader.cache.disc.DiscCacheAware DiscCacheAware}
+ *
+ * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @see FileNameGenerator
+ * @since 1.9.2
+ */
 public class LruDiscCache implements DiscCacheAware {
 	/** {@value */
 	public static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 Kb
@@ -25,19 +47,30 @@ public class LruDiscCache implements DiscCacheAware {
 
 	private static final String ERROR_ARG_NULL = " argument must be not null";
 
-	private DiskLruCache cache;
+	protected DiskLruCache cache;
 
-	private final FileNameGenerator fileNameGenerator;
+	protected final FileNameGenerator fileNameGenerator;
 
 	protected int bufferSize = DEFAULT_BUFFER_SIZE;
 
 	protected Bitmap.CompressFormat compressFormat = DEFAULT_COMPRESS_FORMAT;
 	protected int compressQuality = DEFAULT_COMPRESS_QUALITY;
 
+	/**
+	 * @param cacheDir     Directory for file caching
+	 * @param cacheMaxSize Max cache size in bytes
+	 */
 	public LruDiscCache(File cacheDir, int cacheMaxSize) {
 		this(cacheDir, cacheMaxSize, DefaultConfigurationFactory.createFileNameGenerator());
 	}
 
+	/**
+	 * @param cacheDir          Directory for file caching
+	 * @param cacheMaxSize      Max cache size in bytes
+	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
+	 *                          Name generator} for cached files. Genearted names must match the regex
+	 *                          <strong>[a-z0-9_-]{1,64}</strong>
+	 */
 	public LruDiscCache(File cacheDir, int cacheMaxSize, FileNameGenerator fileNameGenerator) {
 		if (cacheDir == null) {
 			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);

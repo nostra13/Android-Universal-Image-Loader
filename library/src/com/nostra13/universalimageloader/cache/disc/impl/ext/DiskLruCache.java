@@ -84,7 +84,7 @@ import java.util.regex.Pattern;
  * Callers should handle other problems by catching {@code IOException} and
  * responding appropriately.
  */
-public final class DiskLruCache implements Closeable {
+final class DiskLruCache implements Closeable {
 	static final String JOURNAL_FILE = "journal";
 	static final String JOURNAL_FILE_TEMP = "journal.tmp";
 	static final String JOURNAL_FILE_BACKUP = "journal.bkp";
