@@ -90,6 +90,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	final DisplayImageOptions options;
 	final ImageLoadingListener listener;
 	final ImageLoadingProgressListener progressListener;
+	private final boolean syncLoading;
 
 	// State vars
 	private LoadedFrom loadedFrom = LoadedFrom.NETWORK;
@@ -112,6 +113,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		options = imageLoadingInfo.options;
 		listener = imageLoadingInfo.listener;
 		progressListener = imageLoadingInfo.progressListener;
+		syncLoading = options.isSyncLoading();
 	}
 
 	@Override
@@ -173,7 +175,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine, loadedFrom);
 		displayBitmapTask.setLoggingEnabled(writeLogs);
-		runTask(displayBitmapTask, options.isSyncLoading(), handler, engine);
+		runTask(displayBitmapTask, syncLoading, handler, engine);
 	}
 
 	/** @return <b>true</b> - if task should be interrupted; <b>false</b> - otherwise */
@@ -322,24 +324,26 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	@Override
 	public boolean onBytesCopied(int current, int total) {
-		return progressListener == null || fireProgressEvent(current, total);
+		return fireProgressEvent(current, total);
 	}
 
 	/** @return <b>true</b> - if loading should be continued; <b>false</b> - if loading should be interrupted */
 	private boolean fireProgressEvent(final int current, final int total) {
-		if (options.isSyncLoading() || isTaskInterrupted() || isTaskNotActual()) return false;
-		Runnable r = new Runnable() {
-			@Override
-			public void run() {
-				progressListener.onProgressUpdate(uri, imageAware.getWrappedView(), current, total);
-			}
-		};
-		runTask(r, false, handler, engine);
+		if (syncLoading || isTaskInterrupted() || isTaskNotActual()) return false;
+		if (progressListener != null) {
+			Runnable r = new Runnable() {
+				@Override
+				public void run() {
+					progressListener.onProgressUpdate(uri, imageAware.getWrappedView(), current, total);
+				}
+			};
+			runTask(r, false, handler, engine);
+		}
 		return true;
 	}
 
 	private void fireFailEvent(final FailType failType, final Throwable failCause) {
-		if (options.isSyncLoading() || isTaskInterrupted() || isTaskNotActual()) return;
+		if (syncLoading || isTaskInterrupted() || isTaskNotActual()) return;
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
@@ -353,7 +357,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	}
 
 	private void fireCancelEvent() {
-		if (options.isSyncLoading() || isTaskInterrupted()) return;
+		if (syncLoading || isTaskInterrupted()) return;
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
