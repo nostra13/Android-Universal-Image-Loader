@@ -111,13 +111,17 @@ public class LruDiscCache implements DiscCacheAware {
 		}
 
 		OutputStream os = new BufferedOutputStream(editor.newOutputStream(0), bufferSize);
-		boolean copied;
+		boolean copied = false;
 		try {
 			copied = IoUtils.copyStream(imageStream, os, listener, bufferSize);
 		} finally {
 			IoUtils.closeSilently(os);
+			if (copied) {
+				editor.commit();
+			} else {
+				editor.abort();
+			}
 		}
-		editor.commit();
 		return copied;
 	}
 
