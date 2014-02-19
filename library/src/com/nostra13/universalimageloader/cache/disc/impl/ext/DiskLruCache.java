@@ -15,7 +15,20 @@
  */
 package com.nostra13.universalimageloader.cache.disc.impl.ext;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.Closeable;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;

@@ -188,3 +188,4 @@ class StrictLineReader implements Closeable {
 		end = result;
 	}
 }
+
