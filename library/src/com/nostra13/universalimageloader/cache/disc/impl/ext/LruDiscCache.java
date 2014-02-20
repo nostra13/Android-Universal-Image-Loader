@@ -48,6 +48,7 @@ public class LruDiscCache implements DiscCacheAware {
 	private static final String ERROR_ARG_NULL = " argument must be not null";
 
 	protected DiskLruCache cache;
+	private File reserveCacheDir;
 
 	protected final FileNameGenerator fileNameGenerator;
 
@@ -60,18 +61,28 @@ public class LruDiscCache implements DiscCacheAware {
 	 * @param cacheDir     Directory for file caching
 	 * @param cacheMaxSize Max cache size in bytes
 	 */
-	public LruDiscCache(File cacheDir, int cacheMaxSize) {
-		this(cacheDir, cacheMaxSize, DefaultConfigurationFactory.createFileNameGenerator());
+	public LruDiscCache(File cacheDir, long cacheMaxSize) {
+		this(cacheDir, null, cacheMaxSize, DefaultConfigurationFactory.createFileNameGenerator());
+	}
+
+	/**
+	 * @param cacheDir        Directory for file caching
+	 * @param reserveCacheDir null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
+	 * @param cacheMaxSize    Max cache size in bytes
+	 */
+	public LruDiscCache(File cacheDir, File reserveCacheDir, long cacheMaxSize) {
+		this(cacheDir, reserveCacheDir, cacheMaxSize, DefaultConfigurationFactory.createFileNameGenerator());
 	}
 
 	/**
 	 * @param cacheDir          Directory for file caching
+	 * @param reserveCacheDir   null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
 	 * @param cacheMaxSize      Max cache size in bytes
 	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
 	 *                          Name generator} for cached files. Genearted names must match the regex
 	 *                          <strong>[a-z0-9_-]{1,64}</strong>
 	 */
-	public LruDiscCache(File cacheDir, int cacheMaxSize, FileNameGenerator fileNameGenerator) {
+	public LruDiscCache(File cacheDir, File reserveCacheDir, long cacheMaxSize, FileNameGenerator fileNameGenerator) {
 		if (cacheDir == null) {
 			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);
 		}
@@ -80,10 +91,18 @@ public class LruDiscCache implements DiscCacheAware {
 		}
 
 		this.fileNameGenerator = fileNameGenerator;
+		this.reserveCacheDir = reserveCacheDir;
+		initCache(cacheDir, reserveCacheDir, cacheMaxSize);
+	}
+
+	private void initCache(File cacheDir, File reserveCacheDir, long cacheMaxSize) {
 		try {
 			cache = DiskLruCache.open(cacheDir, 1, 1, cacheMaxSize);
 		} catch (IOException e) {
 			L.e(e);
+			if (reserveCacheDir != null) {
+				initCache(reserveCacheDir, null, cacheMaxSize);
+			}
 		}
 	}
 
@@ -161,9 +180,10 @@ public class LruDiscCache implements DiscCacheAware {
 	public void clear() {
 		try {
 			cache.delete();
-			cache = DiskLruCache.open(cache.getDirectory(), 1, 1, cache.getMaxSize());
 		} catch (IOException e) {
 			L.e(e);
+		} finally {
+			initCache(cache.getDirectory(), reserveCacheDir, cache.getMaxSize());
 		}
 	}
 

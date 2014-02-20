@@ -19,8 +19,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache;
-import com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
@@ -79,8 +79,7 @@ public class DefaultConfigurationFactory {
 		File reserveCacheDir = createReserveDiscCacheDir(context);
 		if (discCacheSize > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
-			return new TotalSizeLimitedDiscCache(individualCacheDir, reserveCacheDir, discCacheFileNameGenerator,
-					discCacheSize);
+			return new LruDiscCache(individualCacheDir, reserveCacheDir, discCacheSize, discCacheFileNameGenerator);
 		} else if (discCacheFileCount > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
 			return new FileCountLimitedDiscCache(individualCacheDir, reserveCacheDir, discCacheFileNameGenerator,
