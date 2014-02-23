@@ -114,7 +114,7 @@ public final class ImageLoaderConfiguration {
 	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
 	 * <li>allow to cache different sizes of image in memory</li>
 	 * <li>memoryCache = {@link DefaultConfigurationFactory#createMemoryCache(int)}</li>
-	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.BaseDiscCache}</li>
+	 * <li>discCache = {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache}</li>
 	 * <li>imageDownloader = {@link DefaultConfigurationFactory#createImageDownloader(Context)}</li>
 	 * <li>imageDecoder = {@link DefaultConfigurationFactory#createImageDecoder(boolean)}</li>
 	 * <li>discCacheFileNameGenerator = {@link DefaultConfigurationFactory#createFileNameGenerator()}</li>
@@ -452,7 +452,7 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Sets disc cache for images.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.BaseDiscCache
+		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache
 		 * BaseDiscCache}. Cache directory is defined by
 		 * {@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context)
 		 * StorageUtils.getCacheDirectory(Context)}.<br />
