@@ -705,6 +705,7 @@ public class ImageLoader {
 	public void destroy() {
 		if (configuration != null && configuration.writeLogs) L.d(LOG_DESTROY);
 		stop();
+		configuration.discCache.close();
 		engine = null;
 		configuration = null;
 	}

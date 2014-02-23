@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Interface for disc cache
+ * Interface for disk cache
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
@@ -77,6 +77,9 @@ public interface DiscCacheAware {
 	 */
 	boolean remove(String imageUri);
 
-	/** Clears disc cache. */
+	/** Closes disk cache, releases resources. */
+	void close();
+
+	/** Clears disk cache. */
 	void clear();
 }

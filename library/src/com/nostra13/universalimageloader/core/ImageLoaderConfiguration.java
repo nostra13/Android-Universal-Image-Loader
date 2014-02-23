@@ -180,7 +180,7 @@ public final class ImageLoaderConfiguration {
 		private QueueProcessingType tasksProcessingType = DEFAULT_TASK_PROCESSING_TYPE;
 
 		private int memoryCacheSize = 0;
-		private int discCacheSize = 0;
+		private long discCacheSize = 0;
 		private int discCacheFileCount = 0;
 
 		private MemoryCacheAware<String, Bitmap> memoryCache = null;
@@ -401,14 +401,14 @@ public final class ImageLoaderConfiguration {
 		 * Sets maximum disc cache size for images (in bytes).<br />
 		 * By default: disc cache is unlimited.<br />
 		 * <b>NOTE:</b> If you use this method then
-		 * {@link com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache TotalSizeLimitedDiscCache}
+		 * {@link com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache LruDiscCache}
 		 * will be used as disc cache. You can use {@link #discCache(DiscCacheAware)} method for introduction your own
 		 * implementation of {@link DiscCacheAware}
 		 */
 		public Builder discCacheSize(int maxCacheSize) {
 			if (maxCacheSize <= 0) throw new IllegalArgumentException("maxCacheSize must be a positive number");
 
-			if (discCache != null || discCacheFileCount > 0) {
+			if (discCache != null) {
 				L.w(WARNING_OVERLAP_DISC_CACHE_PARAMS);
 			}
 
@@ -420,18 +420,17 @@ public final class ImageLoaderConfiguration {
 		 * Sets maximum file count in disc cache directory.<br />
 		 * By default: disc cache is unlimited.<br />
 		 * <b>NOTE:</b> If you use this method then
-		 * {@link com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache FileCountLimitedDiscCache}
+		 * {@link com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache LruDiscCache}
 		 * will be used as disc cache. You can use {@link #discCache(DiscCacheAware)} method for introduction your own
 		 * implementation of {@link DiscCacheAware}
 		 */
 		public Builder discCacheFileCount(int maxFileCount) {
 			if (maxFileCount <= 0) throw new IllegalArgumentException("maxFileCount must be a positive number");
 
-			if (discCache != null || discCacheSize > 0) {
+			if (discCache != null) {
 				L.w(WARNING_OVERLAP_DISC_CACHE_PARAMS);
 			}
 
-			this.discCacheSize = 0;
 			this.discCacheFileCount = maxFileCount;
 			return this;
 		}
@@ -448,28 +447,6 @@ public final class ImageLoaderConfiguration {
 			}
 
 			this.discCacheFileNameGenerator = fileNameGenerator;
-			return this;
-		}
-
-		/**
-		 * Sets utility which will be responsible for downloading of image.<br />
-		 * Default value -
-		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createImageDownloader(Context)
-		 * DefaultConfigurationFactory.createImageDownloader()}
-		 */
-		public Builder imageDownloader(ImageDownloader imageDownloader) {
-			this.downloader = imageDownloader;
-			return this;
-		}
-
-		/**
-		 * Sets utility which will be responsible for decoding of image stream.<br />
-		 * Default value -
-		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createImageDecoder(boolean)
-		 * DefaultConfigurationFactory.createImageDecoder()}
-		 */
-		public Builder imageDecoder(ImageDecoder imageDecoder) {
-			this.decoder = imageDecoder;
 			return this;
 		}
 
@@ -496,6 +473,28 @@ public final class ImageLoaderConfiguration {
 			}
 
 			this.discCache = discCache;
+			return this;
+		}
+
+		/**
+		 * Sets utility which will be responsible for downloading of image.<br />
+		 * Default value -
+		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createImageDownloader(Context)
+		 * DefaultConfigurationFactory.createImageDownloader()}
+		 */
+		public Builder imageDownloader(ImageDownloader imageDownloader) {
+			this.downloader = imageDownloader;
+			return this;
+		}
+
+		/**
+		 * Sets utility which will be responsible for decoding of image stream.<br />
+		 * Default value -
+		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createImageDecoder(boolean)
+		 * DefaultConfigurationFactory.createImageDecoder()}
+		 */
+		public Builder imageDecoder(ImageDecoder imageDecoder) {
+			this.decoder = imageDecoder;
 			return this;
 		}
 

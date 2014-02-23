@@ -143,8 +143,10 @@ final class DiskLruCache implements Closeable {
 	private final File journalFileBackup;
 	private final int appVersion;
 	private long maxSize;
+	private int maxFileCount;
 	private final int valueCount;
 	private long size = 0;
+	private int fileCount = 0;
 	private Writer journalWriter;
 	private final LinkedHashMap<String, Entry> lruEntries =
 			new LinkedHashMap<String, Entry>(0, 0.75f, true);
@@ -167,6 +169,7 @@ final class DiskLruCache implements Closeable {
 					return null; // Closed.
 				}
 				trimToSize();
+				trimToFileCount();
 				if (journalRebuildRequired()) {
 					rebuildJournal();
 					redundantOpCount = 0;
@@ -176,7 +179,7 @@ final class DiskLruCache implements Closeable {
 		}
 	};
 
-	private DiskLruCache(File directory, int appVersion, int valueCount, long maxSize) {
+	private DiskLruCache(File directory, int appVersion, int valueCount, long maxSize, int maxFileCount) {
 		this.directory = directory;
 		this.appVersion = appVersion;
 		this.journalFile = new File(directory, JOURNAL_FILE);
@@ -184,6 +187,7 @@ final class DiskLruCache implements Closeable {
 		this.journalFileBackup = new File(directory, JOURNAL_FILE_BACKUP);
 		this.valueCount = valueCount;
 		this.maxSize = maxSize;
+		this.maxFileCount = maxFileCount;
 	}
 
 	/**
@@ -193,12 +197,16 @@ final class DiskLruCache implements Closeable {
 	 * @param directory a writable directory
 	 * @param valueCount the number of values per cache entry. Must be positive.
 	 * @param maxSize the maximum number of bytes this cache should use to store
+	 * @param maxFileCount the maximum file count this cache should store
 	 * @throws IOException if reading or writing the cache directory fails
 	 */
-	public static DiskLruCache open(File directory, int appVersion, int valueCount, long maxSize)
+	public static DiskLruCache open(File directory, int appVersion, int valueCount, long maxSize, int maxFileCount)
 			throws IOException {
 		if (maxSize <= 0) {
 			throw new IllegalArgumentException("maxSize <= 0");
+		}
+		if (maxFileCount <= 0) {
+			throw new IllegalArgumentException("maxFileCount <= 0");
 		}
 		if (valueCount <= 0) {
 			throw new IllegalArgumentException("valueCount <= 0");
@@ -217,7 +225,7 @@ final class DiskLruCache implements Closeable {
 		}
 
 		// Prefer to pick up where we left off.
-		DiskLruCache cache = new DiskLruCache(directory, appVersion, valueCount, maxSize);
+		DiskLruCache cache = new DiskLruCache(directory, appVersion, valueCount, maxSize, maxFileCount);
 		if (cache.journalFile.exists()) {
 			try {
 				cache.readJournal();
@@ -238,7 +246,7 @@ final class DiskLruCache implements Closeable {
 
 		// Create a new empty cache.
 		directory.mkdirs();
-		cache = new DiskLruCache(directory, appVersion, valueCount, maxSize);
+		cache = new DiskLruCache(directory, appVersion, valueCount, maxSize, maxFileCount);
 		cache.rebuildJournal();
 		return cache;
 	}
@@ -325,6 +333,7 @@ final class DiskLruCache implements Closeable {
 			if (entry.currentEditor == null) {
 				for (int t = 0; t < valueCount; t++) {
 					size += entry.lengths[t];
+					fileCount++;
 				}
 			} else {
 				entry.currentEditor = null;
@@ -490,6 +499,11 @@ final class DiskLruCache implements Closeable {
 		return maxSize;
 	}
 
+	/** Returns the maximum number of files that this cache should store */
+	public synchronized int getMaxFileCount() {
+		return maxFileCount;
+	}
+
 	/**
 	 * Changes the maximum number of bytes the cache can store and queues a job
 	 * to trim the existing store, if necessary.
@@ -506,6 +520,15 @@ final class DiskLruCache implements Closeable {
 	 */
 	public synchronized long size() {
 		return size;
+	}
+
+	/**
+	 * Returns the number of files currently being used to store the values in
+	 * this cache. This may be greater than the max file count if a background
+	 * deletion is pending.
+	 */
+	public synchronized long fileCount() {
+		return fileCount;
 	}
 
 	private synchronized void completeEdit(Editor editor, boolean success) throws IOException {
@@ -538,6 +561,7 @@ final class DiskLruCache implements Closeable {
 					long newLength = clean.length();
 					entry.lengths[i] = newLength;
 					size = size - oldLength + newLength;
+					fileCount++;
 				}
 			} else {
 				deleteIfExists(dirty);
@@ -558,7 +582,7 @@ final class DiskLruCache implements Closeable {
 		}
 		journalWriter.flush();
 
-		if (size > maxSize || journalRebuildRequired()) {
+		if (size > maxSize || fileCount > maxFileCount || journalRebuildRequired()) {
 			executorService.submit(cleanupCallable);
 		}
 	}
@@ -593,6 +617,7 @@ final class DiskLruCache implements Closeable {
 				throw new IOException("failed to delete " + file);
 			}
 			size -= entry.lengths[i];
+			fileCount--;
 			entry.lengths[i] = 0;
 		}
 
@@ -622,6 +647,7 @@ final class DiskLruCache implements Closeable {
 	public synchronized void flush() throws IOException {
 		checkNotClosed();
 		trimToSize();
+		trimToFileCount();
 		journalWriter.flush();
 	}
 
@@ -636,12 +662,20 @@ final class DiskLruCache implements Closeable {
 			}
 		}
 		trimToSize();
+		trimToFileCount();
 		journalWriter.close();
 		journalWriter = null;
 	}
 
 	private void trimToSize() throws IOException {
 		while (size > maxSize) {
+			Map.Entry<String, Entry> toEvict = lruEntries.entrySet().iterator().next();
+			remove(toEvict.getKey());
+		}
+	}
+
+	private void trimToFileCount() throws IOException {
+		while (fileCount > maxFileCount) {
 			Map.Entry<String, Entry> toEvict = lruEntries.entrySet().iterator().next();
 			remove(toEvict.getKey());
 		}

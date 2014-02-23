@@ -29,10 +29,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Base disc cache. Cache size is unlimited.
+ * Base disc cache.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @see com.nostra13.universalimageloader.cache.disc.DiscCacheAware
  * @see FileNameGenerator
  * @since 1.0.0
  */
@@ -147,6 +146,11 @@ public abstract class BaseDiscCache implements DiscCacheAware {
 	@Override
 	public boolean remove(String imageUri) {
 		return getFile(imageUri).delete();
+	}
+
+	@Override
+	public void close() {
+		// Nothing to do
 	}
 
 	@Override

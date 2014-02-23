@@ -46,6 +46,7 @@ public class LruDiscCache implements DiscCacheAware {
 	public static final int DEFAULT_COMPRESS_QUALITY = 100;
 
 	private static final String ERROR_ARG_NULL = " argument must be not null";
+	private static final String ERROR_ARG_NEGATIVE = " argument must be positive number";
 
 	protected DiskLruCache cache;
 	private File reserveCacheDir;
@@ -59,49 +60,61 @@ public class LruDiscCache implements DiscCacheAware {
 
 	/**
 	 * @param cacheDir     Directory for file caching
-	 * @param cacheMaxSize Max cache size in bytes
+	 * @param cacheMaxSize Max cache size in bytes. <b>0</b> means cache size is unlimited.
 	 */
 	public LruDiscCache(File cacheDir, long cacheMaxSize) {
-		this(cacheDir, null, cacheMaxSize, DefaultConfigurationFactory.createFileNameGenerator());
-	}
-
-	/**
-	 * @param cacheDir        Directory for file caching
-	 * @param reserveCacheDir null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
-	 * @param cacheMaxSize    Max cache size in bytes
-	 */
-	public LruDiscCache(File cacheDir, File reserveCacheDir, long cacheMaxSize) {
-		this(cacheDir, reserveCacheDir, cacheMaxSize, DefaultConfigurationFactory.createFileNameGenerator());
+		this(cacheDir, cacheMaxSize, 0);
 	}
 
 	/**
 	 * @param cacheDir          Directory for file caching
-	 * @param reserveCacheDir   null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
-	 * @param cacheMaxSize      Max cache size in bytes
+	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
+	 * @param cacheMaxFileCount Max file count in cache. <b>0</b> means file count is unlimited.
+	 */
+	public LruDiscCache(File cacheDir, long cacheMaxSize, int cacheMaxFileCount) {
+		this(cacheDir, cacheMaxSize, cacheMaxFileCount, DefaultConfigurationFactory.createFileNameGenerator());
+	}
+
+	/**
+	 * @param cacheDir          Directory for file caching
+	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
+	 * @param cacheMaxFileCount Max file count in cache. <b>0</b> means file count is unlimited.
 	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
 	 *                          Name generator} for cached files. Genearted names must match the regex
 	 *                          <strong>[a-z0-9_-]{1,64}</strong>
 	 */
-	public LruDiscCache(File cacheDir, File reserveCacheDir, long cacheMaxSize, FileNameGenerator fileNameGenerator) {
+	public LruDiscCache(File cacheDir, long cacheMaxSize, int cacheMaxFileCount, FileNameGenerator fileNameGenerator) {
 		if (cacheDir == null) {
 			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);
+		}
+		if (cacheMaxSize < 0) {
+			throw new IllegalArgumentException("cacheMaxSize" + ERROR_ARG_NEGATIVE);
+		}
+		if (cacheMaxFileCount < 0) {
+			throw new IllegalArgumentException("cacheMaxFileCount" + ERROR_ARG_NEGATIVE);
 		}
 		if (fileNameGenerator == null) {
 			throw new IllegalArgumentException("fileNameGenerator" + ERROR_ARG_NULL);
 		}
 
+		if (cacheMaxSize == 0) {
+			cacheMaxSize = Long.MAX_VALUE;
+		}
+		if (cacheMaxFileCount == 0) {
+			cacheMaxFileCount = Integer.MAX_VALUE;
+		}
+
 		this.fileNameGenerator = fileNameGenerator;
-		this.reserveCacheDir = reserveCacheDir;
-		initCache(cacheDir, reserveCacheDir, cacheMaxSize);
+		initCache(cacheDir, reserveCacheDir, cacheMaxSize, cacheMaxFileCount);
 	}
 
-	private void initCache(File cacheDir, File reserveCacheDir, long cacheMaxSize) {
+	private void initCache(File cacheDir, File reserveCacheDir, long cacheMaxSize, int cacheMaxFileCount) {
 		try {
-			cache = DiskLruCache.open(cacheDir, 1, 1, cacheMaxSize);
+			cache = DiskLruCache.open(cacheDir, 1, 1, cacheMaxSize, cacheMaxFileCount);
 		} catch (IOException e) {
 			L.e(e);
 			if (reserveCacheDir != null) {
-				initCache(reserveCacheDir, null, cacheMaxSize);
+				initCache(reserveCacheDir, null, cacheMaxSize, cacheMaxFileCount);
 			}
 		}
 	}
@@ -177,18 +190,35 @@ public class LruDiscCache implements DiscCacheAware {
 	}
 
 	@Override
+	public void close() {
+		try {
+			cache.close();
+		} catch (IOException e) {
+			L.e(e);
+		}
+		cache = null;
+	}
+
+	@Override
 	public void clear() {
 		try {
 			cache.delete();
 		} catch (IOException e) {
 			L.e(e);
 		} finally {
-			initCache(cache.getDirectory(), reserveCacheDir, cache.getMaxSize());
+			initCache(cache.getDirectory(), reserveCacheDir, cache.getMaxSize(), cache.getMaxFileCount());
 		}
 	}
 
 	private String getKey(String imageUri) {
 		return fileNameGenerator.generate(imageUri);
+	}
+
+	/**
+	 * @param reserveCacheDir null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
+	 */
+	public void setReserveCacheDir(File reserveCacheDir) {
+		this.reserveCacheDir = reserveCacheDir;
 	}
 
 	public void setBufferSize(int bufferSize) {

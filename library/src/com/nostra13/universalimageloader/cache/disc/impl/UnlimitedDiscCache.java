@@ -24,7 +24,6 @@ import java.io.File;
  * Cache size is unlimited.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @see BaseDiscCache
  * @since 1.0.0
  */
 public class UnlimitedDiscCache extends BaseDiscCache {
