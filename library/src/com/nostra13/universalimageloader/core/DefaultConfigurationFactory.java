@@ -78,8 +78,8 @@ public class DefaultConfigurationFactory {
 		File reserveCacheDir = createReserveDiscCacheDir(context);
 		if (discCacheSize > 0 || discCacheFileCount > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
-			LruDiscCache discCache = new LruDiscCache(individualCacheDir, discCacheSize, discCacheFileCount,
-					discCacheFileNameGenerator);
+			LruDiscCache discCache = new LruDiscCache(individualCacheDir, discCacheFileNameGenerator, discCacheSize,
+					discCacheFileCount);
 			discCache.setReserveCacheDir(reserveCacheDir);
 			return discCache;
 		} else {

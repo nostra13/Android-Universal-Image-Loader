@@ -18,7 +18,6 @@ package com.nostra13.universalimageloader.cache.disc.impl.ext;
 import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
-import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -59,31 +58,25 @@ public class LruDiscCache implements DiscCacheAware {
 	protected int compressQuality = DEFAULT_COMPRESS_QUALITY;
 
 	/**
-	 * @param cacheDir     Directory for file caching
-	 * @param cacheMaxSize Max cache size in bytes. <b>0</b> means cache size is unlimited.
-	 */
-	public LruDiscCache(File cacheDir, long cacheMaxSize) {
-		this(cacheDir, cacheMaxSize, 0);
-	}
-
-	/**
 	 * @param cacheDir          Directory for file caching
-	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
-	 * @param cacheMaxFileCount Max file count in cache. <b>0</b> means file count is unlimited.
-	 */
-	public LruDiscCache(File cacheDir, long cacheMaxSize, int cacheMaxFileCount) {
-		this(cacheDir, cacheMaxSize, cacheMaxFileCount, DefaultConfigurationFactory.createFileNameGenerator());
-	}
-
-	/**
-	 * @param cacheDir          Directory for file caching
-	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
-	 * @param cacheMaxFileCount Max file count in cache. <b>0</b> means file count is unlimited.
 	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
-	 *                          Name generator} for cached files. Genearted names must match the regex
+	 *                          Name generator} for cached files. Generated names must match the regex
 	 *                          <strong>[a-z0-9_-]{1,64}</strong>
+	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
 	 */
-	public LruDiscCache(File cacheDir, long cacheMaxSize, int cacheMaxFileCount, FileNameGenerator fileNameGenerator) {
+	public LruDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize) {
+		this(cacheDir, fileNameGenerator, cacheMaxSize, 0);
+	}
+
+	/**
+	 * @param cacheDir          Directory for file caching
+	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
+	 *                          Name generator} for cached files. Generated names must match the regex
+	 *                          <strong>[a-z0-9_-]{1,64}</strong>
+	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
+	 * @param cacheMaxFileCount Max file count in cache. <b>0</b> means file count is unlimited.
+	 */
+	public LruDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize, int cacheMaxFileCount) {
 		if (cacheDir == null) {
 			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);
 		}
