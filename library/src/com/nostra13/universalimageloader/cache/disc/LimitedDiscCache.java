@@ -15,16 +15,20 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc;
 
-import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
-import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
+import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 
 /**
  * Abstract disc cache limited by some parameter. If cache exceeds specified limit then file with the most oldest last
@@ -43,7 +47,9 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 
 	private final int sizeLimit;
 
-	private final Map<File, Long> lastUsageDates = Collections.synchronizedMap(new HashMap<File, Long>());
+	private final int minSizeLimitReduction;
+	
+	private final Map<File, Long> lastUsageDates = Collections.synchronizedMap(new LinkedHashMap<File, Long>(16, 0.75f, true));
 
 	/**
 	 * @param cacheDir  Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
@@ -62,11 +68,17 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	 * @param sizeLimit         Cache limit value. If cache exceeds this limit then file with the most oldest last usage date
 	 *                          will be deleted.
 	 */
-	public LimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int sizeLimit) {
+	public LimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int sizeLimit, float minSizeLimitReductionPercent) {
 		super(cacheDir, fileNameGenerator);
 		this.sizeLimit = sizeLimit;
+		this.minSizeLimitReduction = (int) ((float)sizeLimit * Math.min(1.0, minSizeLimitReductionPercent));
 		cacheSize = new AtomicInteger();
 		calculateCacheSizeAndFillUsageMap();
+		
+	}
+	public LimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int sizeLimit) {
+		this(cacheDir, fileNameGenerator, sizeLimit, 1);
+
 	}
 
 	private void calculateCacheSizeAndFillUsageMap() {
@@ -76,6 +88,14 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 				int size = 0;
 				File[] cachedFiles = cacheDir.listFiles();
 				if (cachedFiles != null) { // rarely but it can happen, don't know why
+					
+					// sort the files by oldest files are first, so when they are inserted into LinkedHashMap they will be the oldest files.
+					Arrays.sort(cachedFiles, new Comparator<File>(){
+					    public int compare(File f1, File f2)
+					    {
+					        return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
+					    } });
+					// order by last usage time.
 					for (File cachedFile : cachedFiles) {
 						size += getSize(cachedFile);
 						lastUsageDates.put(cachedFile, cachedFile.lastModified());
@@ -92,7 +112,7 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 		int curCacheSize = cacheSize.get();
 
 		while (curCacheSize + valueSize > sizeLimit) {
-			int freedSize = removeNext();
+			int freedSize = removeMinAmount(minSizeLimitReduction);
 			if (freedSize == INVALID_SIZE) break; // cache is empty (have nothing to delete)
 			curCacheSize = cacheSize.addAndGet(-freedSize);
 		}
@@ -122,41 +142,52 @@ public abstract class LimitedDiscCache extends BaseDiscCache {
 	}
 
 	/** Remove next file and returns it's size */
-	private int removeNext() {
+	private int removeMinAmount(int minByteAmount) {
 		if (lastUsageDates.isEmpty()) {
 			return INVALID_SIZE;
 		}
-		Long oldestUsage = null;
-		File mostLongUsedFile = null;
+
 		Set<Entry<File, Long>> entries = lastUsageDates.entrySet();
+		int deletedFileSize = 0;
+		List<File> removeFiles = new ArrayList<File>();
 		synchronized (lastUsageDates) {
 			for (Entry<File, Long> entry : entries) {
-				if (mostLongUsedFile == null) {
-					mostLongUsedFile = entry.getKey();
-					oldestUsage = entry.getValue();
-				} else {
-					Long lastValueUsage = entry.getValue();
-					if (lastValueUsage < oldestUsage) {
-						oldestUsage = lastValueUsage;
-						mostLongUsedFile = entry.getKey();
-					}
+				
+				File oldestFile = entry.getKey();
+				if(oldestFile != null)
+				{
+					int fileSize = getSize(oldestFile);
+					removeFiles.add(oldestFile);
+						
+					deletedFileSize += fileSize;
+					if(deletedFileSize >= minByteAmount)
+						break;
 				}
+				else
+				{
+					lastUsageDates.remove(oldestFile);
+				}
+
+			}
+		}
+		int actualDeletedFileSize = 0;
+		for(File removeFile : removeFiles)
+		{
+			if(removeFile != null && removeFile.exists())
+			{
+				int fileSize = getSize(removeFile);
+				if(removeFile.delete())
+				{
+					actualDeletedFileSize += fileSize;
+					lastUsageDates.remove(removeFile);
+				}
+				
 			}
 		}
 
-		int fileSize = 0;
-		if (mostLongUsedFile != null) {
-			if (mostLongUsedFile.exists()) {
-				fileSize = getSize(mostLongUsedFile);
-				if (mostLongUsedFile.delete()) {
-					lastUsageDates.remove(mostLongUsedFile);
-				}
-			} else {
-				lastUsageDates.remove(mostLongUsedFile);
-			}
-		}
-		return fileSize;
+		return actualDeletedFileSize;
 	}
+	
 
 	protected abstract int getSize(File file);
 }
