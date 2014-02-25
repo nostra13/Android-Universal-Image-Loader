@@ -42,21 +42,27 @@ public class TotalSizeLimitedDiscCache extends LimitedDiscCache {
 	 *                     most oldest last usage date will be deleted.
 	 */
 	public TotalSizeLimitedDiscCache(File cacheDir, int maxCacheSize) {
-		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxCacheSize);
+		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxCacheSize, 0);
 	}
-
+	public TotalSizeLimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int maxCacheSize) {
+		this(cacheDir, fileNameGenerator , maxCacheSize, 0);
+	}
 	/**
 	 * @param cacheDir          Directory for file caching. <b>Important:</b> Specify separate folder for cached files. It's
 	 *                          needed for right cache limit work.
 	 * @param fileNameGenerator Name generator for cached files
 	 * @param maxCacheSize      Maximum cache directory size (in bytes). If cache size exceeds this limit then file with the
 	 *                          most oldest last usage date will be deleted.
+	 * @param minCacheDeletePerecentSize Minimum percentage of maxCacheSize that is deleted from cache when the maxCacheSize is hit.                   
 	 */
-	public TotalSizeLimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int maxCacheSize) {
-		super(cacheDir, fileNameGenerator, maxCacheSize);
+	public TotalSizeLimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, int maxCacheSize, float minCacheDeletePerecentSize) {
+		super(cacheDir, fileNameGenerator, maxCacheSize, minCacheDeletePerecentSize);
 		if (maxCacheSize < MIN_NORMAL_CACHE_SIZE) {
 			L.w("You set too small disc cache size (less than %1$d Mb)", MIN_NORMAL_CACHE_SIZE_IN_MB);
 		}
+		
+		if(minCacheDeletePerecentSize < 0 || minCacheDeletePerecentSize > 1)
+			L.w("minCacheDeletePerecentSize must be between 0 and 1");
 	}
 
 	@Override
