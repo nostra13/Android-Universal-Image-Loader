@@ -23,6 +23,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
+import com.nostra13.universalimageloader.utils.HttpUtil;
 import com.nostra13.universalimageloader.utils.IoUtils;
 
 import java.io.BufferedInputStream;
@@ -108,23 +109,29 @@ public class BaseImageDownloader implements ImageDownloader {
 	 *                     URL.
 	 */
 	protected InputStream getStreamFromNetwork(String imageUri, Object extra) throws IOException {
-		HttpURLConnection conn = createConnection(imageUri, extra);
+		try{
+			HttpURLConnection conn = createConnection(imageUri, extra);
 
-		int redirectCount = 0;
-		while (conn.getResponseCode() / 100 == 3 && redirectCount < MAX_REDIRECT_COUNT) {
-			conn = createConnection(conn.getHeaderField("Location"), extra);
-			redirectCount++;
-		}
+			int redirectCount = 0;
+			while (conn.getResponseCode() / 100 == 3 && redirectCount < MAX_REDIRECT_COUNT) {
+				conn = createConnection(conn.getHeaderField("Location"), extra);
+				redirectCount++;
+			}
 
-		InputStream imageStream;
-		try {
-			imageStream = conn.getInputStream();
-		} catch (IOException e) {
-			// Read all data to allow reuse connection (http://bit.ly/1ad35PY)
-			IoUtils.readAndCloseStream(conn.getErrorStream());
-			throw e;
+			InputStream imageStream;
+			try {
+				imageStream = conn.getInputStream();
+			} catch (IOException e) {
+				// Read all data to allow reuse connection (http://bit.ly/1ad35PY)
+				IoUtils.readAndCloseStream(conn.getErrorStream());
+				throw e;
+			}
+			return new ContentLengthInputStream(new BufferedInputStream(imageStream, BUFFER_SIZE), conn.getContentLength());
+		}catch(Exception e){
+			//org.bouncycastle.jce.exception.ExtCertPathValidatorException: Could not validate certificate signature.
+			return HttpUtil.urlByGet2InputStreamSSL(imageUri);
 		}
-		return new ContentLengthInputStream(new BufferedInputStream(imageStream, BUFFER_SIZE), conn.getContentLength());
+		
 	}
 
 	/**

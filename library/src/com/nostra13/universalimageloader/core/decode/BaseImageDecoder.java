@@ -24,6 +24,7 @@ import android.os.Build;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
+import com.nostra13.universalimageloader.utils.HttpUtil;
 import com.nostra13.universalimageloader.utils.ImageSizeUtils;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
@@ -81,7 +82,28 @@ public class BaseImageDecoder implements ImageDecoder {
 		}
 
 		if (decodedBitmap == null) {
-			L.e(ERROR_CANT_DECODE_IMAGE, decodingInfo.getImageKey());
+			//Image can't be decoded [https://lh3.ggpht.com/FGB4woigS1kvx2RQb0xky_FurCmfBRx3E_geYkvRWfpL-zftBUeS6mHajx_Ljdjdrg=h310-rw_480x800]
+			L.e(ERROR_CANT_DECODE_IMAGE, decodingInfo.getImageKey()+"][go on fighting");
+			try{
+				String a[]=decodingInfo.getImageKey().split("_");
+				if(a[0].startsWith("https")){
+					imageStream=HttpUtil.urlByGet2InputStreamSSL(a[0]);
+				}else{
+					imageStream=HttpUtil.urlByGet2InputStream(a[0]);
+				}
+				
+				decodedBitmap=BitmapFactory.decodeStream(imageStream);
+				if(decodedBitmap==null){
+					L.e(ERROR_CANT_DECODE_IMAGE, decodingInfo.getImageKey()+"][go on fighting failed");
+				}else{
+					decodedBitmap = considerExactScaleAndOrientaiton(decodedBitmap, decodingInfo, imageInfo.exif.rotation,
+							imageInfo.exif.flipHorizontal);
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			
+			
 		} else {
 			decodedBitmap = considerExactScaleAndOrientaiton(decodedBitmap, decodingInfo, imageInfo.exif.rotation,
 					imageInfo.exif.flipHorizontal);
