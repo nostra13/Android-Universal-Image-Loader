@@ -392,9 +392,9 @@ If you use Universal Image Loader code in your application you should inform the
 > **Text:** I use Universal Image Loader &lt;lib_version> in &lt;application_name> - http://link_to_google_play.
 > I [allow | don't allow] to mention my app in section "Applications using Universal Image Loader" on GitHub.
 
-Also I'll be grateful if you mention UIL in application UI with string **"Using Universal Image Loader (c) 2011-2013, Sergey Tarasevich"** (e.g. in some "About" section).
+Also I'll be grateful if you mention UIL in application UI with string **"Using Universal Image Loader (c) 2011-2014, Sergey Tarasevich"** (e.g. in some "About" section).
 
-    Copyright 2011-2013 Sergey Tarasevich
+    Copyright 2011-2014 Sergey Tarasevich
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
