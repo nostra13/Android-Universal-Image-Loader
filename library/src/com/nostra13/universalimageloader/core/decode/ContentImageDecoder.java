@@ -15,35 +15,45 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.decode;
 
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
+import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.text.TextUtils;
 
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
-import com.nostra13.universalimageloader.utils.ImageSizeUtils;
-import com.nostra13.universalimageloader.utils.IoUtils;
-import com.nostra13.universalimageloader.utils.L;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class ContentImageDecoder extends BaseImageDecoder {
-    private final ContentResolver mContentResolver;
+    public static final String TAG = "ContentImageDecoder";
+
+    private final Context mContext;
+    private ContentResolver mContentResolver;
+
+    private static final boolean DEBUG = false;
+    private static class Log8 {
+        public static int d(Object... arr) {
+            if (!DEBUG) return 0;
+            StackTraceElement call = Thread.currentThread().getStackTrace()[3];
+            String className = call.getClassName();
+            className = className.substring(className.lastIndexOf('.') + 1);
+            return android.util.Log.d(TAG,
+                className + "."
+                + call.getMethodName() + ":"
+                + call.getLineNumber() + ": "
+                + java.util.Arrays.deepToString(arr));
+        }
+    }
 
     public ContentImageDecoder(Context context) {
         this(false, context);
@@ -51,7 +61,15 @@ public class ContentImageDecoder extends BaseImageDecoder {
 
     public ContentImageDecoder(boolean loggingEnabled, Context context) {
         super(false);
-        mContentResolver = context.getContentResolver();
+        mContext = context;
+    }
+
+    private ContentResolver getContentResolver() {
+        if (mContentResolver == null) {
+            mContentResolver = mContext.getContentResolver();
+        }
+        Log8.d(mContentResolver);
+        return mContentResolver;
     }
 
     @Override
@@ -63,32 +81,87 @@ public class ContentImageDecoder extends BaseImageDecoder {
         String cleanedUriString = cleanUriString(info.getImageKey());
         Uri uri = Uri.parse(cleanedUriString);
         if (isVideoUri(uri)) {
-            return makeVideoThumbnail(info.getTargetSize().getWidth(), info.getTargetSize().getHeight(), getVideoFilePath(uri));
+            int width = info.getTargetSize().getWidth();
+            int height = info.getTargetSize().getHeight();
+            Bitmap thumbnail = makeVideoThumbnailFromMediaMetadataRetriever(
+                    width, height, getMediaMetadataRetriever(mContext, uri));
+            /*
+            thumbnail = makeVideoThumbnailFromMediaMetadataRetriever(
+                    width, height, getMediaMetadataRetriever(getVideoFilePath(uri)));
+            */
+            Log8.d(thumbnail);
+            if (thumbnail == null) {
+                Log8.d(getVideoFilePath(uri));
+                thumbnail = makeVideoThumbnail(width, height, getVideoFilePath(uri));
+                Log8.d(thumbnail);
+            }
+            return thumbnail;
         }
         else {
             return super.decode(info);
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.FROYO)
     private Bitmap makeVideoThumbnail(int width, int height, String filePath) {
-        if (filePath == null) {
-            return null;
-        }
+        if (TextUtils.isEmpty(filePath)) return null;
         Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Video.Thumbnails.MINI_KIND);
+        if (thumbnail == null) return null;
         Bitmap scaledThumb = scaleBitmap(thumbnail, width, height);
         thumbnail.recycle();
         return scaledThumb;
     }
 
+    private Bitmap makeVideoThumbnailFromMediaMetadataRetriever(int width, int height, MediaMetadataRetriever retriever) {
+        if (retriever == null) return null;
+
+        Bitmap thumbnail = null;
+        byte[] picture = retriever.getEmbeddedPicture();
+
+        if (picture != null) {
+            Log8.d();
+            thumbnail = BitmapFactory.decodeByteArray(picture, 0, picture.length);
+        } else {
+            Log8.d();
+        }
+
+        if (thumbnail == null) {
+            Log8.d();
+            thumbnail = retriever.getFrameAtTime();
+        }
+
+        if (thumbnail == null) {
+            Log8.d();
+            return null;
+        }
+
+        Bitmap scaledThumb = scaleBitmap(thumbnail, width, height);
+        thumbnail.recycle();
+        return scaledThumb;
+    }
+
+    private static MediaMetadataRetriever getMediaMetadataRetriever(String filePath) {
+        if (TextUtils.isEmpty(filePath)) return null;
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(filePath);
+        return retriever;
+    }
+
+    private static MediaMetadataRetriever getMediaMetadataRetriever(Context context, Uri uri) {
+        if (context == null || uri == null) return null;
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(context, uri);
+        return retriever;
+    }
+
     private boolean isVideoUri(Uri uri) {
-        String mimeType = mContentResolver.getType(uri);
+        String mimeType = getContentResolver().getType(uri);
+        Log8.d(mimeType);
         return mimeType.startsWith("video/");
     }
 
     private String getVideoFilePath(Uri uri) {
         String columnName = MediaStore.Video.VideoColumns.DATA;
-        Cursor cursor = mContentResolver.query(uri, new String[] { columnName }, null, null, null);
+        Cursor cursor = getContentResolver().query(uri, new String[] { columnName }, null, null, null);
         try {
             int dataIndex = cursor.getColumnIndex(columnName);
             if (dataIndex != -1 && cursor.moveToFirst()) {
@@ -159,7 +232,7 @@ public class ContentImageDecoder extends BaseImageDecoder {
         };
         Cursor cursor = null;
         try {
-            cursor = mContentResolver.query(Uri.parse(imageUri), PROJECTION, null, null, null);
+            cursor = getContentResolver().query(Uri.parse(imageUri), PROJECTION, null, null, null);
         } catch (Exception e) {
         }
         if (cursor != null) {
@@ -169,6 +242,7 @@ public class ContentImageDecoder extends BaseImageDecoder {
                     rotation = (orientation + 360) % 360;
                 }
             } catch (Exception e) {
+                e.printStackTrace();
             } finally {
                 cursor.close();
             }
