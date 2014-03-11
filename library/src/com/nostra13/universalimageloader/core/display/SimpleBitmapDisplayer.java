@@ -16,6 +16,8 @@
 package com.nostra13.universalimageloader.core.display;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
+
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 
@@ -25,9 +27,13 @@ import com.nostra13.universalimageloader.core.imageaware.ImageAware;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.5.6
  */
-public final class SimpleBitmapDisplayer implements BitmapDisplayer {
+public class SimpleBitmapDisplayer implements BitmapDisplayer {
 	@Override
 	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
 		imageAware.setImageBitmap(bitmap);
+	}
+
+	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom, String uri) {
+		display(bitmap, imageAware, loadedFrom);
 	}
 }
