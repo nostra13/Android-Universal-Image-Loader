@@ -34,6 +34,17 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Initialization:
+ *
+ * ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+ *             ...
+ *             .imageDecoder(new ContentImageDecoder(getApplicationContext()))
+ *             .build();
+ *
+ * Credit:
+ *   [Daniel Gabriel] (http://stackoverflow.com/questions/20931585/is-it-possible-to-display-video-thumbnails-using-universal-image-loader-and-how)
+ */
 public class ContentImageDecoder extends BaseImageDecoder {
     public static final String TAG = "ContentImageDecoder";
 
