@@ -52,8 +52,8 @@ public class ContentImageDecoder extends BaseImageDecoder {
     private final Context mContext;
     private ContentResolver mContentResolver;
 
-    public static int K = 1024;
-    private static LruCache<String, Integer> sRotationCache = new LruCache<String, Integer>(K);
+    public static final int K = 1024;
+    private static LruCache<String, Integer> sRotationCache;
 
     private static final boolean DEBUG = false;
     private static class Log8 {
@@ -206,6 +206,13 @@ public class ContentImageDecoder extends BaseImageDecoder {
         return contentUriWithAppendedSize.replaceFirst("_\\d+x\\d+$", "");
     }
 
+    private static LruCache<String, Integer> getRotationCache() {
+        if (sRotationCache == null) {
+            sRotationCache = new LruCache<String, Integer>(K);
+        }
+        return sRotationCache;
+    }
+
     @Override
     protected ImageFileInfo defineImageSizeAndRotation(InputStream imageStream, ImageDecodingInfo decodingInfo) throws IOException {
         String imageUri = decodingInfo.getImageUri();
@@ -219,11 +226,11 @@ public class ContentImageDecoder extends BaseImageDecoder {
 
         ExifInfo exif;
 
-        Integer rotation = sRotationCache.get(imageUri);
+        Integer rotation = getRotationCache().get(imageUri);
         if (rotation == null) {
             if (decodingInfo.shouldConsiderExifParams()) {
                 exif = getExifInfo(imageUri, null);
-                sRotationCache.put(imageUri, exif.rotation);
+                getRotationCache().put(imageUri, exif.rotation);
             } else {
                 exif = new ExifInfo();
             }
