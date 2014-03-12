@@ -28,8 +28,6 @@ import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
-import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageNonViewAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
@@ -252,12 +250,7 @@ public class ImageLoader {
 					engine.submit(displayTask);
 				}
 			} else {
-				BitmapDisplayer displayer = options.getDisplayer();
-				if (displayer instanceof SimpleBitmapDisplayer) {
-					((SimpleBitmapDisplayer) displayer).display(bmp, imageAware, LoadedFrom.MEMORY_CACHE, uri);
-				} else {
-					displayer.display(bmp, imageAware, LoadedFrom.MEMORY_CACHE);
-				}
+				options.getDisplayer().display(bmp, imageAware, LoadedFrom.MEMORY_CACHE);
 				listener.onLoadingComplete(uri, imageAware.getWrappedView(), bmp);
 			}
 		} else {

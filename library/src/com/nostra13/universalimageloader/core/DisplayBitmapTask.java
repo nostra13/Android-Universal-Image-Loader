@@ -16,8 +16,6 @@
 package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
-
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
@@ -71,11 +69,7 @@ final class DisplayBitmapTask implements Runnable {
 			listener.onLoadingCancelled(imageUri, imageAware.getWrappedView());
 		} else {
 			if (loggingEnabled) L.d(LOG_DISPLAY_IMAGE_IN_IMAGEAWARE, loadedFrom, memoryCacheKey);
-			if (displayer instanceof SimpleBitmapDisplayer) {
-				((SimpleBitmapDisplayer) displayer).display(bitmap, imageAware, loadedFrom, imageUri);
-			} else {
-				displayer.display(bitmap, imageAware, loadedFrom);
-			}
+			displayer.display(bitmap, imageAware, loadedFrom);
 			listener.onLoadingComplete(imageUri, imageAware.getWrappedView(), bitmap);
 			engine.cancelDisplayTaskFor(imageAware);
 		}
