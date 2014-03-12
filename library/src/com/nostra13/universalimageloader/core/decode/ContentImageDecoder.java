@@ -18,6 +18,8 @@ package com.nostra13.universalimageloader.core.decode;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
@@ -51,6 +53,7 @@ public class ContentImageDecoder extends BaseImageDecoder {
 
     private final Context mContext;
     private ContentResolver mContentResolver;
+    private int mResourceId;
 
     public static final int K = 1024;
     private static LruCache<String, Integer> sRotationCache;
@@ -71,12 +74,17 @@ public class ContentImageDecoder extends BaseImageDecoder {
     }
 
     public ContentImageDecoder(Context context) {
-        this(false, context);
+        this(false, context, 0);
     }
 
-    public ContentImageDecoder(boolean loggingEnabled, Context context) {
+    public ContentImageDecoder(Context context, int resourceId) {
+        this(false, context, resourceId);
+    }
+
+    public ContentImageDecoder(boolean loggingEnabled, Context context, int resourceId) {
         super(false);
         mContext = context;
+        mResourceId = resourceId;
     }
 
     private ContentResolver getContentResolver() {
@@ -110,11 +118,42 @@ public class ContentImageDecoder extends BaseImageDecoder {
                 thumbnail = makeVideoThumbnail(width, height, getVideoFilePath(uri));
                 Log8.d(thumbnail);
             }
+
+            if (thumbnail != null) {
+                overlayCenter(thumbnail, mContext, mResourceId);
+            }
             return thumbnail;
         }
         else {
             return super.decode(info);
         }
+    }
+
+    protected static void overlayCenter(Bitmap bitmap, Context context, int resourceId) {
+        if (resourceId <= 0) return;
+        Bitmap overlay = BitmapFactory.decodeResource(context.getResources(),
+                resourceId);
+
+        final int x = bitmap.getWidth() / 2;
+        final int y = bitmap.getHeight() / 2;
+
+        final int w;
+        final int h;
+        if (bitmap.getWidth() >= bitmap.getHeight()) {
+            h = bitmap.getHeight() / 5;
+            w = overlay.getWidth() * h / overlay.getHeight();
+        } else {
+            w = bitmap.getWidth() / 5;
+            h = overlay.getHeight() * w / overlay.getWidth();
+        }
+
+        final Rect rect = new Rect(x - w / 2, y - h / 2, x + w / 2, y + h / 2);
+
+        final Canvas canvas = new Canvas(bitmap);
+        canvas.drawBitmap(overlay, null, rect, null);
+
+        overlay.recycle();
+        overlay = null;
     }
 
     private Bitmap makeVideoThumbnail(int width, int height, String filePath) {
