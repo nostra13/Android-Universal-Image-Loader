@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.ImageColumns;
 import android.text.TextUtils;
+import android.util.LruCache;
 
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
@@ -50,6 +51,9 @@ public class ContentImageDecoder extends BaseImageDecoder {
 
     private final Context mContext;
     private ContentResolver mContentResolver;
+
+    public static int K = 1024;
+    private static LruCache<String, Integer> sRotationCache = new LruCache<String, Integer>(K);
 
     private static final boolean DEBUG = false;
     private static class Log8 {
@@ -165,9 +169,8 @@ public class ContentImageDecoder extends BaseImageDecoder {
     }
 
     private boolean isVideoUri(Uri uri) {
-        String mimeType = getContentResolver().getType(uri);
-        Log8.d(mimeType);
-        return mimeType.startsWith("video/");
+        String type = getContentResolver().getType(uri);
+        return !TextUtils.isEmpty(type) && type.startsWith("video/");
     }
 
     private String getVideoFilePath(Uri uri) {
@@ -216,10 +219,16 @@ public class ContentImageDecoder extends BaseImageDecoder {
 
         ExifInfo exif;
 
-        if (decodingInfo.shouldConsiderExifParams()) {
-            exif = getExifInfo(imageUri, null);
+        Integer rotation = sRotationCache.get(imageUri);
+        if (rotation == null) {
+            if (decodingInfo.shouldConsiderExifParams()) {
+                exif = getExifInfo(imageUri, null);
+                sRotationCache.put(imageUri, exif.rotation);
+            } else {
+                exif = new ExifInfo();
+            }
         } else {
-            exif = new ExifInfo();
+            exif = new ExifInfo(rotation, false);
         }
         return new ImageFileInfo(new ImageSize(options.outWidth, options.outHeight, exif.rotation), exif);
     }
