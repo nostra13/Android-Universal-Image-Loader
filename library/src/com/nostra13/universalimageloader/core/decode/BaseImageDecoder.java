@@ -109,7 +109,7 @@ public class BaseImageDecoder implements ImageDecoder {
 		return new ImageFileInfo(new ImageSize(options.outWidth, options.outHeight, exif.rotation), exif);
 	}
 
-	protected boolean canDefineExifParams(String imageUri, String mimeType) {
+	private boolean canDefineExifParams(String imageUri, String mimeType) {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR && "image/jpeg".equalsIgnoreCase(mimeType) && Scheme
 				.ofUri(imageUri) == Scheme.FILE;
 	}
