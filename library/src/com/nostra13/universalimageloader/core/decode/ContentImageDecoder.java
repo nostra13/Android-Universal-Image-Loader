@@ -247,7 +247,7 @@ public class ContentImageDecoder extends BaseImageDecoder {
 
     private static LruCache<String, Integer> getRotationCache() {
         if (sRotationCache == null) {
-            sRotationCache = new LruCache<String, Integer>(K);
+            sRotationCache = new LruCache<String, Integer>(256 * K);
         }
         return sRotationCache;
     }
