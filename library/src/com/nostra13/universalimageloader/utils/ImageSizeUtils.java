@@ -149,11 +149,9 @@ public final class ImageSizeUtils {
 		int widthScale = (int) Math.ceil((float) srcWidth / targetWidth);
 		int heightScale = (int) Math.ceil((float) srcHeight / targetHeight);
 
-		/// FIX: inScale must be power of 2 --shr
-		//return Math.max(widthScale, heightScale); // max
-
+		/// FIX: inScale must be power of 2 --shr 2014-03-28 //return Math.max(widthScale, heightScale); // max
 		int maxScale = Math.max(widthScale, heightScale);
-		int roundedMaxScale = maxScale == 0 ? 0 : 32 - Integer.numberOfLeadingZeros(maxScale - 1);
+		int roundedMaxScale = 1 << ( maxScale == 0 ? 0 : 32 - Integer.numberOfLeadingZeros(maxScale - 1) );
 
 		return roundedMaxScale;
 	}
