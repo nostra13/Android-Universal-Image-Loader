@@ -29,3 +29,11 @@ out/
 # Ignore gradle files
 .gradle/
 build/
+
+# Ignore CVS
+CVS
+**/CVS
+
+# Ignore generic backup files
+.#*
+*~
