@@ -101,6 +101,11 @@ public class ImageDecodingInfo {
 		return imageUri;
 	}
 
+    /** @return The original uri that the request wanted */
+    public String getOriginalImageUri() {
+        return originalImageUri;
+    }
+
 	/**
 	 * @return Target size for image. Decoded bitmap should close to this size according to {@linkplain ImageScaleType
 	 * image scale type} and {@linkplain ViewScaleType view scale type}.
