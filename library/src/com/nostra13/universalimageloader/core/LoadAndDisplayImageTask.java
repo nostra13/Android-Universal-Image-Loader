@@ -228,7 +228,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 				loadedFrom = LoadedFrom.DISC_CACHE;
 
 				checkTaskNotActual();
-				bitmap = decodeImage(cacheFileUri);
+				bitmap = decodeImage(cacheFileUri, uri);
 			}
 			if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
 				log(LOG_LOAD_IMAGE_FROM_NETWORK);
@@ -238,7 +238,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 						options.isCacheOnDisc() && tryCacheImageOnDisc(imageFile) ? cacheFileUri : uri;
 
 				checkTaskNotActual();
-				bitmap = decodeImage(imageUriForDecoding);
+				bitmap = decodeImage(imageUriForDecoding, uri);
 
 				if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
 					fireFailEvent(FailType.DECODING_ERROR, null);
@@ -278,9 +278,9 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		return imageFile;
 	}
 
-	private Bitmap decodeImage(String imageUri) throws IOException {
+	private Bitmap decodeImage(String imageUri, String originalImageUri) throws IOException {
 		ViewScaleType viewScaleType = imageAware.getScaleType();
-		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, imageUri, targetSize, viewScaleType,
+		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, imageUri, originalImageUri, targetSize, viewScaleType,
 				getDownloader(), options);
 		return decoder.decode(decodingInfo);
 	}
@@ -335,7 +335,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		DisplayImageOptions specialOptions = new DisplayImageOptions.Builder().cloneFrom(options)
 				.imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
 		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey,
-				Scheme.FILE.wrap(targetFile.getAbsolutePath()), targetImageSize, ViewScaleType.FIT_INSIDE,
+				Scheme.FILE.wrap(targetFile.getAbsolutePath()), uri, targetImageSize, ViewScaleType.FIT_INSIDE,
 				getDownloader(), specialOptions);
 		Bitmap bmp = decoder.decode(decodingInfo);
 		if (bmp != null && configuration.processorForDiscCache != null) {
