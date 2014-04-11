@@ -34,6 +34,7 @@ public class ImageDecodingInfo {
 
 	private final String imageKey;
 	private final String imageUri;
+    private final String originalImageUri;
 	private final ImageSize targetSize;
 
 	private final ImageScaleType imageScaleType;
@@ -45,10 +46,11 @@ public class ImageDecodingInfo {
 	private final boolean considerExifParams;
 	private final Options decodingOptions;
 
-	public ImageDecodingInfo(String imageKey, String imageUri, ImageSize targetSize, ViewScaleType viewScaleType,
+	public ImageDecodingInfo(String imageKey, String imageUri, String originalImageUri, ImageSize targetSize, ViewScaleType viewScaleType,
 							 ImageDownloader downloader, DisplayImageOptions displayOptions) {
 		this.imageKey = imageKey;
 		this.imageUri = imageUri;
+        this.originalImageUri = originalImageUri;
 		this.targetSize = targetSize;
 
 		this.imageScaleType = displayOptions.getImageScaleType();
@@ -98,6 +100,11 @@ public class ImageDecodingInfo {
 	public String getImageUri() {
 		return imageUri;
 	}
+
+    /** @return The original uri that the request wanted */
+    public String getOriginalImageUri() {
+        return originalImageUri;
+    }
 
 	/**
 	 * @return Target size for image. Decoded bitmap should close to this size according to {@linkplain ImageScaleType
