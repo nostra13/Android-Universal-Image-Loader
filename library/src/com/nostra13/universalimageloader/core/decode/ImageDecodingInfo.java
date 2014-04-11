@@ -18,6 +18,7 @@ package com.nostra13.universalimageloader.core.decode;
 import android.annotation.TargetApi;
 import android.graphics.BitmapFactory.Options;
 import android.os.Build;
+
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -34,7 +35,7 @@ public class ImageDecodingInfo {
 
 	private final String imageKey;
 	private final String imageUri;
-    private final String originalImageUri;
+	private final String originalImageUri;
 	private final ImageSize targetSize;
 
 	private final ImageScaleType imageScaleType;
@@ -50,7 +51,7 @@ public class ImageDecodingInfo {
 							 ImageDownloader downloader, DisplayImageOptions displayOptions) {
 		this.imageKey = imageKey;
 		this.imageUri = imageUri;
-        this.originalImageUri = originalImageUri;
+		this.originalImageUri = originalImageUri;
 		this.targetSize = targetSize;
 
 		this.imageScaleType = displayOptions.getImageScaleType();
@@ -101,10 +102,10 @@ public class ImageDecodingInfo {
 		return imageUri;
 	}
 
-    /** @return The original uri that the request wanted */
-    public String getOriginalImageUri() {
-        return originalImageUri;
-    }
+	/** @return The original image URI which was passed to ImageLoader */
+	public String getOriginalImageUri() {
+		return originalImageUri;
+	}
 
 	/**
 	 * @return Target size for image. Decoded bitmap should close to this size according to {@linkplain ImageScaleType
