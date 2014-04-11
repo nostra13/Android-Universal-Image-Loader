@@ -17,6 +17,7 @@ package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
+
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.FailReason.FailType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -262,7 +263,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	private Bitmap decodeImage(String imageUri) throws IOException {
 		ViewScaleType viewScaleType = imageAware.getScaleType();
-		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, imageUri, targetSize, viewScaleType,
+		ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey, imageUri, uri, targetSize, viewScaleType,
 				getDownloader(), options);
 		return decoder.decode(decodingInfo);
 	}
@@ -304,7 +305,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 			DisplayImageOptions specialOptions = new DisplayImageOptions.Builder().cloneFrom(options)
 					.imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
 			ImageDecodingInfo decodingInfo = new ImageDecodingInfo(memoryCacheKey,
-					Scheme.FILE.wrap(targetFile.getAbsolutePath()), targetImageSize, ViewScaleType.FIT_INSIDE,
+					Scheme.FILE.wrap(targetFile.getAbsolutePath()), uri, targetImageSize, ViewScaleType.FIT_INSIDE,
 					getDownloader(), specialOptions);
 			Bitmap bmp = decoder.decode(decodingInfo);
 			if (bmp != null && configuration.processorForDiscCache != null) {
