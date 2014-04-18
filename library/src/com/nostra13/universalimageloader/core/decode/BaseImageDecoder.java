@@ -40,7 +40,7 @@ import java.io.InputStream;
  */
 public class BaseImageDecoder implements ImageDecoder {
 
-	protected static final String LOG_SABSAMPLE_IMAGE = "Subsample original image (%1$s) to %2$s (scale = %3$d) [%4$s]";
+	protected static final String LOG_SUBSAMPLE_IMAGE = "Subsample original image (%1$s) to %2$s (scale = %3$d) [%4$s]";
 	protected static final String LOG_SCALE_IMAGE = "Scale subsampled image (%1$s) to %2$s (scale = %3$.5f) [%4$s]";
 	protected static final String LOG_ROTATE_IMAGE = "Rotate image on %1$d\u00B0 [%2$s]";
 	protected static final String LOG_FLIP_IMAGE = "Flip image horizontally [%s]";
@@ -66,6 +66,7 @@ public class BaseImageDecoder implements ImageDecoder {
 	 * @throws IOException                   if some I/O exception occurs during image reading
 	 * @throws UnsupportedOperationException if image URI has unsupported scheme(protocol)
 	 */
+	@Override
 	public Bitmap decode(ImageDecodingInfo decodingInfo) throws IOException {
 		Bitmap decodedBitmap;
 		ImageFileInfo imageInfo;
@@ -83,7 +84,7 @@ public class BaseImageDecoder implements ImageDecoder {
 		if (decodedBitmap == null) {
 			L.e(ERROR_CANT_DECODE_IMAGE, decodingInfo.getImageKey());
 		} else {
-			decodedBitmap = considerExactScaleAndOrientaiton(decodedBitmap, decodingInfo, imageInfo.exif.rotation,
+			decodedBitmap = considerExactScaleAndOrientatiton(decodedBitmap, decodingInfo, imageInfo.exif.rotation,
 					imageInfo.exif.flipHorizontal);
 		}
 		return decodedBitmap;
@@ -159,7 +160,7 @@ public class BaseImageDecoder implements ImageDecoder {
 			scale = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, decodingInfo.getViewScaleType(), powerOf2);
 		}
 		if (scale > 1 && loggingEnabled) {
-			L.d(LOG_SABSAMPLE_IMAGE, imageSize, imageSize.scaleDown(scale), scale, decodingInfo.getImageKey());
+			L.d(LOG_SUBSAMPLE_IMAGE, imageSize, imageSize.scaleDown(scale), scale, decodingInfo.getImageKey());
 		}
 
 		Options decodingOptions = decodingInfo.getDecodingOptions();
@@ -177,7 +178,7 @@ public class BaseImageDecoder implements ImageDecoder {
 		return imageStream;
 	}
 
-	protected Bitmap considerExactScaleAndOrientaiton(Bitmap subsampledBitmap, ImageDecodingInfo decodingInfo,
+	protected Bitmap considerExactScaleAndOrientatiton(Bitmap subsampledBitmap, ImageDecodingInfo decodingInfo,
 			int rotation, boolean flipHorizontal) {
 		Matrix m = new Matrix();
 		// Scale to exact size if need
