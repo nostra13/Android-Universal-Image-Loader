@@ -39,6 +39,7 @@ public class ImageGalleryActivity extends BaseActivity {
 
 	DisplayImageOptions options;
 
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ac_image_gallery);
@@ -51,7 +52,7 @@ public class ImageGalleryActivity extends BaseActivity {
 			.showImageForEmptyUri(R.drawable.ic_empty)
 			.showImageOnFail(R.drawable.ic_error)
 			.cacheInMemory(true)
-			.cacheOnDisc(true)
+			.cacheOnDisk(true)
 			.considerExifParams(true)
 			.bitmapConfig(Bitmap.Config.RGB_565)
 			.build();

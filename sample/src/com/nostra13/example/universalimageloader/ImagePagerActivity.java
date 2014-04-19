@@ -45,6 +45,7 @@ public class ImagePagerActivity extends BaseActivity {
 
 	ViewPager pager;
 
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ac_image_pager);
@@ -62,7 +63,7 @@ public class ImagePagerActivity extends BaseActivity {
 			.showImageForEmptyUri(R.drawable.ic_empty)
 			.showImageOnFail(R.drawable.ic_error)
 			.resetViewBeforeLoading(true)
-			.cacheOnDisc(true)
+			.cacheOnDisk(true)
 			.imageScaleType(ImageScaleType.EXACTLY)
 			.bitmapConfig(Bitmap.Config.RGB_565)
 			.considerExifParams(true)
