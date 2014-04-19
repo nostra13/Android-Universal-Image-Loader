@@ -19,20 +19,22 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
+
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
+import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
-import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloader;
-import com.nostra13.universalimageloader.core.download.SlowNetworkImageDownloader;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 import com.nostra13.universalimageloader.utils.L;
 import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.Executor;
 
 /**
@@ -559,6 +561,61 @@ public final class ImageLoaderConfiguration {
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();
+			}
+		}
+	}
+
+	/**
+	 * Decorator. Prevents downloads from network (throws {@link IllegalStateException exception}).<br />
+	 * In most cases this downloader shouldn't be used directly.
+	 *
+	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+	 * @since 1.8.0
+	 */
+	private static class NetworkDeniedImageDownloader implements ImageDownloader {
+
+		private final ImageDownloader wrappedDownloader;
+
+		public NetworkDeniedImageDownloader(ImageDownloader wrappedDownloader) {
+			this.wrappedDownloader = wrappedDownloader;
+		}
+
+		@Override
+		public InputStream getStream(String imageUri, Object extra) throws IOException {
+			switch (Scheme.ofUri(imageUri)) {
+				case HTTP:
+				case HTTPS:
+					throw new IllegalStateException();
+				default:
+					return wrappedDownloader.getStream(imageUri, extra);
+			}
+		}
+	}
+
+	/**
+	 * Decorator. Handles <a href="http://code.google.com/p/android/issues/detail?id=6066">this problem</a> on slow networks
+	 * using {@link com.nostra13.universalimageloader.core.assist.FlushedInputStream}.
+	 *
+	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+	 * @since 1.8.1
+	 */
+	private static class SlowNetworkImageDownloader implements ImageDownloader {
+
+		private final ImageDownloader wrappedDownloader;
+
+		public SlowNetworkImageDownloader(ImageDownloader wrappedDownloader) {
+			this.wrappedDownloader = wrappedDownloader;
+		}
+
+		@Override
+		public InputStream getStream(String imageUri, Object extra) throws IOException {
+			InputStream imageStream = wrappedDownloader.getStream(imageUri, extra);
+			switch (Scheme.ofUri(imageUri)) {
+				case HTTP:
+				case HTTPS:
+					return new FlushedInputStream(imageStream);
+				default:
+					return imageStream;
 			}
 		}
 	}

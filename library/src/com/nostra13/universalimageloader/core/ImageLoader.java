@@ -34,7 +34,6 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.SyncImageLoadingListener;
 import com.nostra13.universalimageloader.utils.ImageSizeUtils;
 import com.nostra13.universalimageloader.utils.L;
 import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
@@ -718,5 +717,25 @@ public class ImageLoader {
 			handler = new Handler();
 		}
 		return handler;
+	}
+
+	/**
+	 * Listener which is designed for synchronous image loading.
+	 *
+	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+	 * @since 1.9.0
+	 */
+	private static class SyncImageLoadingListener extends SimpleImageLoadingListener {
+
+		private Bitmap loadedImage;
+
+		@Override
+		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+			this.loadedImage = loadedImage;
+		}
+
+		public Bitmap getLoadedBitmap() {
+			return loadedImage;
+		}
 	}
 }
