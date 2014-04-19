@@ -37,7 +37,7 @@ import java.util.Set;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */
-public class UsingFreqLimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
+public class UsingFreqLimitedMemoryCache extends LimitedMemoryCache {
 	/**
 	 * Contains strong references to stored objects (keys) and last object usage date (in milliseconds). If hard cache
 	 * size will exceed limit then object with the least frequently usage is deleted (but it continue exist at

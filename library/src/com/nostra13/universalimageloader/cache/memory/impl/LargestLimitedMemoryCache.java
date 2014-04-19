@@ -37,7 +37,7 @@ import java.util.Set;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */
-public class LargestLimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
+public class LargestLimitedMemoryCache extends LimitedMemoryCache {
 	/**
 	 * Contains strong references to stored objects (keys) and sizes of the objects. If hard cache
 	 * size will exceed limit then object with the largest size is deleted (but it continue exist at

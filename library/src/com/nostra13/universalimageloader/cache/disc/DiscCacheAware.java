@@ -27,7 +27,9 @@ import java.io.InputStream;
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
+ * @deprecated Use {@link DiskCache DiskCache} instead
  */
+@Deprecated
 public interface DiscCacheAware {
 
 	/**

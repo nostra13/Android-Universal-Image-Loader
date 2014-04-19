@@ -15,13 +15,15 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.memory.impl;
 
-import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+import android.graphics.Bitmap;
+
+import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 
 import java.util.Collection;
 import java.util.Comparator;
 
 /**
- * Decorator for {@link MemoryCacheAware}. Provides special feature for cache: some different keys are considered as
+ * Decorator for {@link MemoryCache}. Provides special feature for cache: some different keys are considered as
  * equals (using {@link Comparator comparator}). And when you try to put some value into cache by key so entries with
  * "equals" keys will be removed from cache before.<br />
  * <b>NOTE:</b> Used for internal needs. Normally you don't need to use this class.
@@ -29,22 +31,22 @@ import java.util.Comparator;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.0.0
  */
-public class FuzzyKeyMemoryCache<K, V> implements MemoryCacheAware<K, V> {
+public class FuzzyKeyMemoryCache implements MemoryCache {
 
-	private final MemoryCacheAware<K, V> cache;
-	private final Comparator<K> keyComparator;
+	private final MemoryCache cache;
+	private final Comparator<String> keyComparator;
 
-	public FuzzyKeyMemoryCache(MemoryCacheAware<K, V> cache, Comparator<K> keyComparator) {
+	public FuzzyKeyMemoryCache(MemoryCache cache, Comparator<String> keyComparator) {
 		this.cache = cache;
 		this.keyComparator = keyComparator;
 	}
 
 	@Override
-	public boolean put(K key, V value) {
+	public boolean put(String key, Bitmap value) {
 		// Search equal key and remove this entry
 		synchronized (cache) {
-			K keyToRemove = null;
-			for (K cacheKey : cache.keys()) {
+			String keyToRemove = null;
+			for (String cacheKey : cache.keys()) {
 				if (keyComparator.compare(key, cacheKey) == 0) {
 					keyToRemove = cacheKey;
 					break;
@@ -58,12 +60,12 @@ public class FuzzyKeyMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 	}
 
 	@Override
-	public V get(K key) {
+	public Bitmap get(String key) {
 		return cache.get(key);
 	}
 
 	@Override
-	public void remove(K key) {
+	public void remove(String key) {
 		cache.remove(key);
 	}
 
@@ -73,7 +75,7 @@ public class FuzzyKeyMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 	}
 
 	@Override
-	public Collection<K> keys() {
+	public Collection<String> keys() {
 		return cache.keys();
 	}
 }

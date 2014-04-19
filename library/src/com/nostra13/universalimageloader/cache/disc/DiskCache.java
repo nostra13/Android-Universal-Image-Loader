@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.universalimageloader.cache.memory.impl;
-
-import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.cache.memory.BaseMemoryCache;
-
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
+package com.nostra13.universalimageloader.cache.disc;
 
 /**
- * Memory cache with {@linkplain WeakReference weak references} to {@linkplain android.graphics.Bitmap bitmaps}<br />
- * <br />
- * <b>NOTE:</b> This cache uses only weak references for stored Bitmaps.
+ * Interface for disk cache
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.5.3
+ * @since 1.9.2
  */
-public class WeakMemoryCache extends BaseMemoryCache {
-	@Override
-	protected Reference<Bitmap> createReference(Bitmap value) {
-		return new WeakReference<Bitmap>(value);
-	}
+public interface DiskCache extends DiscCacheAware {
 }

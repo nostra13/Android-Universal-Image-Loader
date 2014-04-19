@@ -16,7 +16,8 @@
 package com.nostra13.universalimageloader.utils;
 
 import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+
+import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -63,7 +64,7 @@ public final class MemoryCacheUtils {
 	 * {@link ImageLoaderConfiguration.Builder#denyCacheImageMultipleSizesInMemory()
 	 * denyCacheImageMultipleSizesInMemory()} option in {@linkplain ImageLoaderConfiguration configuration}
 	 */
-	public static List<Bitmap> findCachedBitmapsForImageUri(String imageUri, MemoryCacheAware<String, Bitmap> memoryCache) {
+	public static List<Bitmap> findCachedBitmapsForImageUri(String imageUri, MemoryCache memoryCache) {
 		List<Bitmap> values = new ArrayList<Bitmap>();
 		for (String key : memoryCache.keys()) {
 			if (key.startsWith(imageUri)) {
@@ -79,7 +80,7 @@ public final class MemoryCacheUtils {
 	 * {@link ImageLoaderConfiguration.Builder#denyCacheImageMultipleSizesInMemory()
 	 * denyCacheImageMultipleSizesInMemory()} option in {@linkplain ImageLoaderConfiguration configuration}
 	 */
-	public static List<String> findCacheKeysForImageUri(String imageUri, MemoryCacheAware<String, Bitmap> memoryCache) {
+	public static List<String> findCacheKeysForImageUri(String imageUri, MemoryCache memoryCache) {
 		List<String> values = new ArrayList<String>();
 		for (String key : memoryCache.keys()) {
 			if (key.startsWith(imageUri)) {
@@ -95,7 +96,7 @@ public final class MemoryCacheUtils {
 	 * {@link ImageLoaderConfiguration.Builder#denyCacheImageMultipleSizesInMemory()
 	 * denyCacheImageMultipleSizesInMemory()} option in {@linkplain ImageLoaderConfiguration configuration}
 	 */
-	public static void removeFromCache(String imageUri, MemoryCacheAware<String, Bitmap> memoryCache) {
+	public static void removeFromCache(String imageUri, MemoryCache memoryCache) {
 		List<String> keysToRemove = new ArrayList<String>();
 		for (String key : memoryCache.keys()) {
 			if (key.startsWith(imageUri)) {

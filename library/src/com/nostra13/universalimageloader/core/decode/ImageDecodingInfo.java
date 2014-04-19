@@ -97,7 +97,7 @@ public class ImageDecodingInfo {
 		return imageKey;
 	}
 
-	/** @return Image URI for decoding (usually image from disc cache) */
+	/** @return Image URI for decoding (usually image from disk cache) */
 	public String getImageUri() {
 		return imageUri;
 	}

@@ -21,8 +21,9 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
-import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+
+import com.nostra13.universalimageloader.cache.disc.DiskCache;
+import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -197,7 +198,7 @@ public class ImageLoader {
 	 *                         events on UI thread if this method is called on UI thread.
 	 * @param progressListener {@linkplain com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener
 	 *                         Listener} for image loading progress. Listener fires events on UI thread if this method
-	 *                         is called on UI thread. Caching on disc should be enabled in
+	 *                         is called on UI thread. Caching on disk should be enabled in
 	 *                         {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions options} to make
 	 *                         this listener work.
 	 * @throws IllegalStateException    if {@link #init(ImageLoaderConfiguration)} method wasn't called before
@@ -354,7 +355,7 @@ public class ImageLoader {
 	 *                         events on UI thread if this method is called on UI thread.
 	 * @param progressListener {@linkplain com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener
 	 *                         Listener} for image loading progress. Listener fires events on UI thread if this method
-	 *                         is called on UI thread. Caching on disc should be enabled in
+	 *                         is called on UI thread. Caching on disk should be enabled in
 	 *                         {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions options} to make
 	 *                         this listener work.
 	 * @throws IllegalStateException    if {@link #init(ImageLoaderConfiguration)} method wasn't called before
@@ -464,7 +465,7 @@ public class ImageLoader {
 	 *                         events on UI thread if this method is called on UI thread.
 	 * @param progressListener {@linkplain com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener
 	 *                         Listener} for image loading progress. Listener fires events on UI thread if this method
-	 *                         is called on UI thread. Caching on disc should be enabled in
+	 *                         is called on UI thread. Caching on disk should be enabled in
 	 *                         {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions options} to make
 	 *                         this listener work.
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
@@ -574,7 +575,7 @@ public class ImageLoader {
 	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public MemoryCacheAware<String, Bitmap> getMemoryCache() {
+	public MemoryCache getMemoryCache() {
 		checkConfiguration();
 		return configuration.memoryCache;
 	}
@@ -590,23 +591,45 @@ public class ImageLoader {
 	}
 
 	/**
-	 * Returns disc cache
+	 * Returns disk cache
 	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * @deprecated Use {@link #getDiskCache()} instead
 	 */
-	public DiscCacheAware getDiscCache() {
-		checkConfiguration();
-		return configuration.discCache;
+	@Deprecated
+	public DiskCache getDiscCache() {
+		return getDiskCache();
 	}
 
 	/**
-	 * Clears disc cache.
+	 * Returns disk cache
 	 *
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
-	public void clearDiscCache() {
+	public DiskCache getDiskCache() {
 		checkConfiguration();
-		configuration.discCache.clear();
+		return configuration.diskCache;
+	}
+
+	/**
+	 * Clears disk cache.
+	 *
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * @deprecated Use {@link #clearDiskCache()} instead
+	 */
+	@Deprecated
+	public void clearDiscCache() {
+		clearDiskCache();
+	}
+
+	/**
+	 * Clears disk cache.
+	 *
+	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 */
+	public void clearDiskCache() {
+		checkConfiguration();
+		configuration.diskCache.clear();
 	}
 
 	/**
@@ -704,7 +727,7 @@ public class ImageLoader {
 	public void destroy() {
 		if (configuration != null && configuration.writeLogs) L.d(LOG_DESTROY);
 		stop();
-		configuration.discCache.close();
+		configuration.diskCache.close();
 		engine = null;
 		configuration = null;
 	}

@@ -34,7 +34,7 @@ public class FadeInBitmapDisplayer implements BitmapDisplayer {
 	private final int durationMillis;
 
 	private final boolean animateFromNetwork;
-	private final boolean animateFromDisc;
+	private final boolean animateFromDisk;
 	private final boolean animateFromMemory;
 
 	/**
@@ -47,14 +47,14 @@ public class FadeInBitmapDisplayer implements BitmapDisplayer {
 	/**
 	 * @param durationMillis     Duration of "fade-in" animation (in milliseconds)
 	 * @param animateFromNetwork Whether animation should be played if image is loaded from network
-	 * @param animateFromDisc    Whether animation should be played if image is loaded from disc cache
+	 * @param animateFromDisk    Whether animation should be played if image is loaded from disk cache
 	 * @param animateFromMemory  Whether animation should be played if image is loaded from memory cache
 	 */
-	public FadeInBitmapDisplayer(int durationMillis, boolean animateFromNetwork, boolean animateFromDisc,
+	public FadeInBitmapDisplayer(int durationMillis, boolean animateFromNetwork, boolean animateFromDisk,
 								 boolean animateFromMemory) {
 		this.durationMillis = durationMillis;
 		this.animateFromNetwork = animateFromNetwork;
-		this.animateFromDisc = animateFromDisc;
+		this.animateFromDisk = animateFromDisk;
 		this.animateFromMemory = animateFromMemory;
 	}
 
@@ -63,7 +63,7 @@ public class FadeInBitmapDisplayer implements BitmapDisplayer {
 		imageAware.setImageBitmap(bitmap);
 
 		if ((animateFromNetwork && loadedFrom == LoadedFrom.NETWORK) ||
-				(animateFromDisc && loadedFrom == LoadedFrom.DISC_CACHE) ||
+				(animateFromDisk && loadedFrom == LoadedFrom.DISC_CACHE) ||
 				(animateFromMemory && loadedFrom == LoadedFrom.MEMORY_CACHE)) {
 			animate(imageAware.getWrappedView(), durationMillis);
 		}

@@ -20,7 +20,7 @@ import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import java.io.File;
 
 /**
- * Default implementation of {@linkplain com.nostra13.universalimageloader.cache.disc.DiscCacheAware disc cache}.
+ * Default implementation of {@linkplain com.nostra13.universalimageloader.cache.disc.DiskCache disk cache}.
  * Cache size is unlimited.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)

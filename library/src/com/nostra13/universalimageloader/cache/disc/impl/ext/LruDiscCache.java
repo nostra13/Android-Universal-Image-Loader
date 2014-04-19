@@ -16,7 +16,7 @@
 package com.nostra13.universalimageloader.cache.disc.impl.ext;
 
 import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
+import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
@@ -28,15 +28,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Disc cache based on "Least-Recently Used" principle. Adapter pattern, adapts
+ * Disk cache based on "Least-Recently Used" principle. Adapter pattern, adapts
  * {@link com.nostra13.universalimageloader.cache.disc.impl.ext.DiskLruCache DiskLruCache} to
- * {@link com.nostra13.universalimageloader.cache.disc.DiscCacheAware DiscCacheAware}
+ * {@link com.nostra13.universalimageloader.cache.disc.DiskCache DiskCache}
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see FileNameGenerator
  * @since 1.9.2
  */
-public class LruDiscCache implements DiscCacheAware {
+public class LruDiscCache implements DiskCache {
 	/** {@value */
 	public static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 Kb
 	/** {@value */

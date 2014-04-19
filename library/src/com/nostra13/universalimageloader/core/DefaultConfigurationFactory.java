@@ -16,13 +16,12 @@
 package com.nostra13.universalimageloader.core;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
+import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
-import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.assist.deque.LIFOLinkedBlockingDeque;
@@ -72,24 +71,26 @@ public class DefaultConfigurationFactory {
 		return new HashCodeFileNameGenerator();
 	}
 
-	/** Creates default implementation of {@link DiscCacheAware} depends on incoming parameters */
-	public static DiscCacheAware createDiscCache(Context context, FileNameGenerator discCacheFileNameGenerator,
-			long discCacheSize, int discCacheFileCount) {
-		File reserveCacheDir = createReserveDiscCacheDir(context);
-		if (discCacheSize > 0 || discCacheFileCount > 0) {
+	/**
+	 * Creates default implementation of {@link DiskCache} depends on incoming parameters
+	 */
+	public static DiskCache createDiskCache(Context context, FileNameGenerator diskCacheFileNameGenerator,
+			long diskCacheSize, int diskCacheFileCount) {
+		File reserveCacheDir = createReserveDiskCacheDir(context);
+		if (diskCacheSize > 0 || diskCacheFileCount > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
-			LruDiscCache discCache = new LruDiscCache(individualCacheDir, discCacheFileNameGenerator, discCacheSize,
-					discCacheFileCount);
-			discCache.setReserveCacheDir(reserveCacheDir);
-			return discCache;
+			LruDiscCache diskCache = new LruDiscCache(individualCacheDir, diskCacheFileNameGenerator, diskCacheSize,
+					diskCacheFileCount);
+			diskCache.setReserveCacheDir(reserveCacheDir);
+			return diskCache;
 		} else {
 			File cacheDir = StorageUtils.getCacheDirectory(context);
-			return new UnlimitedDiscCache(cacheDir, reserveCacheDir, discCacheFileNameGenerator);
+			return new UnlimitedDiscCache(cacheDir, reserveCacheDir, diskCacheFileNameGenerator);
 		}
 	}
 
-	/** Creates reserve disc cache folder which will be used if primary disc cache folder becomes unavailable */
-	private static File createReserveDiscCacheDir(Context context) {
+	/** Creates reserve disk cache folder which will be used if primary disk cache folder becomes unavailable */
+	private static File createReserveDiskCacheDir(Context context) {
 		File cacheDir = StorageUtils.getCacheDirectory(context, false);
 		File individualDir = new File(cacheDir, "uil-images");
 		if (individualDir.exists() || individualDir.mkdir()) {
@@ -99,10 +100,10 @@ public class DefaultConfigurationFactory {
 	}
 
 	/**
-	 * Creates default implementation of {@link MemoryCacheAware} - {@link LruMemoryCache}<br />
+	 * Creates default implementation of {@link MemoryCache} - {@link LruMemoryCache}<br />
 	 * Default cache size = 1/8 of available app memory.
 	 */
-	public static MemoryCacheAware<String, Bitmap> createMemoryCache(int memoryCacheSize) {
+	public static MemoryCache createMemoryCache(int memoryCacheSize) {
 		if (memoryCacheSize == 0) {
 			memoryCacheSize = (int) (Runtime.getRuntime().maxMemory() / 8);
 		}

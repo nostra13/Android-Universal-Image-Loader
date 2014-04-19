@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,35 +15,13 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.memory;
 
-import java.util.Collection;
+import android.graphics.Bitmap;
 
 /**
  * Interface for memory cache
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.0.0
- * @deprecated Use {@link com.nostra13.universalimageloader.cache.memory.MemoryCache MemoryCache}
- * instead
+ * @since 1.9.2
  */
-@Deprecated
-public interface MemoryCacheAware<K, V> {
-	/**
-	 * Puts value into cache by key
-	 *
-	 * @return <b>true</b> - if value was put into cache successfully, <b>false</b> - if value was <b>not</b> put into
-	 *         cache
-	 */
-	boolean put(K key, V value);
-
-	/** Returns value by key. If there is no value for key then null will be returned. */
-	V get(K key);
-
-	/** Removes item by key */
-	void remove(K key);
-
-	/** Returns all keys of cache */
-	Collection<K> keys();
-
-	/** Remove all items from cache */
-	void clear();
+public interface MemoryCache extends MemoryCacheAware<String, Bitmap> {
 }

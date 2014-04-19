@@ -16,7 +16,7 @@
 package com.nostra13.universalimageloader.cache.disc.impl;
 
 import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
+import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 import com.nostra13.universalimageloader.utils.IoUtils;
@@ -29,13 +29,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Base disc cache.
+ * Base disk cache.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see FileNameGenerator
  * @since 1.0.0
  */
-public abstract class BaseDiscCache implements DiscCacheAware {
+public abstract class BaseDiscCache implements DiskCache {
 	/** {@value */
 	public static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 Kb
 	/** {@value */

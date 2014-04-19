@@ -36,7 +36,7 @@ import java.util.Map.Entry;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.3.0
  */
-public class LRULimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
+public class LRULimitedMemoryCache extends LimitedMemoryCache {
 
 	private static final int INITIAL_CAPACITY = 10;
 	private static final float LOAD_FACTOR = 1.1f;

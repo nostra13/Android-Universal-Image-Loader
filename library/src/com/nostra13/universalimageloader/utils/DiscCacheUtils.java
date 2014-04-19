@@ -15,12 +15,12 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.utils;
 
-import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
+import com.nostra13.universalimageloader.cache.disc.DiskCache;
 
 import java.io.File;
 
 /**
- * Utility for convenient work with disc cache.<br />
+ * Utility for convenient work with disk cache.<br />
  * <b>NOTE:</b> This utility works with file system so avoid using it on application main thread.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -31,19 +31,19 @@ public final class DiscCacheUtils {
 	private DiscCacheUtils() {
 	}
 
-	/** Returns {@link File} of cached image or <b>null</b> if image was not cached in disc cache */
-	public static File findInCache(String imageUri, DiscCacheAware discCache) {
-		File image = discCache.get(imageUri);
+	/** Returns {@link File} of cached image or <b>null</b> if image was not cached in disk cache */
+	public static File findInCache(String imageUri, DiskCache diskCache) {
+		File image = diskCache.get(imageUri);
 		return image != null && image.exists() ? image : null;
 	}
 
 	/**
-	 * Removed cached image file from disc cache (if image was cached in disc cache before)
+	 * Removed cached image file from disk cache (if image was cached in disk cache before)
 	 *
 	 * @return <b>true</b> - if cached image file existed and was deleted; <b>false</b> - otherwise.
 	 */
-	public static boolean removeFromCache(String imageUri, DiscCacheAware discCache) {
-		File image = discCache.get(imageUri);
+	public static boolean removeFromCache(String imageUri, DiskCache diskCache) {
+		File image = diskCache.get(imageUri);
 		return image != null && image.exists() && image.delete();
 	}
 }
