@@ -179,7 +179,7 @@ public class ImageLoader {
 	 * @throws IllegalArgumentException if passed <b>imageAware</b> is null
 	 */
 	public void displayImage(String uri, ImageAware imageAware, DisplayImageOptions options,
-							 ImageLoadingListener listener) {
+			ImageLoadingListener listener) {
 		displayImage(uri, imageAware, options, listener, null);
 	}
 
@@ -205,7 +205,7 @@ public class ImageLoader {
 	 * @throws IllegalArgumentException if passed <b>imageAware</b> is null
 	 */
 	public void displayImage(String uri, ImageAware imageAware, DisplayImageOptions options,
-							 ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
+			ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
 		checkConfiguration();
 		if (imageAware == null) {
 			throw new IllegalArgumentException(ERROR_WRONG_ARGUMENTS);
@@ -337,7 +337,7 @@ public class ImageLoader {
 	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
 	public void displayImage(String uri, ImageView imageView, DisplayImageOptions options,
-							 ImageLoadingListener listener) {
+			ImageLoadingListener listener) {
 		displayImage(uri, imageView, options, listener, null);
 	}
 
@@ -362,7 +362,7 @@ public class ImageLoader {
 	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
 	public void displayImage(String uri, ImageView imageView, DisplayImageOptions options,
-							 ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
+			ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
 		displayImage(uri, new ImageViewAware(imageView), options, listener, progressListener);
 	}
 
@@ -441,7 +441,7 @@ public class ImageLoader {
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(String uri, ImageSize targetImageSize, DisplayImageOptions options,
-						  ImageLoadingListener listener) {
+			ImageLoadingListener listener) {
 		loadImage(uri, targetImageSize, options, listener, null);
 	}
 
@@ -471,7 +471,7 @@ public class ImageLoader {
 	 * @throws IllegalStateException if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 */
 	public void loadImage(String uri, ImageSize targetImageSize, DisplayImageOptions options,
-						  ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
+			ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
 		checkConfiguration();
 		if (targetImageSize == null) {
 			targetImageSize = configuration.getMaxImageSize();
@@ -688,6 +688,9 @@ public class ImageLoader {
 
 	/**
 	 * Cancels all running and scheduled display image tasks.<br />
+	 * <b>NOTE:</b> This method doesn't shutdown
+	 * {@linkplain com.nostra13.universalimageloader.core.ImageLoaderConfiguration.Builder#taskExecutor(java.util.concurrent.Executor)
+	 * custom task executors} if you set them.<br />
 	 * ImageLoader still can be used after calling this method.
 	 */
 	public void stop() {
@@ -702,6 +705,7 @@ public class ImageLoader {
 	public void destroy() {
 		if (configuration != null && configuration.writeLogs) L.d(LOG_DESTROY);
 		stop();
+		configuration.discCache.close();
 		engine = null;
 		configuration = null;
 	}

@@ -32,7 +32,7 @@ import static com.nostra13.example.universalimageloader.Constants.IMAGES;
 
 /**
  * Example widget provider
- *
+ * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public class UILWidgetProvider extends AppWidgetProvider {
@@ -60,19 +60,19 @@ public class UILWidgetProvider extends AppWidgetProvider {
 		ImageSize minImageSize = new ImageSize(70, 70); // 70 - approximate size of ImageView in widget
 		ImageLoader.getInstance()
 				.loadImage(IMAGES[0], minImageSize, displayOptions, new SimpleImageLoadingListener() {
-					@Override
-					public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-						views.setImageViewBitmap(R.id.image_left, loadedImage);
-						appWidgetManager.updateAppWidget(appWidgetId, views);
-					}
-				});
+			@Override
+			public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+				views.setImageViewBitmap(R.id.image_left, loadedImage);
+				appWidgetManager.updateAppWidget(appWidgetId, views);
+			}
+		});
 		ImageLoader.getInstance()
 				.loadImage(IMAGES[1], minImageSize, displayOptions, new SimpleImageLoadingListener() {
-					@Override
-					public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-						views.setImageViewBitmap(R.id.image_right, loadedImage);
-						appWidgetManager.updateAppWidget(appWidgetId, views);
-					}
-				});
+			@Override
+			public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+				views.setImageViewBitmap(R.id.image_right, loadedImage);
+				appWidgetManager.updateAppWidget(appWidgetId, views);
+			}
+		});
 	}
 }

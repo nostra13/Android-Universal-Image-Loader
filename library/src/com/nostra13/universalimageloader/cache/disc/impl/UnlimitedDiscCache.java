@@ -15,37 +15,38 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc.impl;
 
-import com.nostra13.universalimageloader.cache.disc.BaseDiscCache;
-import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
-import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 
 import java.io.File;
 
 /**
- * Default implementation of {@linkplain DiscCacheAware disc cache}. Cache size is unlimited.
+ * Default implementation of {@linkplain com.nostra13.universalimageloader.cache.disc.DiscCacheAware disc cache}.
+ * Cache size is unlimited.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @see BaseDiscCache
  * @since 1.0.0
  */
 public class UnlimitedDiscCache extends BaseDiscCache {
-
 	/** @param cacheDir Directory for file caching */
 	public UnlimitedDiscCache(File cacheDir) {
-		this(cacheDir, DefaultConfigurationFactory.createFileNameGenerator());
+		super(cacheDir);
+	}
+
+	/**
+	 * @param cacheDir        Directory for file caching
+	 * @param reserveCacheDir null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
+	 */
+	public UnlimitedDiscCache(File cacheDir, File reserveCacheDir) {
+		super(cacheDir, reserveCacheDir);
 	}
 
 	/**
 	 * @param cacheDir          Directory for file caching
-	 * @param fileNameGenerator Name generator for cached files
+	 * @param reserveCacheDir   null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
+	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
+	 *                          Name generator} for cached files
 	 */
-	public UnlimitedDiscCache(File cacheDir, FileNameGenerator fileNameGenerator) {
-		super(cacheDir, fileNameGenerator);
-	}
-
-	@Override
-	public void put(String key, File file) {
-		// Do nothing
+	public UnlimitedDiscCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator) {
+		super(cacheDir, reserveCacheDir, fileNameGenerator);
 	}
 }

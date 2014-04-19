@@ -48,7 +48,7 @@ final class DisplayBitmapTask implements Runnable {
 	private boolean loggingEnabled;
 
 	public DisplayBitmapTask(Bitmap bitmap, ImageLoadingInfo imageLoadingInfo, ImageLoaderEngine engine,
-							 LoadedFrom loadedFrom) {
+			LoadedFrom loadedFrom) {
 		this.bitmap = bitmap;
 		imageUri = imageLoadingInfo.uri;
 		imageAware = imageLoadingInfo.imageAware;

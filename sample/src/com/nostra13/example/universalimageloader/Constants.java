@@ -22,7 +22,6 @@ public final class Constants {
 
 	public static final String[] IMAGES = new String[] {
 			// Heavy images
-            "http://image.donga.com/mlbpark/fileUpload/201401/52dde15113c53b01da3b.jpg",
 			"https://lh6.googleusercontent.com/-55osAWw3x0Q/URquUtcFr5I/AAAAAAAAAbs/rWlj1RUKrYI/s1024/A%252520Photographer.jpg",
 			"https://lh4.googleusercontent.com/--dq8niRp7W4/URquVgmXvgI/AAAAAAAAAbs/-gnuLQfNnBA/s1024/A%252520Song%252520of%252520Ice%252520and%252520Fire.jpg",
 			"https://lh5.googleusercontent.com/-7qZeDtRKFKc/URquWZT1gOI/AAAAAAAAAbs/hqWgteyNXsg/s1024/Another%252520Rockaway%252520Sunset.jpg",
@@ -125,6 +124,8 @@ public final class Constants {
 			// Light images
 			"http://tabletpcssource.com/wp-content/uploads/2011/05/android-logo.png",
 			"http://simpozia.com/pages/images/stories/windows-icon.png",
+			"https://si0.twimg.com/profile_images/1135218951/gmail_profile_icon3_normal.png",
+			"http://www.krify.net/wp-content/uploads/2011/09/Macromedia_Flash_dock_icon.png",
 			"http://radiotray.sourceforge.net/radio.png",
 			"http://www.bandwidthblog.com/wp-content/uploads/2011/11/twitter-logo.png",
 			"http://weloveicons.s3.amazonaws.com/icons/100907_itunes1.png",
