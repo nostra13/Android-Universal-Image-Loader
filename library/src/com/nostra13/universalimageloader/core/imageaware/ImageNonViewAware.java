@@ -42,6 +42,10 @@ public class ImageNonViewAware implements ImageAware {
 	}
 
 	public ImageNonViewAware(String imageUri, ImageSize imageSize, ViewScaleType scaleType) {
+		if (imageUri == null) throw new IllegalArgumentException("imageUri must not be null");
+		if (imageSize == null) throw new IllegalArgumentException("imageSize must not be null");
+		if (scaleType == null) throw new IllegalArgumentException("scaleType must not be null");
+
 		this.imageUri = imageUri;
 		this.imageSize = imageSize;
 		this.scaleType = scaleType;

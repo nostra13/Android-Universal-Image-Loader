@@ -29,7 +29,7 @@ import com.nostra13.universalimageloader.utils.L;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.0
  */
-class ProcessAndDisplayImageTask implements Runnable {
+final class ProcessAndDisplayImageTask implements Runnable {
 
 	private static final String LOG_POSTPROCESS_IMAGE = "PostProcess image before displaying [%s]";
 

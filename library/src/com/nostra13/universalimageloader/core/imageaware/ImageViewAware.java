@@ -17,14 +17,11 @@ package com.nostra13.universalimageloader.core.imageaware;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Looper;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.utils.L;
 
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 
 /**
@@ -34,13 +31,7 @@ import java.lang.reflect.Field;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.9.0
  */
-public class ImageViewAware implements ImageAware {
-
-	public static final String WARN_CANT_SET_DRAWABLE = "Can't set a drawable into view. You should call ImageLoader on UI thread for it.";
-	public static final String WARN_CANT_SET_BITMAP = "Can't set a bitmap into view. You should call ImageLoader on UI thread for it.";
-
-	protected Reference<ImageView> imageViewRef;
-	protected boolean checkActualViewSize;
+public class ImageViewAware extends ViewAware {
 
 	/**
 	 * Constructor. <br />
@@ -49,7 +40,7 @@ public class ImageViewAware implements ImageAware {
 	 * @param imageView {@link android.widget.ImageView ImageView} to work with
 	 */
 	public ImageViewAware(ImageView imageView) {
-		this(imageView, true);
+		super(imageView);
 	}
 
 	/**
@@ -70,87 +61,65 @@ public class ImageViewAware implements ImageAware {
 	 *                            <p/>
 	 */
 	public ImageViewAware(ImageView imageView, boolean checkActualViewSize) {
-		this.imageViewRef = new WeakReference<ImageView>(imageView);
-		this.checkActualViewSize = checkActualViewSize;
+		super(imageView, checkActualViewSize);
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * Width is defined by target {@link ImageView view} parameters, configuration
-	 * parameters or device display dimensions.<br />
-	 * Size computing algorithm:<br />
-	 * 1) Get the actual drawn <b>getWidth()</b> of the View. If view haven't drawn yet then go
-	 * to step #2.<br />
-	 * 2) Get <b>layout_width</b>. If it hasn't exact value then go to step #3.<br />
+	 * <br />
 	 * 3) Get <b>maxWidth</b>.
 	 */
 	@Override
 	public int getWidth() {
-		ImageView imageView = imageViewRef.get();
-		if (imageView != null) {
-			final ViewGroup.LayoutParams params = imageView.getLayoutParams();
-			int width = 0;
-			if (checkActualViewSize && params != null && params.width != ViewGroup.LayoutParams.WRAP_CONTENT) {
-				width = imageView.getWidth(); // Get actual image width
+		int width = super.getWidth();
+		if (width <= 0) {
+			ImageView imageView = (ImageView) viewRef.get();
+			if (imageView != null) {
+				width = getImageViewFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
 			}
-			if (width <= 0 && params != null) width = params.width; // Get layout width parameter
-			if (width <= 0) width = getImageViewFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
-			return width;
 		}
-		return 0;
+		return width;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * <p/>
-	 * Height is defined by target {@link ImageView view} parameters, configuration
-	 * parameters or device display dimensions.<br />
-	 * Size computing algorithm:<br />
-	 * 1) Get the actual drawn <b>getHeight()</b> of the View. If view haven't drawn yet then go
-	 * to step #2.<br />
-	 * 2) Get <b>layout_height</b>. If it hasn't exact value then go to step #3.<br />
-	 * 3) Get <b>maxHeight</b>.
+	 * <br />
+	 * 3) Get <b>maxHeight</b>
 	 */
 	@Override
 	public int getHeight() {
-		ImageView imageView = imageViewRef.get();
-		if (imageView != null) {
-			final ViewGroup.LayoutParams params = imageView.getLayoutParams();
-			int height = 0;
-			if (checkActualViewSize && params != null && params.height != ViewGroup.LayoutParams.WRAP_CONTENT) {
-				height = imageView.getHeight(); // Get actual image height
+		int height = super.getHeight();
+		if (height <= 0) {
+			ImageView imageView = (ImageView) viewRef.get();
+			if (imageView != null) {
+				height = getImageViewFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
 			}
-			if (height <= 0 && params != null) height = params.height; // Get layout height parameter
-			if (height <= 0) height = getImageViewFieldValue(imageView, "mMaxHeight"); // Check maxHeight parameter
-			return height;
 		}
-		return 0;
+		return height;
 	}
 
 	@Override
 	public ViewScaleType getScaleType() {
-		ImageView imageView = imageViewRef.get();
+		ImageView imageView = (ImageView) viewRef.get();
 		if (imageView != null) {
 			return ViewScaleType.fromImageView(imageView);
 		}
-		return null;
+		return super.getScaleType();
 	}
 
 	@Override
 	public ImageView getWrappedView() {
-		return imageViewRef.get();
+		return (ImageView) super.getWrappedView();
 	}
 
 	@Override
-	public boolean isCollected() {
-		return imageViewRef.get() == null;
+	protected void setImageDrawableInto(Drawable drawable, View view) {
+		((ImageView) view).setImageDrawable(drawable);
 	}
 
 	@Override
-	public int getId() {
-		ImageView imageView = imageViewRef.get();
-		return imageView == null ? super.hashCode() : imageView.hashCode();
+	protected void setImageBitmapInto(Bitmap bitmap, View view) {
+		((ImageView) view).setImageBitmap(bitmap);
 	}
 
 	private static int getImageViewFieldValue(Object object, String fieldName) {
@@ -166,33 +135,5 @@ public class ImageViewAware implements ImageAware {
 			L.e(e);
 		}
 		return value;
-	}
-
-	@Override
-	public boolean setImageDrawable(Drawable drawable) {
-		if (Looper.myLooper() == Looper.getMainLooper()) {
-			ImageView imageView = imageViewRef.get();
-			if (imageView != null) {
-				imageView.setImageDrawable(drawable);
-				return true;
-			}
-		} else {
-			L.w(WARN_CANT_SET_DRAWABLE);
-		}
-		return false;
-	}
-
-	@Override
-	public boolean setImageBitmap(Bitmap bitmap) {
-		if (Looper.myLooper() == Looper.getMainLooper()) {
-			ImageView imageView = imageViewRef.get();
-			if (imageView != null) {
-				imageView.setImageBitmap(bitmap);
-				return true;
-			}
-		} else {
-			L.w(WARN_CANT_SET_BITMAP);
-		}
-		return false;
 	}
 }
