@@ -28,8 +28,9 @@ import com.nostra13.universalimageloader.core.assist.ViewScaleType;
  * callbacks.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @see ViewAware
  * @see ImageViewAware
- * @see ImageNonViewAware
+ * @see NonViewAware
  * @since 1.9.0
  */
 public interface ImageAware {

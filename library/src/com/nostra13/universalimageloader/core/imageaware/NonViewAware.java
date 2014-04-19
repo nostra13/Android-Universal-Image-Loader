@@ -31,18 +31,17 @@ import com.nostra13.universalimageloader.core.assist.ViewScaleType;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.9.0
  */
-public class ImageNonViewAware implements ImageAware {
+public class NonViewAware implements ImageAware {
 
 	protected final String imageUri;
 	protected final ImageSize imageSize;
 	protected final ViewScaleType scaleType;
 
-	public ImageNonViewAware(ImageSize imageSize, ViewScaleType scaleType) {
+	public NonViewAware(ImageSize imageSize, ViewScaleType scaleType) {
 		this(null, imageSize, scaleType);
 	}
 
-	public ImageNonViewAware(String imageUri, ImageSize imageSize, ViewScaleType scaleType) {
-		if (imageUri == null) throw new IllegalArgumentException("imageUri must not be null");
+	public NonViewAware(String imageUri, ImageSize imageSize, ViewScaleType scaleType) {
 		if (imageSize == null) throw new IllegalArgumentException("imageSize must not be null");
 		if (scaleType == null) throw new IllegalArgumentException("scaleType must not be null");
 
