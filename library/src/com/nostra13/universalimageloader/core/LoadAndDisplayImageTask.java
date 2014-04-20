@@ -17,11 +17,8 @@ package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
-
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.FailReason.FailType;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
@@ -31,6 +28,8 @@ import com.nostra13.universalimageloader.core.decode.ImageDecodingInfo;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -83,7 +82,6 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	private final ImageDownloader networkDeniedDownloader;
 	private final ImageDownloader slowNetworkDownloader;
 	private final ImageDecoder decoder;
-	private final boolean writeLogs;
 	final String uri;
 	private final String memoryCacheKey;
 	final ImageAware imageAware;
@@ -106,7 +104,6 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		networkDeniedDownloader = configuration.networkDeniedDownloader;
 		slowNetworkDownloader = configuration.slowNetworkDownloader;
 		decoder = configuration.decoder;
-		writeLogs = configuration.writeLogs;
 		uri = imageLoadingInfo.uri;
 		memoryCacheKey = imageLoadingInfo.memoryCacheKey;
 		imageAware = imageLoadingInfo.imageAware;
@@ -123,9 +120,9 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		if (delayIfNeed()) return;
 
 		ReentrantLock loadFromUriLock = imageLoadingInfo.loadFromUriLock;
-		log(LOG_START_DISPLAY_IMAGE_TASK);
+		L.d(LOG_START_DISPLAY_IMAGE_TASK, memoryCacheKey);
 		if (loadFromUriLock.isLocked()) {
-			log(LOG_WAITING_FOR_IMAGE_LOADED);
+			L.d(LOG_WAITING_FOR_IMAGE_LOADED, memoryCacheKey);
 		}
 
 		loadFromUriLock.lock();
@@ -142,7 +139,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 				checkTaskInterrupted();
 
 				if (options.shouldPreProcess()) {
-					log(LOG_PREPROCESS_IMAGE);
+					L.d(LOG_PREPROCESS_IMAGE, memoryCacheKey);
 					bmp = options.getPreProcessor().process(bmp);
 					if (bmp == null) {
 						L.e(ERROR_PRE_PROCESSOR_NULL, memoryCacheKey);
@@ -150,16 +147,16 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 				}
 
 				if (bmp != null && options.isCacheInMemory()) {
-					log(LOG_CACHE_IMAGE_IN_MEMORY);
+					L.d(LOG_CACHE_IMAGE_IN_MEMORY, memoryCacheKey);
 					configuration.memoryCache.put(memoryCacheKey, bmp);
 				}
 			} else {
 				loadedFrom = LoadedFrom.MEMORY_CACHE;
-				log(LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING);
+				L.d(LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING, memoryCacheKey);
 			}
 
 			if (bmp != null && options.shouldPostProcess()) {
-				log(LOG_POSTPROCESS_IMAGE);
+				L.d(LOG_POSTPROCESS_IMAGE, memoryCacheKey);
 				bmp = options.getPostProcessor().process(bmp);
 				if (bmp == null) {
 					L.e(ERROR_POST_PROCESSOR_NULL, memoryCacheKey);
@@ -175,7 +172,6 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		}
 
 		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine, loadedFrom);
-		displayBitmapTask.setLoggingEnabled(writeLogs);
 		runTask(displayBitmapTask, syncLoading, handler, engine);
 	}
 
@@ -185,14 +181,14 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		if (pause.get()) {
 			synchronized (engine.getPauseLock()) {
 				if (pause.get()) {
-					log(LOG_WAITING_FOR_RESUME);
+					L.d(LOG_WAITING_FOR_RESUME, memoryCacheKey);
 					try {
 						engine.getPauseLock().wait();
 					} catch (InterruptedException e) {
 						L.e(LOG_TASK_INTERRUPTED, memoryCacheKey);
 						return true;
 					}
-					log(LOG_RESUME_AFTER_PAUSE);
+					L.d(LOG_RESUME_AFTER_PAUSE, memoryCacheKey);
 				}
 			}
 		}
@@ -202,7 +198,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	/** @return <b>true</b> - if task should be interrupted; <b>false</b> - otherwise */
 	private boolean delayIfNeed() {
 		if (options.shouldDelayBeforeLoading()) {
-			log(LOG_DELAY_BEFORE_LOADING, options.getDelayBeforeLoading(), memoryCacheKey);
+			L.d(LOG_DELAY_BEFORE_LOADING, options.getDelayBeforeLoading(), memoryCacheKey);
 			try {
 				Thread.sleep(options.getDelayBeforeLoading());
 			} catch (InterruptedException e) {
@@ -219,14 +215,14 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		try {
 			File imageFile = configuration.diskCache.get(uri);
 			if (imageFile != null && imageFile.exists()) {
-				log(LOG_LOAD_IMAGE_FROM_DISK_CACHE);
+				L.d(LOG_LOAD_IMAGE_FROM_DISK_CACHE, memoryCacheKey);
 				loadedFrom = LoadedFrom.DISC_CACHE;
 
 				checkTaskNotActual();
 				bitmap = decodeImage(Scheme.FILE.wrap(imageFile.getAbsolutePath()));
 			}
 			if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
-				log(LOG_LOAD_IMAGE_FROM_NETWORK);
+				L.d(LOG_LOAD_IMAGE_FROM_NETWORK, memoryCacheKey);
 				loadedFrom = LoadedFrom.NETWORK;
 
 				String imageUriForDecoding = uri;
@@ -270,7 +266,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	/** @return <b>true</b> - if image was downloaded successfully; <b>false</b> - otherwise */
 	private boolean tryCacheImageOnDisk() throws TaskCancelledException {
-		log(LOG_CACHE_IMAGE_ON_DISK);
+		L.d(LOG_CACHE_IMAGE_ON_DISK, memoryCacheKey);
 
 		boolean loaded;
 		try {
@@ -279,7 +275,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 				int width = configuration.maxImageWidthForDiskCache;
 				int height = configuration.maxImageHeightForDiskCache;
 				if (width > 0 || height > 0) {
-					log(LOG_RESIZE_CACHED_IMAGE_FILE);
+					L.d(LOG_RESIZE_CACHED_IMAGE_FILE, memoryCacheKey);
 					resizeAndSaveImage(width, height); // TODO : process boolean result
 				}
 			}
@@ -309,7 +305,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 					getDownloader(), specialOptions);
 			Bitmap bmp = decoder.decode(decodingInfo);
 			if (bmp != null && configuration.processorForDiskCache != null) {
-				log(LOG_PROCESS_IMAGE_BEFORE_CACHE_ON_DISK);
+				L.d(LOG_PROCESS_IMAGE_BEFORE_CACHE_ON_DISK, memoryCacheKey);
 				bmp = configuration.processorForDiskCache.process(bmp);
 				if (bmp == null) {
 					L.e(ERROR_PROCESSOR_FOR_DISK_CACHE_NULL, memoryCacheKey);
@@ -408,7 +404,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	/** @return <b>true</b> - if target ImageAware is collected by GC; <b>false</b> - otherwise */
 	private boolean isViewCollected() {
 		if (imageAware.isCollected()) {
-			log(LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED);
+			L.d(LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED, memoryCacheKey);
 			return true;
 		}
 		return false;
@@ -428,7 +424,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		// If ImageAware is reused for another task then current task should be cancelled.
 		boolean imageAwareWasReused = !memoryCacheKey.equals(currentCacheKey);
 		if (imageAwareWasReused) {
-			log(LOG_TASK_CANCELLED_IMAGEAWARE_REUSED);
+			L.d(LOG_TASK_CANCELLED_IMAGEAWARE_REUSED, memoryCacheKey);
 			return true;
 		}
 		return false;
@@ -444,7 +440,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	/** @return <b>true</b> - if current task was interrupted; <b>false</b> - otherwise */
 	private boolean isTaskInterrupted() {
 		if (Thread.interrupted()) {
-			log(LOG_TASK_INTERRUPTED);
+			L.d(LOG_TASK_INTERRUPTED, memoryCacheKey);
 			return true;
 		}
 		return false;
@@ -452,14 +448,6 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	String getLoadingUri() {
 		return uri;
-	}
-
-	private void log(String message) {
-		if (writeLogs) L.d(message, memoryCacheKey);
-	}
-
-	private void log(String message, Object... args) {
-		if (writeLogs) L.d(message, args);
 	}
 
 	static void runTask(Runnable r, boolean sync, Handler handler, ImageLoaderEngine engine) {

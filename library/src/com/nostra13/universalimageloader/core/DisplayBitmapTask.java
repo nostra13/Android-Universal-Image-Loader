@@ -16,10 +16,10 @@
 package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.utils.L;
 
 /**
@@ -45,8 +45,6 @@ final class DisplayBitmapTask implements Runnable {
 	private final ImageLoaderEngine engine;
 	private final LoadedFrom loadedFrom;
 
-	private boolean loggingEnabled;
-
 	public DisplayBitmapTask(Bitmap bitmap, ImageLoadingInfo imageLoadingInfo, ImageLoaderEngine engine,
 			LoadedFrom loadedFrom) {
 		this.bitmap = bitmap;
@@ -62,13 +60,13 @@ final class DisplayBitmapTask implements Runnable {
 	@Override
 	public void run() {
 		if (imageAware.isCollected()) {
-			if (loggingEnabled) L.d(LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED, memoryCacheKey);
+			L.d(LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED, memoryCacheKey);
 			listener.onLoadingCancelled(imageUri, imageAware.getWrappedView());
 		} else if (isViewWasReused()) {
-			if (loggingEnabled) L.d(LOG_TASK_CANCELLED_IMAGEAWARE_REUSED, memoryCacheKey);
+			L.d(LOG_TASK_CANCELLED_IMAGEAWARE_REUSED, memoryCacheKey);
 			listener.onLoadingCancelled(imageUri, imageAware.getWrappedView());
 		} else {
-			if (loggingEnabled) L.d(LOG_DISPLAY_IMAGE_IN_IMAGEAWARE, loadedFrom, memoryCacheKey);
+			L.d(LOG_DISPLAY_IMAGE_IN_IMAGEAWARE, loadedFrom, memoryCacheKey);
 			displayer.display(bitmap, imageAware, loadedFrom);
 			engine.cancelDisplayTaskFor(imageAware);
 			listener.onLoadingComplete(imageUri, imageAware.getWrappedView(), bitmap);
@@ -79,9 +77,5 @@ final class DisplayBitmapTask implements Runnable {
 	private boolean isViewWasReused() {
 		String currentCacheKey = engine.getLoadingUriForView(imageAware);
 		return !memoryCacheKey.equals(currentCacheKey);
-	}
-
-	void setLoggingEnabled(boolean loggingEnabled) {
-		this.loggingEnabled = loggingEnabled;
 	}
 }

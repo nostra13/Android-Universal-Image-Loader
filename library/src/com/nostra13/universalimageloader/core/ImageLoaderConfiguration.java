@@ -18,7 +18,6 @@ package com.nostra13.universalimageloader.core;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
@@ -72,7 +71,6 @@ public final class ImageLoaderConfiguration {
 	final ImageDownloader downloader;
 	final ImageDecoder decoder;
 	final DisplayImageOptions defaultDisplayImageOptions;
-	final boolean writeLogs;
 
 	final ImageDownloader networkDeniedDownloader;
 	final ImageDownloader slowNetworkDownloader;
@@ -92,7 +90,6 @@ public final class ImageLoaderConfiguration {
 		diskCache = builder.diskCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
-		writeLogs = builder.writeLogs;
 		downloader = builder.downloader;
 		decoder = builder.decoder;
 
@@ -101,6 +98,8 @@ public final class ImageLoaderConfiguration {
 
 		networkDeniedDownloader = new NetworkDeniedImageDownloader(downloader);
 		slowNetworkDownloader = new SlowNetworkImageDownloader(downloader);
+
+		L.writeDebugLogs(builder.writeLogs);
 	}
 
 	/**
@@ -218,7 +217,7 @@ public final class ImageLoaderConfiguration {
 		 */
 		@Deprecated
 		public Builder discCacheExtraOptions(int maxImageWidthForDiskCache, int maxImageHeightForDiskCache,
-											 BitmapProcessor processorForDiskCache) {
+				BitmapProcessor processorForDiskCache) {
 			return diskCacheExtraOptions(maxImageWidthForDiskCache, maxImageHeightForDiskCache, processorForDiskCache);
 		}
 
@@ -409,7 +408,7 @@ public final class ImageLoaderConfiguration {
 			return this;
 		}
 
-		/** @deprecated Use {@link #diskCacheSize(int)} instead	 */
+		/** @deprecated Use {@link #diskCacheSize(int)} instead */
 		@Deprecated
 		public Builder discCacheSize(int maxCacheSize) {
 			return diskCacheSize(maxCacheSize);
@@ -547,7 +546,8 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Enables detail logging of {@link ImageLoader} work. To prevent detail logs don't call this method.
-		 * Consider {@link com.nostra13.universalimageloader.utils.L#disableLogging()} to disable ImageLoader logging completely (even error logs)
+		 * Consider {@link com.nostra13.universalimageloader.utils.L#disableLogging()} to disable
+		 * ImageLoader logging completely (even error logs)
 		 */
 		public Builder writeDebugLogs() {
 			this.writeLogs = true;
@@ -584,8 +584,7 @@ public final class ImageLoaderConfiguration {
 				memoryCache = DefaultConfigurationFactory.createMemoryCache(memoryCacheSize);
 			}
 			if (denyCacheImageMultipleSizesInMemory) {
-				memoryCache = new FuzzyKeyMemoryCache(memoryCache,
-						MemoryCacheUtils.createFuzzyKeyComparator());
+				memoryCache = new FuzzyKeyMemoryCache(memoryCache, MemoryCacheUtils.createFuzzyKeyComparator());
 			}
 			if (downloader == null) {
 				downloader = DefaultConfigurationFactory.createImageDownloader(context);

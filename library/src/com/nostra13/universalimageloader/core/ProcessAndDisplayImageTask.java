@@ -48,13 +48,12 @@ final class ProcessAndDisplayImageTask implements Runnable {
 
 	@Override
 	public void run() {
-		if (engine.configuration.writeLogs) L.d(LOG_POSTPROCESS_IMAGE, imageLoadingInfo.memoryCacheKey);
+		L.d(LOG_POSTPROCESS_IMAGE, imageLoadingInfo.memoryCacheKey);
 
 		BitmapProcessor processor = imageLoadingInfo.options.getPostProcessor();
 		Bitmap processedBitmap = processor.process(bitmap);
 		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(processedBitmap, imageLoadingInfo, engine,
 				LoadedFrom.MEMORY_CACHE);
-		displayBitmapTask.setLoggingEnabled(engine.configuration.writeLogs);
 		LoadAndDisplayImageTask.runTask(displayBitmapTask, imageLoadingInfo.options.isSyncLoading(), handler, engine);
 	}
 }

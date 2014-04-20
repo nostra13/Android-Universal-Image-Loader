@@ -21,7 +21,6 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
-
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -30,8 +29,8 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
-import com.nostra13.universalimageloader.core.imageaware.NonViewAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
+import com.nostra13.universalimageloader.core.imageaware.NonViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
@@ -94,7 +93,7 @@ public class ImageLoader {
 			throw new IllegalArgumentException(ERROR_INIT_CONFIG_WITH_NULL);
 		}
 		if (this.configuration == null) {
-			if (configuration.writeLogs) L.d(LOG_INIT_CONFIG);
+			L.d(LOG_INIT_CONFIG);
 			engine = new ImageLoaderEngine(configuration);
 			this.configuration = configuration;
 		} else {
@@ -237,7 +236,7 @@ public class ImageLoader {
 
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
-			if (configuration.writeLogs) L.d(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey);
+			L.d(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey);
 
 			if (options.shouldPostProcess()) {
 				ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageAware, targetSize, memoryCacheKey,
@@ -725,7 +724,7 @@ public class ImageLoader {
 	 * method.
 	 */
 	public void destroy() {
-		if (configuration != null && configuration.writeLogs) L.d(LOG_DESTROY);
+		if (configuration != null) L.d(LOG_DESTROY);
 		stop();
 		configuration.diskCache.close();
 		engine = null;
