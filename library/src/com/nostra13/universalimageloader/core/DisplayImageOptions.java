@@ -330,6 +330,7 @@ public final class DisplayImageOptions {
 		 *
 		 * @deprecated Use {@link #cacheInMemory(boolean) cacheInMemory(true)} instead
 		 */
+		@Deprecated
 		public Builder cacheInMemory() {
 			cacheInMemory = true;
 			return this;
