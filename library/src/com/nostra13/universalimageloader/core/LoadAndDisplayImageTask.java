@@ -131,7 +131,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 			checkTaskNotActual();
 
 			bmp = configuration.memoryCache.get(memoryCacheKey);
-			if (bmp == null) {
+			if (bmp == null || bmp.isRecycled()) {
 				bmp = tryLoadBitmap();
 				if (bmp == null) return; // listener callback already was fired
 
