@@ -74,6 +74,7 @@ public final class IoUtils {
 			current += count;
 			if (shouldStopLoading(listener, current, total)) return false;
 		}
+		os.flush();
 		return true;
 	}
 
