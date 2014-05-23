@@ -7,11 +7,11 @@ This project aims to provide a reusable instrument for asynchronous image loadin
 ## Project News
  **Upcoming changes in new UIL version (1.9.2)**
  * Possibility to call ImageLoader out of UI thread
- * New Disk Cache API (more flexible). New `LruDiscCache` based on Jake Wharton's `DiskLruCache`. 
+ * New Disk Cache API (more flexible). New `LruDiskCache` based on Jake Wharton's `DiskLruCache`. 
 
 ## Features
  * Multithread image loading
- * Possibility of wide tuning ImageLoader's configuration (thread executors, downloader, decoder, memory and disc cache, display image options, and others)
+ * Possibility of wide tuning ImageLoader's configuration (thread executors, downloader, decoder, memory and disk cache, display image options, and others)
  * Possibility of image caching in memory and/or on device's file system (or SD card)
  * Possibility to "listen" loading process
  * Possibility to customize every display image call with separated options
@@ -110,7 +110,7 @@ All options in Configuration builder are optional. Use only those you really wan
 File cacheDir = StorageUtils.getCacheDirectory(context);
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
 		.memoryCacheExtraOptions(480, 800) // default = device screen dimensions
-		.discCacheExtraOptions(480, 800, CompressFormat.JPEG, 75, null)
+		.diskCacheExtraOptions(480, 800, CompressFormat.JPEG, 75, null)
 		.taskExecutor(...)
 		.taskExecutorForCachedImages(...)
 		.threadPoolSize(3) // default
@@ -120,10 +120,10 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
 		.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
 		.memoryCacheSize(2 * 1024 * 1024)
 		.memoryCacheSizePercentage(13) // default
-		.discCache(new UnlimitedDiscCache(cacheDir)) // default
-		.discCacheSize(50 * 1024 * 1024)
-		.discCacheFileCount(100)
-		.discCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
+		.diskCache(new UnlimitedDiscCache(cacheDir)) // default
+		.diskCacheSize(50 * 1024 * 1024)
+		.diskCacheFileCount(100)
+		.diskCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
 		.imageDownloader(new BaseImageDownloader(context)) // default
 		.imageDecoder(new BaseImageDecoder()) // default
 		.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
@@ -144,7 +144,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
 		.resetViewBeforeLoading(false)  // default
 		.delayBeforeLoading(1000)
 		.cacheInMemory(false) // default
-		.cacheOnDisc(false) // default
+		.cacheOnDisk(false) // default
 		.preProcessor(...)
 		.postProcessor(...)
 		.extraForDownloader(...)
@@ -239,8 +239,8 @@ Other useful methods and classes to consider.
 ImageLoader |
 			| - getMemoryCache()
 			| - clearMemoryCache()
-			| - getDiscCache()
-			| - clearDiscCache()
+			| - getDiskCache()
+			| - clearDiskCache()
 			| - denyNetworkDownloads(boolean)
 			| - handleSlowNetwork(boolean)
 			| - pause()
@@ -252,12 +252,12 @@ ImageLoader |
 			| - cancelDisplayTask(ImageView)
 			| - cancelDisplayTask(ImageAware)
 
-MemoryCacheUtil |
+MemoryCacheUtils |
 				| - findCachedBitmapsForImageUri(...)
 				| - findCacheKeysForImageUri(...)
 				| - removeFromCache(...)
 
-DiscCacheUtil |
+DiskCacheUtils |
 			  | - findInCache(...)
 			  | - removeFromCache(...)
 
@@ -281,14 +281,14 @@ ImageAware |
 Also look into more detailed **[Library Map](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Library-Map)**
 
 ## Useful Info
-1. **Caching is NOT enabled by default.** If you want loaded images will be cached in memory and/or on disc then you should enable caching in DisplayImageOptions this way:
+1. **Caching is NOT enabled by default.** If you want loaded images will be cached in memory and/or on disk then you should enable caching in DisplayImageOptions this way:
 ``` java
 // Create default options which will be used for every 
 //  displayImage(...) call if no options will be passed to this method
 DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
 			...
             .cacheInMemory(true)
-            .cacheOnDisc(true)
+            .cacheOnDisk(true)
             ...
             .build();
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
@@ -307,13 +307,13 @@ or this way:
 DisplayImageOptions options = new DisplayImageOptions.Builder()
 			...
             .cacheInMemory(true)
-            .cacheOnDisc(true)
+            .cacheOnDisk(true)
             ...
             .build();
 ImageLoader.getInstance().displayImage(imageUrl, imageView, options); // Incoming options will be used
 ```
 
-2. If you enabled disc caching then UIL try to cache images on external storage (/sdcard/Android/data/[package_name]/cache). If external storage is not available then images are cached on device's filesystem.
+2. If you enabled disk caching then UIL try to cache images on external storage (/sdcard/Android/data/[package_name]/cache). If external storage is not available then images are cached on device's filesystem.
 To provide caching on external storage (SD card) add following permission to AndroidManifest.xml:
 ``` java
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -346,13 +346,12 @@ To provide caching on external storage (SD card) add following permission to And
  * Cache using **only weak** references:
      * `WeakMemoryCache` (Unlimited cache)
 
-6. For disc cache configuration (`ImageLoaderConfiguration.discCache(...)`) you can use already prepared implementations:
+6. For disk cache configuration (`ImageLoaderConfiguration.diskCache(...)`) you can use already prepared implementations:
  * `UnlimitedDiscCache` (The fastest cache, doesn't limit cache size) - **Used by default**
- * `TotalSizeLimitedDiscCache` (Cache limited by total cache size. If cache size exceeds specified limit then file with the most oldest last usage date will be deleted)
- * `FileCountLimitedDiscCache` (Cache limited by file count. If file count in cache directory exceeds specified limit then file with the most oldest last usage date will be deleted. Use it if your cached files are of about the same size.)
+ * `LruDiskCache` (Cache limited by total cache size and/or by file count. If cache size exceeds specified limit then least-recently used file will be deleted)
  * `LimitedAgeDiscCache` (Size-unlimited cache with limited files' lifetime. If age of cached file exceeds defined limit then it will be deleted from cache.)
  
- **NOTE:** UnlimitedDiscCache is 30%-faster than other limited disc cache implementations.
+ **NOTE:** UnlimitedDiscCache is pretty faster than other limited disk cache implementations.
 
 7. To display bitmap (`DisplayImageOptions.displayer(...)`) you can use already prepared implementations: 
  * `RoundedBitmapDisplayer` (Displays bitmap with rounded corners)
