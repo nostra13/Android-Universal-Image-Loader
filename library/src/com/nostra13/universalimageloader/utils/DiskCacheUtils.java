@@ -26,9 +26,9 @@ import java.io.File;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.0
  */
-public final class DiscCacheUtils {
+public final class DiskCacheUtils {
 
-	private DiscCacheUtils() {
+	private DiskCacheUtils() {
 	}
 
 	/** Returns {@link File} of cached image or <b>null</b> if image was not cached in disk cache */
