@@ -83,14 +83,14 @@ public class ImageListActivity extends AbsListViewBaseActivity {
 		startActivity(intent);
 	}
 
+	private static class ViewHolder {
+		TextView text;
+		ImageView image;
+	}
+
 	class ItemAdapter extends BaseAdapter {
 
 		private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
-
-		private class ViewHolder {
-			public TextView text;
-			public ImageView image;
-		}
 
 		@Override
 		public int getCount() {
