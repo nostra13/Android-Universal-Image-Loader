@@ -75,6 +75,11 @@ public class ImageGridActivity extends AbsListViewBaseActivity {
 		intent.putExtra(Extra.IMAGE_POSITION, position);
 		startActivity(intent);
 	}
+	
+	private static class ViewHolder {
+		ImageView imageView;
+		ProgressBar progressBar;
+	}
 
 	public class ImageAdapter extends BaseAdapter {
 		@Override
@@ -134,11 +139,6 @@ public class ImageGridActivity extends AbsListViewBaseActivity {
 			);
 
 			return view;
-		}
-
-		class ViewHolder {
-			ImageView imageView;
-			ProgressBar progressBar;
 		}
 	}
 }
