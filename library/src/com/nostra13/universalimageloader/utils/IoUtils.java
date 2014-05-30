@@ -31,6 +31,8 @@ public final class IoUtils {
 	/** {@value} */
 	public static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 KB
 	/** {@value} */
+	public static final int DEFAULT_IMAGE_TOTAL_SIZE = 500 * 1024; // 500 Kb
+	/** {@value} */
 	public static final int CONTINUE_LOADING_PERCENTAGE = 75;
 
 	private IoUtils() {
@@ -64,7 +66,10 @@ public final class IoUtils {
 	public static boolean copyStream(InputStream is, OutputStream os, CopyListener listener, int bufferSize)
 			throws IOException {
 		int current = 0;
-		final int total = is.available();
+		int total = is.available();
+		if (total <= 0) {
+			total = DEFAULT_IMAGE_TOTAL_SIZE;
+		}
 
 		final byte[] bytes = new byte[bufferSize];
 		int count;
