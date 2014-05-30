@@ -38,7 +38,6 @@ public interface BitmapDisplayer {
 	 * @param imageAware {@linkplain com.nostra13.universalimageloader.core.imageaware.ImageAware Image aware view} to
 	 *                   display Bitmap
 	 * @param loadedFrom Source of loaded image
-	 * ImageAware}
 	 */
 	void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom);
 }

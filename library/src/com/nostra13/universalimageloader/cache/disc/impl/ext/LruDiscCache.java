@@ -109,6 +109,9 @@ public class LruDiscCache implements DiskCache {
 			if (reserveCacheDir != null) {
 				initCache(reserveCacheDir, null, cacheMaxSize, cacheMaxFileCount);
 			}
+			if (cache == null) {
+				throw new RuntimeException("Can't initialize disk cache", e);
+			}
 		}
 	}
 
