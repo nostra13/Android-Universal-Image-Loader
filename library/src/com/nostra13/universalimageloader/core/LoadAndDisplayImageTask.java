@@ -321,12 +321,12 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	@Override
 	public boolean onBytesCopied(int current, int total) {
-		return fireProgressEvent(current, total);
+		return syncLoading || fireProgressEvent(current, total);
 	}
 
 	/** @return <b>true</b> - if loading should be continued; <b>false</b> - if loading should be interrupted */
 	private boolean fireProgressEvent(final int current, final int total) {
-		if (syncLoading || isTaskInterrupted() || isTaskNotActual()) return false;
+		if (isTaskInterrupted() || isTaskNotActual()) return false;
 		if (progressListener != null) {
 			Runnable r = new Runnable() {
 				@Override
