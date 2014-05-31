@@ -102,7 +102,7 @@ public class LruMemoryCache implements MemoryCache {
 
 	/** Removes the entry for {@code key} if it exists. */
 	@Override
-	public final void remove(String key) {
+	public final Bitmap remove(String key) {
 		if (key == null) {
 			throw new NullPointerException("key == null");
 		}
@@ -112,6 +112,7 @@ public class LruMemoryCache implements MemoryCache {
 			if (previous != null) {
 				size -= sizeOf(key, previous);
 			}
+			return previous;
 		}
 	}
 

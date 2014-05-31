@@ -85,14 +85,14 @@ public abstract class LimitedMemoryCache extends BaseMemoryCache {
 	}
 
 	@Override
-	public void remove(String key) {
+	public Bitmap remove(String key) {
 		Bitmap value = super.get(key);
 		if (value != null) {
 			if (hardCache.remove(value)) {
 				cacheSize.addAndGet(-getSize(value));
 			}
 		}
-		super.remove(key);
+		return super.remove(key);
 	}
 
 	@Override

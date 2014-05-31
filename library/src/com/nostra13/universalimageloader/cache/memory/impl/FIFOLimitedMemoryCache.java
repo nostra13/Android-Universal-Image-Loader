@@ -53,12 +53,12 @@ public class FIFOLimitedMemoryCache extends LimitedMemoryCache {
 	}
 
 	@Override
-	public void remove(String key) {
+	public Bitmap remove(String key) {
 		Bitmap value = super.get(key);
 		if (value != null) {
 			queue.remove(value);
 		}
-		super.remove(key);
+		return super.remove(key);
 	}
 
 	@Override

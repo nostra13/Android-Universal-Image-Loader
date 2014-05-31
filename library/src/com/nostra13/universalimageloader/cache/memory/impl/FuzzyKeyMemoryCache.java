@@ -65,8 +65,8 @@ public class FuzzyKeyMemoryCache implements MemoryCache {
 	}
 
 	@Override
-	public void remove(String key) {
-		cache.remove(key);
+	public Bitmap remove(String key) {
+		return cache.remove(key);
 	}
 
 	@Override

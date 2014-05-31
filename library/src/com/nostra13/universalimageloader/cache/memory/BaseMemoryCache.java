@@ -49,8 +49,9 @@ public abstract class BaseMemoryCache implements MemoryCache {
 	}
 
 	@Override
-	public void remove(String key) {
-		softMap.remove(key);
+	public Bitmap remove(String key) {
+		Reference<Bitmap> bmpRef = softMap.remove(key);
+		return bmpRef == null ? null : bmpRef.get();
 	}
 
 	@Override

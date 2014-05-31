@@ -70,9 +70,9 @@ public class LimitedAgeMemoryCache implements MemoryCache {
 	}
 
 	@Override
-	public void remove(String key) {
-		cache.remove(key);
+	public Bitmap remove(String key) {
 		loadingDates.remove(key);
+		return cache.remove(key);
 	}
 
 	@Override

@@ -66,9 +66,9 @@ public class LRULimitedMemoryCache extends LimitedMemoryCache {
 	}
 
 	@Override
-	public void remove(String key) {
+	public Bitmap remove(String key) {
 		lruCache.remove(key);
-		super.remove(key);
+		return super.remove(key);
 	}
 
 	@Override

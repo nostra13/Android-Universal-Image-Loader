@@ -39,7 +39,7 @@ public interface MemoryCacheAware<K, V> {
 	V get(K key);
 
 	/** Removes item by key */
-	void remove(K key);
+	V remove(K key);
 
 	/** Returns all keys of cache */
 	Collection<K> keys();
