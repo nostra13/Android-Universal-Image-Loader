@@ -20,7 +20,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-import android.os.Build;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
@@ -111,8 +110,7 @@ public class BaseImageDecoder implements ImageDecoder {
 	}
 
 	private boolean canDefineExifParams(String imageUri, String mimeType) {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR && "image/jpeg".equalsIgnoreCase(mimeType) && Scheme
-				.ofUri(imageUri) == Scheme.FILE;
+		return "image/jpeg".equalsIgnoreCase(mimeType) && (Scheme.ofUri(imageUri) == Scheme.FILE);
 	}
 
 	protected ExifInfo defineExifOrientation(String imageUri) {
