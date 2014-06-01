@@ -1,5 +1,11 @@
 package com.nostra13.universalimageloader.core.assist;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 import com.nostra13.universalimageloader.utils.ImageSizeUtils;
@@ -8,13 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import android.app.Activity;
-import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 @RunWith(RobolectricTestRunner.class)
 public class ImageSizeTest {
@@ -81,6 +80,74 @@ public class ImageSizeTest {
 		ImageSize expected = new ImageSize(500, 500);
 		ImageSize result = ImageSizeUtils.defineTargetSizeForView(mImageAware, new ImageSize(500, 500));
 		Assertions.assertThat(result).isNotNull().isEqualsToByComparingFields(expected);
+	}
+
+	@Test
+	public void testComputeImageSampleSize_fitInside() throws Exception {
+		final ViewScaleType scaleType = ViewScaleType.FIT_INSIDE;
+		int result;
+
+		ImageSize srcSize = new ImageSize(300, 100);
+		ImageSize targetSize = new ImageSize(30, 10);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		Assertions.assertThat(result).isEqualTo(10);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		Assertions.assertThat(result).isEqualTo(8);
+
+		srcSize = new ImageSize(300, 100);
+		targetSize = new ImageSize(200, 200);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		Assertions.assertThat(result).isEqualTo(1);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		Assertions.assertThat(result).isEqualTo(1);
+
+		srcSize = new ImageSize(300, 100);
+		targetSize = new ImageSize(55, 40);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		Assertions.assertThat(result).isEqualTo(5);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		Assertions.assertThat(result).isEqualTo(4);
+
+		srcSize = new ImageSize(300, 100);
+		targetSize = new ImageSize(30, 40);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		Assertions.assertThat(result).isEqualTo(10);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		Assertions.assertThat(result).isEqualTo(8);
+	}
+
+	@Test
+	public void testComputeImageSampleSize_centerCrop() throws Exception {
+		final ViewScaleType scaleType = ViewScaleType.CROP;
+		int result;
+
+		ImageSize srcSize = new ImageSize(300, 100);
+		ImageSize targetSize = new ImageSize(30, 10);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		Assertions.assertThat(result).isEqualTo(10);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		Assertions.assertThat(result).isEqualTo(8);
+
+		srcSize = new ImageSize(300, 100);
+		targetSize = new ImageSize(200, 200);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		Assertions.assertThat(result).isEqualTo(1);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		Assertions.assertThat(result).isEqualTo(1);
+
+		srcSize = new ImageSize(300, 100);
+		targetSize = new ImageSize(55, 40);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		Assertions.assertThat(result).isEqualTo(2);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		Assertions.assertThat(result).isEqualTo(2);
+
+		srcSize = new ImageSize(300, 100);
+		targetSize = new ImageSize(30, 30);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		Assertions.assertThat(result).isEqualTo(3);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		Assertions.assertThat(result).isEqualTo(2);
 	}
 
 	/** Fixes {@link NoSuchMethodError} for <code>ImageView#onLayout(...)</code> */
