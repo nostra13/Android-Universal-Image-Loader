@@ -25,6 +25,15 @@ public enum ImageScaleType {
 	/** Image won't be scaled */
 	NONE,
 	/**
+	 * Image will be scaled down only if image size is greater than
+	 * {@linkplain javax.microedition.khronos.opengles.GL10#GL_MAX_TEXTURE_SIZE maximum acceptable texture size}.
+	 * Usually it's 2048x2048.<br />
+	 * If Bitmap is expected to display than it must not exceed this size (otherwise you'll get the exception
+	 * "OpenGLRenderer: Bitmap too large to be uploaded into a texture".<br />
+	 * Image will be subsampled in an integer number of times (1, 2, 3, ...) to maximum texture size of device.
+	 */
+	NONE_SAFE,
+	/**
 	 * Image will be reduces 2-fold until next reduce step make image smaller target size.<br />
 	 * It's <b>fast</b> type and it's preferable for usage in lists/grids/galleries (and other
 	 * {@linkplain android.widget.AdapterView adapter-views}) .<br />
@@ -52,7 +61,6 @@ public enum ImageScaleType {
 	 * <b>Pros:</b> Requires more memory in one time for creation of result Bitmap.
 	 */
 	EXACTLY,
-
 	/**
 	 * Image will scaled exactly to target size (scaled width or height or both will be equal to target size; depends on
 	 * {@linkplain android.widget.ImageView.ScaleType ImageView's scale type}). Use it if memory economy is critically

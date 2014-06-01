@@ -151,6 +151,8 @@ public class BaseImageDecoder implements ImageDecoder {
 		ImageScaleType scaleType = decodingInfo.getImageScaleType();
 		int scale;
 		if (scaleType == ImageScaleType.NONE) {
+			scale = 1;
+		} else if (scaleType == ImageScaleType.NONE_SAFE) {
 			scale = ImageSizeUtils.computeMinImageSampleSize(imageSize);
 		} else {
 			ImageSize targetSize = decodingInfo.getTargetSize();
