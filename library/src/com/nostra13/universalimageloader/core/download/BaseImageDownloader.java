@@ -15,16 +15,6 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.download;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
-import com.nostra13.universalimageloader.utils.IoUtils;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,6 +26,18 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+
+import android.content.ContentResolver;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.provider.MediaStore;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
+import com.nostra13.universalimageloader.utils.IoUtils;
 
 /**
  * Provides retrieving of {@link InputStream} of image by URI from network or file system or app resources.<br />
@@ -172,6 +174,18 @@ public class BaseImageDownloader implements ImageDownloader {
 	protected InputStream getStreamFromContent(String imageUri, Object extra) throws FileNotFoundException {
 		ContentResolver res = context.getContentResolver();
 		Uri uri = Uri.parse(imageUri);
+		
+		if(isVideoUri(uri)){
+			
+			Bitmap bitmap = MediaStore.Video.Thumbnails.getThumbnail(res, Long.valueOf(uri.getLastPathSegment()), MediaStore.Images.Thumbnails.MINI_KIND, null);
+
+			ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
+			bitmap.compress(CompressFormat.PNG, 0 , bos); 
+			byte[] bitmapdata = bos.toByteArray();
+			return new ByteArrayInputStream(bitmapdata);
+			
+		}
+		
 		return res.openInputStream(uri);
 	}
 
@@ -224,4 +238,14 @@ public class BaseImageDownloader implements ImageDownloader {
 	protected InputStream getStreamFromOtherSource(String imageUri, Object extra) throws IOException {
 		throw new UnsupportedOperationException(String.format(ERROR_UNSUPPORTED_SCHEME, imageUri));
 	}
+	
+	private boolean isVideoUri(Uri uri) {
+        String mimeType = context.getContentResolver().getType(uri);
+        
+        if(mimeType == null){
+        	return false;
+        }
+        
+        return mimeType.startsWith("video/");
+    }
 }
