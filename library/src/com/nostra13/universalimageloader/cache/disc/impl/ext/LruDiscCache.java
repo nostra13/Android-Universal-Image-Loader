@@ -122,6 +122,9 @@ public class LruDiscCache implements DiskCache {
 
 	@Override
 	public File get(String imageUri) {
+		if (imageUri == null) {
+			return null;
+		}
 		DiskLruCache.Snapshot snapshot = null;
 		try {
 			snapshot = cache.get(getKey(imageUri));
