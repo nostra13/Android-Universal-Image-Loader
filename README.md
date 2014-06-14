@@ -5,16 +5,20 @@ This project aims to provide a reusable instrument for asynchronous image loadin
 ![Screenshot](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/UniversalImageLoader.png)
 
 ## Project News
- **Upcoming changes in new UIL version (1.9.3)**
+ **Upcoming changes in new UIL version (1.9.3+)**
+ * Implicit ImageLoader initialization (explicit configuration on start isn't required anymore)
  * Memory Cache redesign
+ * **New API:** `DisplayImageOptions.targetSize(ImageSize)`
+ * HTTP cache support
+ * Consider `BitmapFactory.Options.inBitmap`
+ * `ImageLoader.loadImageSync()` fix
 
 ## Features
- * Multithread image loading
- * Possibility of wide tuning ImageLoader's configuration (thread executors, downloader, decoder, memory and disk cache, display image options, and others)
- * Possibility of image caching in memory and/or on device's file system (or SD card)
- * Possibility to "listen" loading process
- * Possibility to customize every display image call with separated options
- * Widget support
+ * Multithread image loading (async or sync)
+ * Wide customization of ImageLoader's configuration (thread executors, downloader, decoder, memory and disk cache, display image options, etc.)
+ * Many customization options for every display image call (stub images, caching switch, decoding options, Bitmap processing and displaying, etc.)
+ * Image caching in memory and/or on disk (device's file system or SD card)
+ * Listening loading process (including downloading progress)
 
 Android 2.0+ support
 
@@ -29,8 +33,8 @@ Latest snapshot of the library - **[here](https://github.com/nostra13/Android-Un
 
 ## Documentation (outdated, new one is in progress...)
  * Universal Image Loader. Part 1 - Introduction [[RU](http://nostra13android.blogspot.com/2012/03/4-universal-image-loader-part-1.html)]
- * Universal Image Loader. Part 2 - Configuration [[RU](http://nostra13android.blogspot.com/2012/03/5-universal-image-loader-part-2.html) | [EN](http://www.intexsoft.com/blog/item/72-universal-image-loader-part-2.html)]
- * Universal Image Loader. Part 3 - Usage [[RU](http://nostra13android.blogspot.com/2012/03/6-universal-image-loader-part-3-usage.html) | [EN](http://www.intexsoft.com/blog/item/74-universal-image-loader-part-3.html)]
+ * Universal Image Loader. Part 2 - Configuration [[RU](http://nostra13android.blogspot.com/2012/03/5-universal-image-loader-part-2.html)]
+ * Universal Image Loader. Part 3 - Usage [[RU](http://nostra13android.blogspot.com/2012/03/6-universal-image-loader-part-3-usage.html)]
 
 ### [Changelog](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/CHANGELOG.md)
 
@@ -38,7 +42,7 @@ Latest snapshot of the library - **[here](https://github.com/nostra13/Android-Un
  1. Look into **[Useful Info](https://github.com/nostra13/Android-Universal-Image-Loader#useful-info)**
  2. Search problem solution on **[StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)**
  3. Ask your own question on **[StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)**.<br />
-    Be sure to mention following information in your question:
+    **Be sure to mention following information** in your question (otherwise a question may be ignored)):
    - UIL version (e.g. 1.9.2)
    - Android version tested on (e.g. 2.1)
    - your configuration (`ImageLoaderConfiguration`)
@@ -252,13 +256,13 @@ ImageLoader |
 			| - cancelDisplayTask(ImageAware)
 
 MemoryCacheUtils |
-				| - findCachedBitmapsForImageUri(...)
-				| - findCacheKeysForImageUri(...)
-				| - removeFromCache(...)
+				 | - findCachedBitmapsForImageUri(...)
+				 | - findCacheKeysForImageUri(...)
+				 | - removeFromCache(...)
 
 DiskCacheUtils |
-			  | - findInCache(...)
-			  | - removeFromCache(...)
+			   | - findInCache(...)
+			   | - removeFromCache(...)
 
 StorageUtils |
 			 | - getCacheDirectory(Context)
@@ -268,12 +272,12 @@ StorageUtils |
 PauseOnScrollListener
 
 ImageAware |
+		   | - getId()
 		   | - getWidth()
 		   | - getHeight()
 		   | - getScaleType()
 		   | - getWrappedView()
 		   | - isCollected()
-		   | - getId()
 		   | - setImageDrawable(Drawable)
 		   | - setImageBitmap(Bitmap)
 </pre>
@@ -327,11 +331,14 @@ To provide caching on external storage (SD card) add following permission to And
 
  So **try to set** `android:layout_width`|`android:layout_height` or `android:maxWidth`|`android:maxHeight` parameters for ImageView if you know approximate maximum size of it. It will help correctly compute Bitmap size needed for this view and **save memory**.
 
-4. If you often got **OutOfMemoryError** in your app using Universal Image Loader then try next (all of them or several):
+4. If you often got **OutOfMemoryError** in your app using Universal Image Loader then:
+ - Disable caching in memory. If OOM is still occurs then it's a defect of your app.
+ Otherwise try the following steps (all of them or several):
  - Reduce thread pool size in configuration (`.threadPoolSize(...)`). 1 - 5 is recommended.
  - Use `.bitmapConfig(Bitmap.Config.RGB_565)` in display options. Bitmaps in RGB_565 consume 2 times less memory than in ARGB_8888.
- - Use `.memoryCache(new WeakMemoryCache())` in configuration or disable caching in memory at all in display options (don't call `.cacheInMemory()`).
- - Use `.imageScaleType(ImageScaleType.IN_SAMPLE_INT)` in display options. Or try `.imageScaleType(ImageScaleType.EXACTLY)`.
+ - Use `.imageScaleType(ImageScaleType.EXACTLY)`
+ - Use `.diskCacheExtraOptions(480, 320, null)` in configuration
+
 
 5. For memory cache configuration (`ImageLoaderConfiguration.memoryCache(...)`) you can use already prepared implementations.
  * Cache using **only strong** references:
@@ -366,6 +373,7 @@ listView.setOnScrollListener(listener);
 
 9. If you see in logs some strange supplement at the end of image URL (e.g. `http://anysite.com/images/image.png_230x460`) then it doesn't mean this URL is used in requests. This is just "URL + target size", also this is key for Bitmap in memory cache. This postfix (`_230x460`) is **NOT used in requests**.
 
+10. ImageLoader always keeps aspect ratio of images.
 
 ## Applications using Universal Image Loader
 **[MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)** | **[Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)** | **[ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox)**, [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro) | [Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities) | [Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test) | [Sporee - Live Soccer Scores](https://play.google.com/store/apps/details?id=com.sporee.android) | **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)** | [PhotoDownloader for Facebook](https://play.google.com/store/apps/details?id=com.giannz.photodownloader) | **[Topface - meeting is easy](https://play.google.com/store/apps/details?id=com.topface.topface)** | **[reddit is fun](https://play.google.com/store/apps/details?id=com.andrewshu.android.reddit)** | **[Diaro - personal diary](https://play.google.com/store/apps/details?id=com.pixelcrater.Diaro)** |  [WebMoney Keeper Mobile](https://play.google.com/store/apps/details?id=ru.webmoney.keeper.mobile) | **[LoL Memento League of Legends](https://play.google.com/store/apps/details?id=com.buchland.lolmemento)** | **[Meetup](https://play.google.com/store/apps/details?id=com.meetup)** | [Vingle - Magazines by Fans](https://play.google.com/store/apps/details?id=com.vingle.android) | [Anime Music Radio](https://play.google.com/store/apps/details?id=com.maxxt.animeradio) | [WidgetLocker Theme Viewer](https://play.google.com/store/apps/details?id=com.companionfree.WLThemeViewer) | [ShortBlogger for Tumblr](https://play.google.com/store/apps/details?id=com.luckydroid.tumblelog) | [SnapDish Food Camera](https://play.google.com/store/apps/details?id=com.vuzz.snapdish) | **[Twitch](https://play.google.com/store/apps/details?id=tv.twitch.android.viewer)** | [TVShow Time, TV show guide](https://play.google.com/store/apps/details?id=com.tozelabs.tvshowtime) | [Planning Center Services](https://play.google.com/store/apps/details?id=com.ministrycentered.PlanningCenter) | [Daybe - 일기가 되는 SNS](https://play.google.com/store/apps/details?id=com.daybe) | **[Lapse It](https://play.google.com/store/apps/details?id=com.ui.LapseIt)** | [My Cloud Player for SoundCloud](https://play.google.com/store/apps/details?id=com.mycloudplayers.mycloudplayer) | **[SoundTracking](https://play.google.com/store/apps/details?id=com.schematiclabs.soundtracking)** | [LoopLR Social Video](https://play.google.com/store/apps/details?id=com.looplr) | [Reddit Pics HD](https://play.google.com/store/apps/details?id=com.funpokes.redditpics) | [Hír24](https://play.google.com/store/apps/details?id=hu.sanomamedia.hir24) | **[Immobilien Scout24](https://play.google.com/store/apps/details?id=de.is24.android)** | **[Lieferheld - Pizza Pasta Sushi](https://play.google.com/store/apps/details?id=de.lieferheld.android)** | [Loocator: free sex datings](https://play.google.com/store/apps/details?id=com.ivicode.loocator) | [벨팡-개편 이벤트,컬러링,벨소리,무료,최신가요,링투유](https://play.google.com/store/apps/details?id=com.mediahubs.www) | [Streambels AirPlay/DLNA Player](https://play.google.com/store/apps/details?id=com.tuxera.streambels) | [Ship Mate - All Cruise Lines](https://play.google.com/store/apps/details?id=shipmate.carnival) | [Disk & Storage Analyzer](https://play.google.com/store/apps/details?id=com.mobile_infographics_tools.mydrive) | [糗事百科](https://play.google.com/store/apps/details?id=qsbk.app)
@@ -382,6 +390,10 @@ You can support the project and thank the author for his hard work :)
 
  * [Picasso](https://github.com/square/picasso)
  * [Glide](https://github.com/bumptech/glide)
+ * [UrlImageViewHelper](https://github.com/koush/UrlImageViewHelper)
+ * [AndroidQuery : ImageLoading](https://code.google.com/p/android-query/wiki/ImageLoading)
+ * [Volley : ImageLoader](https://android.googlesource.com/platform/frameworks/volley/)
+ * [DroidParts : ImageFetcher](http://droidparts.org/image_fetcher.html)
 
 ## License
 
