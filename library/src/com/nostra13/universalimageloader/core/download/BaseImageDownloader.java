@@ -171,8 +171,8 @@ public class BaseImageDownloader implements ImageDownloader {
 	 */
 	protected InputStream getStreamFromContent(String imageUri, Object extra) throws FileNotFoundException {
 		ContentResolver res = context.getContentResolver();
-		Uri uri = Uri.parse(imageUri);
 
+		Uri uri = Uri.parse(imageUri);
 		if (isVideoUri(uri)) {
 			Long origId = Long.valueOf(uri.getLastPathSegment());
 			Bitmap bitmap = MediaStore.Video.Thumbnails
@@ -180,8 +180,7 @@ public class BaseImageDownloader implements ImageDownloader {
 			if (bitmap != null) {
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				bitmap.compress(CompressFormat.PNG, 0, bos);
-				byte[] bmpData = bos.toByteArray();
-				return new ByteArrayInputStream(bmpData);
+				return new ByteArrayInputStream(bos.toByteArray());
 			}
 		}
 
