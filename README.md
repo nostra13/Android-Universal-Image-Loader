@@ -42,7 +42,7 @@ Latest snapshot of the library - **[here](https://github.com/nostra13/Android-Un
  1. Look into **[Useful Info](https://github.com/nostra13/Android-Universal-Image-Loader#useful-info)**
  2. Search problem solution on **[StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)**
  3. Ask your own question on **[StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)**.<br />
-    **Be sure to mention following information** in your question (otherwise a question may be ignored)):
+    **Be sure to mention following information** in your question (otherwise a question may be ignored):
    - UIL version (e.g. 1.9.2)
    - Android version tested on (e.g. 2.1)
    - your configuration (`ImageLoaderConfiguration`)
@@ -285,7 +285,7 @@ Also look into more detailed **[Library Map](https://github.com/nostra13/Android
 
 ## Useful Info
 1. **Caching is NOT enabled by default.** If you want loaded images will be cached in memory and/or on disk then you should enable caching in DisplayImageOptions this way:
-``` java
+ ``` java
 // Create default options which will be used for every 
 //  displayImage(...) call if no options will be passed to this method
 DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
@@ -300,13 +300,13 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplic
             ...
             .build();
 ImageLoader.getInstance().init(config); // Do it on Application start
-```
-``` java
+ ```
+ ``` java
 // Then later, when you want to display image
 ImageLoader.getInstance().displayImage(imageUrl, imageView); // Default options will be used
 ```
-or this way:
-``` java
+ or this way:
+ ``` java
 DisplayImageOptions options = new DisplayImageOptions.Builder()
 			...
             .cacheInMemory(true)
@@ -314,13 +314,13 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
             ...
             .build();
 ImageLoader.getInstance().displayImage(imageUrl, imageView, options); // Incoming options will be used
-```
+ ```
 
 2. If you enabled disk caching then UIL try to cache images on external storage (/sdcard/Android/data/[package_name]/cache). If external storage is not available then images are cached on device's filesystem.
 To provide caching on external storage (SD card) add following permission to AndroidManifest.xml:
-``` java
+ ``` java
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-```
+ ```
 
 3. How UIL define Bitmap size needed for exact ImageView? It searches defined parameters:
  * Get actual measured width and height of ImageView
@@ -364,12 +364,12 @@ To provide caching on external storage (SD card) add following permission to And
  * `FadeInBitmapDisplayer` (Displays image with "fade in" animation)
 
 8. To avoid list (grid, ...) scrolling lags you can use `PauseOnScrollListener`:
-``` java
+ ``` java
 boolean pauseOnScroll = false; // or true
 boolean pauseOnFling = true; // or false
 PauseOnScrollListener listener = new PauseOnScrollListener(imageLoader, pauseOnScroll, pauseOnFling);
 listView.setOnScrollListener(listener);
-```
+ ```
 
 9. If you see in logs some strange supplement at the end of image URL (e.g. `http://anysite.com/images/image.png_230x460`) then it doesn't mean this URL is used in requests. This is just "URL + target size", also this is key for Bitmap in memory cache. This postfix (`_230x460`) is **NOT used in requests**.
 
