@@ -124,7 +124,21 @@ public final class ImageSizeUtils {
 		if (scale < 1) {
 			scale = 1;
 		}
+		scale = considerMaxTextureSize(srcWidth, srcHeight, scale, powerOf2Scale);
 
+		return scale;
+	}
+
+	private static int considerMaxTextureSize(int srcWidth, int srcHeight, int scale, boolean powerOf2) {
+		final int maxWidth = maxBitmapSize.getWidth();
+		final int maxHeight = maxBitmapSize.getHeight();
+		while ((srcWidth / scale) > maxWidth || (srcHeight / scale) > maxHeight) {
+			if (powerOf2) {
+				scale *= 2;
+			} else {
+				scale++;
+			}
+		}
 		return scale;
 	}
 
