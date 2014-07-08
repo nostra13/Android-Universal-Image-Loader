@@ -65,8 +65,13 @@ public final class StorageUtils {
 	 */
 	public static File getCacheDirectory(Context context, boolean preferExternal) {
 		File appCacheDir = null;
-		if (preferExternal && MEDIA_MOUNTED
-				.equals(Environment.getExternalStorageState()) && hasExternalStoragePermission(context)) {
+		String externalStorageState;
+		try {
+			externalStorageState = Environment.getExternalStorageState();
+		} catch (NullPointerException e) { // (sh)it happens (Issue #660)
+			externalStorageState = "";
+		}
+		if (preferExternal && MEDIA_MOUNTED.equals(externalStorageState) && hasExternalStoragePermission(context)) {
 			appCacheDir = getExternalCacheDir(context);
 		}
 		if (appCacheDir == null) {
