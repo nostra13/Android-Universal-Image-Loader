@@ -63,20 +63,24 @@ public class LruDiscCache implements DiskCache {
 	 *                          Name generator} for cached files. Generated names must match the regex
 	 *                          <strong>[a-z0-9_-]{1,64}</strong>
 	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
+	 * @throws IOException if cache can't be initialized (e.g. "No space left on device")
 	 */
-	public LruDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize) {
-		this(cacheDir, fileNameGenerator, cacheMaxSize, 0);
+	public LruDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize) throws IOException {
+		this(cacheDir, null, fileNameGenerator, cacheMaxSize, 0);
 	}
 
 	/**
 	 * @param cacheDir          Directory for file caching
+	 * @param reserveCacheDir   null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
 	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
 	 *                          Name generator} for cached files. Generated names must match the regex
 	 *                          <strong>[a-z0-9_-]{1,64}</strong>
 	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
 	 * @param cacheMaxFileCount Max file count in cache. <b>0</b> means file count is unlimited.
+	 * @throws IOException if cache can't be initialized (e.g. "No space left on device")
 	 */
-	public LruDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize, int cacheMaxFileCount) {
+	public LruDiscCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize,
+			int cacheMaxFileCount) throws IOException {
 		if (cacheDir == null) {
 			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);
 		}
@@ -97,11 +101,13 @@ public class LruDiscCache implements DiskCache {
 			cacheMaxFileCount = Integer.MAX_VALUE;
 		}
 
+		this.reserveCacheDir = reserveCacheDir;
 		this.fileNameGenerator = fileNameGenerator;
 		initCache(cacheDir, reserveCacheDir, cacheMaxSize, cacheMaxFileCount);
 	}
 
-	private void initCache(File cacheDir, File reserveCacheDir, long cacheMaxSize, int cacheMaxFileCount) {
+	private void initCache(File cacheDir, File reserveCacheDir, long cacheMaxSize, int cacheMaxFileCount)
+			throws IOException {
 		try {
 			cache = DiskLruCache.open(cacheDir, 1, 1, cacheMaxSize, cacheMaxFileCount);
 		} catch (IOException e) {
@@ -110,7 +116,7 @@ public class LruDiscCache implements DiskCache {
 				initCache(reserveCacheDir, null, cacheMaxSize, cacheMaxFileCount);
 			}
 			if (cache == null) {
-				throw new RuntimeException("Can't initialize disk cache", e);
+				throw e; //new RuntimeException("Can't initialize disk cache", e);
 			}
 		}
 	}
@@ -206,20 +212,16 @@ public class LruDiscCache implements DiskCache {
 			cache.delete();
 		} catch (IOException e) {
 			L.e(e);
-		} finally {
+		}
+		try {
 			initCache(cache.getDirectory(), reserveCacheDir, cache.getMaxSize(), cache.getMaxFileCount());
+		} catch (IOException e) {
+			L.e(e);
 		}
 	}
 
 	private String getKey(String imageUri) {
 		return fileNameGenerator.generate(imageUri);
-	}
-
-	/**
-	 * @param reserveCacheDir null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
-	 */
-	public void setReserveCacheDir(File reserveCacheDir) {
-		this.reserveCacheDir = reserveCacheDir;
 	}
 
 	public void setBufferSize(int bufferSize) {

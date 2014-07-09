@@ -31,9 +31,11 @@ import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
+import com.nostra13.universalimageloader.utils.L;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -79,14 +81,16 @@ public class DefaultConfigurationFactory {
 		File reserveCacheDir = createReserveDiskCacheDir(context);
 		if (diskCacheSize > 0 || diskCacheFileCount > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
-			LruDiscCache diskCache = new LruDiscCache(individualCacheDir, diskCacheFileNameGenerator, diskCacheSize,
-					diskCacheFileCount);
-			diskCache.setReserveCacheDir(reserveCacheDir);
-			return diskCache;
-		} else {
-			File cacheDir = StorageUtils.getCacheDirectory(context);
-			return new UnlimitedDiscCache(cacheDir, reserveCacheDir, diskCacheFileNameGenerator);
+			try {
+				return new LruDiscCache(individualCacheDir, reserveCacheDir, diskCacheFileNameGenerator, diskCacheSize,
+						diskCacheFileCount);
+			} catch (IOException e) {
+				L.e(e);
+				// continue and create unlimited cache
+			}
 		}
+		File cacheDir = StorageUtils.getCacheDirectory(context);
+		return new UnlimitedDiscCache(cacheDir, reserveCacheDir, diskCacheFileNameGenerator);
 	}
 
 	/** Creates reserve disk cache folder which will be used if primary disk cache folder becomes unavailable */
