@@ -124,8 +124,6 @@ public final class Constants {
 			// Light images
 			"http://tabletpcssource.com/wp-content/uploads/2011/05/android-logo.png",
 			"http://simpozia.com/pages/images/stories/windows-icon.png",
-			"https://si0.twimg.com/profile_images/1135218951/gmail_profile_icon3_normal.png",
-			"http://www.krify.net/wp-content/uploads/2011/09/Macromedia_Flash_dock_icon.png",
 			"http://radiotray.sourceforge.net/radio.png",
 			"http://www.bandwidthblog.com/wp-content/uploads/2011/11/twitter-logo.png",
 			"http://weloveicons.s3.amazonaws.com/icons/100907_itunes1.png",
