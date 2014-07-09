@@ -114,6 +114,13 @@ public class ImageSizeTest {
 		Assertions.assertThat(result).isEqualTo(10);
 		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(8);
+
+		srcSize = new ImageSize(5000, 70);
+		targetSize = new ImageSize(2000, 30);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		Assertions.assertThat(result).isEqualTo(3);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		Assertions.assertThat(result).isEqualTo(4);
 	}
 
 	@Test
@@ -148,6 +155,13 @@ public class ImageSizeTest {
 		Assertions.assertThat(result).isEqualTo(3);
 		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(2);
+
+		srcSize = new ImageSize(5000, 70);
+		targetSize = new ImageSize(300, 30);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		Assertions.assertThat(result).isEqualTo(3);
+		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		Assertions.assertThat(result).isEqualTo(4);
 	}
 
 	/** Fixes {@link NoSuchMethodError} for <code>ImageView#onLayout(...)</code> */
