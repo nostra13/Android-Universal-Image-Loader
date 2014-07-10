@@ -16,4 +16,4 @@ before_install:
   - echo yes | android update sdk --filter "$TOOLS" --no-ui --force
   # API 16 stuff which needs to be provided
   - SDK=$(android list sdk --no-ui | grep ", API 16," | cut -d"-" -f1)
-  - android update sdk --filter "$SDK" --no-ui --force
+  - echo yes | android update sdk --filter "$SDK" --no-ui --force
