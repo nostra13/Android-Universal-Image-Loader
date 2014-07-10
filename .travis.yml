@@ -4,8 +4,8 @@ before_install:
   - sudo apt-get update -qq
   - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
   # download the latest android sdk and unzip
-  - wget http://dl.google.com/android/android-sdk_r21.1-linux.tgz
-  - tar -zxf android-sdk_r21.1-linux.tgz
+  - wget http://dl.google.com/android/android-sdk_r23.0.2-linux.tgz
+  - tar -zxf android-sdk_r23.0.2-linux.tgz
   # setup your ANDROID_HOME and PATH environment variables
   # use ~/builds/[Github username]/[project]/android-sdk-linux
   - export ANDROID_HOME=`pwd`/android-sdk-linux
@@ -17,4 +17,3 @@ before_install:
   # API 16 stuff which needs to be provided
   - SDK=$(android list sdk --no-ui | grep ", API 16," | cut -d"-" -f1)
   - android update sdk --filter "$SDK" --no-ui --force
-  - /home/travis/build/nostra13/Android-Universal-Image-Loader/android-sdk-linux/tools/android update sdk --no-ui --obsolete --force
