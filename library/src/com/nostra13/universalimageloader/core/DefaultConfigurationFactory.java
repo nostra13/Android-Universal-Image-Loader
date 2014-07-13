@@ -145,8 +145,7 @@ public class DefaultConfigurationFactory {
 
 		DefaultThreadFactory(int threadPriority, String threadNamePrefix) {
 			this.threadPriority = threadPriority;
-			SecurityManager s = System.getSecurityManager();
-			group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
+			group = Thread.currentThread().getThreadGroup();
 			namePrefix = threadNamePrefix + poolNumber.getAndIncrement() + "-thread-";
 		}
 
