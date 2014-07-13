@@ -1,4 +1,8 @@
 language: android
+android:
+  components:
+    - build-tools-19.0.2
+    - android-16
 before_install:
   # fix the 64bit box
   - sudo apt-get update -qq
@@ -18,7 +22,3 @@ before_install:
   - SDK=$(android list sdk --no-ui | grep ", API 16," | cut -d"-" -f1)
   - echo yes | android update sdk --filter "$SDK" --no-ui --force
 
-android:
-  components:
-    - build-tools-19.0.2
-    - android-19
