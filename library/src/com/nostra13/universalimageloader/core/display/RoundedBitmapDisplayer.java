@@ -32,7 +32,8 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
  * <br />
  * <br />
  * If this implementation doesn't meet your needs then consider
- * <a href="https://github.com/vinc3m1/RoundedImageView">this project</a> for usage.
+ * <a href="https://github.com/vinc3m1/RoundedImageView">RoundedImageView</a> or
+ * <a href="https://github.com/Pkmmte/CircularImageView">CircularImageView</a> projects for usage.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.5.6
