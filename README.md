@@ -75,7 +75,7 @@ or
 or
 
 **Gradle dependency:**
-```
+``` groovy
 compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.2'
 ```
 
