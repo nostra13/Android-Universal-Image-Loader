@@ -26,7 +26,7 @@ Android 2.0+ support
  * **[universal-image-loader-1.9.2.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.2.jar)** (library; contains *.class files)
  * **[universal-image-loader-1.9.2-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.2-sources.jar)** (sources; contains *.java files)
  * **[universal-image-loader-1.9.2-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.2-javadoc.jar)** (Java docs; contains *.html files)
- * **[universal-image-loader-1.9.2-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.2-with-sources.jar)** (library with sources inside; contains *.class and *.java files)<br />_Prefer to use this JAR so you can see Java docs in Eclipse tooltips._
+ * **[universal-image-loader-1.9.2-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.2-with-sources.jar)** (library with sources inside; contains *.class and *.java files)<br />_Use this JAR if you use Eclipse. So you can see Java docs in tooltips._
  * **[universal-image-loader-sample-1.9.2.apk](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.9.2.apk)** (sample application)
 
 Latest snapshot of the library - **[here](https://github.com/nostra13/Android-Universal-Image-Loader/tree/master/sample/libs)**
@@ -58,7 +58,7 @@ If you have some **issues on migration** to newer library version - be sure to a
 #### 1. Include library
 
 **Manual:**
- * [Download JAR](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.2-with-sources.jar)
+ * [Download JAR](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.2.jar)
  * Put the JAR in the **libs** subfolder of your Android project
 
 or
@@ -75,19 +75,17 @@ or
 #### 2. Android Manifest
 ``` xml
 <manifest>
+	<!-- Include following permission if you load images from Internet -->
 	<uses-permission android:name="android.permission.INTERNET" />
-	<!-- Include next permission if you want to allow UIL to cache images on SD card -->
+	<!-- Include following permission if you want to allow UIL to cache images on SD card -->
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	...
-	<application android:name="MyApplication">
-		...
-	</application>
 </manifest>
 ```
 
-#### 3. Application class
+#### 3. Application or Activity class (before the first usage of ImageLoader)
 ``` java
-public class MyApplication extends Application {
+public class MyActivity extends Activity {
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -97,6 +95,7 @@ public class MyApplication extends Application {
 			...
 			.build();
 		ImageLoader.getInstance().init(config);
+		...
 	}
 }
 ```
@@ -110,6 +109,7 @@ public class MyApplication extends Application {
 All options in Configuration builder are optional. Use only those you really want to customize.<br />*See default values for config options in Java docs for every option.*
 ``` java
 // DON'T COPY THIS CODE TO YOUR PROJECT! This is just example of ALL options using.
+// See the sample project how to use ImageLoader correctly.
 File cacheDir = StorageUtils.getCacheDirectory(context);
 ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
 		.memoryCacheExtraOptions(480, 800) // default = device screen dimensions
@@ -140,6 +140,7 @@ Display Options can be applied to every display task (`ImageLoader.displayImage(
 **Note:** If Display Options wasn't passed to `ImageLoader.displayImage(...)`method then default Display Options from configuration (`ImageLoaderConfiguration.defaultDisplayImageOptions(...)`) will be used.
 ``` java
 // DON'T COPY THIS CODE TO YOUR PROJECT! This is just example of ALL options using.
+// See the sample project how to use ImageLoader correctly.
 DisplayImageOptions options = new DisplayImageOptions.Builder()
 		.showImageOnLoading(R.drawable.ic_stub) // resource or drawable
 		.showImageForEmptyUri(R.drawable.ic_empty) // resource or drawable
@@ -332,13 +333,12 @@ To provide caching on external storage (SD card) add following permission to And
  So **try to set** `android:layout_width`|`android:layout_height` or `android:maxWidth`|`android:maxHeight` parameters for ImageView if you know approximate maximum size of it. It will help correctly compute Bitmap size needed for this view and **save memory**.
 
 4. If you often got **OutOfMemoryError** in your app using Universal Image Loader then:
- - Disable caching in memory. If OOM is still occurs then it's a defect of your app.
+ - Disable caching in memory. If OOM is still occurs then it seems your app has a memory leak. Use MemoryAnalyzer to detect it.
  Otherwise try the following steps (all of them or several):
  - Reduce thread pool size in configuration (`.threadPoolSize(...)`). 1 - 5 is recommended.
  - Use `.bitmapConfig(Bitmap.Config.RGB_565)` in display options. Bitmaps in RGB_565 consume 2 times less memory than in ARGB_8888.
  - Use `.imageScaleType(ImageScaleType.EXACTLY)`
  - Use `.diskCacheExtraOptions(480, 320, null)` in configuration
-
 
 5. For memory cache configuration (`ImageLoaderConfiguration.memoryCache(...)`) you can use already prepared implementations.
  * Cache using **only strong** references:
@@ -376,7 +376,7 @@ listView.setOnScrollListener(listener);
 10. ImageLoader always keeps aspect ratio of images.
 
 ## Applications using Universal Image Loader
-**[MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)** | **[Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)** | **[ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox)**, [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro) | [Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities) | [Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test) | [Sporee - Live Soccer Scores](https://play.google.com/store/apps/details?id=com.sporee.android) | **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)** | [PhotoDownloader for Facebook](https://play.google.com/store/apps/details?id=com.giannz.photodownloader) | **[Topface - meeting is easy](https://play.google.com/store/apps/details?id=com.topface.topface)** | **[reddit is fun](https://play.google.com/store/apps/details?id=com.andrewshu.android.reddit)** | **[Diaro - personal diary](https://play.google.com/store/apps/details?id=com.pixelcrater.Diaro)** |  [WebMoney Keeper Mobile](https://play.google.com/store/apps/details?id=ru.webmoney.keeper.mobile) | **[LoL Memento League of Legends](https://play.google.com/store/apps/details?id=com.buchland.lolmemento)** | **[Meetup](https://play.google.com/store/apps/details?id=com.meetup)** | [Vingle - Magazines by Fans](https://play.google.com/store/apps/details?id=com.vingle.android) | [Anime Music Radio](https://play.google.com/store/apps/details?id=com.maxxt.animeradio) | [WidgetLocker Theme Viewer](https://play.google.com/store/apps/details?id=com.companionfree.WLThemeViewer) | [ShortBlogger for Tumblr](https://play.google.com/store/apps/details?id=com.luckydroid.tumblelog) | [SnapDish Food Camera](https://play.google.com/store/apps/details?id=com.vuzz.snapdish) | **[Twitch](https://play.google.com/store/apps/details?id=tv.twitch.android.viewer)** | [TVShow Time, TV show guide](https://play.google.com/store/apps/details?id=com.tozelabs.tvshowtime) | [Planning Center Services](https://play.google.com/store/apps/details?id=com.ministrycentered.PlanningCenter) | [Daybe - 일기가 되는 SNS](https://play.google.com/store/apps/details?id=com.daybe) | **[Lapse It](https://play.google.com/store/apps/details?id=com.ui.LapseIt)** | [My Cloud Player for SoundCloud](https://play.google.com/store/apps/details?id=com.mycloudplayers.mycloudplayer) | **[SoundTracking](https://play.google.com/store/apps/details?id=com.schematiclabs.soundtracking)** | [LoopLR Social Video](https://play.google.com/store/apps/details?id=com.looplr) | [Reddit Pics HD](https://play.google.com/store/apps/details?id=com.funpokes.redditpics) | [Hír24](https://play.google.com/store/apps/details?id=hu.sanomamedia.hir24) | **[Immobilien Scout24](https://play.google.com/store/apps/details?id=de.is24.android)** | **[Lieferheld - Pizza Pasta Sushi](https://play.google.com/store/apps/details?id=de.lieferheld.android)** | [Loocator: free sex datings](https://play.google.com/store/apps/details?id=com.ivicode.loocator) | [벨팡-개편 이벤트,컬러링,벨소리,무료,최신가요,링투유](https://play.google.com/store/apps/details?id=com.mediahubs.www) | [Streambels AirPlay/DLNA Player](https://play.google.com/store/apps/details?id=com.tuxera.streambels) | [Ship Mate - All Cruise Lines](https://play.google.com/store/apps/details?id=shipmate.carnival) | [Disk & Storage Analyzer](https://play.google.com/store/apps/details?id=com.mobile_infographics_tools.mydrive) | [糗事百科](https://play.google.com/store/apps/details?id=qsbk.app) | [Balance BY](https://play.google.com/store/apps/details?id=com.vladyud.balance)
+**[MediaHouse, UPnP/DLNA Browser](https://play.google.com/store/apps/details?id=com.dbapp.android.mediahouse)** | **[Prezzi Benzina (AndroidFuel)](https://play.google.com/store/apps/details?id=org.vernazza.androidfuel)** | **[ROM Toolbox Lite](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolbox)**, [Pro](https://play.google.com/store/apps/details?id=com.jrummy.liberty.toolboxpro) | [Stadium Astro](https://play.google.com/store/apps/details?id=com.astro.stadium.activities) | [Chef Astro](https://play.google.com/store/apps/details?id=com.sencha.test) | [Sporee - Live Soccer Scores](https://play.google.com/store/apps/details?id=com.sporee.android) | **[EyeEm - Photo Filter Camera](https://play.google.com/store/apps/details?id=com.baseapp.eyeem)** | [PhotoDownloader for Facebook](https://play.google.com/store/apps/details?id=com.giannz.photodownloader) | **[Topface - meeting is easy](https://play.google.com/store/apps/details?id=com.topface.topface)** | **[reddit is fun](https://play.google.com/store/apps/details?id=com.andrewshu.android.reddit)** | **[Diaro - personal diary](https://play.google.com/store/apps/details?id=com.pixelcrater.Diaro)** |  [WebMoney Keeper Mobile](https://play.google.com/store/apps/details?id=ru.webmoney.keeper.mobile) | **[LoL Memento League of Legends](https://play.google.com/store/apps/details?id=com.buchland.lolmemento)** | **[Meetup](https://play.google.com/store/apps/details?id=com.meetup)** | [Vingle - Magazines by Fans](https://play.google.com/store/apps/details?id=com.vingle.android) | [Anime Music Radio](https://play.google.com/store/apps/details?id=com.maxxt.animeradio) | [WidgetLocker Theme Viewer](https://play.google.com/store/apps/details?id=com.companionfree.WLThemeViewer) | [ShortBlogger for Tumblr](https://play.google.com/store/apps/details?id=com.luckydroid.tumblelog) | [SnapDish Food Camera](https://play.google.com/store/apps/details?id=com.vuzz.snapdish) | **[Twitch](https://play.google.com/store/apps/details?id=tv.twitch.android.viewer)** | [TVShow Time, TV show guide](https://play.google.com/store/apps/details?id=com.tozelabs.tvshowtime) | [Planning Center Services](https://play.google.com/store/apps/details?id=com.ministrycentered.PlanningCenter) | [Daybe - 일기가 되는 SNS](https://play.google.com/store/apps/details?id=com.daybe) | **[Lapse It](https://play.google.com/store/apps/details?id=com.ui.LapseIt)** | [My Cloud Player for SoundCloud](https://play.google.com/store/apps/details?id=com.mycloudplayers.mycloudplayer) | **[SoundTracking](https://play.google.com/store/apps/details?id=com.schematiclabs.soundtracking)** | [LoopLR Social Video](https://play.google.com/store/apps/details?id=com.looplr) | [Reddit Pics HD](https://play.google.com/store/apps/details?id=com.funpokes.redditpics) | [Hír24](https://play.google.com/store/apps/details?id=hu.sanomamedia.hir24) | **[Immobilien Scout24](https://play.google.com/store/apps/details?id=de.is24.android)** | **[Lieferheld - Pizza Pasta Sushi](https://play.google.com/store/apps/details?id=de.lieferheld.android)** | [Loocator: free sex datings](https://play.google.com/store/apps/details?id=com.ivicode.loocator) | [벨팡-개편 이벤트,컬러링,벨소리,무료,최신가요,링투유](https://play.google.com/store/apps/details?id=com.mediahubs.www) | [Streambels AirPlay/DLNA Player](https://play.google.com/store/apps/details?id=com.tuxera.streambels) | [Ship Mate - All Cruise Lines](https://play.google.com/store/apps/details?id=shipmate.carnival) | [Disk & Storage Analyzer](https://play.google.com/store/apps/details?id=com.mobile_infographics_tools.mydrive) | [糗事百科](https://play.google.com/store/apps/details?id=qsbk.app) | [Balance BY](https://play.google.com/store/apps/details?id=com.vladyud.balance) | **[Anti Theft Alarm - Security](https://play.google.com/store/apps/details?id=br.com.verde.alarme)**
 
 ## Donation
 You can support the project and thank the author for his hard work :)
@@ -388,12 +388,12 @@ You can support the project and thank the author for his hard work :)
 
 ## Alternative libraries
 
- * [Picasso](https://github.com/square/picasso)
- * [Glide](https://github.com/bumptech/glide)
- * [UrlImageViewHelper](https://github.com/koush/UrlImageViewHelper)
  * [AndroidQuery : ImageLoading](https://code.google.com/p/android-query/wiki/ImageLoading)
- * [Volley : ImageLoader](https://android.googlesource.com/platform/frameworks/volley/)
  * [DroidParts : ImageFetcher](http://droidparts.org/image_fetcher.html)
+ * [Glide](https://github.com/bumptech/glide)
+ * [Picasso](https://github.com/square/picasso)
+ * [UrlImageViewHelper](https://github.com/koush/UrlImageViewHelper)
+ * [Volley : ImageLoader](https://android.googlesource.com/platform/frameworks/volley/)
 
 ## License
 
