@@ -15,6 +15,8 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.memory;
 
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+
 import android.graphics.Bitmap;
 
 /**
@@ -24,4 +26,9 @@ import android.graphics.Bitmap;
  * @since 1.9.2
  */
 public interface MemoryCache extends MemoryCacheAware<String, Bitmap> {
+
+	/**
+	 * Generates key for memory cache.
+	 */
+	public String generateKey(String imageUri, ImageSize targetSize);
 }

@@ -3,6 +3,8 @@ package com.nostra13.universalimageloader.cache.memory.impl;
 import android.graphics.Bitmap;
 
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -126,6 +128,11 @@ public class LruMemoryCache implements MemoryCache {
 	@Override
 	public void clear() {
 		trimToSize(-1); // -1 will evict 0-sized elements
+	}
+
+	@Override
+	public String generateKey(String imageUri, ImageSize targetSize) {
+		return MemoryCacheUtils.generateKey(imageUri, targetSize);
 	}
 
 	/**

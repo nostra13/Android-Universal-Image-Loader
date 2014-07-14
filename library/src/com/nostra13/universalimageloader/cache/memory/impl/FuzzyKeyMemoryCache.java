@@ -18,6 +18,8 @@ package com.nostra13.universalimageloader.cache.memory.impl;
 import android.graphics.Bitmap;
 
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -77,5 +79,10 @@ public class FuzzyKeyMemoryCache implements MemoryCache {
 	@Override
 	public Collection<String> keys() {
 		return cache.keys();
+	}
+
+	@Override
+	public String generateKey(String imageUri, ImageSize targetSize) {
+		return MemoryCacheUtils.generateKey(imageUri, targetSize);
 	}
 }
