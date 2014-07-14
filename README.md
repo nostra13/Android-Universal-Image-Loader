@@ -72,6 +72,13 @@ or
 </dependency>
 ```
 
+or
+
+**Gradle dependency:**
+```
+compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.2'
+```
+
 #### 2. Android Manifest
 ``` xml
 <manifest>
