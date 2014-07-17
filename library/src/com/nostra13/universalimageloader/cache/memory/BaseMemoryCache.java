@@ -15,10 +15,17 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.memory;
 
+import java.lang.ref.Reference;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import android.graphics.Bitmap;
 
-import java.lang.ref.Reference;
-import java.util.*;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 /**
  * Base memory cache. Implements common functionality for memory cache. Provides object references (
@@ -65,6 +72,11 @@ public abstract class BaseMemoryCache implements MemoryCache {
 	public void clear() {
 		softMap.clear();
 	}
+
+	@Override
+	public String generateKey(String imageUri, ImageSize targetSize) {
+		return MemoryCacheUtils.generateKey(imageUri, targetSize);
+	};
 
 	/** Creates {@linkplain Reference not strong} reference of value */
 	protected abstract Reference<Bitmap> createReference(Bitmap value);

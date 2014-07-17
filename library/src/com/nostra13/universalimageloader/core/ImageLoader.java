@@ -36,7 +36,6 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListe
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.utils.ImageSizeUtils;
 import com.nostra13.universalimageloader.utils.L;
-import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 /**
  * Singletone for image loading and displaying at {@link ImageView ImageViews}<br />
@@ -229,7 +228,7 @@ public class ImageLoader {
 		}
 
 		ImageSize targetSize = ImageSizeUtils.defineTargetSizeForView(imageAware, configuration.getMaxImageSize());
-		String memoryCacheKey = MemoryCacheUtils.generateKey(uri, targetSize);
+		String memoryCacheKey = configuration.memoryCache.generateKey(uri, targetSize);
 		engine.prepareDisplayTaskFor(imageAware, memoryCacheKey);
 
 		listener.onLoadingStarted(uri, imageAware.getWrappedView());
