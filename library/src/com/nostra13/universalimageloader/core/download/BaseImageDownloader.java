@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
@@ -173,7 +174,7 @@ public class BaseImageDownloader implements ImageDownloader {
 		ContentResolver res = context.getContentResolver();
 
 		Uri uri = Uri.parse(imageUri);
-		if (isVideoUri(uri)) {
+		if (isVideoUri(uri)) { // video thumbnail
 			Long origId = Long.valueOf(uri.getLastPathSegment());
 			Bitmap bitmap = MediaStore.Video.Thumbnails
 					.getThumbnail(res, origId, MediaStore.Images.Thumbnails.MINI_KIND, null);
@@ -182,6 +183,8 @@ public class BaseImageDownloader implements ImageDownloader {
 				bitmap.compress(CompressFormat.PNG, 0, bos);
 				return new ByteArrayInputStream(bos.toByteArray());
 			}
+		} else if (imageUri.startsWith(CONTENT_CONTACTS_URI_PREFIX)) { // contacts photo
+			return ContactsContract.Contacts.openContactPhotoInputStream(res, uri);
 		}
 
 		return res.openInputStream(uri);
