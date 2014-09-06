@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2011-2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.example.universalimageloader.fragment;
+package com.nostra13.universalimageloader.sample.fragment;
 
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AbsListView;
-import com.nostra13.example.universalimageloader.Constants;
-import com.nostra13.example.universalimageloader.R;
-import com.nostra13.example.universalimageloader.activity.SimpleImageActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
+import com.nostra13.universalimageloader.sample.Constants;
+import com.nostra13.universalimageloader.sample.R;
+import com.nostra13.universalimageloader.sample.activity.SimpleImageActivity;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)

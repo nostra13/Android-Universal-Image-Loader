@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.example.universalimageloader.activity;
+package com.nostra13.universalimageloader.sample.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,9 +21,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import com.nostra13.example.universalimageloader.fragment.ImageGridFragment;
-import com.nostra13.example.universalimageloader.fragment.ImageListFragment;
-import com.nostra13.example.universalimageloader.R;
+import com.nostra13.universalimageloader.sample.R;
+import com.nostra13.universalimageloader.sample.fragment.ImageGridFragment;
+import com.nostra13.universalimageloader.sample.fragment.ImageListFragment;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)

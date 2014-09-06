@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.example.universalimageloader.activity;
+package com.nostra13.universalimageloader.sample.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import com.nostra13.example.universalimageloader.Constants;
-import com.nostra13.example.universalimageloader.R;
-import com.nostra13.example.universalimageloader.fragment.ImageGalleryFragment;
-import com.nostra13.example.universalimageloader.fragment.ImageGridFragment;
-import com.nostra13.example.universalimageloader.fragment.ImageListFragment;
-import com.nostra13.example.universalimageloader.fragment.ImagePagerFragment;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.sample.Constants;
+import com.nostra13.universalimageloader.sample.R;
+import com.nostra13.universalimageloader.sample.fragment.ImageGalleryFragment;
+import com.nostra13.universalimageloader.sample.fragment.ImageGridFragment;
+import com.nostra13.universalimageloader.sample.fragment.ImageListFragment;
+import com.nostra13.universalimageloader.sample.fragment.ImagePagerFragment;
 import com.nostra13.universalimageloader.utils.L;
 
 import java.io.File;
@@ -84,6 +86,26 @@ public class HomeActivity extends Activity {
 	public void onBackPressed() {
 		ImageLoader.getInstance().stop();
 		super.onBackPressed();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.item_clear_memory_cache:
+				ImageLoader.getInstance().clearMemoryCache();
+				return true;
+			case R.id.item_clear_disc_cache:
+				ImageLoader.getInstance().clearDiskCache();
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	private void copyTestImageToSdCard(final File testImageOnSdCard) {
