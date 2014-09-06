@@ -1,6 +1,17 @@
 Change Log
 ===
 
+v1.9.3 *(06.09.2014)*
+---
+ * Introduced `ImageScaleType.NONE_SAFE`
+ * Video thumbnails support (`content://...`)
+ * Animated drawables support (for `.showImageOnLoading()`, `.showImageOnFail()`, `.showImageForEmptyUri()`)
+ * Fixed bugs:
+   * `loadImageSync(...)` bug ([#636](https://github.com/nostra13/Android-Universal-Image-Loader/issues/636))
+   * NPE if no free space while init disk cache
+   * "Bitmap too large ..." for all ImageScaleTypes
+   * contacts photo considering
+
 v1.9.2 *(24.05.2014)*
 ---
  * New Disk cache API (preparing renaming `disc` -> `disk`)
