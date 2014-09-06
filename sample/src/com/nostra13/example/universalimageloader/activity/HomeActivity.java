@@ -13,26 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.example.universalimageloader;
+package com.nostra13.example.universalimageloader.activity;
 
-import static com.nostra13.example.universalimageloader.Constants.IMAGES;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import com.nostra13.example.universalimageloader.Constants;
+import com.nostra13.example.universalimageloader.R;
+import com.nostra13.example.universalimageloader.fragment.ImageGalleryFragment;
+import com.nostra13.example.universalimageloader.fragment.ImageGridFragment;
+import com.nostra13.example.universalimageloader.fragment.ImageListFragment;
+import com.nostra13.example.universalimageloader.fragment.ImagePagerFragment;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.utils.L;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-
-import com.nostra13.example.universalimageloader.Constants.Extra;
-import com.nostra13.universalimageloader.utils.L;
-
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends Activity {
 
 	private static final String TEST_FILE_NAME = "Universal Image Loader @#&=+-_.,!()~'%20.png";
 
@@ -48,32 +52,37 @@ public class HomeActivity extends BaseActivity {
 	}
 
 	public void onImageListClick(View view) {
-		Intent intent = new Intent(this, ImageListActivity.class);
-		intent.putExtra(Extra.IMAGES, IMAGES);
+		Intent intent = new Intent(this, SimpleImageActivity.class);
+		intent.putExtra(Constants.Extra.FRAGMENT_INDEX, ImageListFragment.INDEX);
 		startActivity(intent);
 	}
 
 	public void onImageGridClick(View view) {
-		Intent intent = new Intent(this, ImageGridActivity.class);
-		intent.putExtra(Extra.IMAGES, IMAGES);
+		Intent intent = new Intent(this, SimpleImageActivity.class);
+		intent.putExtra(Constants.Extra.FRAGMENT_INDEX, ImageGridFragment.INDEX);
 		startActivity(intent);
 	}
 
 	public void onImagePagerClick(View view) {
-		Intent intent = new Intent(this, ImagePagerActivity.class);
-		intent.putExtra(Extra.IMAGES, IMAGES);
+		Intent intent = new Intent(this, SimpleImageActivity.class);
+		intent.putExtra(Constants.Extra.FRAGMENT_INDEX, ImagePagerFragment.INDEX);
 		startActivity(intent);
 	}
 
 	public void onImageGalleryClick(View view) {
-		Intent intent = new Intent(this, ImageGalleryActivity.class);
-		intent.putExtra(Extra.IMAGES, IMAGES);
+		Intent intent = new Intent(this, SimpleImageActivity.class);
+		intent.putExtra(Constants.Extra.FRAGMENT_INDEX, ImageGalleryFragment.INDEX);
+		startActivity(intent);
+	}
+
+	public void onFragmentsClick(View view) {
+		Intent intent = new Intent(this, ComplexImageActivity.class);
 		startActivity(intent);
 	}
 
 	@Override
 	public void onBackPressed() {
-		imageLoader.stop();
+		ImageLoader.getInstance().stop();
 		super.onBackPressed();
 	}
 

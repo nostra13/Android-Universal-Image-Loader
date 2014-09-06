@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="5"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="20" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -14,9 +14,10 @@
     <application
         android:name=".UILApplication"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+		android:allowBackup="false">
         <activity
-            android:name=".HomeActivity"
+            android:name=".activity.HomeActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,17 +26,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ImageListActivity"
+            android:name=".activity.SimpleImageActivity"
             android:label="@string/ac_name_image_list" />
-        <activity
-            android:name=".ImageGridActivity"
-            android:label="@string/ac_name_image_grid" />
-        <activity
-            android:name=".ImagePagerActivity"
-            android:label="@string/ac_name_image_pager" />
-        <activity
-            android:name=".ImageGalleryActivity"
-            android:label="@string/ac_name_image_gallery" />
+		<activity
+			android:name=".activity.ComplexImageActivity"
+			android:label="@string/ac_name_complex" />
 
         <!-- Widget -->
         <receiver android:name=".widget.UILWidgetProvider" >

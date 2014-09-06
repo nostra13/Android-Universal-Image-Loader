@@ -13,21 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.example.universalimageloader;
+package com.nostra13.example.universalimageloader.fragment;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import com.nostra13.example.universalimageloader.Constants.Extra;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+import com.nostra13.example.universalimageloader.Constants;
+import com.nostra13.example.universalimageloader.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -36,51 +42,47 @@ import java.util.List;
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class ImageListActivity extends AbsListViewBaseActivity {
+public class ImageListFragment extends AbsListViewBaseFragment {
+
+	public static final int INDEX = 0;
+
+	String[] imageUrls = Constants.IMAGES;
 
 	DisplayImageOptions options;
-
-	String[] imageUrls;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.ac_image_list);
-
-		Bundle bundle = getIntent().getExtras();
-		imageUrls = bundle.getStringArray(Extra.IMAGES);
 
 		options = new DisplayImageOptions.Builder()
-			.showImageOnLoading(R.drawable.ic_stub)
-			.showImageForEmptyUri(R.drawable.ic_empty)
-			.showImageOnFail(R.drawable.ic_error)
-			.cacheInMemory(true)
-			.cacheOnDisk(true)
-			.considerExifParams(true)
-			.displayer(new RoundedBitmapDisplayer(20))
-			.build();
+				.showImageOnLoading(R.drawable.ic_stub)
+				.showImageForEmptyUri(R.drawable.ic_empty)
+				.showImageOnFail(R.drawable.ic_error)
+				.cacheInMemory(true)
+				.cacheOnDisk(true)
+				.considerExifParams(true)
+				.displayer(new RoundedBitmapDisplayer(20))
+				.build();
+	}
 
-		listView = (ListView) findViewById(android.R.id.list);
-		((ListView) listView).setAdapter(new ItemAdapter());
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View rootView = inflater.inflate(R.layout.fr_image_list, container, false);
+		listView = (ListView) rootView.findViewById(android.R.id.list);
+		((ListView) listView).setAdapter(new ImageAdapter());
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				startImagePagerActivity(position);
 			}
 		});
+		return rootView;
 	}
 
 	@Override
-	public void onBackPressed() {
+	public void onDestroy() {
+		super.onDestroy();
 		AnimateFirstDisplayListener.displayedImages.clear();
-		super.onBackPressed();
-	}
-
-	private void startImagePagerActivity(int position) {
-		Intent intent = new Intent(this, ImagePagerActivity.class);
-		intent.putExtra(Extra.IMAGES, imageUrls);
-		intent.putExtra(Extra.IMAGE_POSITION, position);
-		startActivity(intent);
 	}
 
 	private static class ViewHolder {
@@ -88,9 +90,14 @@ public class ImageListActivity extends AbsListViewBaseActivity {
 		ImageView image;
 	}
 
-	class ItemAdapter extends BaseAdapter {
+	class ImageAdapter extends BaseAdapter {
 
+		private LayoutInflater inflater;
 		private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+
+		ImageAdapter() {
+			inflater = LayoutInflater.from(getActivity());
+		}
 
 		@Override
 		public int getCount() {
@@ -112,7 +119,7 @@ public class ImageListActivity extends AbsListViewBaseActivity {
 			View view = convertView;
 			final ViewHolder holder;
 			if (convertView == null) {
-				view = getLayoutInflater().inflate(R.layout.item_list_image, parent, false);
+				view = inflater.inflate(R.layout.item_list_image, parent, false);
 				holder = new ViewHolder();
 				holder.text = (TextView) view.findViewById(R.id.text);
 				holder.image = (ImageView) view.findViewById(R.id.image);
@@ -123,7 +130,7 @@ public class ImageListActivity extends AbsListViewBaseActivity {
 
 			holder.text.setText("Item " + (position + 1));
 
-			imageLoader.displayImage(imageUrls[position], holder.image, options, animateFirstListener);
+			ImageLoader.getInstance().displayImage(imageUrls[position], holder.image, options, animateFirstListener);
 
 			return view;
 		}

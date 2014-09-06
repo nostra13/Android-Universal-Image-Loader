@@ -13,25 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.example.universalimageloader;
+package com.nostra13.example.universalimageloader.fragment;
 
-import android.app.Activity;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-
+import com.nostra13.example.universalimageloader.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public abstract class BaseActivity extends Activity {
+public abstract class BaseFragment extends Fragment {
 
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main_menu, menu);
-		return true;
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setHasOptionsMenu(true);
+		setRetainInstance(true);
+	}
+
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.main_menu, menu);
 	}
 
 	@Override
@@ -41,7 +49,7 @@ public abstract class BaseActivity extends Activity {
 				imageLoader.clearMemoryCache();
 				return true;
 			case R.id.item_clear_disc_cache:
-				imageLoader.clearDiscCache();
+				imageLoader.clearDiskCache();
 				return true;
 			default:
 				return false;
