@@ -13,9 +13,7 @@
 		android:contentDescription="@string/descr_image"
 		android:paddingBottom="4dip"
 		android:paddingLeft="8dip"
-		android:paddingStart="8dip"
 		android:paddingRight="4dip"
-		android:paddingEnd="4dip"
 		android:paddingTop="4dip"
 		android:src="@drawable/ic_stub" />
 
@@ -27,9 +25,7 @@
 		android:contentDescription="@string/descr_image"
 		android:paddingBottom="4dip"
 		android:paddingLeft="4dip"
-		android:paddingStart="4dip"
 		android:paddingRight="8dip"
-		android:paddingEnd="8dip"
 		android:paddingTop="4dip"
 		android:src="@drawable/ic_stub" />
 
