@@ -68,6 +68,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	private static final String LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED = "ImageAware was collected by GC. Task is cancelled. [%s]";
 	private static final String LOG_TASK_INTERRUPTED = "Task was interrupted [%s]";
 
+	private static final String ERROR_NO_IMAGE_STREAM = "No stream for image [%s]";
 	private static final String ERROR_PRE_PROCESSOR_NULL = "Pre-processor returned null [%s]";
 	private static final String ERROR_POST_PROCESSOR_NULL = "Post-processor returned null [%s]";
 	private static final String ERROR_PROCESSOR_FOR_DISK_CACHE_NULL = "Bitmap processor for disk cache returned null [%s]";
@@ -288,10 +289,15 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	private boolean downloadImage() throws IOException {
 		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
-		try {
-			return configuration.diskCache.save(uri, is, this);
-		} finally {
-			IoUtils.closeSilently(is);
+		if (is == null) {
+			L.e(ERROR_NO_IMAGE_STREAM, memoryCacheKey);
+			return false;
+		} else {
+			try {
+				return configuration.diskCache.save(uri, is, this);
+			} finally {
+				IoUtils.closeSilently(is);
+			}
 		}
 	}
 
