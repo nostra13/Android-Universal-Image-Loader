@@ -49,9 +49,10 @@ public interface DiscCacheAware {
 
 	/**
 	 * Saves image stream in disk cache.
+	 * Incoming image stream shouldn't be closed in this method.
 	 *
 	 * @param imageUri    Original image URI
-	 * @param imageStream Input stream of image
+	 * @param imageStream Input stream of image (shouldn't be closed in this method)
 	 * @param listener    Listener for saving progress, can be ignored if you don't use
 	 *                    {@linkplain com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener
 	 *                    progress listener} in ImageLoader calls

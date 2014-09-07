@@ -111,7 +111,6 @@ public abstract class BaseDiscCache implements DiskCache {
 				IoUtils.closeSilently(os);
 			}
 		} finally {
-			IoUtils.closeSilently(imageStream);
 			if (loaded && !tmpFile.renameTo(imageFile)) {
 				loaded = false;
 			}

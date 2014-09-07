@@ -288,7 +288,11 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	private boolean downloadImage() throws IOException {
 		InputStream is = getDownloader().getStream(uri, options.getExtraForDownloader());
-		return configuration.diskCache.save(uri, is, this);
+		try {
+			return configuration.diskCache.save(uri, is, this);
+		} finally {
+			IoUtils.closeSilently(is);
+		}
 	}
 
 	/** Decodes image file into Bitmap, resize it and save it back */
