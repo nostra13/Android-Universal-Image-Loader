@@ -103,8 +103,7 @@ public final class IoUtils {
 	public static void readAndCloseStream(InputStream is) {
 		final byte[] bytes = new byte[DEFAULT_BUFFER_SIZE];
 		try {
-			while (is.read(bytes, 0, DEFAULT_BUFFER_SIZE) != -1) {
-			}
+			while (is.read(bytes, 0, DEFAULT_BUFFER_SIZE) != -1);
 		} catch (IOException e) {
 			// Do nothing
 		} finally {
