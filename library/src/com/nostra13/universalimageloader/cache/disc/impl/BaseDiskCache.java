@@ -35,7 +35,7 @@ import java.io.OutputStream;
  * @see FileNameGenerator
  * @since 1.0.0
  */
-public abstract class BaseDiscCache implements DiskCache {
+public abstract class BaseDiskCache implements DiskCache {
 	/** {@value */
 	public static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 Kb
 	/** {@value */
@@ -57,7 +57,7 @@ public abstract class BaseDiscCache implements DiskCache {
 	protected int compressQuality = DEFAULT_COMPRESS_QUALITY;
 
 	/** @param cacheDir Directory for file caching */
-	public BaseDiscCache(File cacheDir) {
+	public BaseDiskCache(File cacheDir) {
 		this(cacheDir, null);
 	}
 
@@ -65,7 +65,7 @@ public abstract class BaseDiscCache implements DiskCache {
 	 * @param cacheDir        Directory for file caching
 	 * @param reserveCacheDir null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
 	 */
-	public BaseDiscCache(File cacheDir, File reserveCacheDir) {
+	public BaseDiskCache(File cacheDir, File reserveCacheDir) {
 		this(cacheDir, reserveCacheDir, DefaultConfigurationFactory.createFileNameGenerator());
 	}
 
@@ -75,7 +75,7 @@ public abstract class BaseDiscCache implements DiskCache {
 	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
 	 *                          Name generator} for cached files
 	 */
-	public BaseDiscCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator) {
+	public BaseDiskCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator) {
 		if (cacheDir == null) {
 			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);
 		}

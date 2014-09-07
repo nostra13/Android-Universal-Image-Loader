@@ -21,8 +21,8 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
+import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
@@ -86,7 +86,7 @@ public class DefaultConfigurationFactory {
 		if (diskCacheSize > 0 || diskCacheFileCount > 0) {
 			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
 			try {
-				return new LruDiscCache(individualCacheDir, reserveCacheDir, diskCacheFileNameGenerator, diskCacheSize,
+				return new LruDiskCache(individualCacheDir, reserveCacheDir, diskCacheFileNameGenerator, diskCacheSize,
 						diskCacheFileCount);
 			} catch (IOException e) {
 				L.e(e);
@@ -94,7 +94,7 @@ public class DefaultConfigurationFactory {
 			}
 		}
 		File cacheDir = StorageUtils.getCacheDirectory(context);
-		return new UnlimitedDiscCache(cacheDir, reserveCacheDir, diskCacheFileNameGenerator);
+		return new UnlimitedDiskCache(cacheDir, reserveCacheDir, diskCacheFileNameGenerator);
 	}
 
 	/** Creates reserve disk cache folder which will be used if primary disk cache folder becomes unavailable */

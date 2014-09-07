@@ -36,7 +36,7 @@ import java.io.OutputStream;
  * @see FileNameGenerator
  * @since 1.9.2
  */
-public class LruDiscCache implements DiskCache {
+public class LruDiskCache implements DiskCache {
 	/** {@value */
 	public static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 Kb
 	/** {@value */
@@ -65,7 +65,7 @@ public class LruDiscCache implements DiskCache {
 	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
 	 * @throws IOException if cache can't be initialized (e.g. "No space left on device")
 	 */
-	public LruDiscCache(File cacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize) throws IOException {
+	public LruDiskCache(File cacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize) throws IOException {
 		this(cacheDir, null, fileNameGenerator, cacheMaxSize, 0);
 	}
 
@@ -79,7 +79,7 @@ public class LruDiscCache implements DiskCache {
 	 * @param cacheMaxFileCount Max file count in cache. <b>0</b> means file count is unlimited.
 	 * @throws IOException if cache can't be initialized (e.g. "No space left on device")
 	 */
-	public LruDiscCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize,
+	public LruDiskCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize,
 			int cacheMaxFileCount) throws IOException {
 		if (cacheDir == null) {
 			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);

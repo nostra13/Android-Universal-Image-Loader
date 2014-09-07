@@ -33,7 +33,7 @@ import java.util.Map;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.3.1
  */
-public class LimitedAgeDiscCache extends BaseDiscCache {
+public class LimitedAgeDiskCache extends BaseDiskCache {
 
 	private final long maxFileAge;
 
@@ -44,7 +44,7 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	 * @param maxAge   Max file age (in seconds). If file age will exceed this value then it'll be removed on next
 	 *                 treatment (and therefore be reloaded).
 	 */
-	public LimitedAgeDiscCache(File cacheDir, long maxAge) {
+	public LimitedAgeDiskCache(File cacheDir, long maxAge) {
 		this(cacheDir, null, DefaultConfigurationFactory.createFileNameGenerator(), maxAge);
 	}
 
@@ -53,7 +53,7 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	 * @param maxAge   Max file age (in seconds). If file age will exceed this value then it'll be removed on next
 	 *                 treatment (and therefore be reloaded).
 	 */
-	public LimitedAgeDiscCache(File cacheDir, File reserveCacheDir, long maxAge) {
+	public LimitedAgeDiskCache(File cacheDir, File reserveCacheDir, long maxAge) {
 		this(cacheDir, reserveCacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxAge);
 	}
 
@@ -64,7 +64,7 @@ public class LimitedAgeDiscCache extends BaseDiscCache {
 	 * @param maxAge            Max file age (in seconds). If file age will exceed this value then it'll be removed on next
 	 *                          treatment (and therefore be reloaded).
 	 */
-	public LimitedAgeDiscCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator, long maxAge) {
+	public LimitedAgeDiskCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator, long maxAge) {
 		super(cacheDir, reserveCacheDir, fileNameGenerator);
 		this.maxFileAge = maxAge * 1000; // to milliseconds
 	}
