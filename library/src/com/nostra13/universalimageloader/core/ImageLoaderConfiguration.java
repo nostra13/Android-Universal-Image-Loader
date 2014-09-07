@@ -113,7 +113,7 @@ public final class ImageLoaderConfiguration {
 	 * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
 	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
 	 * <li>allow to cache different sizes of image in memory</li>
-	 * <li>memoryCache = {@link DefaultConfigurationFactory#createMemoryCache(int)}</li>
+	 * <li>memoryCache = {@link DefaultConfigurationFactory#createMemoryCache(android.content.Context, int)}</li>
 	 * <li>diskCache = {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache}</li>
 	 * <li>imageDownloader = {@link DefaultConfigurationFactory#createImageDownloader(Context)}</li>
 	 * <li>imageDecoder = {@link DefaultConfigurationFactory#createImageDecoder(boolean)}</li>
@@ -157,7 +157,7 @@ public final class ImageLoaderConfiguration {
 		/** {@value} */
 		public static final int DEFAULT_THREAD_POOL_SIZE = 3;
 		/** {@value} */
-		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
+		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 2;
 		/** {@value} */
 		public static final QueueProcessingType DEFAULT_TASK_PROCESSING_TYPE = QueueProcessingType.FIFO;
 
@@ -581,7 +581,7 @@ public final class ImageLoaderConfiguration {
 						.createDiskCache(context, diskCacheFileNameGenerator, diskCacheSize, diskCacheFileCount);
 			}
 			if (memoryCache == null) {
-				memoryCache = DefaultConfigurationFactory.createMemoryCache(memoryCacheSize);
+				memoryCache = DefaultConfigurationFactory.createMemoryCache(context, memoryCacheSize);
 			}
 			if (denyCacheImageMultipleSizesInMemory) {
 				memoryCache = new FuzzyKeyMemoryCache(memoryCache, MemoryCacheUtils.createFuzzyKeyComparator());

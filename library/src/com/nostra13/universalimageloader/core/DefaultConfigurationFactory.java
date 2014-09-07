@@ -15,7 +15,11 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core;
 
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.os.Build;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
@@ -107,11 +111,30 @@ public class DefaultConfigurationFactory {
 	 * Creates default implementation of {@link MemoryCache} - {@link LruMemoryCache}<br />
 	 * Default cache size = 1/8 of available app memory.
 	 */
-	public static MemoryCache createMemoryCache(int memoryCacheSize) {
+	public static MemoryCache createMemoryCache(Context context, int memoryCacheSize) {
 		if (memoryCacheSize == 0) {
-			memoryCacheSize = (int) (Runtime.getRuntime().maxMemory() / 8);
+			ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+			int memoryClass = am.getMemoryClass();
+			if (hasHoneycomb() && isLargeHeap(context)) {
+				memoryClass = getLargeMemoryClass(am);
+			}
+			memoryCacheSize = 1024 * 1024 * memoryClass / 8;
 		}
 		return new LruMemoryCache(memoryCacheSize);
+	}
+
+	private static boolean hasHoneycomb() {
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private static boolean isLargeHeap(Context context) {
+		return (context.getApplicationInfo().flags & ApplicationInfo.FLAG_LARGE_HEAP) != 0;
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private static int getLargeMemoryClass(ActivityManager am) {
+		return am.getLargeMemoryClass();
 	}
 
 	/** Creates default implementation of {@link ImageDownloader} - {@link BaseImageDownloader} */
