@@ -123,7 +123,7 @@ ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
 		.taskExecutor(...)
 		.taskExecutorForCachedImages(...)
 		.threadPoolSize(3) // default
-		.threadPriority(Thread.NORM_PRIORITY - 1) // default
+		.threadPriority(Thread.NORM_PRIORITY - 2) // default
 		.tasksProcessingOrder(QueueProcessingType.FIFO) // default
 		.denyCacheImageMultipleSizesInMemory()
 		.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
