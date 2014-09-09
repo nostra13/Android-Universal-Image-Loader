@@ -1,6 +1,6 @@
-# ![Logo](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/sample/res/drawable-mdpi/ic_launcher.png) Universal Image Loader for Android
+# ![Logo](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/sample/res/drawable-mdpi/ic_launcher.png) Universal Image Loader
 
-This project aims to provide a reusable instrument for asynchronous image loading, caching and displaying. It is originally based on [Fedor Vlasov's project](https://github.com/thest1/LazyList) and has been vastly refactored and improved since then.
+UIL aims to provide a powerful, flexible and highly customizable instrument for image loading, caching and displaying. It provides a lot of configuration options and good control over the image loading and caching process.
 
 ![Screenshot](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/UniversalImageLoader.png)
 
@@ -23,34 +23,14 @@ This project aims to provide a reusable instrument for asynchronous image loadin
 Android 2.0+ support
 
 ## Downloads
- * **[universal-image-loader-1.9.3.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3.jar)** (library; contains *.class files)
- * **[universal-image-loader-1.9.3-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-sources.jar)** (sources; contains *.java files)
- * **[universal-image-loader-1.9.3-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-javadoc.jar)** (Java docs; contains *.html files)
- * **[universal-image-loader-1.9.3-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-with-sources.jar)** (library with sources inside; contains *.class and *.java files)<br />_Use this JAR if you use Eclipse. So you can see Java docs in tooltips._
- * **[universal-image-loader-sample-1.9.3.apk](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.9.3.apk)** (sample application)
+ * **[universal-image-loader-1.9.3.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3.jar)**
+ * **[universal-image-loader-1.9.3-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-sources.jar)**
+ * **[universal-image-loader-1.9.3-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-javadoc.jar)**
+ * **[universal-image-loader-1.9.3-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-with-sources.jar)**
 
-Latest snapshot of the library - **[here](https://github.com/nostra13/Android-Universal-Image-Loader/tree/master/sample/libs)**
+### [Documentation](https://github.com/nostra13/Android-Universal-Image-Loader/wiki) | [Useful Info](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Useful-Info) | [User Support](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/User-Support) | [Changelog](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/CHANGELOG.md)
 
-## Documentation ([Wiki](https://github.com/nostra13/Android-Universal-Image-Loader/wiki))
-
-### [Useful Info](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Useful-Info)
-
-### [Changelog](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/CHANGELOG.md)
-
-### User Support
- 1. Look into **[Useful Info](https://github.com/nostra13/Android-Universal-Image-Loader#useful-info)**
- 2. Search problem solution on **[StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)**
- 3. Ask your own question on **[StackOverFlow](http://stackoverflow.com/questions/tagged/universal-image-loader)**.<br />
-    **Be sure to mention following information** in your question (otherwise a question may be ignored):
-   - UIL version (e.g. 1.9.3)
-   - Android version tested on (e.g. 2.1)
-   - your configuration (`ImageLoaderConfiguration`)
-   - display options (`DisplayImageOptions`)
-   - `getView()` method code of your adapter (if you use it)
-   - XML layout of your ImageView you load image into
-
-**Bugs** and **feature requests** put **[here](https://github.com/nostra13/Android-Universal-Image-Loader/issues/new)**.<br />
-If you have some **issues on migration** to newer library version - be sure to ask for help **[here](https://github.com/nostra13/Android-Universal-Image-Loader/issues/169)**
+![Demo app](http://chart.apis.google.com/chart?chs=200x200&cht=qr&chld=|1&chl=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.nostra13.universalimageloader.sample) [![Demo app](https://camo.githubusercontent.com/dc1ffe0e4d25c2c28a69423c3c78000ef7ee96bf/68747470733a2f2f646576656c6f7065722e616e64726f69642e636f6d2f696d616765732f6272616e642f656e5f6170705f7267625f776f5f34352e706e67)](https://play.google.com/store/apps/details?id=com.nostra13.universalimageloader.sample)
 
 ## Quick Setup
 
@@ -266,7 +246,7 @@ You can support the project and thank the author for his hard work :)
 
 If you use Universal Image Loader code in your application you should inform the author about it ( *email: nostra13[at]gmail[dot]com* ) like this:
 > **Subject:** UIL usage notification<br />
-> **Text:** I use Universal Image Loader &lt;lib_version> in &lt;application_name> - http://link_to_google_play.
+> **Text:** I use Universal Image Loader {lib_version} in {application_name} - {http://link_to_google_play}.
 > I [allow | don't allow] to mention my app in section "Applications using Universal Image Loader" on GitHub.
 
 Also I'll be grateful if you mention UIL in application UI with string **"Using Universal Image Loader (c) 2011-2014, Sergey Tarasevich"** (e.g. in some "About" section).
