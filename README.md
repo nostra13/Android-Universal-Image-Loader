@@ -62,7 +62,7 @@ compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
 <manifest>
 	<!-- Include following permission if you load images from Internet -->
 	<uses-permission android:name="android.permission.INTERNET" />
-	<!-- Include following permission if you want to allow UIL to cache images on SD card -->
+	<!-- Include following permission if you want to cache images on SD card -->
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	...
 </manifest>
@@ -75,8 +75,8 @@ public class MyActivity extends Activity {
 	public void onCreate() {
 		super.onCreate();
 
-		// Create global configuration and initialize ImageLoader with this configuration
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+		// Create global configuration and initialize ImageLoader with this config
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
 			...
 			.build();
 		ImageLoader.getInstance().init(config);
@@ -154,7 +154,7 @@ String imageUri = "http://site.com/image.png"; // from Web
 String imageUri = "file:///mnt/sdcard/image.png"; // from SD card
 String imageUri = "content://media/external/audio/albumart/13"; // from content provider
 String imageUri = "assets://image.png"; // from assets
-String imageUri = "drawable://" + R.drawable.image; // from drawables (only images, non-9patch)
+String imageUri = "drawable://" + R.drawable.img; // from drawables (non-9patch images)
 ```
 **NOTE:** Use `drawable://` only if you really need it! Always **consider the native way** to load drawables - `ImageView.setImageResource(...)` instead of using of `ImageLoader`.
 
@@ -182,7 +182,7 @@ Bitmap bmp = imageLoader.loadImageSync(imageUri);
 ``` java
 // Load image, decode it to Bitmap and display Bitmap in ImageView (or any other view 
 //	which implements ImageAware interface)
-imageLoader.displayImage(imageUri, imageView, displayOptions, new ImageLoadingListener() {
+imageLoader.displayImage(imageUri, imageView, options, new ImageLoadingListener() {
 	@Override
 	public void onLoadingStarted(String imageUri, View view) {
 		...
@@ -208,8 +208,8 @@ imageLoader.displayImage(imageUri, imageView, displayOptions, new ImageLoadingLi
 ```
 ``` java
 // Load image, decode it to Bitmap and return Bitmap to callback
-ImageSize targetSize = new ImageSize(120, 80); // result Bitmap will be fit to this size
-imageLoader.loadImage(imageUri, targetSize, displayOptions, new SimpleImageLoadingListener() {
+ImageSize targetSize = new ImageSize(80, 50); // result Bitmap will be fit to this size
+imageLoader.loadImage(imageUri, targetSize, options, new SimpleImageLoadingListener() {
 	@Override
 	public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 		// Do whatever you want with Bitmap
@@ -218,8 +218,8 @@ imageLoader.loadImage(imageUri, targetSize, displayOptions, new SimpleImageLoadi
 ```
 ``` java
 // Load image, decode it to Bitmap and return Bitmap synchronously
-ImageSize targetSize = new ImageSize(120, 80); // result Bitmap will be fit to this size
-Bitmap bmp = imageLoader.loadImageSync(imageUri, targetSize, displayOptions);
+ImageSize targetSize = new ImageSize(80, 50); // result Bitmap will be fit to this size
+Bitmap bmp = imageLoader.loadImageSync(imageUri, targetSize, options);
 ```
 
 
