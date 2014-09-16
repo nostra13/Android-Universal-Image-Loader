@@ -104,18 +104,18 @@ public final class IoUtils {
 		final byte[] bytes = new byte[DEFAULT_BUFFER_SIZE];
 		try {
 			while (is.read(bytes, 0, DEFAULT_BUFFER_SIZE) != -1);
-		} catch (IOException e) {
-			// Do nothing
+		} catch (IOException ignored) {
 		} finally {
 			closeSilently(is);
 		}
 	}
 
 	public static void closeSilently(Closeable closeable) {
-		try {
-			closeable.close();
-		} catch (Exception e) {
-			// Do nothing
+		if (closeable != null) {
+			try {
+				closeable.close();
+			} catch (Exception ignored) {
+			}
 		}
 	}
 
