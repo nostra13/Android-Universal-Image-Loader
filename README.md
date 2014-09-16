@@ -10,7 +10,6 @@ UIL aims to provide a powerful, flexible and highly customizable instrument for 
  * **New API:** `DisplayImageOptions.targetSize(ImageSize)`
  * HTTP cache support
  * Consider `BitmapFactory.Options.inBitmap`
- * `ImageLoader.loadImageSync()` fix
  * Time-to-live option for files in LruDiskCache
 
 ## Features
@@ -152,7 +151,7 @@ DisplayImageOptions options = new DisplayImageOptions.Builder()
 ``` java
 String imageUri = "http://site.com/image.png"; // from Web
 String imageUri = "file:///mnt/sdcard/image.png"; // from SD card
-String imageUri = "content://media/external/audio/albumart/13"; // from content provider
+String imageUri = "content://media/external/audio/albumart/1"; // from content provider
 String imageUri = "assets://image.png"; // from assets
 String imageUri = "drawable://" + R.drawable.img; // from drawables (non-9patch images)
 ```
