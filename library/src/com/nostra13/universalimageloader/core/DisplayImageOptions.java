@@ -82,12 +82,11 @@ public final class DisplayImageOptions {
 	private final BitmapProcessor postProcessor;
 	private final BitmapDisplayer displayer;
 	private final Handler handler;
-	private final boolean isSyncLoading;
-	
-	private final boolean isForcedrefresh;
+	private final boolean isSyncLoading;	
+	private final boolean isForcedToRefresh;
 
 	private DisplayImageOptions(Builder builder) {
-		isForcedrefresh = builder.isForcedrefresh;
+		isForcedToRefresh = builder.isForcedrefresh;
 		imageResOnLoading = builder.imageResOnLoading;
 		imageResForEmptyUri = builder.imageResForEmptyUri;
 		imageResOnFail = builder.imageResOnFail;
@@ -153,8 +152,8 @@ public final class DisplayImageOptions {
 		return cacheInMemory;
 	}
 	
-	public boolean isForcedrefresh() {
-		return isForcedrefresh;
+	public boolean isForcedToRefresh() {
+		return isForcedToRefresh;
 	}
 
 	public boolean isCacheOnDisk() {
@@ -424,7 +423,8 @@ public final class DisplayImageOptions {
 			return this;
 		}
 		
-		public Builder isForcedrefresh(boolean force) {
+		/** Sets whether ImageLoader will force to load mage from the original uri and refresh the cache when success */
+		public Builder isForcedToRefresh(boolean force) {
 			this.isForcedrefresh = force;
 			return this;
 		}

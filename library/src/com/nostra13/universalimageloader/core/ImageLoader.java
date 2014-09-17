@@ -234,8 +234,11 @@ public class ImageLoader {
 
 		listener.onLoadingStarted(uri, imageAware.getWrappedView());
 
-		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
-		if (!options.isForcedrefresh() && bmp != null && !bmp.isRecycled()) {
+		Bitmap bmp = null;
+		if (!options.isForcedToRefresh()) {
+			bmp = configuration.memoryCache.get(memoryCacheKey);
+		}
+		if (!options.isForcedToRefresh() && bmp != null && !bmp.isRecycled()) {
 			L.d(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey);
 
 			if (options.shouldPostProcess()) {

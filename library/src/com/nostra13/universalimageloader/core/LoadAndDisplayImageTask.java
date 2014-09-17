@@ -127,12 +127,13 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		}
 
 		loadFromUriLock.lock();
-		Bitmap bmp;
+		Bitmap bmp = null;
 		try {
 			checkTaskNotActual();
-
-			bmp = configuration.memoryCache.get(memoryCacheKey);
-			if (options.isForcedrefresh() || (bmp == null || bmp.isRecycled())) {
+			if (!options.isForcedToRefresh()) {
+				bmp = configuration.memoryCache.get(memoryCacheKey);
+			}
+			if (options.isForcedToRefresh() || (bmp == null || bmp.isRecycled())) {
 				bmp = tryLoadBitmap();
 				if (bmp == null) return; // listener callback already was fired
 
@@ -214,15 +215,18 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	private Bitmap tryLoadBitmap() throws TaskCancelledException {
 		Bitmap bitmap = null;
 		try {
-			File imageFile = configuration.diskCache.get(uri);
-			if (imageFile != null && imageFile.exists()) {
-				L.d(LOG_LOAD_IMAGE_FROM_DISK_CACHE, memoryCacheKey);
-				loadedFrom = LoadedFrom.DISC_CACHE;
+			
+			File imageFile = configuration.diskCache.get(uri);			
+			if (!options.isForcedToRefresh()) {
+				if (imageFile != null && imageFile.exists()) {
+					L.d(LOG_LOAD_IMAGE_FROM_DISK_CACHE, memoryCacheKey);
+					loadedFrom = LoadedFrom.DISC_CACHE;
 
-				checkTaskNotActual();
-				bitmap = decodeImage(Scheme.FILE.wrap(imageFile.getAbsolutePath()));
+					checkTaskNotActual();
+					bitmap = decodeImage(Scheme.FILE.wrap(imageFile.getAbsolutePath()));
+				}
 			}
-			if (options.isForcedrefresh() || (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0)) {
+			if (options.isForcedToRefresh() || (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0)) {
 				L.d(LOG_LOAD_IMAGE_FROM_NETWORK, memoryCacheKey);
 				loadedFrom = LoadedFrom.NETWORK;
 
