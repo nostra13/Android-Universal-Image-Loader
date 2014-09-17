@@ -83,8 +83,11 @@ public final class DisplayImageOptions {
 	private final BitmapDisplayer displayer;
 	private final Handler handler;
 	private final boolean isSyncLoading;
+	
+	private final boolean isForcedrefresh;
 
 	private DisplayImageOptions(Builder builder) {
+		isForcedrefresh = builder.isForcedrefresh;
 		imageResOnLoading = builder.imageResOnLoading;
 		imageResForEmptyUri = builder.imageResForEmptyUri;
 		imageResOnFail = builder.imageResOnFail;
@@ -149,6 +152,10 @@ public final class DisplayImageOptions {
 	public boolean isCacheInMemory() {
 		return cacheInMemory;
 	}
+	
+	public boolean isForcedrefresh() {
+		return isForcedrefresh;
+	}
 
 	public boolean isCacheOnDisk() {
 		return cacheOnDisk;
@@ -200,6 +207,7 @@ public final class DisplayImageOptions {
 	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
 	 */
 	public static class Builder {
+		private boolean isForcedrefresh = false;
 		private int imageResOnLoading = 0;
 		private int imageResForEmptyUri = 0;
 		private int imageResOnFail = 0;
@@ -413,6 +421,11 @@ public final class DisplayImageOptions {
 		/** Sets whether ImageLoader will consider EXIF parameters of JPEG image (rotate, flip) */
 		public Builder considerExifParams(boolean considerExifParams) {
 			this.considerExifParams = considerExifParams;
+			return this;
+		}
+		
+		public Builder isForcedrefresh(boolean force) {
+			this.isForcedrefresh = force;
 			return this;
 		}
 
