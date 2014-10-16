@@ -43,7 +43,7 @@ public interface ImageDownloader {
 
 	/** Represents supported schemes(protocols) of URI. Provides convenient methods for work with schemes and URIs. */
 	public enum Scheme {
-		HTTP("http"), HTTPS("https"), FILE("file"), CONTENT("content"), ASSETS("assets"), DRAWABLE("drawable"), UNKNOWN("");
+		HTTP("http"), HTTPS("https"), FILE("file"), CONTENT("content"), ASSETS("assets"), DRAWABLE("drawable"), VIDEO("video"), UNKNOWN("");
 
 		private String scheme;
 		private String uriPrefix;
