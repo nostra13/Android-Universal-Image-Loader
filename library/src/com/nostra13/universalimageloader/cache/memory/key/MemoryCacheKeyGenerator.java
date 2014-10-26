@@ -13,34 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.nostra13.universalimageloader.cache.memory;
+package com.nostra13.universalimageloader.cache.memory.key;
 
-import android.graphics.Bitmap;
-
-import java.util.Set;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 /**
- * Interface for memory cache
- *
- * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.9.2
+ * @author Sergey Tarasevich
+ *         12.09.2014.
  */
-public interface MemoryCache {
-	/** Returns value by key. If there is no value for key then null will be returned. */
-	Bitmap get(String key);
+public interface MemoryCacheKeyGenerator {
 
-	/** Puts value into cache by key */
-	void put(String key, Bitmap value);
+	String generate(String imageUri, ImageSize originalSize, ImageSize targetSize);
 
-	/** Returns the current size of the cache in bytes. */
-	int size();
-
-	/** Removes item by key */
-	Bitmap remove(String key);
-
-	/** Returns all keys of cache */
-	Set<String> keys();
-
-	/** Remove all items from cache */
-	void clear();
+	boolean isKeyOfUri(String key, String imageUri);
 }
