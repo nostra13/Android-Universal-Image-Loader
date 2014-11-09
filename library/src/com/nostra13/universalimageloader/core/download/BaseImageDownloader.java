@@ -15,13 +15,17 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.download;
 
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.webkit.MimeTypeMap;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
 import com.nostra13.universalimageloader.utils.IoUtils;
@@ -92,8 +96,6 @@ public class BaseImageDownloader implements ImageDownloader {
 				return getStreamFromAssets(imageUri, extra);
 			case DRAWABLE:
 				return getStreamFromDrawable(imageUri, extra);
-			case VIDEO:
-				return getStreamFromSdCardVideo(imageUri, extra);
 			case UNKNOWN:
 			default:
 				return getStreamFromOtherSource(imageUri, extra);
@@ -159,8 +161,25 @@ public class BaseImageDownloader implements ImageDownloader {
 	 */
 	protected InputStream getStreamFromFile(String imageUri, Object extra) throws IOException {
 		String filePath = Scheme.FILE.crop(imageUri);
-		return new ContentLengthInputStream(new BufferedInputStream(new FileInputStream(filePath), BUFFER_SIZE),
-				(int) new File(filePath).length());
+		if (isVideoFileUri(imageUri)) {
+			return getVideoThumbnailStream(filePath);
+		} else {
+			BufferedInputStream imageStream = new BufferedInputStream(new FileInputStream(filePath), BUFFER_SIZE);
+			return new ContentLengthInputStream(imageStream, (int) new File(filePath).length());
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.FROYO)
+	private InputStream getVideoThumbnailStream(String filePath) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+			Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Images.Thumbnails.FULL_SCREEN_KIND);
+			if (bitmap != null) {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				bitmap.compress(CompressFormat.PNG, 0, bos);
+				return new ByteArrayInputStream(bos.toByteArray());
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -176,7 +195,7 @@ public class BaseImageDownloader implements ImageDownloader {
 		ContentResolver res = context.getContentResolver();
 
 		Uri uri = Uri.parse(imageUri);
-		if (isVideoUri(uri)) { // video thumbnail
+		if (isVideoContentUri(uri)) { // video thumbnail
 			Long origId = Long.valueOf(uri.getLastPathSegment());
 			Bitmap bitmap = MediaStore.Video.Thumbnails
 					.getThumbnail(res, origId, MediaStore.Images.Thumbnails.MINI_KIND, null);
@@ -219,29 +238,7 @@ public class BaseImageDownloader implements ImageDownloader {
 		int drawableId = Integer.parseInt(drawableIdString);
 		return context.getResources().openRawResource(drawableId);
 	}
-	/**
-	 * Retrieves {@link InputStream} of video thumbnail by URI (video is located on the local file system or SD card).
-	 *
-	 * @param imageUri Image URI
-	 * @param extra    Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
-	 *                 DisplayImageOptions.extraForDownloader(Object)}; can be null
-	 * @return {@link InputStream} of video thumbnail
-	 * @throws IOException if some I/O error occurs reading from file system
-	 */
-	protected InputStream getStreamFromSdCardVideo(String imageUri, Object extra) throws FileNotFoundException {
-		imageUri=imageUri.replace("video://", "");
-		Uri uri = Uri.parse(imageUri);
-		if (isSDCardVideoUri(uri)) { // video thumbnail
-			Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(imageUri,
-						 MediaStore.Images.Thumbnails.FULL_SCREEN_KIND); 
-			if (bitmap != null) {
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				bitmap.compress(CompressFormat.PNG, 0, bos);
-				return new ByteArrayInputStream(bos.toByteArray());
-			}
-		}
-	   return null;
-	}
+
 	/**
 	 * Retrieves {@link InputStream} of image by URI from other source with unsupported scheme. Should be overriden by
 	 * successors to implement image downloading from special sources.<br />
@@ -259,28 +256,14 @@ public class BaseImageDownloader implements ImageDownloader {
 		throw new UnsupportedOperationException(String.format(ERROR_UNSUPPORTED_SCHEME, imageUri));
 	}
 
-	private boolean isVideoUri(Uri uri) {
+	private boolean isVideoContentUri(Uri uri) {
 		String mimeType = context.getContentResolver().getType(uri);
-
-		if (mimeType == null) {
-			return false;
-		}
-
-		return mimeType.startsWith("video/");
+		return mimeType != null && mimeType.startsWith("video/");
 	}
-	private boolean isSDCardVideoUri(Uri uri) {
-		String mimeType = getMimeType(uri.toString());
-		if (mimeType == null) {
-			return false;
-		}
 
-		return mimeType.startsWith("video/");
+	private boolean isVideoFileUri(String uri) {
+		String extension = MimeTypeMap.getFileExtensionFromUrl(uri);
+		String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+		return mimeType != null && mimeType.startsWith("video/");
 	}
-	public static String getMimeType(String url)
-    	{
-		String extension = url.substring(url.lastIndexOf("."));
-        	String mimeTypeMap = MimeTypeMap.getFileExtensionFromUrl(extension);
-        	String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimeTypeMap);
-        	return mimeType;
-    	}
 }
