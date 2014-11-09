@@ -92,6 +92,8 @@ public class BaseImageDownloader implements ImageDownloader {
 				return getStreamFromAssets(imageUri, extra);
 			case DRAWABLE:
 				return getStreamFromDrawable(imageUri, extra);
+			case VIDEO:
+				return getStreamFromSdCardVideo(imageUri, extra);
 			case UNKNOWN:
 			default:
 				return getStreamFromOtherSource(imageUri, extra);
@@ -217,7 +219,29 @@ public class BaseImageDownloader implements ImageDownloader {
 		int drawableId = Integer.parseInt(drawableIdString);
 		return context.getResources().openRawResource(drawableId);
 	}
-
+	/**
+	 * Retrieves {@link InputStream} of video thumbnail by URI (video is located on the local file system or SD card).
+	 *
+	 * @param imageUri Image URI
+	 * @param extra    Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
+	 *                 DisplayImageOptions.extraForDownloader(Object)}; can be null
+	 * @return {@link InputStream} of video thumbnail
+	 * @throws IOException if some I/O error occurs reading from file system
+	 */
+	protected InputStream getStreamFromSdCardVideo(String imageUri, Object extra) throws FileNotFoundException {
+		imageUri=imageUri.replace("video://", "");
+		Uri uri = Uri.parse(imageUri);
+		if (isSDCardVideoUri(uri)) { // video thumbnail
+			Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(imageUri,
+						 MediaStore.Images.Thumbnails.FULL_SCREEN_KIND); 
+			if (bitmap != null) {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				bitmap.compress(CompressFormat.PNG, 0, bos);
+				return new ByteArrayInputStream(bos.toByteArray());
+			}
+		}
+	   return null;
+	}
 	/**
 	 * Retrieves {@link InputStream} of image by URI from other source with unsupported scheme. Should be overriden by
 	 * successors to implement image downloading from special sources.<br />
@@ -244,4 +268,19 @@ public class BaseImageDownloader implements ImageDownloader {
 
 		return mimeType.startsWith("video/");
 	}
+	private boolean isSDCardVideoUri(Uri uri) {
+		String mimeType = getMimeType(uri.toString());
+		if (mimeType == null) {
+			return false;
+		}
+
+		return mimeType.startsWith("video/");
+	}
+	public static String getMimeType(String url)
+    	{
+		String extension = url.substring(url.lastIndexOf("."));
+        	String mimeTypeMap = MimeTypeMap.getFileExtensionFromUrl(extension);
+        	String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(mimeTypeMap);
+        	return mimeType;
+    	}
 }
