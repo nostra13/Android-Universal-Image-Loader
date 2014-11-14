@@ -61,8 +61,12 @@ public class ImageLoader {
 	private ImageLoaderConfiguration configuration;
 	private ImageLoaderEngine engine;
 
-	private final ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
+	private ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
 
+	/**Sets a default loading listener for all display and loading tasks of the corresponding image loader instance*/
+	public void setDefaultImageLoadingListenerForAllInstances(ImageLoadingListener listener){
+		emptyListener=listener;
+	}
 	private volatile static ImageLoader instance;
 
 	/** Returns singleton class instance */
