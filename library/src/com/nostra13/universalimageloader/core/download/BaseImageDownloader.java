@@ -69,20 +69,15 @@ public class BaseImageDownloader implements ImageDownloader {
 	protected final Context context;
 	protected final int connectTimeout;
 	protected final int readTimeout;
-	/**
-	 * Whether read stream if server returned non-200 response
-	 */
-	protected final boolean readOnError;
 
 	public BaseImageDownloader(Context context) {
-		this(context.getApplicationContext(), DEFAULT_HTTP_CONNECT_TIMEOUT, DEFAULT_HTTP_READ_TIMEOUT, false);
+		this(context, DEFAULT_HTTP_CONNECT_TIMEOUT, DEFAULT_HTTP_READ_TIMEOUT);
 	}
 
-	public BaseImageDownloader(Context context, int connectTimeout, int readTimeout, boolean readOnError) {
+	public BaseImageDownloader(Context context, int connectTimeout, int readTimeout) {
 		this.context = context.getApplicationContext();
 		this.connectTimeout = connectTimeout;
 		this.readTimeout = readTimeout;
-		this.readOnError = readOnError;
 	}
 
 	@Override
@@ -126,16 +121,28 @@ public class BaseImageDownloader implements ImageDownloader {
 
 		InputStream imageStream;
 		try {
-			if (conn.getResponseCode() != 200 && !readOnError) {
-				throw new IOException("Unable to retrieve image. Response code: " + conn.getResponseCode());
-			}
 			imageStream = conn.getInputStream();
 		} catch (IOException e) {
 			// Read all data to allow reuse connection (http://bit.ly/1ad35PY)
 			IoUtils.readAndCloseStream(conn.getErrorStream());
 			throw e;
 		}
+		if (!shouldBeProcessed(conn)) {
+			IoUtils.closeSilently(imageStream);
+			throw new IOException("Image request failed with response code " + conn.getResponseCode());
+		}
+
 		return new ContentLengthInputStream(new BufferedInputStream(imageStream, BUFFER_SIZE), conn.getContentLength());
+	}
+
+	/**
+	 * @param conn Opened request connection (response code is available)
+	 * @return <b>true</b> - if data from connection is correct and should be read and processed;
+	 *         <b>false</b> - if response contains irrelevant data and shouldn't be processed
+	 * @throws IOException
+	 */
+	protected boolean shouldBeProcessed(HttpURLConnection conn) throws IOException {
+		return conn.getResponseCode() == 200;
 	}
 
 	/**
