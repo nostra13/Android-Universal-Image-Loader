@@ -15,13 +15,17 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.download;
 
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.webkit.MimeTypeMap;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
 import com.nostra13.universalimageloader.utils.IoUtils;
@@ -67,9 +71,7 @@ public class BaseImageDownloader implements ImageDownloader {
 	protected final int readTimeout;
 
 	public BaseImageDownloader(Context context) {
-		this.context = context.getApplicationContext();
-		this.connectTimeout = DEFAULT_HTTP_CONNECT_TIMEOUT;
-		this.readTimeout = DEFAULT_HTTP_READ_TIMEOUT;
+		this(context, DEFAULT_HTTP_CONNECT_TIMEOUT, DEFAULT_HTTP_READ_TIMEOUT);
 	}
 
 	public BaseImageDownloader(Context context, int connectTimeout, int readTimeout) {
@@ -125,7 +127,22 @@ public class BaseImageDownloader implements ImageDownloader {
 			IoUtils.readAndCloseStream(conn.getErrorStream());
 			throw e;
 		}
+		if (!shouldBeProcessed(conn)) {
+			IoUtils.closeSilently(imageStream);
+			throw new IOException("Image request failed with response code " + conn.getResponseCode());
+		}
+
 		return new ContentLengthInputStream(new BufferedInputStream(imageStream, BUFFER_SIZE), conn.getContentLength());
+	}
+
+	/**
+	 * @param conn Opened request connection (response code is available)
+	 * @return <b>true</b> - if data from connection is correct and should be read and processed;
+	 *         <b>false</b> - if response contains irrelevant data and shouldn't be processed
+	 * @throws IOException
+	 */
+	protected boolean shouldBeProcessed(HttpURLConnection conn) throws IOException {
+		return conn.getResponseCode() == 200;
 	}
 
 	/**
@@ -157,8 +174,25 @@ public class BaseImageDownloader implements ImageDownloader {
 	 */
 	protected InputStream getStreamFromFile(String imageUri, Object extra) throws IOException {
 		String filePath = Scheme.FILE.crop(imageUri);
-		return new ContentLengthInputStream(new BufferedInputStream(new FileInputStream(filePath), BUFFER_SIZE),
-				(int) new File(filePath).length());
+		if (isVideoFileUri(imageUri)) {
+			return getVideoThumbnailStream(filePath);
+		} else {
+			BufferedInputStream imageStream = new BufferedInputStream(new FileInputStream(filePath), BUFFER_SIZE);
+			return new ContentLengthInputStream(imageStream, (int) new File(filePath).length());
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.FROYO)
+	private InputStream getVideoThumbnailStream(String filePath) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+			Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Images.Thumbnails.FULL_SCREEN_KIND);
+			if (bitmap != null) {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				bitmap.compress(CompressFormat.PNG, 0, bos);
+				return new ByteArrayInputStream(bos.toByteArray());
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -174,7 +208,7 @@ public class BaseImageDownloader implements ImageDownloader {
 		ContentResolver res = context.getContentResolver();
 
 		Uri uri = Uri.parse(imageUri);
-		if (isVideoUri(uri)) { // video thumbnail
+		if (isVideoContentUri(uri)) { // video thumbnail
 			Long origId = Long.valueOf(uri.getLastPathSegment());
 			Bitmap bitmap = MediaStore.Video.Thumbnails
 					.getThumbnail(res, origId, MediaStore.Images.Thumbnails.MINI_KIND, null);
@@ -235,13 +269,14 @@ public class BaseImageDownloader implements ImageDownloader {
 		throw new UnsupportedOperationException(String.format(ERROR_UNSUPPORTED_SCHEME, imageUri));
 	}
 
-	private boolean isVideoUri(Uri uri) {
+	private boolean isVideoContentUri(Uri uri) {
 		String mimeType = context.getContentResolver().getType(uri);
+		return mimeType != null && mimeType.startsWith("video/");
+	}
 
-		if (mimeType == null) {
-			return false;
-		}
-
-		return mimeType.startsWith("video/");
+	private boolean isVideoFileUri(String uri) {
+		String extension = MimeTypeMap.getFileExtensionFromUrl(uri);
+		String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+		return mimeType != null && mimeType.startsWith("video/");
 	}
 }
