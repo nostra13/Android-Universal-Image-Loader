@@ -69,17 +69,20 @@ public class BaseImageDownloader implements ImageDownloader {
 	protected final Context context;
 	protected final int connectTimeout;
 	protected final int readTimeout;
+	/**
+	 * Whether read stream if server returned non-200 response
+	 */
+	protected final boolean readOnError;
 
 	public BaseImageDownloader(Context context) {
-		this.context = context.getApplicationContext();
-		this.connectTimeout = DEFAULT_HTTP_CONNECT_TIMEOUT;
-		this.readTimeout = DEFAULT_HTTP_READ_TIMEOUT;
+		this(context.getApplicationContext(), DEFAULT_HTTP_CONNECT_TIMEOUT, DEFAULT_HTTP_READ_TIMEOUT, false);
 	}
 
-	public BaseImageDownloader(Context context, int connectTimeout, int readTimeout) {
+	public BaseImageDownloader(Context context, int connectTimeout, int readTimeout, boolean readOnError) {
 		this.context = context.getApplicationContext();
 		this.connectTimeout = connectTimeout;
 		this.readTimeout = readTimeout;
+		this.readOnError = readOnError;
 	}
 
 	@Override
@@ -123,6 +126,9 @@ public class BaseImageDownloader implements ImageDownloader {
 
 		InputStream imageStream;
 		try {
+			if (conn.getResponseCode() != 200 && !readOnError) {
+				throw new IOException("Unable to retrieve image. Response code: " + conn.getResponseCode());
+			}
 			imageStream = conn.getInputStream();
 		} catch (IOException e) {
 			// Read all data to allow reuse connection (http://bit.ly/1ad35PY)
