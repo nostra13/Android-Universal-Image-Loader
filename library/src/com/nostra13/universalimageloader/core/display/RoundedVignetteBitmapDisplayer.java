@@ -47,13 +47,13 @@ public class RoundedVignetteBitmapDisplayer extends RoundedBitmapDisplayer {
 			throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
 		}
 
-		imageAware.setImageDrawable(new RoundedVignetteDrawable(bitmap, cornerRadius, margin));
+		imageAware.setImageDrawable(new RoundedVignetteDrawable(bitmap,imageAware, cornerRadius, margin));
 	}
 
 	protected static class RoundedVignetteDrawable extends RoundedDrawable {
 
-		RoundedVignetteDrawable(Bitmap bitmap, int cornerRadius, int margin) {
-			super(bitmap, cornerRadius, margin);
+		RoundedVignetteDrawable(Bitmap bitmap, ImageAware imageAware,int cornerRadius, int margin) {
+			super(bitmap,imageAware, cornerRadius, margin);
 		}
 
 		@Override

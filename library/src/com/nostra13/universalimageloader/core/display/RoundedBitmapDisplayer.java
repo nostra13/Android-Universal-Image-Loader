@@ -19,6 +19,8 @@ import android.graphics.*;
 import android.graphics.drawable.Drawable;
 
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
+import com.nostra13.universalimageloader.core.assist.ViewScaleType;
+import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
@@ -58,7 +60,7 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 			throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
 		}
 
-		imageAware.setImageDrawable(new RoundedDrawable(bitmap, cornerRadius, margin));
+		imageAware.setImageDrawable(new RoundedDrawable(bitmap,imageAware, cornerRadius, margin));
 	}
 
 	public static class RoundedDrawable extends Drawable {
@@ -71,10 +73,34 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 		protected final BitmapShader bitmapShader;
 		protected final Paint paint;
 
-		public RoundedDrawable(Bitmap bitmap, int cornerRadius, int margin) {
+		public RoundedDrawable(Bitmap bitmap,ImageAware imageAware, int cornerRadius, int margin) {
 			this.cornerRadius = cornerRadius;
 			this.margin = margin;
-
+            if(imageAware.getScaleType() == ViewScaleType.CROP){
+                int bw = bitmap.getWidth();
+                int bh = bitmap.getHeight();
+                int vw = imageAware.getWidth();
+                int vh = imageAware.getHeight();
+                if (vw <= 0) vw = bw;
+                if (vh <= 0) vh = bh;
+                int outWidth, outHeight;
+                float vRation= (float) vw / vh;
+                float bRation = (float) bw / bh;
+                int x=0;
+                int y=0;
+                if (vRation > bRation) {
+                    outWidth = bw;
+                    outHeight = (int) (vh * ((float) bw / vw));
+                    x = 0;
+                    y = (bh - outHeight) / 2;
+                } else {
+                    outWidth = (int) (vw * ((float) bh / vh));
+                    outHeight = bh;
+                    x = (bw - outWidth) / 2;
+                    y = 0;
+                }
+                bitmap=Bitmap.createBitmap(bitmap, x, y,outWidth, outHeight);
+			}
 			bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
 			mBitmapRect = new RectF (margin, margin, bitmap.getWidth() - margin, bitmap.getHeight() - margin);
 			
