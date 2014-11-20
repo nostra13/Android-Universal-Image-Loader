@@ -2,6 +2,9 @@
 bin/
 gen/
 
+# Readme
+README.md
+
 # Ant
 build.xml
 local.properties
