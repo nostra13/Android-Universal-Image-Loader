@@ -10,7 +10,7 @@ UIL aims to provide a powerful, flexible and highly customizable instrument for 
  * **#2** of Android libraries on GitHub (according [gitrep](https://www.gitrep.com/search?utf8=%E2%9C%93&omni_search=android+library&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
  * **#4** of Java repositories on GitHub (according [gitrep](https://www.gitrep.com/search?utf8=%E2%9C%93&omni_search=&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
 
- **Upcoming changes in new UIL version (1.9.4+)**
+**Upcoming changes in new UIL version (1.9.4+)**
  * Memory Cache redesign
  * Video file thumbnail support via "file:///sdcard/video.mp4"
  * **New API:** `DisplayImageOptions.targetSize(ImageSize)`
