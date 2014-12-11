@@ -38,7 +38,7 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.5.6
  */
-public class RoundedBitmapDisplayer implements BitmapDisplayer {
+public class RoundedBitmapDisplayer extends SimpleBitmapDisplayer {
 
 	protected final int cornerRadius;
 	protected final int margin;
@@ -54,6 +54,7 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 
 	@Override
 	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
+		super.display(bitmap, imageAware, loadedFrom);
 		if (!(imageAware instanceof ImageViewAware)) {
 			throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
 		}

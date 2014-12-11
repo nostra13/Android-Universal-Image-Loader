@@ -249,6 +249,7 @@ public class ImageLoader {
 					engine.submit(displayTask);
 				}
 			} else {
+				options.getDisplayer().judgeFirstDisplay(uri, imageAware);
 				options.getDisplayer().display(bmp, imageAware, LoadedFrom.MEMORY_CACHE);
 				listener.onLoadingComplete(uri, imageAware.getWrappedView(), bmp);
 			}

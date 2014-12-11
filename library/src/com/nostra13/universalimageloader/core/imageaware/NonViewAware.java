@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
+
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 
@@ -88,5 +89,15 @@ public class NonViewAware implements ImageAware {
 	@Override
 	public boolean setImageBitmap(Bitmap bitmap) { // Do nothing
 		return true;
+	}
+
+	@Override
+	public Object getTag() {
+		return null;
+	}
+
+	@Override
+	public void setTag(String uri) {
+		
 	}
 }
