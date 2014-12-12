@@ -29,7 +29,7 @@ import com.nostra13.universalimageloader.core.imageaware.ImageAware;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com), Daniel Martí
  * @since 1.6.4
  */
-public class FadeInBitmapDisplayer implements BitmapDisplayer {
+public class FadeInBitmapDisplayer extends SimpleBitmapDisplayer {
 
 	private final int durationMillis;
 
@@ -58,14 +58,16 @@ public class FadeInBitmapDisplayer implements BitmapDisplayer {
 		this.animateFromMemory = animateFromMemory;
 	}
 
-	@Override
 	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
+		super.display(bitmap, imageAware, loadedFrom);
 		imageAware.setImageBitmap(bitmap);
 
-		if ((animateFromNetwork && loadedFrom == LoadedFrom.NETWORK) ||
-				(animateFromDisk && loadedFrom == LoadedFrom.DISC_CACHE) ||
-				(animateFromMemory && loadedFrom == LoadedFrom.MEMORY_CACHE)) {
-			animate(imageAware.getWrappedView(), durationMillis);
+		if (isFirstDisplay()) {
+			if ((animateFromNetwork && loadedFrom == LoadedFrom.NETWORK) ||
+					(animateFromDisk && loadedFrom == LoadedFrom.DISC_CACHE) ||
+					(animateFromMemory && loadedFrom == LoadedFrom.MEMORY_CACHE)) {
+				animate(imageAware.getWrappedView(), durationMillis);
+			}
 		}
 	}
 

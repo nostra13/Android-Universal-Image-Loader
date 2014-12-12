@@ -40,4 +40,8 @@ public interface BitmapDisplayer {
 	 * @param loadedFrom Source of loaded image
 	 */
 	void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom);
+	
+	void judgeFirstDisplay(String uri, ImageAware imageAware);
+	
+	boolean isFirstDisplay();
 }

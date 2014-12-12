@@ -111,4 +111,8 @@ public interface ImageAware {
 	 * @return <b>true</b> if bitmap was set successfully; <b>false</b> - otherwise
 	 */
 	boolean setImageBitmap(Bitmap bitmap);
+	
+	Object getTag();
+	
+	void setTag(String uri);
 }
