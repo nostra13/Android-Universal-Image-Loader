@@ -6,9 +6,9 @@ UIL aims to provide a powerful, flexible and highly customizable instrument for 
 
 ## Project News
  **27.11 UIL celebrates 3 years of development :)**
- * **#1** of Android libraries for loading and caching images on GitHub
- * **#2** of Android libraries on GitHub (according [gitrep](https://www.gitrep.com/search?utf8=%E2%9C%93&omni_search=android+library&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
- * **#4** of Java repositories on GitHub (according [gitrep](https://www.gitrep.com/search?utf8=%E2%9C%93&omni_search=&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
+ * **#1** of Android libraries for loading and caching images
+ * **#1** of Android libraries on GitHub (according [gitrep](https://www.gitrep.com/search?utf8=%E2%9C%93&omni_search=android+library&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
+ * **#3** of Java repositories on GitHub (according [gitrep](https://www.gitrep.com/search?utf8=%E2%9C%93&omni_search=&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
 
 **Upcoming changes in new UIL version (1.9.4+)**
  * Memory Cache redesign
@@ -34,122 +34,14 @@ Android 2.0+ support
  * **[universal-image-loader-1.9.3-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-with-sources.jar)**
  * [![Demo app](https://camo.githubusercontent.com/dc1ffe0e4d25c2c28a69423c3c78000ef7ee96bf/68747470733a2f2f646576656c6f7065722e616e64726f69642e636f6d2f696d616765732f6272616e642f656e5f6170705f7267625f776f5f34352e706e67)](https://play.google.com/store/apps/details?id=com.nostra13.universalimageloader.sample) [![QR Code](https://lh3.ggpht.com/csXEddxiLgQ6FxckefjQnP1PVugbaAYOdcuTa3vVtGV1PlWbFu2dYggoH8rI1w2RdEz1=w50)](http://chart.apis.google.com/chart?chs=300x300&cht=qr&chld=|1&chl=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.nostra13.universalimageloader.sample) [<img src="http://mobway.in/image/apk.png" height="45px" />](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.9.3.apk)
 
-### [Documentation](https://github.com/nostra13/Android-Universal-Image-Loader/wiki) | [Useful Info](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Useful-Info) | [User Support](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/User-Support) | [Changelog](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/CHANGELOG.md)
-
-## Quick Setup
-
-#### 1. Include library
-
-**Manual:**
- * [Download JAR](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3.jar)
- * Put the JAR in the **libs** subfolder of your Android project
-
-or
-
-**Maven dependency:**
-``` xml
-<dependency>
-	<groupId>com.nostra13.universalimageloader</groupId>
-	<artifactId>universal-image-loader</artifactId>
-	<version>1.9.3</version>
-</dependency>
-```
-
-or
-
-**Gradle dependency:**
-``` groovy
-compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
-```
-
-#### 2. Android Manifest
-``` xml
-<manifest>
-	<!-- Include following permission if you load images from Internet -->
-	<uses-permission android:name="android.permission.INTERNET" />
-	<!-- Include following permission if you want to cache images on SD card -->
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	...
-</manifest>
-```
-
-#### 3. Application or Activity class (before the first usage of ImageLoader)
-``` java
-public class MyActivity extends Activity {
-	@Override
-	public void onCreate() {
-		super.onCreate();
-
-		// Create global configuration and initialize ImageLoader with this config
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-			...
-			.build();
-		ImageLoader.getInstance().init(config);
-		...
-	}
-}
-```
-
-## Configuration and Display Options
-
- * ImageLoader **Configuration (`ImageLoaderConfiguration`) is global** for application.
- * **Display Options (`DisplayImageOptions`) are local** for every display task (`ImageLoader.displayImage(...)`).
-
-### Configuration
-All options in Configuration builder are optional. Use only those you really want to customize.<br />*See default values for config options in Java docs for every option.*
-``` java
-// DON'T COPY THIS CODE TO YOUR PROJECT! This is just example of ALL options using.
-// See the sample project how to use ImageLoader correctly.
-File cacheDir = StorageUtils.getCacheDirectory(context);
-ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-		.memoryCacheExtraOptions(480, 800) // default = device screen dimensions
-		.diskCacheExtraOptions(480, 800, null)
-		.taskExecutor(...)
-		.taskExecutorForCachedImages(...)
-		.threadPoolSize(3) // default
-		.threadPriority(Thread.NORM_PRIORITY - 2) // default
-		.tasksProcessingOrder(QueueProcessingType.FIFO) // default
-		.denyCacheImageMultipleSizesInMemory()
-		.memoryCache(new LruMemoryCache(2 * 1024 * 1024))
-		.memoryCacheSize(2 * 1024 * 1024)
-		.memoryCacheSizePercentage(13) // default
-		.diskCache(new UnlimitedDiscCache(cacheDir)) // default
-		.diskCacheSize(50 * 1024 * 1024)
-		.diskCacheFileCount(100)
-		.diskCacheFileNameGenerator(new HashCodeFileNameGenerator()) // default
-		.imageDownloader(new BaseImageDownloader(context)) // default
-		.imageDecoder(new BaseImageDecoder()) // default
-		.defaultDisplayImageOptions(DisplayImageOptions.createSimple()) // default
-		.writeDebugLogs()
-		.build();
-```
-
-### Display Options
-Display Options can be applied to every display task (`ImageLoader.displayImage(...)` call).
-
-**Note:** If Display Options wasn't passed to `ImageLoader.displayImage(...)`method then default Display Options from configuration (`ImageLoaderConfiguration.defaultDisplayImageOptions(...)`) will be used.
-``` java
-// DON'T COPY THIS CODE TO YOUR PROJECT! This is just example of ALL options using.
-// See the sample project how to use ImageLoader correctly.
-DisplayImageOptions options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_stub) // resource or drawable
-		.showImageForEmptyUri(R.drawable.ic_empty) // resource or drawable
-		.showImageOnFail(R.drawable.ic_error) // resource or drawable
-		.resetViewBeforeLoading(false)  // default
-		.delayBeforeLoading(1000)
-		.cacheInMemory(false) // default
-		.cacheOnDisk(false) // default
-		.preProcessor(...)
-		.postProcessor(...)
-		.extraForDownloader(...)
-		.considerExifParams(false) // default
-		.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2) // default
-		.bitmapConfig(Bitmap.Config.ARGB_8888) // default
-		.decodingOptions(...)
-		.displayer(new SimpleBitmapDisplayer()) // default
-		.handler(new Handler()) // default
-		.build();
-```
+## [Documentation](https://github.com/nostra13/Android-Universal-Image-Loader/wiki)
+ * **[Quick Setup](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Quick-Setup)**
+ * **[Configuration](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Configuration)**
+ * **[Display Options](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Display-Options)**
+ * [Useful Info](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Useful-Info) - Read it before asking a question
+ * [User Support](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/User-Support) - Read it before creating new issue
+ * [Sample project](https://github.com/nostra13/Android-Universal-Image-Loader/tree/master/sample) - Learn it to understand the right way of library usage
+ * [ChangeLog](https://github.com/nostra13/Android-Universal-Image-Loader/blob/master/CHANGELOG.md) - Info about API changes is here
 
 ## Usage
 
