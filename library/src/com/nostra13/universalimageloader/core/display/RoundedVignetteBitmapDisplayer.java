@@ -43,6 +43,7 @@ public class RoundedVignetteBitmapDisplayer extends RoundedBitmapDisplayer {
 
 	@Override
 	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
+		super.display(bitmap, imageAware, loadedFrom);
 		if (!(imageAware instanceof ImageViewAware)) {
 			throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
 		}

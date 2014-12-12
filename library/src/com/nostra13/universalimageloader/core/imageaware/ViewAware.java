@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -71,6 +72,10 @@ public abstract class ViewAware implements ImageAware {
 
 		this.viewRef = new WeakReference<View>(view);
 		this.checkActualViewSize = checkActualViewSize;
+	}
+	
+	public Reference<View> getViewRef() {
+		return this.viewRef;
 	}
 
 	/**
@@ -168,6 +173,21 @@ public abstract class ViewAware implements ImageAware {
 			L.w(WARN_CANT_SET_BITMAP);
 		}
 		return false;
+	}
+	
+	@Override
+	public void setTag(String uri) {
+		if (getViewRef().get() != null) {
+			getViewRef().get().setTag(uri);
+		}
+	}
+	
+	@Override
+	public Object getTag() {
+		if (getViewRef().get() != null) {
+			return getViewRef().get().getTag(); 
+		}
+		return "";
 	}
 
 	/**

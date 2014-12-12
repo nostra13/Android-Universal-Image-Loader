@@ -16,18 +16,38 @@
 package com.nostra13.universalimageloader.core.display;
 
 import android.graphics.Bitmap;
+
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 
 /**
- * Just displays {@link Bitmap} in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}
- *
+ * Just displays {@link Bitmap} in
+ * {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}
+ * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.5.6
  */
-public final class SimpleBitmapDisplayer implements BitmapDisplayer {
+public class SimpleBitmapDisplayer implements BitmapDisplayer {
+	
+	private boolean isFirstDisplay = true;
+	
 	@Override
 	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
 		imageAware.setImageBitmap(bitmap);
+	}
+
+	@Override
+	public void judgeFirstDisplay(String uri, ImageAware imageAware) {
+		if (imageAware.getTag() != null && imageAware.getTag().equals(uri)) {
+			isFirstDisplay = false;
+			return ;
+		}
+		imageAware.setTag(uri);
+		isFirstDisplay = true;
+	}
+	
+	@Override
+	public boolean isFirstDisplay() {
+		return isFirstDisplay;
 	}
 }
