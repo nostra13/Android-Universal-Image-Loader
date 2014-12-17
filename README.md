@@ -7,12 +7,12 @@ UIL aims to provide a powerful, flexible and highly customizable instrument for 
 ## Project News
  **27.11 UIL celebrates 3 years of development :)**
  * **#1** of Android libraries for loading and caching images
- * **#1** of Android libraries on GitHub (according [gitrep](https://www.gitrep.com/search?utf8=%E2%9C%93&omni_search=android+library&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
- * **#3** of Java repositories on GitHub (according [gitrep](https://www.gitrep.com/search?utf8=%E2%9C%93&omni_search=&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
+ * **#1** of Android libraries on GitHub (according to [gitrep](https://www.gitrep.com/search?utf8=✓&omni_search=&public_tags%5B%5D=android&description=&search=true&sort=star_count&commit=Search))
+ * **#3** of Java repositories on GitHub (according to [gitrep](https://www.gitrep.com/search?utf8=✓&omni_search=&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
 
 **Upcoming changes in new UIL version (1.9.4+)**
  * Memory Cache redesign
- * Video file thumbnail support via "file:///sdcard/video.mp4"
+ * Video file thumbnail support via `file:///sdcard/video.mp4`
  * **New API:** `DisplayImageOptions.targetSize(ImageSize)`
  * HTTP cache support
  * Consider `BitmapFactory.Options.inBitmap`
@@ -29,9 +29,7 @@ Android 2.0+ support
 
 ## Downloads
  * **[universal-image-loader-1.9.3.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3.jar)**
- * **[universal-image-loader-1.9.3-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-sources.jar)**
- * **[universal-image-loader-1.9.3-javadoc.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-javadoc.jar)**
- * **[universal-image-loader-1.9.3-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-with-sources.jar)**
+ * **[universal-image-loader-1.9.3-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.3-with-sources.jar)** (for Eclipse)
  * [![Demo app](https://camo.githubusercontent.com/dc1ffe0e4d25c2c28a69423c3c78000ef7ee96bf/68747470733a2f2f646576656c6f7065722e616e64726f69642e636f6d2f696d616765732f6272616e642f656e5f6170705f7267625f776f5f34352e706e67)](https://play.google.com/store/apps/details?id=com.nostra13.universalimageloader.sample) [![QR Code](https://lh3.ggpht.com/csXEddxiLgQ6FxckefjQnP1PVugbaAYOdcuTa3vVtGV1PlWbFu2dYggoH8rI1w2RdEz1=w50)](http://chart.apis.google.com/chart?chs=300x300&cht=qr&chld=|1&chl=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.nostra13.universalimageloader.sample) [<img src="http://mobway.in/image/apk.png" height="45px" />](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.9.3.apk)
 
 ## [Documentation](https://github.com/nostra13/Android-Universal-Image-Loader/wiki)
