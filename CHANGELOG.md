@@ -11,6 +11,7 @@ v1.9.3 *(06.09.2014)*
    * NPE if no free space while init disk cache
    * "Bitmap too large ..." for all ImageScaleTypes
    * contacts photo considering
+   * Updates on Disc Cache : now use getDiskCache() instead of getDiscCache().
 
 v1.9.2 *(24.05.2014)*
 ---
