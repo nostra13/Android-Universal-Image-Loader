@@ -68,6 +68,7 @@ public final class ImageLoaderConfiguration {
 
 	final MemoryCache memoryCache;
 	final DiskCache diskCache;
+	final DiskCache bitmapDiskCache;
 	final ImageDownloader downloader;
 	final ImageDecoder decoder;
 	final DisplayImageOptions defaultDisplayImageOptions;
@@ -88,6 +89,7 @@ public final class ImageLoaderConfiguration {
 		threadPriority = builder.threadPriority;
 		tasksProcessingType = builder.tasksProcessingType;
 		diskCache = builder.diskCache;
+		bitmapDiskCache = builder.bitmapDiskCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
 		downloader = builder.downloader;
@@ -150,6 +152,7 @@ public final class ImageLoaderConfiguration {
 
 		private static final String WARNING_OVERLAP_DISK_CACHE_PARAMS = "diskCache(), diskCacheSize() and diskCacheFileCount calls overlap each other";
 		private static final String WARNING_OVERLAP_DISK_CACHE_NAME_GENERATOR = "diskCache() and diskCacheFileNameGenerator() calls overlap each other";
+		private static final String WARNING_OVERLAP_BITMAP_DISK_CACHE_PARAMS = "bitmapDiskCache(), bitmapDiskCacheSize() and bitmapDiskCacheFileCount calls overlap each other";
 		private static final String WARNING_OVERLAP_MEMORY_CACHE = "memoryCache() and memoryCacheSize() calls overlap each other";
 		private static final String WARNING_OVERLAP_EXECUTOR = "threadPoolSize(), threadPriority() and tasksProcessingOrder() calls "
 				+ "can overlap taskExecutor() and taskExecutorForCachedImages() calls.";
@@ -182,9 +185,12 @@ public final class ImageLoaderConfiguration {
 		private int memoryCacheSize = 0;
 		private long diskCacheSize = 0;
 		private int diskCacheFileCount = 0;
+		private long bitmapDiskCacheSize = 0;
+		private int bitmapDiskCacheFileCount = 0;
 
 		private MemoryCache memoryCache = null;
 		private DiskCache diskCache = null;
+		private DiskCache bitmapDiskCache = null;
 		private FileNameGenerator diskCacheFileNameGenerator = null;
 		private ImageDownloader downloader = null;
 		private ImageDecoder decoder;
@@ -512,6 +518,70 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
+		 * Sets maximum bitmap disk cache size for images (in bytes).<br />
+		 * By default: disk cache is unlimited.<br />
+		 * <b>NOTE:</b> If you use this method then
+		 * {@link com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache LruDiskCache}
+		 * will be used as disk cache. You can use {@link #bitmapDiskCache(DiskCache)} method for introduction your own
+		 * implementation of {@link DiskCache}
+		 */
+		public Builder bitmapDiskCacheSize(int maxCacheSize) {
+			if (maxCacheSize <= 0) throw new IllegalArgumentException("maxCacheSize must be a positive number");
+
+			if (bitmapDiskCache != null) {
+				L.w(WARNING_OVERLAP_BITMAP_DISK_CACHE_PARAMS);
+			}
+
+			this.bitmapDiskCacheSize = maxCacheSize;
+			return this;
+		}
+
+		/**
+		 * Sets maximum file count in bitmap disk cache directory.<br />
+		 * By default: disk cache is unlimited.<br />
+		 * <b>NOTE:</b> If you use this method then
+		 * {@link com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache LruDiskCache}
+		 * will be used as disk cache. You can use {@link #bitmapDiskCache(DiskCache)} method for introduction your own
+		 * implementation of {@link DiskCache}
+		 */
+		public Builder bitmapDiskCacheFileCount(int maxFileCount) {
+			if (maxFileCount <= 0) throw new IllegalArgumentException("maxFileCount must be a positive number");
+
+			if (bitmapDiskCache != null) {
+				L.w(WARNING_OVERLAP_BITMAP_DISK_CACHE_PARAMS);
+			}
+
+			this.bitmapDiskCacheFileCount = maxFileCount;
+			return this;
+		}
+
+		/**
+		 * Sets bitmap disk cache for images.<br />
+		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache
+		 * UnlimitedDiskCache}. Cache directory is defined by
+		 * {@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context)
+		 * StorageUtils.getCacheDirectory(Context)}.<br />
+		 * <br />
+		 * <b>NOTE:</b> If you set custom disk cache then following configuration option will not be considered:
+		 * <ul>
+		 * <li>{@link #diskCacheSize(int)}</li>
+		 * <li>{@link #diskCacheFileCount(int)}</li>
+		 * <li>{@link #diskCacheFileNameGenerator(FileNameGenerator)}</li>
+		 * </ul>
+		 */
+		public Builder bitmapDiskCache(DiskCache diskCache) {
+			if (diskCacheSize > 0 || diskCacheFileCount > 0) {
+				L.w(WARNING_OVERLAP_BITMAP_DISK_CACHE_PARAMS);
+			}
+			if (diskCacheFileNameGenerator != null) {
+				L.w(WARNING_OVERLAP_DISK_CACHE_NAME_GENERATOR);
+			}
+
+			this.bitmapDiskCache = diskCache;
+			return this;
+		}
+
+		/**
 		 * Sets utility which will be responsible for downloading of image.<br />
 		 * Default value -
 		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createImageDownloader(Context)
@@ -579,6 +649,13 @@ public final class ImageLoaderConfiguration {
 				}
 				diskCache = DefaultConfigurationFactory
 						.createDiskCache(context, diskCacheFileNameGenerator, diskCacheSize, diskCacheFileCount);
+			}
+			if (bitmapDiskCache == null) {
+				if (diskCacheFileNameGenerator == null) {
+					diskCacheFileNameGenerator = DefaultConfigurationFactory.createFileNameGenerator();
+				}
+				bitmapDiskCache = DefaultConfigurationFactory
+						.createBitmapDiskCache(context, diskCacheFileNameGenerator, bitmapDiskCacheSize, bitmapDiskCacheFileCount);
 			}
 			if (memoryCache == null) {
 				memoryCache = DefaultConfigurationFactory.createMemoryCache(context, memoryCacheSize);

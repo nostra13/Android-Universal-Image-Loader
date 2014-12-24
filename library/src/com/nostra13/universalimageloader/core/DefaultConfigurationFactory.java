@@ -108,6 +108,36 @@ public class DefaultConfigurationFactory {
 	}
 
 	/**
+	 * Creates default implementation of {@link bitmapDiskCache} depends on incoming parameters
+	 */
+	public static DiskCache createBitmapDiskCache(Context context, FileNameGenerator diskCacheFileNameGenerator,
+			long diskCacheSize, int diskCacheFileCount) {
+		File reserveCacheDir = createReserveBitmapDiskCacheDir(context);
+		if (diskCacheSize > 0 || diskCacheFileCount > 0) {
+			File individualCacheDir = StorageUtils.getIndividualBitmapCacheDirectory(context);
+			try {
+				return new LruDiskCache(individualCacheDir, reserveCacheDir, diskCacheFileNameGenerator, diskCacheSize,
+						diskCacheFileCount);
+			} catch (IOException e) {
+				L.e(e);
+				// continue and create unlimited cache
+			}
+		}
+		File cacheDir = StorageUtils.getIndividualBitmapCacheDirectory(context);
+		return new UnlimitedDiskCache(cacheDir, reserveCacheDir, diskCacheFileNameGenerator);
+	}
+
+	/** Creates reserve bitmap disk cache folder which will be used if primary disk cache folder becomes unavailable */
+	private static File createReserveBitmapDiskCacheDir(Context context) {
+		File cacheDir = StorageUtils.getCacheDirectory(context, false);
+		File individualDir = new File(cacheDir, "uil-bitmaps");
+		if (individualDir.exists() || individualDir.mkdir()) {
+			cacheDir = individualDir;
+		}
+		return cacheDir;
+	}
+
+	/**
 	 * Creates default implementation of {@link MemoryCache} - {@link LruMemoryCache}<br />
 	 * Default cache size = 1/8 of available app memory.
 	 */

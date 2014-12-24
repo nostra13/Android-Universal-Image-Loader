@@ -58,6 +58,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	private static final String LOG_GET_IMAGE_FROM_MEMORY_CACHE_AFTER_WAITING = "...Get cached bitmap from memory after waiting. [%s]";
 	private static final String LOG_LOAD_IMAGE_FROM_NETWORK = "Load image from network [%s]";
 	private static final String LOG_LOAD_IMAGE_FROM_DISK_CACHE = "Load image from disk cache [%s]";
+	private static final String LOG_LOAD_IMAGE_FROM_BITMAP_DISK_CACHE = "Load image from bitmap disk cache [%s]";
 	private static final String LOG_RESIZE_CACHED_IMAGE_FILE = "Resize image in disk cache [%s]";
 	private static final String LOG_PREPROCESS_IMAGE = "PreProcess image before caching in memory [%s]";
 	private static final String LOG_POSTPROCESS_IMAGE = "PostProcess image before displaying [%s]";
@@ -214,33 +215,56 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 	private Bitmap tryLoadBitmap() throws TaskCancelledException {
 		Bitmap bitmap = null;
 		try {
-			File imageFile = configuration.diskCache.get(uri);
+			File imageFile = configuration.bitmapDiskCache.get(memoryCacheKey);
+			if (imageFile != null && imageFile.exists()) {
+				L.d(LOG_LOAD_IMAGE_FROM_BITMAP_DISK_CACHE, memoryCacheKey);
+				loadedFrom = LoadedFrom.BITMAP_DISK_CACHE;
+
+				checkTaskNotActual();
+				bitmap = decodeImage(Scheme.FILE.wrap(imageFile.getAbsolutePath()));
+
+				if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
+					return bitmap;
+				}
+			}
+
+			imageFile = configuration.diskCache.get(uri);
 			if (imageFile != null && imageFile.exists()) {
 				L.d(LOG_LOAD_IMAGE_FROM_DISK_CACHE, memoryCacheKey);
 				loadedFrom = LoadedFrom.DISC_CACHE;
 
 				checkTaskNotActual();
 				bitmap = decodeImage(Scheme.FILE.wrap(imageFile.getAbsolutePath()));
-			}
-			if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
-				L.d(LOG_LOAD_IMAGE_FROM_NETWORK, memoryCacheKey);
-				loadedFrom = LoadedFrom.NETWORK;
-
-				String imageUriForDecoding = uri;
-				if (options.isCacheOnDisk() && tryCacheImageOnDisk()) {
-					imageFile = configuration.diskCache.get(uri);
-					if (imageFile != null) {
-						imageUriForDecoding = Scheme.FILE.wrap(imageFile.getAbsolutePath());
+				if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
+					if (options.isCacheBitmapOnDisk()) {
+						configuration.bitmapDiskCache.save(memoryCacheKey, bitmap);
 					}
-				}
-
-				checkTaskNotActual();
-				bitmap = decodeImage(imageUriForDecoding);
-
-				if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
-					fireFailEvent(FailType.DECODING_ERROR, null);
+					return bitmap;
 				}
 			}
+
+			L.d(LOG_LOAD_IMAGE_FROM_NETWORK, memoryCacheKey);
+			loadedFrom = LoadedFrom.NETWORK;
+
+			String imageUriForDecoding = uri;
+			if (options.isCacheOnDisk() && tryCacheImageOnDisk()) {
+				imageFile = configuration.diskCache.get(uri);
+				if (imageFile != null) {
+					imageUriForDecoding = Scheme.FILE.wrap(imageFile.getAbsolutePath());
+				}
+			}
+
+			checkTaskNotActual();
+			bitmap = decodeImage(imageUriForDecoding);
+
+			if (bitmap != null && bitmap.getWidth() > 0 && bitmap.getHeight() > 0) {
+				if (options.isCacheBitmapOnDisk()) {
+					configuration.bitmapDiskCache.save(memoryCacheKey, bitmap);
+				}
+				return bitmap;
+			}
+
+			fireFailEvent(FailType.DECODING_ERROR, null);
 		} catch (IllegalStateException e) {
 			fireFailEvent(FailType.NETWORK_DENIED, null);
 		} catch (TaskCancelledException e) {

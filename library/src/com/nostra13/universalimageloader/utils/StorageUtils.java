@@ -34,6 +34,7 @@ public final class StorageUtils {
 
 	private static final String EXTERNAL_STORAGE_PERMISSION = "android.permission.WRITE_EXTERNAL_STORAGE";
 	private static final String INDIVIDUAL_DIR_NAME = "uil-images";
+	private static final String INDIVIDUAL_BITMAP_DIR_NAME = "uil-bitmaps";
 
 	private StorageUtils() {
 	}
@@ -96,6 +97,25 @@ public final class StorageUtils {
 	public static File getIndividualCacheDirectory(Context context) {
 		File cacheDir = getCacheDirectory(context);
 		File individualCacheDir = new File(cacheDir, INDIVIDUAL_DIR_NAME);
+		if (!individualCacheDir.exists()) {
+			if (!individualCacheDir.mkdir()) {
+				individualCacheDir = cacheDir;
+			}
+		}
+		return individualCacheDir;
+	}
+
+	/**
+	 * Returns individual application bitmap cache directory (for only image caching from ImageLoader). Cache directory will be
+	 * created on SD card <i>("/Android/data/[app_package_name]/cache/uil-bitmaps")</i> if card is mounted and app has
+	 * appropriate permission. Else - Android defines cache directory on device's file system.
+	 *
+	 * @param context Application context
+	 * @return Cache {@link File directory}
+	 */
+	public static File getIndividualBitmapCacheDirectory(Context context) {
+		File cacheDir = getCacheDirectory(context);
+		File individualCacheDir = new File(cacheDir, INDIVIDUAL_BITMAP_DIR_NAME);
 		if (!individualCacheDir.exists()) {
 			if (!individualCacheDir.mkdir()) {
 				individualCacheDir = cacheDir;
