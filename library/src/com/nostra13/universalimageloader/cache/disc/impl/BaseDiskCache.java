@@ -138,7 +138,6 @@ public abstract class BaseDiskCache implements DiskCache {
 				tmpFile.delete();
 			}
 		}
-		bitmap.recycle();
 		return savedSuccessfully;
 	}
 
