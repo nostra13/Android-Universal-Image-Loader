@@ -28,6 +28,7 @@ import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
+import com.nostra13.universalimageloader.core.assist.ReloadableInputStream;
 import com.nostra13.universalimageloader.utils.IoUtils;
 
 import java.io.BufferedInputStream;
@@ -81,7 +82,16 @@ public class BaseImageDownloader implements ImageDownloader {
 	}
 
 	@Override
-	public InputStream getStream(String imageUri, Object extra) throws IOException {
+	public InputStream getStream(final String imageUri, final Object extra) throws IOException {
+		return new ReloadableInputStream(getStreamInner(imageUri, extra)) {
+			@Override
+			public InputStream reload() throws IOException {
+				return getStreamInner(imageUri, extra);
+			}
+		};
+	}
+
+	public InputStream getStreamInner(String imageUri, Object extra) throws IOException {
 		switch (Scheme.ofUri(imageUri)) {
 			case HTTP:
 			case HTTPS:
