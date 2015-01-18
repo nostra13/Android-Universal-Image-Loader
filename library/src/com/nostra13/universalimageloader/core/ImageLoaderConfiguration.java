@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2011-2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,22 @@ package com.nostra13.universalimageloader.core;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.util.DisplayMetrics;
-import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
-import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
+import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.assist.MemoryCacheUtil;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
-import com.nostra13.universalimageloader.core.download.NetworkDeniedImageDownloader;
-import com.nostra13.universalimageloader.core.download.SlowNetworkImageDownloader;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 import com.nostra13.universalimageloader.utils.L;
-import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.Executor;
 
 /**
@@ -44,8 +40,8 @@ import java.util.concurrent.Executor;
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @see ImageLoader
- * @see MemoryCacheAware
- * @see DiscCacheAware
+ * @see MemoryCache
+ * @see DiskCache
  * @see DisplayImageOptions
  * @see ImageDownloader
  * @see FileNameGenerator
@@ -57,11 +53,9 @@ public final class ImageLoaderConfiguration {
 
 	final int maxImageWidthForMemoryCache;
 	final int maxImageHeightForMemoryCache;
-	final int maxImageWidthForDiscCache;
-	final int maxImageHeightForDiscCache;
-	final CompressFormat imageCompressFormatForDiscCache;
-	final int imageQualityForDiscCache;
-	final BitmapProcessor processorForDiscCache;
+	final int maxImageWidthForDiskCache;
+	final int maxImageHeightForDiskCache;
+	final BitmapProcessor processorForDiskCache;
 
 	final Executor taskExecutor;
 	final Executor taskExecutorForCachedImages;
@@ -72,14 +66,12 @@ public final class ImageLoaderConfiguration {
 	final int threadPriority;
 	final QueueProcessingType tasksProcessingType;
 
-	final MemoryCacheAware<String, Bitmap> memoryCache;
-	final DiscCacheAware discCache;
+	final MemoryCache memoryCache;
+	final DiskCache diskCache;
 	final ImageDownloader downloader;
 	final ImageDecoder decoder;
 	final DisplayImageOptions defaultDisplayImageOptions;
-	final boolean writeLogs;
 
-	final DiscCacheAware reserveDiscCache;
 	final ImageDownloader networkDeniedDownloader;
 	final ImageDownloader slowNetworkDownloader;
 
@@ -87,20 +79,17 @@ public final class ImageLoaderConfiguration {
 		resources = builder.context.getResources();
 		maxImageWidthForMemoryCache = builder.maxImageWidthForMemoryCache;
 		maxImageHeightForMemoryCache = builder.maxImageHeightForMemoryCache;
-		maxImageWidthForDiscCache = builder.maxImageWidthForDiscCache;
-		maxImageHeightForDiscCache = builder.maxImageHeightForDiscCache;
-		imageCompressFormatForDiscCache = builder.imageCompressFormatForDiscCache;
-		imageQualityForDiscCache = builder.imageQualityForDiscCache;
-		processorForDiscCache = builder.processorForDiscCache;
+		maxImageWidthForDiskCache = builder.maxImageWidthForDiskCache;
+		maxImageHeightForDiskCache = builder.maxImageHeightForDiskCache;
+		processorForDiskCache = builder.processorForDiskCache;
 		taskExecutor = builder.taskExecutor;
 		taskExecutorForCachedImages = builder.taskExecutorForCachedImages;
 		threadPoolSize = builder.threadPoolSize;
 		threadPriority = builder.threadPriority;
 		tasksProcessingType = builder.tasksProcessingType;
-		discCache = builder.discCache;
+		diskCache = builder.diskCache;
 		memoryCache = builder.memoryCache;
 		defaultDisplayImageOptions = builder.defaultDisplayImageOptions;
-		writeLogs = builder.writeLogs;
 		downloader = builder.downloader;
 		decoder = builder.decoder;
 
@@ -110,8 +99,7 @@ public final class ImageLoaderConfiguration {
 		networkDeniedDownloader = new NetworkDeniedImageDownloader(downloader);
 		slowNetworkDownloader = new SlowNetworkImageDownloader(downloader);
 
-		File reserveCacheDir = StorageUtils.getCacheDirectory(builder.context, false);
-		reserveDiscCache = DefaultConfigurationFactory.createReserveDiscCache(reserveCacheDir);
+		L.writeDebugLogs(builder.writeLogs);
 	}
 
 	/**
@@ -120,16 +108,16 @@ public final class ImageLoaderConfiguration {
 	 * <ul>
 	 * <li>maxImageWidthForMemoryCache = device's screen width</li>
 	 * <li>maxImageHeightForMemoryCache = device's screen height</li>
-	 * <li>maxImageWidthForDiscCache = unlimited</li>
-	 * <li>maxImageHeightForDiscCache = unlimited</li>
+	 * <li>maxImageWidthForDikcCache = unlimited</li>
+	 * <li>maxImageHeightForDiskCache = unlimited</li>
 	 * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
 	 * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
 	 * <li>allow to cache different sizes of image in memory</li>
-	 * <li>memoryCache = {@link DefaultConfigurationFactory#createMemoryCache(int)}</li>
-	 * <li>discCache = {@link UnlimitedDiscCache}</li>
+	 * <li>memoryCache = {@link DefaultConfigurationFactory#createMemoryCache(android.content.Context, int)}</li>
+	 * <li>diskCache = {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache}</li>
 	 * <li>imageDownloader = {@link DefaultConfigurationFactory#createImageDownloader(Context)}</li>
 	 * <li>imageDecoder = {@link DefaultConfigurationFactory#createImageDecoder(boolean)}</li>
-	 * <li>discCacheFileNameGenerator = {@link DefaultConfigurationFactory#createFileNameGenerator()}</li>
+	 * <li>diskCacheFileNameGenerator = {@link DefaultConfigurationFactory#createFileNameGenerator()}</li>
 	 * <li>defaultDisplayImageOptions = {@link DisplayImageOptions#createSimple() Simple options}</li>
 	 * <li>tasksProcessingOrder = {@link QueueProcessingType#FIFO}</li>
 	 * <li>detailed logging disabled</li>
@@ -160,8 +148,8 @@ public final class ImageLoaderConfiguration {
 	 */
 	public static class Builder {
 
-		private static final String WARNING_OVERLAP_DISC_CACHE_PARAMS = "discCache(), discCacheSize() and discCacheFileCount calls overlap each other";
-		private static final String WARNING_OVERLAP_DISC_CACHE_NAME_GENERATOR = "discCache() and discCacheFileNameGenerator() calls overlap each other";
+		private static final String WARNING_OVERLAP_DISK_CACHE_PARAMS = "diskCache(), diskCacheSize() and diskCacheFileCount calls overlap each other";
+		private static final String WARNING_OVERLAP_DISK_CACHE_NAME_GENERATOR = "diskCache() and diskCacheFileNameGenerator() calls overlap each other";
 		private static final String WARNING_OVERLAP_MEMORY_CACHE = "memoryCache() and memoryCacheSize() calls overlap each other";
 		private static final String WARNING_OVERLAP_EXECUTOR = "threadPoolSize(), threadPriority() and tasksProcessingOrder() calls "
 				+ "can overlap taskExecutor() and taskExecutorForCachedImages() calls.";
@@ -169,7 +157,7 @@ public final class ImageLoaderConfiguration {
 		/** {@value} */
 		public static final int DEFAULT_THREAD_POOL_SIZE = 3;
 		/** {@value} */
-		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 1;
+		public static final int DEFAULT_THREAD_PRIORITY = Thread.NORM_PRIORITY - 2;
 		/** {@value} */
 		public static final QueueProcessingType DEFAULT_TASK_PROCESSING_TYPE = QueueProcessingType.FIFO;
 
@@ -177,11 +165,9 @@ public final class ImageLoaderConfiguration {
 
 		private int maxImageWidthForMemoryCache = 0;
 		private int maxImageHeightForMemoryCache = 0;
-		private int maxImageWidthForDiscCache = 0;
-		private int maxImageHeightForDiscCache = 0;
-		private CompressFormat imageCompressFormatForDiscCache = null;
-		private int imageQualityForDiscCache = 0;
-		private BitmapProcessor processorForDiscCache = null;
+		private int maxImageWidthForDiskCache = 0;
+		private int maxImageHeightForDiskCache = 0;
+		private BitmapProcessor processorForDiskCache = null;
 
 		private Executor taskExecutor = null;
 		private Executor taskExecutorForCachedImages = null;
@@ -194,12 +180,12 @@ public final class ImageLoaderConfiguration {
 		private QueueProcessingType tasksProcessingType = DEFAULT_TASK_PROCESSING_TYPE;
 
 		private int memoryCacheSize = 0;
-		private int discCacheSize = 0;
-		private int discCacheFileCount = 0;
+		private long diskCacheSize = 0;
+		private int diskCacheFileCount = 0;
 
-		private MemoryCacheAware<String, Bitmap> memoryCache = null;
-		private DiscCacheAware discCache = null;
-		private FileNameGenerator discCacheFileNameGenerator = null;
+		private MemoryCache memoryCache = null;
+		private DiskCache diskCache = null;
+		private FileNameGenerator diskCacheFileNameGenerator = null;
 		private ImageDownloader downloader = null;
 		private ImageDecoder decoder;
 		private DisplayImageOptions defaultDisplayImageOptions = null;
@@ -225,25 +211,29 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets options for resizing/compressing of downloaded images before saving to disc cache.<br />
+		 * @deprecated Use
+		 * {@link #diskCacheExtraOptions(int, int, com.nostra13.universalimageloader.core.process.BitmapProcessor)}
+		 * instead
+		 */
+		@Deprecated
+		public Builder discCacheExtraOptions(int maxImageWidthForDiskCache, int maxImageHeightForDiskCache,
+				BitmapProcessor processorForDiskCache) {
+			return diskCacheExtraOptions(maxImageWidthForDiskCache, maxImageHeightForDiskCache, processorForDiskCache);
+		}
+
+		/**
+		 * Sets options for resizing/compressing of downloaded images before saving to disk cache.<br />
 		 * <b>NOTE: Use this option only when you have appropriate needs. It can make ImageLoader slower.</b>
 		 *
-		 * @param maxImageWidthForDiscCache  Maximum width of downloaded images for saving at disc cache
-		 * @param maxImageHeightForDiscCache Maximum height of downloaded images for saving at disc cache
-		 * @param compressFormat             {@link android.graphics.Bitmap.CompressFormat Compress format} downloaded images to
-		 *                                   save them at disc cache
-		 * @param compressQuality            Hint to the compressor, 0-100. 0 meaning compress for small size, 100 meaning compress
-		 *                                   for max quality. Some formats, like PNG which is lossless, will ignore the quality setting
-		 * @param processorForDiscCache      null-ok; {@linkplain BitmapProcessor Bitmap processor} which process images before saving them in disc cache
+		 * @param maxImageWidthForDiskCache  Maximum width of downloaded images for saving at disk cache
+		 * @param maxImageHeightForDiskCache Maximum height of downloaded images for saving at disk cache
+		 * @param processorForDiskCache      null-ok; {@linkplain BitmapProcessor Bitmap processor} which process images before saving them in disc cache
 		 */
-		public Builder discCacheExtraOptions(int maxImageWidthForDiscCache, int maxImageHeightForDiscCache,
-											 CompressFormat compressFormat, int compressQuality,
-											 BitmapProcessor processorForDiscCache) {
-			this.maxImageWidthForDiscCache = maxImageWidthForDiscCache;
-			this.maxImageHeightForDiscCache = maxImageHeightForDiscCache;
-			this.imageCompressFormatForDiscCache = compressFormat;
-			this.imageQualityForDiscCache = compressQuality;
-			this.processorForDiscCache = processorForDiscCache;
+		public Builder diskCacheExtraOptions(int maxImageWidthForDiskCache, int maxImageHeightForDiskCache,
+				BitmapProcessor processorForDiskCache) {
+			this.maxImageWidthForDiskCache = maxImageWidthForDiskCache;
+			this.maxImageHeightForDiskCache = maxImageHeightForDiskCache;
+			this.processorForDiskCache = processorForDiskCache;
 			return this;
 		}
 
@@ -270,7 +260,7 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets custom {@linkplain Executor executor} for tasks of displaying <b>cached on disc</b> images (these tasks
+		 * Sets custom {@linkplain Executor executor} for tasks of displaying <b>cached on disk</b> images (these tasks
 		 * are executed quickly so UIL prefer to use separate executor for them).<br />
 		 * <br />
 		 * If you set the same executor for {@linkplain #taskExecutor(Executor) general tasks} and
@@ -362,8 +352,8 @@ public final class ImageLoaderConfiguration {
 		 * Default value - 1/8 of available app memory.<br />
 		 * <b>NOTE:</b> If you use this method then
 		 * {@link com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache LruMemoryCache} will be used as
-		 * memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method to set your own implementation of
-		 * {@link MemoryCacheAware}.
+		 * memory cache. You can use {@link #memoryCache(MemoryCache)} method to set your own implementation of
+		 * {@link MemoryCache}.
 		 */
 		public Builder memoryCacheSize(int memoryCacheSize) {
 			if (memoryCacheSize <= 0) throw new IllegalArgumentException("memoryCacheSize must be a positive number");
@@ -382,8 +372,8 @@ public final class ImageLoaderConfiguration {
 		 * Default value - 1/8 of available app memory.<br />
 		 * <b>NOTE:</b> If you use this method then
 		 * {@link com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache LruMemoryCache} will be used as
-		 * memory cache. You can use {@link #memoryCache(MemoryCacheAware)} method to set your own implementation of
-		 * {@link MemoryCacheAware}.
+		 * memory cache. You can use {@link #memoryCache(MemoryCache)} method to set your own implementation of
+		 * {@link MemoryCache}.
 		 */
 		public Builder memoryCacheSizePercentage(int availableMemoryPercent) {
 			if (availableMemoryPercent <= 0 || availableMemoryPercent >= 100) {
@@ -409,7 +399,7 @@ public final class ImageLoaderConfiguration {
 		 * <li>{@link #memoryCacheSize(int)}</li>
 		 * </ul>
 		 */
-		public Builder memoryCache(MemoryCacheAware<String, Bitmap> memoryCache) {
+		public Builder memoryCache(MemoryCache memoryCache) {
 			if (memoryCacheSize != 0) {
 				L.w(WARNING_OVERLAP_MEMORY_CACHE);
 			}
@@ -418,57 +408,106 @@ public final class ImageLoaderConfiguration {
 			return this;
 		}
 
-		/**
-		 * Sets maximum disc cache size for images (in bytes).<br />
-		 * By default: disc cache is unlimited.<br />
-		 * <b>NOTE:</b> If you use this method then
-		 * {@link com.nostra13.universalimageloader.cache.disc.impl.TotalSizeLimitedDiscCache TotalSizeLimitedDiscCache}
-		 * will be used as disc cache. You can use {@link #discCache(DiscCacheAware)} method for introduction your own
-		 * implementation of {@link DiscCacheAware}
-		 */
+		/** @deprecated Use {@link #diskCacheSize(int)} instead */
+		@Deprecated
 		public Builder discCacheSize(int maxCacheSize) {
+			return diskCacheSize(maxCacheSize);
+		}
+
+		/**
+		 * Sets maximum disk cache size for images (in bytes).<br />
+		 * By default: disk cache is unlimited.<br />
+		 * <b>NOTE:</b> If you use this method then
+		 * {@link com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache LruDiskCache}
+		 * will be used as disk cache. You can use {@link #diskCache(DiskCache)} method for introduction your own
+		 * implementation of {@link DiskCache}
+		 */
+		public Builder diskCacheSize(int maxCacheSize) {
 			if (maxCacheSize <= 0) throw new IllegalArgumentException("maxCacheSize must be a positive number");
 
-			if (discCache != null || discCacheFileCount > 0) {
-				L.w(WARNING_OVERLAP_DISC_CACHE_PARAMS);
+			if (diskCache != null) {
+				L.w(WARNING_OVERLAP_DISK_CACHE_PARAMS);
 			}
 
-			this.discCacheSize = maxCacheSize;
+			this.diskCacheSize = maxCacheSize;
 			return this;
 		}
 
-		/**
-		 * Sets maximum file count in disc cache directory.<br />
-		 * By default: disc cache is unlimited.<br />
-		 * <b>NOTE:</b> If you use this method then
-		 * {@link com.nostra13.universalimageloader.cache.disc.impl.FileCountLimitedDiscCache FileCountLimitedDiscCache}
-		 * will be used as disc cache. You can use {@link #discCache(DiscCacheAware)} method for introduction your own
-		 * implementation of {@link DiscCacheAware}
-		 */
+		/** @deprecated Use {@link #diskCacheFileCount(int)} instead */
+		@Deprecated
 		public Builder discCacheFileCount(int maxFileCount) {
+			return diskCacheFileCount(maxFileCount);
+		}
+
+		/**
+		 * Sets maximum file count in disk cache directory.<br />
+		 * By default: disk cache is unlimited.<br />
+		 * <b>NOTE:</b> If you use this method then
+		 * {@link com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache LruDiskCache}
+		 * will be used as disk cache. You can use {@link #diskCache(DiskCache)} method for introduction your own
+		 * implementation of {@link DiskCache}
+		 */
+		public Builder diskCacheFileCount(int maxFileCount) {
 			if (maxFileCount <= 0) throw new IllegalArgumentException("maxFileCount must be a positive number");
 
-			if (discCache != null || discCacheSize > 0) {
-				L.w(WARNING_OVERLAP_DISC_CACHE_PARAMS);
+			if (diskCache != null) {
+				L.w(WARNING_OVERLAP_DISK_CACHE_PARAMS);
 			}
 
-			this.discCacheSize = 0;
-			this.discCacheFileCount = maxFileCount;
+			this.diskCacheFileCount = maxFileCount;
 			return this;
 		}
 
+		/** @deprecated Use {@link #diskCacheFileNameGenerator(com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator)} */
+		@Deprecated
+		public Builder discCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
+			return diskCacheFileNameGenerator(fileNameGenerator);
+		}
+
 		/**
-		 * Sets name generator for files cached in disc cache.<br />
+		 * Sets name generator for files cached in disk cache.<br />
 		 * Default value -
 		 * {@link com.nostra13.universalimageloader.core.DefaultConfigurationFactory#createFileNameGenerator()
 		 * DefaultConfigurationFactory.createFileNameGenerator()}
 		 */
-		public Builder discCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
-			if (discCache != null) {
-				L.w(WARNING_OVERLAP_DISC_CACHE_NAME_GENERATOR);
+		public Builder diskCacheFileNameGenerator(FileNameGenerator fileNameGenerator) {
+			if (diskCache != null) {
+				L.w(WARNING_OVERLAP_DISK_CACHE_NAME_GENERATOR);
 			}
 
-			this.discCacheFileNameGenerator = fileNameGenerator;
+			this.diskCacheFileNameGenerator = fileNameGenerator;
+			return this;
+		}
+
+		/** @deprecated Use {@link #diskCache(com.nostra13.universalimageloader.cache.disc.DiskCache)} */
+		@Deprecated
+		public Builder discCache(DiskCache diskCache) {
+			return diskCache(diskCache);
+		}
+
+		/**
+		 * Sets disk cache for images.<br />
+		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache
+		 * UnlimitedDiskCache}. Cache directory is defined by
+		 * {@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context)
+		 * StorageUtils.getCacheDirectory(Context)}.<br />
+		 * <br />
+		 * <b>NOTE:</b> If you set custom disk cache then following configuration option will not be considered:
+		 * <ul>
+		 * <li>{@link #diskCacheSize(int)}</li>
+		 * <li>{@link #diskCacheFileCount(int)}</li>
+		 * <li>{@link #diskCacheFileNameGenerator(FileNameGenerator)}</li>
+		 * </ul>
+		 */
+		public Builder diskCache(DiskCache diskCache) {
+			if (diskCacheSize > 0 || diskCacheFileCount > 0) {
+				L.w(WARNING_OVERLAP_DISK_CACHE_PARAMS);
+			}
+			if (diskCacheFileNameGenerator != null) {
+				L.w(WARNING_OVERLAP_DISK_CACHE_NAME_GENERATOR);
+			}
+
+			this.diskCache = diskCache;
 			return this;
 		}
 
@@ -495,32 +534,6 @@ public final class ImageLoaderConfiguration {
 		}
 
 		/**
-		 * Sets disc cache for images.<br />
-		 * Default value - {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache
-		 * UnlimitedDiscCache}. Cache directory is defined by
-		 * {@link com.nostra13.universalimageloader.utils.StorageUtils#getCacheDirectory(Context)
-		 * StorageUtils.getCacheDirectory(Context)}.<br />
-		 * <br />
-		 * <b>NOTE:</b> If you set custom disc cache then following configuration option will not be considered:
-		 * <ul>
-		 * <li>{@link #discCacheSize(int)}</li>
-		 * <li>{@link #discCacheFileCount(int)}</li>
-		 * <li>{@link #discCacheFileNameGenerator(FileNameGenerator)}</li>
-		 * </ul>
-		 */
-		public Builder discCache(DiscCacheAware discCache) {
-			if (discCacheSize > 0 || discCacheFileCount > 0) {
-				L.w(WARNING_OVERLAP_DISC_CACHE_PARAMS);
-			}
-			if (discCacheFileNameGenerator != null) {
-				L.w(WARNING_OVERLAP_DISC_CACHE_NAME_GENERATOR);
-			}
-
-			this.discCache = discCache;
-			return this;
-		}
-
-		/**
 		 * Sets default {@linkplain DisplayImageOptions display image options} for image displaying. These options will
 		 * be used for every {@linkplain ImageLoader#displayImage(String, android.widget.ImageView) image display call}
 		 * without passing custom {@linkplain DisplayImageOptions options}<br />
@@ -533,7 +546,8 @@ public final class ImageLoaderConfiguration {
 
 		/**
 		 * Enables detail logging of {@link ImageLoader} work. To prevent detail logs don't call this method.
-		 * Consider {@link com.nostra13.universalimageloader.utils.L#disableLogging()} to disable ImageLoader logging completely (even error logs)
+		 * Consider {@link com.nostra13.universalimageloader.utils.L#disableLogging()} to disable
+		 * ImageLoader logging completely (even error logs)
 		 */
 		public Builder writeDebugLogs() {
 			this.writeLogs = true;
@@ -559,19 +573,18 @@ public final class ImageLoaderConfiguration {
 			} else {
 				customExecutorForCachedImages = true;
 			}
-			if (discCache == null) {
-				if (discCacheFileNameGenerator == null) {
-					discCacheFileNameGenerator = DefaultConfigurationFactory.createFileNameGenerator();
+			if (diskCache == null) {
+				if (diskCacheFileNameGenerator == null) {
+					diskCacheFileNameGenerator = DefaultConfigurationFactory.createFileNameGenerator();
 				}
-				discCache = DefaultConfigurationFactory
-						.createDiscCache(context, discCacheFileNameGenerator, discCacheSize, discCacheFileCount);
+				diskCache = DefaultConfigurationFactory
+						.createDiskCache(context, diskCacheFileNameGenerator, diskCacheSize, diskCacheFileCount);
 			}
 			if (memoryCache == null) {
-				memoryCache = DefaultConfigurationFactory.createMemoryCache(memoryCacheSize);
+				memoryCache = DefaultConfigurationFactory.createMemoryCache(context, memoryCacheSize);
 			}
 			if (denyCacheImageMultipleSizesInMemory) {
-				memoryCache = new FuzzyKeyMemoryCache<String, Bitmap>(memoryCache, MemoryCacheUtil
-						.createFuzzyKeyComparator());
+				memoryCache = new FuzzyKeyMemoryCache(memoryCache, MemoryCacheUtils.createFuzzyKeyComparator());
 			}
 			if (downloader == null) {
 				downloader = DefaultConfigurationFactory.createImageDownloader(context);
@@ -581,6 +594,61 @@ public final class ImageLoaderConfiguration {
 			}
 			if (defaultDisplayImageOptions == null) {
 				defaultDisplayImageOptions = DisplayImageOptions.createSimple();
+			}
+		}
+	}
+
+	/**
+	 * Decorator. Prevents downloads from network (throws {@link IllegalStateException exception}).<br />
+	 * In most cases this downloader shouldn't be used directly.
+	 *
+	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+	 * @since 1.8.0
+	 */
+	private static class NetworkDeniedImageDownloader implements ImageDownloader {
+
+		private final ImageDownloader wrappedDownloader;
+
+		public NetworkDeniedImageDownloader(ImageDownloader wrappedDownloader) {
+			this.wrappedDownloader = wrappedDownloader;
+		}
+
+		@Override
+		public InputStream getStream(String imageUri, Object extra) throws IOException {
+			switch (Scheme.ofUri(imageUri)) {
+				case HTTP:
+				case HTTPS:
+					throw new IllegalStateException();
+				default:
+					return wrappedDownloader.getStream(imageUri, extra);
+			}
+		}
+	}
+
+	/**
+	 * Decorator. Handles <a href="http://code.google.com/p/android/issues/detail?id=6066">this problem</a> on slow networks
+	 * using {@link com.nostra13.universalimageloader.core.assist.FlushedInputStream}.
+	 *
+	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+	 * @since 1.8.1
+	 */
+	private static class SlowNetworkImageDownloader implements ImageDownloader {
+
+		private final ImageDownloader wrappedDownloader;
+
+		public SlowNetworkImageDownloader(ImageDownloader wrappedDownloader) {
+			this.wrappedDownloader = wrappedDownloader;
+		}
+
+		@Override
+		public InputStream getStream(String imageUri, Object extra) throws IOException {
+			InputStream imageStream = wrappedDownloader.getStream(imageUri, extra);
+			switch (Scheme.ofUri(imageUri)) {
+				case HTTP:
+				case HTTPS:
+					return new FlushedInputStream(imageStream);
+				default:
+					return imageStream;
 			}
 		}
 	}

@@ -1,6 +1,42 @@
 Change Log
 ===
 
+v1.9.3 *(06.09.2014)*
+---
+ * Introduced `ImageScaleType.NONE_SAFE`
+ * Video thumbnails support (`content://...`)
+ * Animated drawables support (for `.showImageOnLoading()`, `.showImageOnFail()`, `.showImageForEmptyUri()`)
+ * Fixed bugs:
+   * `loadImageSync(...)` bug ([#636](https://github.com/nostra13/Android-Universal-Image-Loader/issues/636))
+   * NPE if no free space while init disk cache
+   * "Bitmap too large ..." for all ImageScaleTypes
+   * contacts photo considering
+
+v1.9.2 *(24.05.2014)*
+---
+ * New Disk cache API (preparing renaming `disc` -> `disk`)
+ * ImageLoader can be called out of the Main thread. Callback will be delivered on separate thread.
+ * Prevented broken image files (#511)
+ * Interrupt non-actual tasks
+ * `LruDiscCache` is default limited cache
+ * Renaming: `ImageNonViewAware` -> `NonViewAware`. Extracted `ViewAware` from `ImageViewAware`.
+ * Introduced `DiskCache` and `MemoryCache` interfaces instead of deprecated `DiscCacheAware` and `MemoryCacheAware`.
+ * Removed `LimitedDiscCache`, `TotalSizeLimitedDiscCache`, `FileCountLimitedDiscCache`. Use `LruDisckCache` instead.
+
+v1.9.1 *(27.12.2013)*
+---
+ * **Changed API:**
+   * `BitmapDisplayer.display(...) : Bitmap` -> `BitmapDisplayer.display(...) : void`
+ * **New API:**
+   * Added possibility to listen image loading progress by listener - `ImageLoadingProgressListener`
+ * Non-actual downloads are interrupted (if loaded less than 75%)
+ * Re-designed `RoundedBitmapDisplayer`. Added `RoundedVignetteBitmapDisplayer`.
+   **NOTE:** New `RoundedBitmapDisplayer`'s behaviour can vary from old one. Also consider ["RoundedImageView" project](https://github.com/vinc3m1/RoundedImageView) for usage if new `RoundedBitmapDisplayer` doesn't work for you.
+ * Maximum GL texture size is considered while decode images ([#281](https://github.com/nostra13/Android-Universal-Image-Loader/issues/281))
+ * `loadImage(...)` call cancels previous task for the same image URI ([#475](https://github.com/nostra13/Android-Universal-Image-Loader/issues/475))
+ * Fixed StrictMode warning `Explicit termination method 'close' not called` ([#482](https://github.com/nostra13/Android-Universal-Image-Loader/issues/482))
+ * `LruMemoryCache` is default memory cache for Android < 2.3 too.
+
 v1.9.0 *(27.11.2013)*
 ---
  * **Changed API:**

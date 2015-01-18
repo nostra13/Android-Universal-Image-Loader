@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2011-2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,16 +31,13 @@ import com.nostra13.universalimageloader.core.imageaware.ImageAware;
  */
 public interface BitmapDisplayer {
 	/**
-	 * Display bitmap in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}. Displayed bitmap should
-	 * be returned.<br />
+	 * Displays bitmap in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware}.
 	 * <b>NOTE:</b> This method is called on UI thread so it's strongly recommended not to do any heavy work in it.
 	 *
 	 * @param bitmap     Source bitmap
 	 * @param imageAware {@linkplain com.nostra13.universalimageloader.core.imageaware.ImageAware Image aware view} to
 	 *                   display Bitmap
 	 * @param loadedFrom Source of loaded image
-	 * @return Bitmap which was displayed in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware
-	 * ImageAware}
 	 */
-	Bitmap display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom);
+	void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom);
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2011-2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.lang.ref.WeakReference;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.5.3
  */
-public class WeakMemoryCache extends BaseMemoryCache<String, Bitmap> {
+public class WeakMemoryCache extends BaseMemoryCache {
 	@Override
 	protected Reference<Bitmap> createReference(Bitmap value) {
 		return new WeakReference<Bitmap>(value);

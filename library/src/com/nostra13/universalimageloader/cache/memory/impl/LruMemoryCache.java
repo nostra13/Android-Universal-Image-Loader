@@ -1,7 +1,8 @@
 package com.nostra13.universalimageloader.cache.memory.impl;
 
 import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
+
+import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,7 +19,7 @@ import java.util.Map;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.1
  */
-public class LruMemoryCache implements MemoryCacheAware<String, Bitmap> {
+public class LruMemoryCache implements MemoryCache {
 
 	private final LinkedHashMap<String, Bitmap> map;
 
@@ -101,7 +102,7 @@ public class LruMemoryCache implements MemoryCacheAware<String, Bitmap> {
 
 	/** Removes the entry for {@code key} if it exists. */
 	@Override
-	public final void remove(String key) {
+	public final Bitmap remove(String key) {
 		if (key == null) {
 			throw new NullPointerException("key == null");
 		}
@@ -111,6 +112,7 @@ public class LruMemoryCache implements MemoryCacheAware<String, Bitmap> {
 			if (previous != null) {
 				size -= sizeOf(key, previous);
 			}
+			return previous;
 		}
 	}
 

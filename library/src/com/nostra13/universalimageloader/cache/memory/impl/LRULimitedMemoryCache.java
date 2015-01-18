@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2011-2013 Sergey Tarasevich
+ * Copyright 2011-2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import java.util.Map.Entry;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.3.0
  */
-public class LRULimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
+public class LRULimitedMemoryCache extends LimitedMemoryCache {
 
 	private static final int INITIAL_CAPACITY = 10;
 	private static final float LOAD_FACTOR = 1.1f;
@@ -66,9 +66,9 @@ public class LRULimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
 	}
 
 	@Override
-	public void remove(String key) {
+	public Bitmap remove(String key) {
 		lruCache.remove(key);
-		super.remove(key);
+		return super.remove(key);
 	}
 
 	@Override

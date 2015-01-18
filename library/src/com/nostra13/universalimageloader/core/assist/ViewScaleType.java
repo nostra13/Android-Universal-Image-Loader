@@ -26,8 +26,8 @@ import android.widget.ImageView.ScaleType;
  */
 public enum ViewScaleType {
 	/**
-	 * Scale the image uniformly (maintain the image's aspect ratio) so that both dimensions (width and height) of the
-	 * image will be equal to or less the corresponding dimension of the view.
+	 * Scale the image uniformly (maintain the image's aspect ratio) so that at least one dimension (width or height) of
+	 * the image will be equal to or less the corresponding dimension of the view.
 	 */
 	FIT_INSIDE,
 	/**

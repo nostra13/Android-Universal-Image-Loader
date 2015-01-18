@@ -16,7 +16,7 @@
 package com.nostra13.universalimageloader.cache.disc.naming;
 
 /**
- * Generates names for files at disc cache
+ * Generates names for files at disk cache
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.3.1
@@ -24,5 +24,5 @@ package com.nostra13.universalimageloader.cache.disc.naming;
 public interface FileNameGenerator {
 
 	/** Generates unique file name for image defined by URI */
-	public abstract String generate(String imageUri);
+	String generate(String imageUri);
 }

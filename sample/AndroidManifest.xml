@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nostra13.example.universalimageloader"
-    android:versionCode="35"
-    android:versionName="1.9.0" >
+    package="com.nostra13.universalimageloader.sample"
+    android:versionCode="39"
+    android:versionName="1.9.4" >
 
     <uses-sdk
         android:minSdkVersion="5"
-        android:targetSdkVersion="16" />
+        android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -14,9 +14,10 @@
     <application
         android:name=".UILApplication"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+		android:allowBackup="false">
         <activity
-            android:name=".HomeActivity"
+            android:name=".activity.HomeActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,17 +26,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ImageListActivity"
+            android:name=".activity.SimpleImageActivity"
             android:label="@string/ac_name_image_list" />
-        <activity
-            android:name=".ImageGridActivity"
-            android:label="@string/ac_name_image_grid" />
-        <activity
-            android:name=".ImagePagerActivity"
-            android:label="@string/ac_name_image_pager" />
-        <activity
-            android:name=".ImageGalleryActivity"
-            android:label="@string/ac_name_image_gallery" />
+		<activity
+			android:name=".activity.ComplexImageActivity"
+			android:label="@string/ac_name_complex" />
 
         <!-- Widget -->
         <receiver android:name=".widget.UILWidgetProvider" >
