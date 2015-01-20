@@ -82,6 +82,7 @@ public final class DisplayImageOptions {
 	private final BitmapProcessor postProcessor;
 	private final BitmapDisplayer displayer;
 	private final Handler handler;
+    private final boolean isShortPipeline;
 	private final boolean isSyncLoading;
 
 	private DisplayImageOptions(Builder builder) {
@@ -103,7 +104,8 @@ public final class DisplayImageOptions {
 		postProcessor = builder.postProcessor;
 		displayer = builder.displayer;
 		handler = builder.handler;
-		isSyncLoading = builder.isSyncLoading;
+		isShortPipeline = builder.isSortPipeline;
+        isSyncLoading = builder.isSyncLoading;
 	}
 
 	public boolean shouldShowImageOnLoading() {
@@ -190,6 +192,10 @@ public final class DisplayImageOptions {
 		return handler;
 	}
 
+    public boolean isShortPipeline() {
+        return isShortPipeline;
+    }
+
 	boolean isSyncLoading() {
 		return isSyncLoading;
 	}
@@ -218,7 +224,8 @@ public final class DisplayImageOptions {
 		private BitmapProcessor postProcessor = null;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 		private Handler handler = null;
-		private boolean isSyncLoading = false;
+		private boolean isSortPipeline = true;
+        private boolean isSyncLoading = false;
 
 		public Builder() {
 			decodingOptions.inPurgeable = true;
@@ -446,10 +453,17 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
-		Builder syncLoading(boolean isSyncLoading) {
-			this.isSyncLoading = isSyncLoading;
+		public Builder shortPipeline(boolean isShortPipeline) {
+			this.isSortPipeline = isShortPipeline;
 			return this;
 		}
+
+
+        Builder syncLoading(boolean isSyncLoading) {
+            this.isSyncLoading = isSyncLoading;
+            return this;
+        }
+
 
 		/**
 		 * Sets custom {@linkplain Handler handler} for displaying images and firing {@linkplain ImageLoadingListener
@@ -480,7 +494,7 @@ public final class DisplayImageOptions {
 			postProcessor = options.postProcessor;
 			displayer = options.displayer;
 			handler = options.handler;
-			isSyncLoading = options.isSyncLoading;
+			isSortPipeline = options.isSyncLoading;
 			return this;
 		}
 

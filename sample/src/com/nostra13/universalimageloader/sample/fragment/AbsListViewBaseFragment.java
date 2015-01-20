@@ -19,6 +19,9 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AbsListView;
+import android.widget.Adapter;
+import android.widget.BaseAdapter;
+
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.nostra13.universalimageloader.sample.Constants;
@@ -83,4 +86,16 @@ public abstract class AbsListViewBaseFragment extends BaseFragment {
 	private void applyScrollListener() {
 		listView.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), pauseOnScroll, pauseOnFling));
 	}
+
+    @Override
+    protected void invalidateDataSet() {
+        Adapter baseAdapter = listView.getAdapter();
+
+        if (baseAdapter instanceof BaseAdapter)
+        {
+            BaseAdapter adapter = (BaseAdapter)baseAdapter;
+
+            adapter.notifyDataSetInvalidated();
+        }
+    }
 }

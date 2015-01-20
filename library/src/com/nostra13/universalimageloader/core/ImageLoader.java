@@ -243,7 +243,7 @@ public class ImageLoader {
 						options, listener, progressListener, engine.getLockForUri(uri));
 				ProcessAndDisplayImageTask displayTask = new ProcessAndDisplayImageTask(engine, bmp, imageLoadingInfo,
 						defineHandler(options));
-				if (options.isSyncLoading()) {
+				if (options.isShortPipeline() || options.isSyncLoading()) {
 					displayTask.run();
 				} else {
 					engine.submit(displayTask);
@@ -263,11 +263,12 @@ public class ImageLoader {
 					options, listener, progressListener, engine.getLockForUri(uri));
 			LoadAndDisplayImageTask displayTask = new LoadAndDisplayImageTask(engine, imageLoadingInfo,
 					defineHandler(options));
-			if (options.isSyncLoading()) {
-				displayTask.run();
-			} else {
-				engine.submit(displayTask);
-			}
+
+            if (options.isSyncLoading()) {
+                displayTask.run();
+            } else {
+                engine.submit(displayTask);
+            }
 		}
 	}
 

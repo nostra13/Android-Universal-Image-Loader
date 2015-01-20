@@ -38,17 +38,25 @@ public abstract class BaseFragment extends Fragment {
 		inflater.inflate(R.menu.main_menu, menu);
 	}
 
+
+    protected void invalidateDataSet() {
+        /* Nothing to do */
+    }
+    
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+            case R.id.item_invalidate_data_set:
+                invalidateDataSet();
+                return true;
 			case R.id.item_clear_memory_cache:
 				ImageLoader.getInstance().clearMemoryCache();
 				return true;
 			case R.id.item_clear_disc_cache:
 				ImageLoader.getInstance().clearDiskCache();
 				return true;
-			default:
-				return false;
 		}
+        return false;
 	}
 }
