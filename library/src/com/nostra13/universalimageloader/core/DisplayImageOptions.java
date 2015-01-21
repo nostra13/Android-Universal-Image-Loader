@@ -104,7 +104,7 @@ public final class DisplayImageOptions {
 		postProcessor = builder.postProcessor;
 		displayer = builder.displayer;
 		handler = builder.handler;
-		isShortPipeline = builder.isSortPipeline;
+		isShortPipeline = builder.isShortPipeline;
         isSyncLoading = builder.isSyncLoading;
 	}
 
@@ -224,7 +224,7 @@ public final class DisplayImageOptions {
 		private BitmapProcessor postProcessor = null;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 		private Handler handler = null;
-		private boolean isSortPipeline = true;
+		private boolean isShortPipeline = true;
         private boolean isSyncLoading = false;
 
 		public Builder() {
@@ -462,7 +462,7 @@ public final class DisplayImageOptions {
 		 * Do not use this hint if you don't experience a problem described.
 		 */
 		public Builder shortPipeline(boolean isShortPipeline) {
-			this.isSortPipeline = isShortPipeline;
+			this.isShortPipeline = isShortPipeline;
 			return this;
 		}
 
@@ -502,7 +502,7 @@ public final class DisplayImageOptions {
 			postProcessor = options.postProcessor;
 			displayer = options.displayer;
 			handler = options.handler;
-			isSortPipeline = options.isSyncLoading;
+			isShortPipeline = options.isSyncLoading;
 			return this;
 		}
 
