@@ -453,6 +453,14 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
+		/** 
+		 * Sets whether the loaded image will pass through a shortened loading pipeline is it is cached in memory.
+		 *
+		 * This hint is useful with <b>ImageLoader.displayImage(...)</b> method only. It is supposed to prevent 
+		 * flickering when {@link android.widget.BaseAdapter.notifyDataSetChanged()} was triggered. 
+		 * 
+		 * Do not use this hint if you don't experience a problem described.
+		 */
 		public Builder shortPipeline(boolean isShortPipeline) {
 			this.isSortPipeline = isShortPipeline;
 			return this;
