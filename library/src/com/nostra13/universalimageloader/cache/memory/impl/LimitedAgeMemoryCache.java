@@ -16,13 +16,12 @@
 package com.nostra13.universalimageloader.cache.memory.impl;
 
 import android.graphics.Bitmap;
-
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Decorator for {@link MemoryCache}. Provides special feature for cache: if some cached object age exceeds defined
@@ -50,12 +49,14 @@ public class LimitedAgeMemoryCache implements MemoryCache {
 	}
 
 	@Override
-	public boolean put(String key, Bitmap value) {
-		boolean putSuccesfully = cache.put(key, value);
-		if (putSuccesfully) {
-			loadingDates.put(key, System.currentTimeMillis());
-		}
-		return putSuccesfully;
+	public void put(String key, Bitmap value) {
+		cache.put(key, value);
+		loadingDates.put(key, System.currentTimeMillis());
+	}
+
+	@Override
+	public int size() {
+		return 0;
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public class LimitedAgeMemoryCache implements MemoryCache {
 	}
 
 	@Override
-	public Collection<String> keys() {
+	public Set<String> keys() {
 		return cache.keys();
 	}
 

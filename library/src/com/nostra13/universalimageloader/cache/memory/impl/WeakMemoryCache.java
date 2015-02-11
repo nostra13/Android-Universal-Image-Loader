@@ -16,10 +16,15 @@
 package com.nostra13.universalimageloader.cache.memory.impl;
 
 import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.cache.memory.BaseMemoryCache;
+import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Memory cache with {@linkplain WeakReference weak references} to {@linkplain android.graphics.Bitmap bitmaps}<br />
@@ -29,8 +34,60 @@ import java.lang.ref.WeakReference;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.5.3
  */
-public class WeakMemoryCache extends BaseMemoryCache {
+public class WeakMemoryCache implements MemoryCache {
+
+	/** Stores not strong references to objects */
+	protected final Map<String, Reference<Bitmap>> softMap = Collections
+			.synchronizedMap(new HashMap<String, Reference<Bitmap>>());
+
 	@Override
+	public Bitmap get(String key) {
+		Bitmap result = null;
+		Reference<Bitmap> reference = softMap.get(key);
+		if (reference != null) {
+			result = reference.get();
+		}
+		return result;
+	}
+
+	@Override
+	public void put(String key, Bitmap value) {
+		softMap.put(key, createReference(value));
+	}
+
+	@Override
+	public Bitmap remove(String key) {
+		Reference<Bitmap> bmpRef = softMap.remove(key);
+		return bmpRef == null ? null : bmpRef.get();
+	}
+
+	@Override
+	public Set<String> keys() {
+		synchronized (softMap) {
+			return new HashSet<String>(softMap.keySet());
+		}
+	}
+
+	@Override
+	public void clear() {
+		softMap.clear();
+	}
+
+	@Override
+	public int size() {
+		int size = 0;
+		synchronized (softMap) {
+			for (Map.Entry<String, Reference<Bitmap>> entry : softMap.entrySet()) {
+				Bitmap bitmap = entry.getValue().get();
+				if (bitmap != null) {
+					size += bitmap.getRowBytes() * bitmap.getHeight();
+				}
+			}
+		}
+		return size;
+	}
+
+	/** Creates {@linkplain Reference not strong} reference of value */
 	protected Reference<Bitmap> createReference(Bitmap value) {
 		return new WeakReference<Bitmap>(value);
 	}
