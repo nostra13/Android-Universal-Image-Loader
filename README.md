@@ -1,14 +1,12 @@
 # ![Logo](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/sample/res/drawable-mdpi/ic_launcher.png) Universal Image Loader
 
+Android library **[#1](https://www.gitrep.com/search?utf8=✓&omni_search=&public_tags%5B%5D=android&description=&search=true&sort=star_count&commit=Search)** on GitHub.
 UIL aims to provide a powerful, flexible and highly customizable instrument for image loading, caching and displaying. It provides a lot of configuration options and good control over the image loading and caching process.
 
 ![Screenshot](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/UniversalImageLoader.png)
 
 ## Project News
- **27.11 UIL celebrates 3 years of development :)**
- * **#1** of Android libraries for loading and caching images
- * **#1** of Android libraries on GitHub (according to [gitrep](https://www.gitrep.com/search?utf8=✓&omni_search=&public_tags%5B%5D=android&description=&search=true&sort=star_count&commit=Search))
- * **#3** of Java repositories on GitHub (according to [gitrep](https://www.gitrep.com/search?utf8=✓&omni_search=&public_tags%5B%5D=Java&description=&search=true&sort=star_count&commit=Search))
+ * Really have no time for development but anyway UIL is still alive :)
 
 **Upcoming changes in new UIL version (1.9.4+)**
  * Memory Cache redesign
@@ -143,12 +141,7 @@ You can support the project and thank the author for his hard work :)
 
 ## License
 
-If you use Universal Image Loader code in your application you should inform the author about it ( *email: nostra13[at]gmail[dot]com* ) like this:
-> **Subject:** UIL usage notification<br />
-> **Text:** I use Universal Image Loader {lib_version} in {application_name} - {http://link_to_google_play}.
-> I [allow | don't allow] to mention my app in section "Applications using Universal Image Loader" on GitHub.
-
-    Copyright 2011-2014 Sergey Tarasevich
+    Copyright 2011-2015 Sergey Tarasevich
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
