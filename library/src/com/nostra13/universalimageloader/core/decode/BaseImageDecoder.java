@@ -78,7 +78,7 @@ public class BaseImageDecoder implements ImageDecoder {
 		}
 		try {
 			imageInfo = defineImageSizeAndRotation(imageStream, decodingInfo);
-			imageStream = resetStream(imageStream, decodingInfo);
+			imageStream.reset();
 			Options decodingOptions = prepareDecodingOptions(imageInfo.imageSize, decodingInfo);
 			decodedBitmap = BitmapFactory.decodeStream(imageStream, null, decodingOptions);
 		} finally {
@@ -171,16 +171,6 @@ public class BaseImageDecoder implements ImageDecoder {
 		Options decodingOptions = decodingInfo.getDecodingOptions();
 		decodingOptions.inSampleSize = scale;
 		return decodingOptions;
-	}
-
-	protected InputStream resetStream(InputStream imageStream, ImageDecodingInfo decodingInfo) throws IOException {
-		try {
-			imageStream.reset();
-		} catch (IOException e) {
-			IoUtils.closeSilently(imageStream);
-			imageStream = getImageStream(decodingInfo);
-		}
-		return imageStream;
 	}
 
 	protected Bitmap considerExactScaleAndOrientatiton(Bitmap subsampledBitmap, ImageDecodingInfo decodingInfo,
