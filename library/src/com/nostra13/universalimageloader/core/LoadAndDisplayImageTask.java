@@ -215,7 +215,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 		Bitmap bitmap = null;
 		try {
 			File imageFile = configuration.diskCache.get(uri);
-			if (imageFile != null && imageFile.exists()) {
+			if (imageFile != null && imageFile.exists() && imageFile.length() > 0) {
 				L.d(LOG_LOAD_IMAGE_FROM_DISK_CACHE, memoryCacheKey);
 				loadedFrom = LoadedFrom.DISC_CACHE;
 
