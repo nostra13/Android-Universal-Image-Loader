@@ -61,7 +61,7 @@ public class ImageLoader {
 	private ImageLoaderConfiguration configuration;
 	private ImageLoaderEngine engine;
 
-	private final ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
+	private ImageLoadingListener defaultListener = new SimpleImageLoadingListener();
 
 	private volatile static ImageLoader instance;
 
@@ -210,7 +210,7 @@ public class ImageLoader {
 			throw new IllegalArgumentException(ERROR_WRONG_ARGUMENTS);
 		}
 		if (listener == null) {
-			listener = emptyListener;
+			listener = defaultListener;
 		}
 		if (options == null) {
 			options = configuration.defaultDisplayImageOptions;
@@ -567,6 +567,11 @@ public class ImageLoader {
 		if (configuration == null) {
 			throw new IllegalStateException(ERROR_NOT_INIT);
 		}
+	}
+
+	/** Sets a default loading listener for all display and loading tasks. */
+	public void setDefaultLoadingListener(ImageLoadingListener listener) {
+		defaultListener = listener == null ? new SimpleImageLoadingListener() : listener;
 	}
 
 	/**
