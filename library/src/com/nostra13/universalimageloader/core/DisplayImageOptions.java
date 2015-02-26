@@ -82,6 +82,7 @@ public final class DisplayImageOptions {
 	private final BitmapProcessor postProcessor;
 	private final BitmapDisplayer displayer;
 	private final Handler handler;
+    private final boolean isShortPipeline;
 	private final boolean isSyncLoading;
 
 	private DisplayImageOptions(Builder builder) {
@@ -103,7 +104,8 @@ public final class DisplayImageOptions {
 		postProcessor = builder.postProcessor;
 		displayer = builder.displayer;
 		handler = builder.handler;
-		isSyncLoading = builder.isSyncLoading;
+		isShortPipeline = builder.isShortPipeline;
+        isSyncLoading = builder.isSyncLoading;
 	}
 
 	public boolean shouldShowImageOnLoading() {
@@ -190,6 +192,10 @@ public final class DisplayImageOptions {
 		return handler;
 	}
 
+    public boolean isShortPipeline() {
+        return isShortPipeline;
+    }
+
 	boolean isSyncLoading() {
 		return isSyncLoading;
 	}
@@ -218,7 +224,8 @@ public final class DisplayImageOptions {
 		private BitmapProcessor postProcessor = null;
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 		private Handler handler = null;
-		private boolean isSyncLoading = false;
+		private boolean isShortPipeline = true;
+        private boolean isSyncLoading = false;
 
 		public Builder() {
 			decodingOptions.inPurgeable = true;
@@ -446,10 +453,25 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
-		Builder syncLoading(boolean isSyncLoading) {
-			this.isSyncLoading = isSyncLoading;
+		/** 
+		 * Sets whether the loaded image will pass through a shortened loading pipeline is it is cached in memory.
+		 *
+		 * This hint is useful with <b>ImageLoader.displayImage(...)</b> method only. It is supposed to prevent 
+		 * flickering when {@link android.widget.BaseAdapter.notifyDataSetChanged()} was triggered. 
+		 * 
+		 * Do not use this hint if you don't experience a problem described.
+		 */
+		public Builder shortPipeline(boolean isShortPipeline) {
+			this.isShortPipeline = isShortPipeline;
 			return this;
 		}
+
+
+        Builder syncLoading(boolean isSyncLoading) {
+            this.isSyncLoading = isSyncLoading;
+            return this;
+        }
+
 
 		/**
 		 * Sets custom {@linkplain Handler handler} for displaying images and firing {@linkplain ImageLoadingListener
@@ -480,7 +502,7 @@ public final class DisplayImageOptions {
 			postProcessor = options.postProcessor;
 			displayer = options.displayer;
 			handler = options.handler;
-			isSyncLoading = options.isSyncLoading;
+			isShortPipeline = options.isSyncLoading;
 			return this;
 		}
 

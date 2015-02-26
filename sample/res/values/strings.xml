@@ -19,6 +19,7 @@
 	<string name="title_list">List</string>
 	<string name="title_grid">Grid</string>
 
+	<string name="menu_item_invalidate_data_set">Invalidate data set</string>
 	<string name="menu_item_clear_memory_cache">Clear memory cache</string>
 	<string name="menu_item_clear_disc_cache">Clear disc cache</string>
 	<string name="menu_item_pause_on_scroll">Pause on scroll</string>

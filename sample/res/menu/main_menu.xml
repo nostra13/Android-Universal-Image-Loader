@@ -2,6 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+    	android:id="@+id/item_invalidate_data_set"
+    	android:title="@string/menu_item_invalidate_data_set"/>
+    <item
         android:id="@+id/item_clear_memory_cache"
         android:title="@string/menu_item_clear_memory_cache"/>
     <item
