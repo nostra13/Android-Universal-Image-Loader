@@ -185,7 +185,8 @@ public class BaseImageDownloader implements ImageDownloader {
 	@TargetApi(Build.VERSION_CODES.FROYO)
 	private InputStream getVideoThumbnailStream(String filePath) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-			Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Images.Thumbnails.FULL_SCREEN_KIND);
+			Bitmap bitmap = ThumbnailUtils
+					.createVideoThumbnail(filePath, MediaStore.Images.Thumbnails.FULL_SCREEN_KIND);
 			if (bitmap != null) {
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				bitmap.compress(CompressFormat.PNG, 0, bos);
@@ -218,10 +219,20 @@ public class BaseImageDownloader implements ImageDownloader {
 				return new ByteArrayInputStream(bos.toByteArray());
 			}
 		} else if (imageUri.startsWith(CONTENT_CONTACTS_URI_PREFIX)) { // contacts photo
-			return ContactsContract.Contacts.openContactPhotoInputStream(res, uri);
+			return getContactPhotoStream(uri);
 		}
 
 		return res.openInputStream(uri);
+	}
+
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	protected InputStream getContactPhotoStream(Uri uri) {
+		ContentResolver res = context.getContentResolver();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			return ContactsContract.Contacts.openContactPhotoInputStream(res, uri, true);
+		} else {
+			return ContactsContract.Contacts.openContactPhotoInputStream(res, uri);
+		}
 	}
 
 	/**
