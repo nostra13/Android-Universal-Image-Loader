@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.1.+'
+    }
+}
+
+
+apply plugin: 'com.android.application'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.squareup.okhttp:okhttp:2.2.0'
+}
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+    }
+}
