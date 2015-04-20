@@ -7,7 +7,7 @@ import org.robolectric.RobolectricTestRunner;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import org.robolectric.annotation.Config;
 
-@Config(emulateSdk = 19) 
+@Config(emulateSdk = 18) 
 @RunWith(RobolectricTestRunner.class)
 public class BaseImageDownloaderTest {
 

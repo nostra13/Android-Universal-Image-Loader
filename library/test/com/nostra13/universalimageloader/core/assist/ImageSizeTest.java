@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-@Config(emulateSdk = 19) 
+@Config(emulateSdk = 18) 
 @RunWith(RobolectricTestRunner.class)
 public class ImageSizeTest {
 	private Activity mActivity;
