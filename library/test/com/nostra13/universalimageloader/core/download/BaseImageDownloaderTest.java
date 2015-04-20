@@ -4,9 +4,10 @@ import org.fest.assertions.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
+import org.robolectric.annotation.Config;
 
+@Config(emulateSdk = 19) 
 @RunWith(RobolectricTestRunner.class)
 public class BaseImageDownloaderTest {
 
