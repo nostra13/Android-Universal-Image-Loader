@@ -15,6 +15,7 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.sample.fragment;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -42,41 +43,35 @@ public class ImagePagerFragment extends BaseFragment {
 
 	public static final int INDEX = 2;
 
-	String[] imageUrls = Constants.IMAGES;
-
-	DisplayImageOptions options;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		options = new DisplayImageOptions.Builder()
-				.showImageForEmptyUri(R.drawable.ic_empty)
-				.showImageOnFail(R.drawable.ic_error)
-				.resetViewBeforeLoading(true)
-				.cacheOnDisk(true)
-				.imageScaleType(ImageScaleType.EXACTLY)
-				.bitmapConfig(Bitmap.Config.RGB_565)
-				.considerExifParams(true)
-				.displayer(new FadeInBitmapDisplayer(300))
-				.build();
-	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fr_image_pager, container, false);
 		ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
-		pager.setAdapter(new ImageAdapter());
+		pager.setAdapter(new ImageAdapter(getActivity()));
 		pager.setCurrentItem(getArguments().getInt(Constants.Extra.IMAGE_POSITION, 0));
 		return rootView;
 	}
 
-	private class ImageAdapter extends PagerAdapter {
+	private static class ImageAdapter extends PagerAdapter {
+
+		private static final String[] IMAGE_URLS = Constants.IMAGES;
 
 		private LayoutInflater inflater;
+		private DisplayImageOptions options;
 
-		ImageAdapter() {
-			inflater = LayoutInflater.from(getActivity());
+		ImageAdapter(Context context) {
+			inflater = LayoutInflater.from(context);
+
+			options = new DisplayImageOptions.Builder()
+					.showImageForEmptyUri(R.drawable.ic_empty)
+					.showImageOnFail(R.drawable.ic_error)
+					.resetViewBeforeLoading(true)
+					.cacheOnDisk(true)
+					.imageScaleType(ImageScaleType.EXACTLY)
+					.bitmapConfig(Bitmap.Config.RGB_565)
+					.considerExifParams(true)
+					.displayer(new FadeInBitmapDisplayer(300))
+					.build();
 		}
 
 		@Override
@@ -86,7 +81,7 @@ public class ImagePagerFragment extends BaseFragment {
 
 		@Override
 		public int getCount() {
-			return imageUrls.length;
+			return IMAGE_URLS.length;
 		}
 
 		@Override
@@ -96,7 +91,7 @@ public class ImagePagerFragment extends BaseFragment {
 			ImageView imageView = (ImageView) imageLayout.findViewById(R.id.image);
 			final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 
-			ImageLoader.getInstance().displayImage(imageUrls[position], imageView, options, new SimpleImageLoadingListener() {
+			ImageLoader.getInstance().displayImage(IMAGE_URLS[position], imageView, options, new SimpleImageLoadingListener() {
 				@Override
 				public void onLoadingStarted(String imageUri, View view) {
 					spinner.setVisibility(View.VISIBLE);
@@ -122,7 +117,7 @@ public class ImagePagerFragment extends BaseFragment {
 							message = "Unknown error";
 							break;
 					}
-					Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+					Toast.makeText(view.getContext(), message, Toast.LENGTH_SHORT).show();
 
 					spinner.setVisibility(View.GONE);
 				}

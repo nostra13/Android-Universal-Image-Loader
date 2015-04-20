@@ -15,6 +15,7 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.sample.fragment;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -41,30 +42,11 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
 
 	public static final int INDEX = 1;
 
-	String[] imageUrls = Constants.IMAGES;
-
-	DisplayImageOptions options;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		options = new DisplayImageOptions.Builder()
-				.showImageOnLoading(R.drawable.ic_stub)
-				.showImageForEmptyUri(R.drawable.ic_empty)
-				.showImageOnFail(R.drawable.ic_error)
-				.cacheInMemory(true)
-				.cacheOnDisk(true)
-				.considerExifParams(true)
-				.bitmapConfig(Bitmap.Config.RGB_565)
-				.build();
-	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fr_image_grid, container, false);
 		listView = (GridView) rootView.findViewById(R.id.grid);
-		((GridView) listView).setAdapter(new ImageAdapter());
+		((GridView) listView).setAdapter(new ImageAdapter(getActivity()));
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -74,17 +56,31 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
 		return rootView;
 	}
 
-	public class ImageAdapter extends BaseAdapter {
+	private static class ImageAdapter extends BaseAdapter {
+
+		private static final String[] IMAGE_URLS = Constants.IMAGES;
 
 		private LayoutInflater inflater;
 
-		ImageAdapter() {
-			inflater = LayoutInflater.from(getActivity());
+		private DisplayImageOptions options;
+
+		ImageAdapter(Context context) {
+			inflater = LayoutInflater.from(context);
+
+			options = new DisplayImageOptions.Builder()
+					.showImageOnLoading(R.drawable.ic_stub)
+					.showImageForEmptyUri(R.drawable.ic_empty)
+					.showImageOnFail(R.drawable.ic_error)
+					.cacheInMemory(true)
+					.cacheOnDisk(true)
+					.considerExifParams(true)
+					.bitmapConfig(Bitmap.Config.RGB_565)
+					.build();
 		}
 
 		@Override
 		public int getCount() {
-			return imageUrls.length;
+			return IMAGE_URLS.length;
 		}
 
 		@Override
@@ -113,7 +109,7 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
 			}
 
 			ImageLoader.getInstance()
-					.displayImage(imageUrls[position], holder.imageView, options, new SimpleImageLoadingListener() {
+					.displayImage(IMAGE_URLS[position], holder.imageView, options, new SimpleImageLoadingListener() {
 						@Override
 						public void onLoadingStarted(String imageUri, View view) {
 							holder.progressBar.setProgress(0);
