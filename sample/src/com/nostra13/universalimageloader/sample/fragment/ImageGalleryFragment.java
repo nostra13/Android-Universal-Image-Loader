@@ -15,6 +15,7 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.sample.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -39,31 +40,12 @@ public class ImageGalleryFragment extends BaseFragment {
 
 	public static final int INDEX = 3;
 
-	String[] imageUrls = Constants.IMAGES;
-
-	DisplayImageOptions options;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		options = new DisplayImageOptions.Builder()
-				.showImageOnLoading(R.drawable.ic_stub)
-				.showImageForEmptyUri(R.drawable.ic_empty)
-				.showImageOnFail(R.drawable.ic_error)
-				.cacheInMemory(true)
-				.cacheOnDisk(true)
-				.considerExifParams(true)
-				.bitmapConfig(Bitmap.Config.RGB_565)
-				.build();
-	}
-
 	@SuppressWarnings("deprecation")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fr_image_gallery, container, false);
 		Gallery gallery = (Gallery) rootView.findViewById(R.id.gallery);
-		gallery.setAdapter(new ImageAdapter());
+		gallery.setAdapter(new ImageAdapter(getActivity()));
 		gallery.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -81,17 +63,31 @@ public class ImageGalleryFragment extends BaseFragment {
 		startActivity(intent);
 	}
 
-	private class ImageAdapter extends BaseAdapter {
+	private static class ImageAdapter extends BaseAdapter {
+
+		private static final String[] IMAGE_URLS = Constants.IMAGES;
 
 		private LayoutInflater inflater;
 
-		ImageAdapter() {
-			inflater = LayoutInflater.from(getActivity());
+		private DisplayImageOptions options;
+
+		ImageAdapter(Context context) {
+			inflater = LayoutInflater.from(context);
+
+			options = new DisplayImageOptions.Builder()
+					.showImageOnLoading(R.drawable.ic_stub)
+					.showImageForEmptyUri(R.drawable.ic_empty)
+					.showImageOnFail(R.drawable.ic_error)
+					.cacheInMemory(true)
+					.cacheOnDisk(true)
+					.considerExifParams(true)
+					.bitmapConfig(Bitmap.Config.RGB_565)
+					.build();
 		}
 
 		@Override
 		public int getCount() {
-			return imageUrls.length;
+			return IMAGE_URLS.length;
 		}
 
 		@Override
@@ -110,7 +106,7 @@ public class ImageGalleryFragment extends BaseFragment {
 			if (imageView == null) {
 				imageView = (ImageView) inflater.inflate(R.layout.item_gallery_image, parent, false);
 			}
-			ImageLoader.getInstance().displayImage(imageUrls[position], imageView, options);
+			ImageLoader.getInstance().displayImage(IMAGE_URLS[position], imageView, options);
 			return imageView;
 		}
 	}
