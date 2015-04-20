@@ -101,7 +101,7 @@
 				<plugin>
 					<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 					<artifactId>android-maven-plugin</artifactId>
-					<version>4.2.0</version>
+					<version>4.0.0-rc.2</version>
 					<configuration>
 						<sdk>
 							<platform>${android.platform}</platform>
