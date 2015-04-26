@@ -2,7 +2,7 @@
  * Copyright 2011-2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this SafeFile except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -20,7 +20,9 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
+
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
+import com.nostra13.universalimageloader.cache.disc.SafeFile;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
@@ -38,7 +40,6 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.utils.L;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
@@ -82,9 +83,9 @@ public class DefaultConfigurationFactory {
 	 */
 	public static DiskCache createDiskCache(Context context, FileNameGenerator diskCacheFileNameGenerator,
 			long diskCacheSize, int diskCacheFileCount) {
-		File reserveCacheDir = createReserveDiskCacheDir(context);
+		SafeFile reserveCacheDir = createReserveDiskCacheDir(context);
 		if (diskCacheSize > 0 || diskCacheFileCount > 0) {
-			File individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
+			SafeFile individualCacheDir = StorageUtils.getIndividualCacheDirectory(context);
 			try {
 				return new LruDiskCache(individualCacheDir, reserveCacheDir, diskCacheFileNameGenerator, diskCacheSize,
 						diskCacheFileCount);
@@ -93,14 +94,14 @@ public class DefaultConfigurationFactory {
 				// continue and create unlimited cache
 			}
 		}
-		File cacheDir = StorageUtils.getCacheDirectory(context);
+		SafeFile cacheDir = StorageUtils.getCacheDirectory(context);
 		return new UnlimitedDiskCache(cacheDir, reserveCacheDir, diskCacheFileNameGenerator);
 	}
 
 	/** Creates reserve disk cache folder which will be used if primary disk cache folder becomes unavailable */
-	private static File createReserveDiskCacheDir(Context context) {
-		File cacheDir = StorageUtils.getCacheDirectory(context, false);
-		File individualDir = new File(cacheDir, "uil-images");
+	private static SafeFile createReserveDiskCacheDir(Context context) {
+		SafeFile cacheDir = StorageUtils.getCacheDirectory(context, false);
+		SafeFile individualDir = new SafeFile(cacheDir, "uil-images");
 		if (individualDir.exists() || individualDir.mkdir()) {
 			cacheDir = individualDir;
 		}

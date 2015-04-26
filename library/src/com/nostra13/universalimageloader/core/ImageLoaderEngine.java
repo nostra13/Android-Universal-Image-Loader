@@ -2,7 +2,7 @@
  * Copyright 2011-2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this SafeFile except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -16,12 +16,13 @@
 package com.nostra13.universalimageloader.core;
 
 import android.view.View;
+
+import com.nostra13.universalimageloader.cache.disc.SafeFile;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +70,7 @@ class ImageLoaderEngine {
 		taskDistributor.execute(new Runnable() {
 			@Override
 			public void run() {
-				File image = configuration.diskCache.get(task.getLoadingUri());
+				SafeFile image = configuration.diskCache.get(task.getLoadingUri());
 				boolean isImageCachedOnDisk = image != null && image.exists();
 				initExecutorsIfNeed();
 				if (isImageCachedOnDisk) {

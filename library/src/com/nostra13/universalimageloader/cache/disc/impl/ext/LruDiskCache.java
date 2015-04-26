@@ -2,7 +2,7 @@
  * Copyright 2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this SafeFile except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -16,13 +16,14 @@
 package com.nostra13.universalimageloader.cache.disc.impl.ext;
 
 import android.graphics.Bitmap;
+
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
+import com.nostra13.universalimageloader.cache.disc.SafeFile;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.utils.IoUtils;
 import com.nostra13.universalimageloader.utils.L;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -48,7 +49,7 @@ public class LruDiskCache implements DiskCache {
 	private static final String ERROR_ARG_NEGATIVE = " argument must be positive number";
 
 	protected DiskLruCache cache;
-	private File reserveCacheDir;
+	private SafeFile reserveCacheDir;
 
 	protected final FileNameGenerator fileNameGenerator;
 
@@ -58,28 +59,28 @@ public class LruDiskCache implements DiskCache {
 	protected int compressQuality = DEFAULT_COMPRESS_QUALITY;
 
 	/**
-	 * @param cacheDir          Directory for file caching
+	 * @param cacheDir          Directory for SafeFile caching
 	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
 	 *                          Name generator} for cached files. Generated names must match the regex
 	 *                          <strong>[a-z0-9_-]{1,64}</strong>
 	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
 	 * @throws IOException if cache can't be initialized (e.g. "No space left on device")
 	 */
-	public LruDiskCache(File cacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize) throws IOException {
+	public LruDiskCache(SafeFile cacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize) throws IOException {
 		this(cacheDir, null, fileNameGenerator, cacheMaxSize, 0);
 	}
 
 	/**
-	 * @param cacheDir          Directory for file caching
-	 * @param reserveCacheDir   null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
+	 * @param cacheDir          Directory for SafeFile caching
+	 * @param reserveCacheDir   null-ok; Reserve directory for SafeFile caching. It's used when the primary directory isn't available.
 	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
 	 *                          Name generator} for cached files. Generated names must match the regex
 	 *                          <strong>[a-z0-9_-]{1,64}</strong>
 	 * @param cacheMaxSize      Max cache size in bytes. <b>0</b> means cache size is unlimited.
-	 * @param cacheMaxFileCount Max file count in cache. <b>0</b> means file count is unlimited.
+	 * @param cacheMaxFileCount Max SafeFile count in cache. <b>0</b> means SafeFile count is unlimited.
 	 * @throws IOException if cache can't be initialized (e.g. "No space left on device")
 	 */
-	public LruDiskCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize,
+	public LruDiskCache(SafeFile cacheDir, SafeFile reserveCacheDir, FileNameGenerator fileNameGenerator, long cacheMaxSize,
 			int cacheMaxFileCount) throws IOException {
 		if (cacheDir == null) {
 			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);
@@ -106,7 +107,7 @@ public class LruDiskCache implements DiskCache {
 		initCache(cacheDir, reserveCacheDir, cacheMaxSize, cacheMaxFileCount);
 	}
 
-	private void initCache(File cacheDir, File reserveCacheDir, long cacheMaxSize, int cacheMaxFileCount)
+	private void initCache(SafeFile cacheDir, SafeFile reserveCacheDir, long cacheMaxSize, int cacheMaxFileCount)
 			throws IOException {
 		try {
 			cache = DiskLruCache.open(cacheDir, 1, 1, cacheMaxSize, cacheMaxFileCount);
@@ -122,12 +123,12 @@ public class LruDiskCache implements DiskCache {
 	}
 
 	@Override
-	public File getDirectory() {
+	public SafeFile getDirectory() {
 		return cache.getDirectory();
 	}
 
 	@Override
-	public File get(String imageUri) {
+	public SafeFile get(String imageUri) {
 		DiskLruCache.Snapshot snapshot = null;
 		try {
 			snapshot = cache.get(getKey(imageUri));
