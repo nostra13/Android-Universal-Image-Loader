@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
+import com.nostra13.universalimageloader.core.imageaware.NonViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -33,6 +34,7 @@ import com.nostra13.universalimageloader.utils.L;
 final class DisplayBitmapTask implements Runnable {
 
 	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEAWARE = "Display image in ImageAware (loaded from %1$s) [%2$s]";
+	private static final String LOG_DISPLAY_IMAGE_IN_NONVIEWAWARE = "Display image in NonViewAware (loaded from %1$s) [%2$s]";
 	private static final String LOG_TASK_CANCELLED_IMAGEAWARE_REUSED = "ImageAware is reused for another image. Task is cancelled. [%s]";
 	private static final String LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED = "ImageAware was collected by GC. Task is cancelled. [%s]";
 
@@ -59,7 +61,12 @@ final class DisplayBitmapTask implements Runnable {
 
 	@Override
 	public void run() {
-		if (imageAware.isCollected()) {
+	    if (imageAware instanceof NonViewAware) {
+            L.d(LOG_DISPLAY_IMAGE_IN_NONVIEWAWARE, loadedFrom, memoryCacheKey);
+			displayer.display(bitmap, imageAware, loadedFrom);
+			engine.cancelDisplayTaskFor(imageAware);
+			listener.onLoadingComplete(imageUri, imageAware.getWrappedView(), bitmap);
+		} else if (imageAware.isCollected()) {
 			L.d(LOG_TASK_CANCELLED_IMAGEAWARE_COLLECTED, memoryCacheKey);
 			listener.onLoadingCancelled(imageUri, imageAware.getWrappedView());
 		} else if (isViewWasReused()) {
