@@ -1,7 +1,6 @@
 package com.nostra13.universalimageloader.cache.memory.impl;
 
 import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -18,20 +17,16 @@ import java.util.Set;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.1
  */
-public class LruMemoryCache implements MemoryCache {
+public class LruMemoryCache extends BaseMemoryCache {
 
 	private final LinkedHashMap<String, Bitmap> map;
 
-	private final int maxSize;
 	/** Size of this cache in bytes */
 	private int size;
 
 	/** @param maxSize Maximum sum of the sizes of the Bitmaps in this cache */
 	public LruMemoryCache(int maxSize) {
-		if (maxSize <= 0) {
-			throw new IllegalArgumentException("maxSize <= 0");
-		}
-		this.maxSize = maxSize;
+		super(maxSize);
 		this.map = new LinkedHashMap<String, Bitmap>(0, 0.75f, true);
 	}
 
@@ -99,6 +94,7 @@ public class LruMemoryCache implements MemoryCache {
 				value = toEvict.getValue();
 				map.remove(key);
 				size -= sizeOf(key, value);
+				fireRemovedEvent(key, value);
 			}
 		}
 	}
@@ -115,6 +111,7 @@ public class LruMemoryCache implements MemoryCache {
 			if (previous != null) {
 				size -= sizeOf(key, previous);
 			}
+			fireRemovedEvent(key, previous);
 			return previous;
 		}
 	}

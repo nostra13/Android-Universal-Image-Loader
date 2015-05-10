@@ -16,7 +16,6 @@
 package com.nostra13.universalimageloader.cache.memory.impl;
 
 import android.graphics.Bitmap;
-import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -34,11 +33,15 @@ import java.util.Set;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.5.3
  */
-public class WeakMemoryCache implements MemoryCache {
+public class WeakMemoryCache extends BaseMemoryCache {
 
 	/** Stores not strong references to objects */
 	protected final Map<String, Reference<Bitmap>> softMap = Collections
 			.synchronizedMap(new HashMap<String, Reference<Bitmap>>());
+
+	protected WeakMemoryCache() {
+		super(0);
+	}
 
 	@Override
 	public Bitmap get(String key) {

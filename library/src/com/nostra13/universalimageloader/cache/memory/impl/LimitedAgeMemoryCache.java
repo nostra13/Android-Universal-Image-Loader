@@ -56,7 +56,7 @@ public class LimitedAgeMemoryCache implements MemoryCache {
 
 	@Override
 	public int size() {
-		return 0;
+		return cache.size();
 	}
 
 	@Override
@@ -77,8 +77,23 @@ public class LimitedAgeMemoryCache implements MemoryCache {
 	}
 
 	@Override
+	public int maxSize() {
+		return cache.maxSize();
+	}
+
+	@Override
 	public Set<String> keys() {
 		return cache.keys();
+	}
+
+	@Override
+	public void addMemoryCacheListener(MemoryCacheListener listener) {
+		cache.addMemoryCacheListener(listener);
+	}
+
+	@Override
+	public void removeMemoryCacheListener(MemoryCacheListener listener) {
+		cache.removeMemoryCacheListener(listener);
 	}
 
 	@Override
