@@ -1,27 +1,13 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.+'
-    }
-}
-
-
 apply plugin: 'com.android.application'
 
-repositories {
-    jcenter()
-}
-
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile project(':library')
+    compile 'com.squareup.okhttp:okhttp:2.3.0'
 }
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
 
     sourceSets {
         main {
@@ -30,5 +16,9 @@ android {
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }
+    }
+
+    lintOptions {
+          abortOnError false
     }
 }
