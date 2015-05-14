@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'android-maven'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 'android-22'
