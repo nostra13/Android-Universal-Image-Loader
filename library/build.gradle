@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
-apply plugin: 'android-maven'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 'android-22'
     buildToolsVersion "22.0.1"
 
     defaultConfig {
