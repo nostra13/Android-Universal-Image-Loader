@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:gravity="center">
+
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:paddingBottom="10dip"
+			android:paddingTop="20dip"
+			android:text="@string/label_examples"
+			android:textSize="24sp" />
+
+		<Button
+			android:layout_width="320dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="10dip"
+			android:layout_marginRight="10dip"
+			android:onClick="onImageListClick"
+			android:text="@string/button_image_list" />
+
+		<Button
+			android:layout_width="320dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="10dip"
+			android:layout_marginRight="10dip"
+			android:onClick="onImageGridClick"
+			android:text="@string/button_image_grid" />
+
+		<Button
+			android:layout_width="320dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="10dip"
+			android:layout_marginRight="10dip"
+			android:onClick="onImagePagerClick"
+			android:text="@string/button_image_pager" />
+
+		<Button
+			android:layout_width="320dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="10dip"
+			android:layout_marginRight="10dip"
+			android:onClick="onImageGalleryClick"
+			android:text="@string/button_image_gallery" />
+
+		<Button
+			android:layout_width="320dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="10dip"
+			android:layout_marginRight="10dip"
+			android:onClick="onFragmentsClick"
+			android:text="@string/button_list_and_grid" />
+	</LinearLayout>
+
+</ScrollView>
