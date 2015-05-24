@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'android-maven'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 22
@@ -33,11 +33,10 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android:support-v4:r7'
-
     testCompile 'com.squareup:fest-android:1.0.7'
     testCompile 'org.robolectric:robolectric:2.1.1'
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support:support-v4:22.1.1'
 }
 
 // build a jar with source files
