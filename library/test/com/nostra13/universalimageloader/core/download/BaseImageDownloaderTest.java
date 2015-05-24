@@ -1,6 +1,6 @@
 package com.nostra13.universalimageloader.core.download;
 
-import org.fest.assertions.api.Assertions;
+import static org.assertj.android.api.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
