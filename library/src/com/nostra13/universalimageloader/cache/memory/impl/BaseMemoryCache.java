@@ -14,7 +14,7 @@ public abstract class BaseMemoryCache implements MemoryCache {
 
 	protected final int maxSize;
 
-	protected final Collection<MemoryCacheListener> listeners = new CopyOnWriteArrayList<MemoryCacheListener>();
+	protected final Collection<Listener> listeners = new CopyOnWriteArrayList<Listener>();
 
 	protected BaseMemoryCache(int maxSize) {
 		if (maxSize <= 0) {
@@ -29,17 +29,17 @@ public abstract class BaseMemoryCache implements MemoryCache {
 	}
 
 	@Override
-	public void addMemoryCacheListener(MemoryCacheListener listener) {
+	public void addMemoryCacheListener(Listener listener) {
 		listeners.add(listener);
 	}
 
 	@Override
-	public void removeMemoryCacheListener(MemoryCacheListener listener) {
+	public void removeMemoryCacheListener(Listener listener) {
 		listeners.remove(listener);
 	}
 
 	protected void fireRemovedEvent(String key, Bitmap removedBitmap) {
-		for (MemoryCacheListener listener : listeners) {
+		for (Listener listener : listeners) {
 			listener.onEntryRemoved(key, removedBitmap);
 		}
 	}

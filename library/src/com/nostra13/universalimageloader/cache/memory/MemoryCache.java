@@ -49,11 +49,11 @@ public interface MemoryCache {
 	/** Returns all keys of cache */
 	Set<String> keys();
 
-	void addMemoryCacheListener(MemoryCacheListener listener);
+	void addMemoryCacheListener(Listener listener);
 
-	void removeMemoryCacheListener(MemoryCacheListener listener);
+	void removeMemoryCacheListener(Listener listener);
 
-	interface MemoryCacheListener {
+	interface Listener {
 
 		void onEntryRemoved(String key, Bitmap removed);
 	}

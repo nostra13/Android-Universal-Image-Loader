@@ -87,12 +87,12 @@ public class LimitedAgeMemoryCache implements MemoryCache {
 	}
 
 	@Override
-	public void addMemoryCacheListener(MemoryCacheListener listener) {
+	public void addMemoryCacheListener(Listener listener) {
 		cache.addMemoryCacheListener(listener);
 	}
 
 	@Override
-	public void removeMemoryCacheListener(MemoryCacheListener listener) {
+	public void removeMemoryCacheListener(Listener listener) {
 		cache.removeMemoryCacheListener(listener);
 	}
 
