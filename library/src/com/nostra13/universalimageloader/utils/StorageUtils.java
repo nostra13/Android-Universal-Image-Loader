@@ -70,6 +70,8 @@ public final class StorageUtils {
 			externalStorageState = Environment.getExternalStorageState();
 		} catch (NullPointerException e) { // (sh)it happens (Issue #660)
 			externalStorageState = "";
+		} catch (IncompatibleClassChangeError e) { // (sh)it happens too (Issue #989)
+			externalStorageState = "";
 		}
 		if (preferExternal && MEDIA_MOUNTED.equals(externalStorageState) && hasExternalStoragePermission(context)) {
 			appCacheDir = getExternalCacheDir(context);
