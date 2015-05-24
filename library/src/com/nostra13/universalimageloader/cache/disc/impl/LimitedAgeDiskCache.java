@@ -16,11 +16,12 @@
 package com.nostra13.universalimageloader.cache.disc.impl;
 
 import android.graphics.Bitmap;
+
+import com.nostra13.universalimageloader.cache.disc.SafeFile;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 import com.nostra13.universalimageloader.utils.IoUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -37,14 +38,14 @@ public class LimitedAgeDiskCache extends BaseDiskCache {
 
 	private final long maxFileAge;
 
-	private final Map<File, Long> loadingDates = Collections.synchronizedMap(new HashMap<File, Long>());
+	private final Map<SafeFile, Long> loadingDates = Collections.synchronizedMap(new HashMap<SafeFile, Long>());
 
 	/**
 	 * @param cacheDir Directory for file caching
 	 * @param maxAge   Max file age (in seconds). If file age will exceed this value then it'll be removed on next
 	 *                 treatment (and therefore be reloaded).
 	 */
-	public LimitedAgeDiskCache(File cacheDir, long maxAge) {
+	public LimitedAgeDiskCache(SafeFile cacheDir, long maxAge) {
 		this(cacheDir, null, DefaultConfigurationFactory.createFileNameGenerator(), maxAge);
 	}
 
@@ -53,7 +54,7 @@ public class LimitedAgeDiskCache extends BaseDiskCache {
 	 * @param maxAge   Max file age (in seconds). If file age will exceed this value then it'll be removed on next
 	 *                 treatment (and therefore be reloaded).
 	 */
-	public LimitedAgeDiskCache(File cacheDir, File reserveCacheDir, long maxAge) {
+	public LimitedAgeDiskCache(SafeFile cacheDir, SafeFile reserveCacheDir, long maxAge) {
 		this(cacheDir, reserveCacheDir, DefaultConfigurationFactory.createFileNameGenerator(), maxAge);
 	}
 
@@ -64,14 +65,14 @@ public class LimitedAgeDiskCache extends BaseDiskCache {
 	 * @param maxAge            Max file age (in seconds). If file age will exceed this value then it'll be removed on next
 	 *                          treatment (and therefore be reloaded).
 	 */
-	public LimitedAgeDiskCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator, long maxAge) {
+	public LimitedAgeDiskCache(SafeFile cacheDir, SafeFile reserveCacheDir, FileNameGenerator fileNameGenerator, long maxAge) {
 		super(cacheDir, reserveCacheDir, fileNameGenerator);
 		this.maxFileAge = maxAge * 1000; // to milliseconds
 	}
 
 	@Override
-	public File get(String imageUri) {
-		File file = super.get(imageUri);
+	public SafeFile get(String imageUri) {
+        SafeFile file = super.get(imageUri);
 		if (file != null && file.exists()) {
 			boolean cached;
 			Long loadingDate = loadingDates.get(file);
@@ -119,7 +120,7 @@ public class LimitedAgeDiskCache extends BaseDiskCache {
 	}
 
 	private void rememberUsage(String imageUri) {
-		File file = getFile(imageUri);
+        SafeFile file = getFile(imageUri);
 		long currentTime = System.currentTimeMillis();
 		file.setLastModified(currentTime);
 		loadingDates.put(file, currentTime);

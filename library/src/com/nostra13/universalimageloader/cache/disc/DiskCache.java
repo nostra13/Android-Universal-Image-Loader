@@ -16,9 +16,9 @@
 package com.nostra13.universalimageloader.cache.disc;
 
 import android.graphics.Bitmap;
+
 import com.nostra13.universalimageloader.utils.IoUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -34,7 +34,7 @@ public interface DiskCache {
 	 *
 	 * @return Root directory of disk cache
 	 */
-	File getDirectory();
+	SafeFile getDirectory();
 
 	/**
 	 * Returns file of cached image
@@ -42,7 +42,7 @@ public interface DiskCache {
 	 * @param imageUri Original image URI
 	 * @return File of cached image or <b>null</b> if image wasn't cached
 	 */
-	File get(String imageUri);
+	SafeFile get(String imageUri);
 
 	/**
 	 * Saves image stream in disk cache.

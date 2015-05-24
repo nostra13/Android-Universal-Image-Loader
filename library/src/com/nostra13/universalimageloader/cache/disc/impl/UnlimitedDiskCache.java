@@ -15,9 +15,8 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.cache.disc.impl;
 
+import com.nostra13.universalimageloader.cache.disc.SafeFile;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
-
-import java.io.File;
 
 /**
  * Default implementation of {@linkplain com.nostra13.universalimageloader.cache.disc.DiskCache disk cache}.
@@ -28,7 +27,7 @@ import java.io.File;
  */
 public class UnlimitedDiskCache extends BaseDiskCache {
 	/** @param cacheDir Directory for file caching */
-	public UnlimitedDiskCache(File cacheDir) {
+	public UnlimitedDiskCache(SafeFile cacheDir) {
 		super(cacheDir);
 	}
 
@@ -36,7 +35,7 @@ public class UnlimitedDiskCache extends BaseDiskCache {
 	 * @param cacheDir        Directory for file caching
 	 * @param reserveCacheDir null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
 	 */
-	public UnlimitedDiskCache(File cacheDir, File reserveCacheDir) {
+	public UnlimitedDiskCache(SafeFile cacheDir, SafeFile reserveCacheDir) {
 		super(cacheDir, reserveCacheDir);
 	}
 
@@ -46,7 +45,7 @@ public class UnlimitedDiskCache extends BaseDiskCache {
 	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
 	 *                          Name generator} for cached files
 	 */
-	public UnlimitedDiskCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator) {
+	public UnlimitedDiskCache(SafeFile cacheDir, SafeFile reserveCacheDir, FileNameGenerator fileNameGenerator) {
 		super(cacheDir, reserveCacheDir, fileNameGenerator);
 	}
 }

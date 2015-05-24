@@ -2,7 +2,7 @@
  * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this SafeFile except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -15,8 +15,9 @@
  */
 package com.nostra13.universalimageloader.cache.disc.impl.ext;
 
+import com.nostra13.universalimageloader.cache.disc.SafeFile;
+
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -45,20 +46,20 @@ final class Util {
 	}
 
 	/**
-	 * Deletes the contents of {@code dir}. Throws an IOException if any file
+	 * Deletes the contents of {@code dir}. Throws an IOException if any SafeFile
 	 * could not be deleted, or if {@code dir} is not a readable directory.
 	 */
-	static void deleteContents(File dir) throws IOException {
-		File[] files = dir.listFiles();
+	static void deleteContents(SafeFile dir) throws IOException {
+		SafeFile[] files = dir.listFiles();
 		if (files == null) {
 			throw new IOException("not a readable directory: " + dir);
 		}
-		for (File file : files) {
-			if (file.isDirectory()) {
-				deleteContents(file);
+		for (SafeFile SafeFile : files) {
+			if (SafeFile.isDirectory()) {
+				deleteContents(SafeFile);
 			}
-			if (!file.delete()) {
-				throw new IOException("failed to delete file: " + file);
+			if (!SafeFile.delete()) {
+				throw new IOException("failed to delete SafeFile: " + SafeFile);
 			}
 		}
 	}

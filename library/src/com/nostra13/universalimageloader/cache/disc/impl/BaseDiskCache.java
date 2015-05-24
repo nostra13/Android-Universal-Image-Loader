@@ -16,13 +16,14 @@
 package com.nostra13.universalimageloader.cache.disc.impl;
 
 import android.graphics.Bitmap;
+
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
+import com.nostra13.universalimageloader.cache.disc.SafeFile;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DefaultConfigurationFactory;
 import com.nostra13.universalimageloader.utils.IoUtils;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,8 +47,8 @@ public abstract class BaseDiskCache implements DiskCache {
 	private static final String ERROR_ARG_NULL = " argument must be not null";
 	private static final String TEMP_IMAGE_POSTFIX = ".tmp";
 
-	protected final File cacheDir;
-	protected final File reserveCacheDir;
+	protected final SafeFile cacheDir;
+	protected final SafeFile reserveCacheDir;
 
 	protected final FileNameGenerator fileNameGenerator;
 
@@ -57,7 +58,7 @@ public abstract class BaseDiskCache implements DiskCache {
 	protected int compressQuality = DEFAULT_COMPRESS_QUALITY;
 
 	/** @param cacheDir Directory for file caching */
-	public BaseDiskCache(File cacheDir) {
+	public BaseDiskCache(SafeFile cacheDir) {
 		this(cacheDir, null);
 	}
 
@@ -65,7 +66,7 @@ public abstract class BaseDiskCache implements DiskCache {
 	 * @param cacheDir        Directory for file caching
 	 * @param reserveCacheDir null-ok; Reserve directory for file caching. It's used when the primary directory isn't available.
 	 */
-	public BaseDiskCache(File cacheDir, File reserveCacheDir) {
+	public BaseDiskCache(SafeFile cacheDir, SafeFile reserveCacheDir) {
 		this(cacheDir, reserveCacheDir, DefaultConfigurationFactory.createFileNameGenerator());
 	}
 
@@ -75,7 +76,7 @@ public abstract class BaseDiskCache implements DiskCache {
 	 * @param fileNameGenerator {@linkplain com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator
 	 *                          Name generator} for cached files
 	 */
-	public BaseDiskCache(File cacheDir, File reserveCacheDir, FileNameGenerator fileNameGenerator) {
+	public BaseDiskCache(SafeFile cacheDir, SafeFile reserveCacheDir, FileNameGenerator fileNameGenerator) {
 		if (cacheDir == null) {
 			throw new IllegalArgumentException("cacheDir" + ERROR_ARG_NULL);
 		}
@@ -89,19 +90,19 @@ public abstract class BaseDiskCache implements DiskCache {
 	}
 
 	@Override
-	public File getDirectory() {
+	public SafeFile getDirectory() {
 		return cacheDir;
 	}
 
 	@Override
-	public File get(String imageUri) {
+	public SafeFile get(String imageUri) {
 		return getFile(imageUri);
 	}
 
 	@Override
 	public boolean save(String imageUri, InputStream imageStream, IoUtils.CopyListener listener) throws IOException {
-		File imageFile = getFile(imageUri);
-		File tmpFile = new File(imageFile.getAbsolutePath() + TEMP_IMAGE_POSTFIX);
+		SafeFile imageFile = getFile(imageUri);
+		SafeFile tmpFile = new SafeFile(imageFile.getAbsolutePath() + TEMP_IMAGE_POSTFIX);
 		boolean loaded = false;
 		try {
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(tmpFile), bufferSize);
@@ -123,8 +124,8 @@ public abstract class BaseDiskCache implements DiskCache {
 
 	@Override
 	public boolean save(String imageUri, Bitmap bitmap) throws IOException {
-		File imageFile = getFile(imageUri);
-		File tmpFile = new File(imageFile.getAbsolutePath() + TEMP_IMAGE_POSTFIX);
+		SafeFile imageFile = getFile(imageUri);
+		SafeFile tmpFile = new SafeFile(imageFile.getAbsolutePath() + TEMP_IMAGE_POSTFIX);
 		OutputStream os = new BufferedOutputStream(new FileOutputStream(tmpFile), bufferSize);
 		boolean savedSuccessfully = false;
 		try {
@@ -154,24 +155,24 @@ public abstract class BaseDiskCache implements DiskCache {
 
 	@Override
 	public void clear() {
-		File[] files = cacheDir.listFiles();
+		SafeFile[] files = cacheDir.listFiles();
 		if (files != null) {
-			for (File f : files) {
+			for (SafeFile f : files) {
 				f.delete();
 			}
 		}
 	}
 
 	/** Returns file object (not null) for incoming image URI. File object can reference to non-existing file. */
-	protected File getFile(String imageUri) {
+	protected SafeFile getFile(String imageUri) {
 		String fileName = fileNameGenerator.generate(imageUri);
-		File dir = cacheDir;
+		SafeFile dir = cacheDir;
 		if (!cacheDir.exists() && !cacheDir.mkdirs()) {
 			if (reserveCacheDir != null && (reserveCacheDir.exists() || reserveCacheDir.mkdirs())) {
 				dir = reserveCacheDir;
 			}
 		}
-		return new File(dir, fileName);
+		return new SafeFile(dir, fileName);
 	}
 
 	public void setBufferSize(int bufferSize) {

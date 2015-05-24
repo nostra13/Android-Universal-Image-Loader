@@ -2,7 +2,7 @@
  * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this SafeFile except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -15,11 +15,12 @@
  */
 package com.nostra13.universalimageloader.cache.disc.impl.ext;
 
+import com.nostra13.universalimageloader.cache.disc.SafeFile;
+import com.nostra13.universalimageloader.cache.disc.SafeFileInputStream;
+
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
@@ -98,7 +99,7 @@ final class DiskLruCache implements Closeable {
 	private static final String READ = "READ";
 
     /*
-     * This cache uses a journal file named "journal". A typical journal file
+     * This cache uses a journal SafeFile named "journal". A typical journal SafeFile
      * looks like this:
      *     libcore.io.DiskLruCache
      *     1
@@ -118,7 +119,7 @@ final class DiskLruCache implements Closeable {
      * constant string "libcore.io.DiskLruCache", the disk cache's version,
      * the application's version, the value count, and a blank line.
      *
-     * Each of the subsequent lines in the file is a record of the state of a
+     * Each of the subsequent lines in the SafeFile is a record of the state of a
      * cache entry. Each line contains space-separated values: a state, a key,
      * and optional state-specific values.
      *   o DIRTY lines track that an entry is actively being created or updated.
@@ -131,16 +132,16 @@ final class DiskLruCache implements Closeable {
      *   o READ lines track accesses for LRU.
      *   o REMOVE lines track entries that have been deleted.
      *
-     * The journal file is appended to as cache operations occur. The journal may
-     * occasionally be compacted by dropping redundant lines. A temporary file named
-     * "journal.tmp" will be used during compaction; that file should be deleted if
+     * The journal SafeFile is appended to as cache operations occur. The journal may
+     * occasionally be compacted by dropping redundant lines. A temporary SafeFile named
+     * "journal.tmp" will be used during compaction; that SafeFile should be deleted if
      * it exists when the cache is opened.
      */
 
-	private final File directory;
-	private final File journalFile;
-	private final File journalFileTmp;
-	private final File journalFileBackup;
+	private final SafeFile directory;
+	private final SafeFile journalFile;
+	private final SafeFile journalFileTmp;
+	private final SafeFile journalFileBackup;
 	private final int appVersion;
 	private long maxSize;
 	private int maxFileCount;
@@ -179,12 +180,12 @@ final class DiskLruCache implements Closeable {
 		}
 	};
 
-	private DiskLruCache(File directory, int appVersion, int valueCount, long maxSize, int maxFileCount) {
+	private DiskLruCache(SafeFile directory, int appVersion, int valueCount, long maxSize, int maxFileCount) {
 		this.directory = directory;
 		this.appVersion = appVersion;
-		this.journalFile = new File(directory, JOURNAL_FILE);
-		this.journalFileTmp = new File(directory, JOURNAL_FILE_TEMP);
-		this.journalFileBackup = new File(directory, JOURNAL_FILE_BACKUP);
+		this.journalFile = new SafeFile(directory, JOURNAL_FILE);
+		this.journalFileTmp = new SafeFile(directory, JOURNAL_FILE_TEMP);
+		this.journalFileBackup = new SafeFile(directory, JOURNAL_FILE_BACKUP);
 		this.valueCount = valueCount;
 		this.maxSize = maxSize;
 		this.maxFileCount = maxFileCount;
@@ -197,10 +198,10 @@ final class DiskLruCache implements Closeable {
 	 * @param directory a writable directory
 	 * @param valueCount the number of values per cache entry. Must be positive.
 	 * @param maxSize the maximum number of bytes this cache should use to store
-	 * @param maxFileCount the maximum file count this cache should store
+	 * @param maxFileCount the maximum SafeFile count this cache should store
 	 * @throws IOException if reading or writing the cache directory fails
 	 */
-	public static DiskLruCache open(File directory, int appVersion, int valueCount, long maxSize, int maxFileCount)
+	public static DiskLruCache open(SafeFile directory, int appVersion, int valueCount, long maxSize, int maxFileCount)
 			throws IOException {
 		if (maxSize <= 0) {
 			throw new IllegalArgumentException("maxSize <= 0");
@@ -212,11 +213,11 @@ final class DiskLruCache implements Closeable {
 			throw new IllegalArgumentException("valueCount <= 0");
 		}
 
-		// If a bkp file exists, use it instead.
-		File backupFile = new File(directory, JOURNAL_FILE_BACKUP);
+		// If a bkp SafeFile exists, use it instead.
+		SafeFile backupFile = new SafeFile(directory, JOURNAL_FILE_BACKUP);
 		if (backupFile.exists()) {
-			File journalFile = new File(directory, JOURNAL_FILE);
-			// If journal file also exists just delete backup file.
+			SafeFile journalFile = new SafeFile(directory, JOURNAL_FILE);
+			// If journal SafeFile also exists just delete backup SafeFile.
 			if (journalFile.exists()) {
 				backupFile.delete();
 			} else {
@@ -252,7 +253,7 @@ final class DiskLruCache implements Closeable {
 	}
 
 	private void readJournal() throws IOException {
-		StrictLineReader reader = new StrictLineReader(new FileInputStream(journalFile), Util.US_ASCII);
+		StrictLineReader reader = new StrictLineReader(new SafeFileInputStream(journalFile), Util.US_ASCII);
 		try {
 			String magic = reader.readLine();
 			String version = reader.readLine();
@@ -389,13 +390,13 @@ final class DiskLruCache implements Closeable {
 				new OutputStreamWriter(new FileOutputStream(journalFile, true), Util.US_ASCII));
 	}
 
-	private static void deleteIfExists(File file) throws IOException {
-		if (file.exists() && !file.delete()) {
+	private static void deleteIfExists(SafeFile SafeFile) throws IOException {
+		if (SafeFile.exists() && !SafeFile.delete()) {
 			throw new IOException();
 		}
 	}
 
-	private static void renameTo(File from, File to, boolean deleteDestination) throws IOException {
+	private static void renameTo(SafeFile from, SafeFile to, boolean deleteDestination) throws IOException {
 		if (deleteDestination) {
 			deleteIfExists(to);
 		}
@@ -424,17 +425,17 @@ final class DiskLruCache implements Closeable {
 		// Open all streams eagerly to guarantee that we see a single published
 		// snapshot. If we opened streams lazily then the streams could come
 		// from different edits.
-		File[] files = new File[valueCount];
+		SafeFile[] files = new SafeFile[valueCount];
 		InputStream[] ins = new InputStream[valueCount];
 		try {
-			File file;
+			SafeFile SafeFile;
 			for (int i = 0; i < valueCount; i++) {
-				file = entry.getCleanFile(i);
-				files[i] = file;
-				ins[i] = new FileInputStream(file);
+				SafeFile = entry.getCleanFile(i);
+				files[i] = SafeFile;
+				ins[i] = new SafeFileInputStream(SafeFile);
 			}
 		} catch (FileNotFoundException e) {
-			// A file must have been deleted manually!
+			// A SafeFile must have been deleted manually!
 			for (int i = 0; i < valueCount; i++) {
 				if (ins[i] != null) {
 					Util.closeQuietly(ins[i]);
@@ -480,14 +481,14 @@ final class DiskLruCache implements Closeable {
 		Editor editor = new Editor(entry);
 		entry.currentEditor = editor;
 
-		// Flush the journal before creating files to prevent file leaks.
+		// Flush the journal before creating files to prevent SafeFile leaks.
 		journalWriter.write(DIRTY + ' ' + key + '\n');
 		journalWriter.flush();
 		return editor;
 	}
 
 	/** Returns the directory where this cache stores its data. */
-	public File getDirectory() {
+	public SafeFile getDirectory() {
 		return directory;
 	}
 
@@ -524,7 +525,7 @@ final class DiskLruCache implements Closeable {
 
 	/**
 	 * Returns the number of files currently being used to store the values in
-	 * this cache. This may be greater than the max file count if a background
+	 * this cache. This may be greater than the max SafeFile count if a background
 	 * deletion is pending.
 	 */
 	public synchronized long fileCount() {
@@ -552,10 +553,10 @@ final class DiskLruCache implements Closeable {
 		}
 
 		for (int i = 0; i < valueCount; i++) {
-			File dirty = entry.getDirtyFile(i);
+			SafeFile dirty = entry.getDirtyFile(i);
 			if (success) {
 				if (dirty.exists()) {
-					File clean = entry.getCleanFile(i);
+					SafeFile clean = entry.getCleanFile(i);
 					dirty.renameTo(clean);
 					long oldLength = entry.lengths[i];
 					long newLength = clean.length();
@@ -612,9 +613,9 @@ final class DiskLruCache implements Closeable {
 		}
 
 		for (int i = 0; i < valueCount; i++) {
-			File file = entry.getCleanFile(i);
-			if (file.exists() && !file.delete()) {
-				throw new IOException("failed to delete " + file);
+			SafeFile SafeFile = entry.getCleanFile(i);
+			if (SafeFile.exists() && !SafeFile.delete()) {
+				throw new IOException("failed to delete " + SafeFile);
 			}
 			size -= entry.lengths[i];
 			fileCount--;
@@ -706,11 +707,11 @@ final class DiskLruCache implements Closeable {
 	public final class Snapshot implements Closeable {
 		private final String key;
 		private final long sequenceNumber;
-		private File[] files;
+		private SafeFile[] files;
 		private final InputStream[] ins;
 		private final long[] lengths;
 
-		private Snapshot(String key, long sequenceNumber, File[] files, InputStream[] ins, long[] lengths) {
+		private Snapshot(String key, long sequenceNumber, SafeFile[] files, InputStream[] ins, long[] lengths) {
 			this.key = key;
 			this.sequenceNumber = sequenceNumber;
 			this.files = files;
@@ -727,8 +728,8 @@ final class DiskLruCache implements Closeable {
 			return DiskLruCache.this.edit(key, sequenceNumber);
 		}
 
-		/** Returns file with the value for {@code index}. */
-		public File getFile(int index) {
+		/** Returns SafeFile with the value for {@code index}. */
+		public SafeFile getFile(int index) {
 			return files[index];
 		}
 
@@ -786,7 +787,7 @@ final class DiskLruCache implements Closeable {
 					return null;
 				}
 				try {
-					return new FileInputStream(entry.getCleanFile(index));
+					return new SafeFileInputStream(entry.getCleanFile(index));
 				} catch (FileNotFoundException e) {
 					return null;
 				}
@@ -817,7 +818,7 @@ final class DiskLruCache implements Closeable {
 				if (!entry.readable) {
 					written[index] = true;
 				}
-				File dirtyFile = entry.getDirtyFile(index);
+				SafeFile dirtyFile = entry.getDirtyFile(index);
 				FileOutputStream outputStream;
 				try {
 					outputStream = new FileOutputStream(dirtyFile);
@@ -963,12 +964,12 @@ final class DiskLruCache implements Closeable {
 			throw new IOException("unexpected journal line: " + java.util.Arrays.toString(strings));
 		}
 
-		public File getCleanFile(int i) {
-			return new File(directory, key + "." + i);
+		public SafeFile getCleanFile(int i) {
+			return new SafeFile(directory, key + "." + i);
 		}
 
-		public File getDirtyFile(int i) {
-			return new File(directory, key + "." + i + ".tmp");
+		public SafeFile getDirtyFile(int i) {
+			return new SafeFile(directory, key + "." + i + ".tmp");
 		}
 	}
 }

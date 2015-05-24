@@ -2,7 +2,7 @@
  * Copyright 2011-2014 Sergey Tarasevich
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this SafeFile except in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -16,12 +16,12 @@
 package com.nostra13.universalimageloader.utils;
 
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
+import com.nostra13.universalimageloader.cache.disc.SafeFile;
 
-import java.io.File;
 
 /**
  * Utility for convenient work with disk cache.<br />
- * <b>NOTE:</b> This utility works with file system so avoid using it on application main thread.
+ * <b>NOTE:</b> This utility works with SafeFile system so avoid using it on application main thread.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.0
@@ -31,19 +31,19 @@ public final class DiskCacheUtils {
 	private DiskCacheUtils() {
 	}
 
-	/** Returns {@link File} of cached image or <b>null</b> if image was not cached in disk cache */
-	public static File findInCache(String imageUri, DiskCache diskCache) {
-		File image = diskCache.get(imageUri);
+	/** Returns {@link SafeFile} of cached image or <b>null</b> if image was not cached in disk cache */
+	public static SafeFile findInCache(String imageUri, DiskCache diskCache) {
+		SafeFile image = diskCache.get(imageUri);
 		return image != null && image.exists() ? image : null;
 	}
 
 	/**
-	 * Removed cached image file from disk cache (if image was cached in disk cache before)
+	 * Removed cached image SafeFile from disk cache (if image was cached in disk cache before)
 	 *
-	 * @return <b>true</b> - if cached image file existed and was deleted; <b>false</b> - otherwise.
+	 * @return <b>true</b> - if cached image SafeFile existed and was deleted; <b>false</b> - otherwise.
 	 */
 	public static boolean removeFromCache(String imageUri, DiskCache diskCache) {
-		File image = diskCache.get(imageUri);
+		SafeFile image = diskCache.get(imageUri);
 		return image != null && image.exists() && image.delete();
 	}
 }
