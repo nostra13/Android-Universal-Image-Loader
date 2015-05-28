@@ -55,6 +55,9 @@ Android 2.0+ support
 
 ### Simple
 ``` java
+ImageLoader imageLoader = ImageLoader.getInstance();
+```
+``` java
 // Load image, decode it to Bitmap and display Bitmap in ImageView (or any other view 
 //	which implements ImageAware interface)
 imageLoader.displayImage(imageUri, imageView);
@@ -135,6 +138,7 @@ You can support the project and thank the author for his hard work :)
  * [AndroidQuery : ImageLoading](https://code.google.com/p/android-query/wiki/ImageLoading)
  * [DroidParts : ImageFetcher](http://droidparts.org/image_fetcher.html)
  * [Glide](https://github.com/bumptech/glide)
+ * [Fresco](https://github.com/facebook/fresco)
  * [Picasso](https://github.com/square/picasso)
  * [UrlImageViewHelper](https://github.com/koush/UrlImageViewHelper)
  * [Volley : ImageLoader](https://android.googlesource.com/platform/frameworks/volley/)
