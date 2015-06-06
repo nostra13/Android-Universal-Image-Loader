@@ -1,6 +1,14 @@
 Change Log
 ===
 
+v1.9.4 *(29.05.2015)*
+---
+ * **New API:**
+   * `ImageLoader.setDefaultLoadingListener(ImageLoadingListener)`
+ * "Disc -> Disk" migration (deleted DiscCacheAware, MemoryCacheAware)
+ * Video thumbnails support (`file://...`)
+ * Fixed 0-length files problem
+
 v1.9.3 *(06.09.2014)*
 ---
  * Introduced `ImageScaleType.NONE_SAFE`
