@@ -6,5 +6,5 @@ package com.nostra13.universalimageloader.core.assist;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
 public enum LoadedFrom {
-	NETWORK, DISC_CACHE, MEMORY_CACHE
+    NETWORK, DISC_CACHE, MEMORY_CACHE
 }
