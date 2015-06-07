@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'android-maven'
 
 android {
     compileSdkVersion 22
@@ -8,22 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 5
         targetSdkVersion 22
-    }
-    buildTypes {
-	sourceSets {
-	    main {
-	        manifest.srcFile 'AndroidManifest.xml'
-                java.srcDirs = ['src']
-                resources.srcDirs = ['src']
-                aidl.srcDirs = ['src']
-                renderscript.srcDirs = ['src']
-		res.srcDirs = ['res']
-	    }
-	}
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+        versionCode 40
+        versionName "1.9.5"
     }
 
     compileOptions {
@@ -33,12 +18,11 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android:support-v4:r7'
-
-    testCompile 'com.squareup:fest-android:1.0.7'
-    testCompile 'org.robolectric:robolectric:2.1.1'
     testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.0-rc3'
+    testCompile 'com.squareup.assertj:assertj-android:1.0.0'
 }
+
 
 // build a jar with source files
 task sourcesJar(type: Jar) {

@@ -108,9 +108,9 @@ afterEvaluate { project ->
 
     task androidJavadocs(type: Javadoc) {
         source = android.sourceSets.main.java.srcDirs
-	options {
-	   encoding = "UTF-8"
-	}
+	    options {
+            encoding = "UTF-8"
+	    }
         classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     }
 

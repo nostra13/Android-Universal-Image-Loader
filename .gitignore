@@ -29,3 +29,6 @@ out/
 # Ignore gradle files
 .gradle/
 build/
+
+# Private
+signing.properties
