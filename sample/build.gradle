@@ -2,12 +2,18 @@ apply plugin: 'com.android.application'
 
 dependencies {
     compile project(':library')
+    compile 'com.android.support:support-v4:22.2.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
 }
 
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        minSdkVersion 5
+        targetSdkVersion 22
+    }
 
     sourceSets {
         main {
@@ -19,6 +25,25 @@ android {
     }
 
     lintOptions {
-          abortOnError false
+        abortOnError false
     }
+}
+
+
+File propFile = file('signing.properties');
+if (propFile.exists()) {
+    def Properties props = new Properties()
+    props.load(new FileInputStream(propFile))
+
+    if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+        android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
+        android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
+        android.signingConfigs.release.keyAlias = props['KEY_ALIAS']
+        android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
+    } else {
+        android.buildTypes.release.signingConfig = null
+    }
+} else {
+    android.buildTypes.release.signingConfig = null
 }
