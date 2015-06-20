@@ -54,7 +54,7 @@ import com.nostra13.universalimageloader.core.process.BitmapProcessor;
  * <ul>
  * <li>with {@link Builder}:<br />
  * <b>i.e.</b> :
- * <code>new {@link DisplayImageOptions}.{@link Builder#Builder() Builder()}.{@link Builder#cacheInMemory() cacheInMemory()}.
+ * <code>new {@link DisplayImageOptions}.Builder().{@link Builder#cacheInMemory() cacheInMemory()}.
  * {@link Builder#showImageOnLoading(int) showImageOnLoading()}.{@link Builder#build() build()}</code><br />
  * </li>
  * <li>or by static method: {@link #createSimple()}</li> <br />
@@ -219,11 +219,6 @@ public final class DisplayImageOptions {
 		private BitmapDisplayer displayer = DefaultConfigurationFactory.createBitmapDisplayer();
 		private Handler handler = null;
 		private boolean isSyncLoading = false;
-
-		public Builder() {
-			decodingOptions.inPurgeable = true;
-			decodingOptions.inInputShareable = true;
-		}
 
 		/**
 		 * Stub image will be displayed in {@link com.nostra13.universalimageloader.core.imageaware.ImageAware
