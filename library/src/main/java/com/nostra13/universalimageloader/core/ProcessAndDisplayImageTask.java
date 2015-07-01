@@ -51,8 +51,8 @@ final class ProcessAndDisplayImageTask implements Runnable {
 		L.d(LOG_POSTPROCESS_IMAGE, imageLoadingInfo.memoryCacheKey);
 
 		BitmapProcessor processor = imageLoadingInfo.options.getPostProcessor();
-		Bitmap processedBitmap = processor.process(bitmap);
-		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(processedBitmap, imageLoadingInfo, engine,
+		Bitmap bmp = processor.process(bitmap);
+		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine,
 				LoadedFrom.MEMORY_CACHE);
 		LoadAndDisplayImageTask.runTask(displayBitmapTask, imageLoadingInfo.options.isSyncLoading(), handler, engine);
 	}
