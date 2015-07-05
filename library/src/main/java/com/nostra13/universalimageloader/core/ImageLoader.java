@@ -204,6 +204,34 @@ public class ImageLoader {
 	 * @throws IllegalArgumentException if passed <b>imageAware</b> is null
 	 */
 	public void displayImage(String uri, ImageAware imageAware, DisplayImageOptions options,
+							 ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
+		displayImage(uri,imageAware,options,null,listener,progressListener);
+	}
+
+	/**
+	 * Adds display image task to execution pool. Image will be set to ImageAware when it's turn.<br />
+	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
+	 *
+	 * @param uri              Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param imageAware       {@linkplain com.nostra13.universalimageloader.core.imageaware.ImageAware Image aware view}
+	 *                         which should display image
+	 * @param options          {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions Options} for image
+	 *                         decoding and displaying. If <b>null</b> - default display image options
+	 *                         {@linkplain ImageLoaderConfiguration.Builder#defaultDisplayImageOptions(DisplayImageOptions)
+	 *                         from configuration} will be used.
+	 * @param targetImageSize 	   {@linkplain ImageSize} Image target size. If <b>null</b> - size will depend on the view
+	 * @param listener         {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires
+	 *                         events on UI thread if this method is called on UI thread.
+	 * @param progressListener {@linkplain com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener
+	 *                         Listener} for image loading progress. Listener fires events on UI thread if this method
+	 *                         is called on UI thread. Caching on disk should be enabled in
+	 *                         {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions options} to make
+	 *                         this listener work.
+	 * @throws IllegalStateException    if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * @throws IllegalArgumentException if passed <b>imageAware</b> is null
+	 */
+	public void displayImage(String uri, ImageAware imageAware, DisplayImageOptions options,
+							 ImageSize targetImageSize,
 			ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
 		checkConfiguration();
 		if (imageAware == null) {
@@ -228,7 +256,12 @@ public class ImageLoader {
 			return;
 		}
 
-		ImageSize targetSize = ImageSizeUtils.defineTargetSizeForView(imageAware, configuration.getMaxImageSize());
+		ImageSize targetSize;
+		if (targetImageSize != null) {
+			targetSize = targetImageSize;
+		}else {
+			targetSize = ImageSizeUtils.defineTargetSizeForView(imageAware, configuration.getMaxImageSize());
+		}
 		String memoryCacheKey = MemoryCacheUtils.generateKey(uri, targetSize);
 		engine.prepareDisplayTaskFor(imageAware, memoryCacheKey);
 
@@ -286,6 +319,20 @@ public class ImageLoader {
 		displayImage(uri, new ImageViewAware(imageView), null, null, null);
 	}
 
+	/**
+	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn. <br/>
+	 * Default {@linkplain DisplayImageOptions display image options} from {@linkplain ImageLoaderConfiguration
+	 * configuration} will be used.<br />
+	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
+	 *
+	 * @param uri       Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * @param imageView {@link ImageView} which should display image
+	 * @throws IllegalStateException    if {@link #init(ImageLoaderConfiguration)} method wasn't called before
+	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
+	 */
+	public void displayImage(String uri, ImageView imageView, ImageSize targetImageSize) {
+		displayImage(uri, new ImageViewAware(imageView), null, targetImageSize, null, null);
+	}
 	/**
 	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
