@@ -27,6 +27,7 @@ import java.io.InputStream;
  * Implementation of ImageDownloader which uses {@link com.squareup.okhttp.OkHttpClient} for image stream retrieving.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @author Leo Link (mr[dot]leolink[at]gmail[dot]com)
  */
 public class OkHttpImageDownloader extends BaseImageDownloader {
 
@@ -40,6 +41,9 @@ public class OkHttpImageDownloader extends BaseImageDownloader {
 	@Override
 	protected InputStream getStreamFromNetwork(String imageUri, Object extra) throws IOException {
 		Request request = new Request.Builder().url(imageUri).build();
-		return client.newCall(request).execute().body().byteStream();
+		ResponseBody responseBody = client.newCall(request).execute().body();
+		InputStream inputStream = responseBody.byteStream();
+		int contentLength = (int) responseBody.contentLength();
+		return new ContentLengthInputStream(inputStream, contentLength);
 	}
 }
