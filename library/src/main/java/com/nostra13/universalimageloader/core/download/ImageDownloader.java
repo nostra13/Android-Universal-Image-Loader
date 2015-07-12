@@ -26,6 +26,7 @@ import java.util.Locale;
  * Implementations have to be thread-safe.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @author Leo Link (mr[dot]leolink[at]gmail[dot]com)
  * @since 1.4.0
  */
 public interface ImageDownloader {
@@ -42,16 +43,28 @@ public interface ImageDownloader {
 	InputStream getStream(String imageUri, Object extra) throws IOException;
 
 	/** Represents supported schemes(protocols) of URI. Provides convenient methods for work with schemes and URIs. */
-	public enum Scheme {
-		HTTP("http"), HTTPS("https"), FILE("file"), CONTENT("content"), ASSETS("assets"), DRAWABLE("drawable"), UNKNOWN("");
+	enum Scheme {
+		HTTP("http", true),
+        HTTPS("https", true),
+        FILE("file", true),
+        CONTENT("content", true),
+        ASSETS("assets", true),
+        DRAWABLE("drawable", true),
+        BASE64("^data:image/[a-zA-Z]{3,};base64,([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)", false),
+        UNKNOWN("", false);
 
 		private String scheme;
-		private String uriPrefix;
+		private String pattern;
 
-		Scheme(String scheme) {
-			this.scheme = scheme;
-			uriPrefix = scheme + "://";
+		Scheme(String scheme, boolean isScheme) {
+            this.scheme = scheme;
+            if (isScheme) {
+                this.pattern = "^" + scheme + "://.+?$";
+            } else {
+                this.pattern = scheme;
+            }
 		}
+
 
 		/**
 		 * Defines scheme of incoming URI
@@ -71,12 +84,12 @@ public interface ImageDownloader {
 		}
 
 		private boolean belongsTo(String uri) {
-			return uri.toLowerCase(Locale.US).startsWith(uriPrefix);
+			return uri.toLowerCase(Locale.US).matches(pattern);
 		}
 
 		/** Appends scheme to incoming path */
 		public String wrap(String path) {
-			return uriPrefix + path;
+			return getUriPrefix() + path;
 		}
 
 		/** Removed scheme part ("scheme://") from incoming URI */
@@ -84,7 +97,11 @@ public interface ImageDownloader {
 			if (!belongsTo(uri)) {
 				throw new IllegalArgumentException(String.format("URI [%1$s] doesn't have expected scheme [%2$s]", uri, scheme));
 			}
-			return uri.substring(uriPrefix.length());
+			return uri.substring(getUriPrefix().length());
 		}
+
+        private String getUriPrefix() {
+            return scheme + "://";
+        }
 	}
 }
