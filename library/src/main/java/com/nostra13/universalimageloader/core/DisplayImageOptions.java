@@ -73,6 +73,7 @@ public final class DisplayImageOptions {
 	private final boolean resetViewBeforeLoading;
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisk;
+	private final boolean nativeAllocation;
 	private final ImageScaleType imageScaleType;
 	private final Options decodingOptions;
 	private final int delayBeforeLoading;
@@ -94,6 +95,7 @@ public final class DisplayImageOptions {
 		resetViewBeforeLoading = builder.resetViewBeforeLoading;
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisk = builder.cacheOnDisk;
+		nativeAllocation = builder.nativeAllocation;
 		imageScaleType = builder.imageScaleType;
 		decodingOptions = builder.decodingOptions;
 		delayBeforeLoading = builder.delayBeforeLoading;
@@ -154,6 +156,10 @@ public final class DisplayImageOptions {
 		return cacheOnDisk;
 	}
 
+	public boolean isNativeAllocation() {
+		return nativeAllocation;
+	}
+
 	public ImageScaleType getImageScaleType() {
 		return imageScaleType;
 	}
@@ -209,6 +215,7 @@ public final class DisplayImageOptions {
 		private boolean resetViewBeforeLoading = false;
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisk = false;
+		private boolean nativeAllocation = false;
 		private ImageScaleType imageScaleType = ImageScaleType.IN_SAMPLE_POWER_OF_2;
 		private Options decodingOptions = new Options();
 		private int delayBeforeLoading = 0;
@@ -363,6 +370,12 @@ public final class DisplayImageOptions {
 			return this;
 		}
 
+		/** Sets whether image bitmap will be allocated in native memory instead of dalvik heap */
+		public Builder nativeAllocation(boolean nativeAllocation) {
+			this.nativeAllocation = nativeAllocation;
+			return this;
+		}
+
 		/**
 		 * Sets {@linkplain ImageScaleType scale type} for decoding image. This parameter is used while define scale
 		 * size for decoding image to Bitmap. Default value - {@link ImageScaleType#IN_SAMPLE_POWER_OF_2}
@@ -466,6 +479,7 @@ public final class DisplayImageOptions {
 			resetViewBeforeLoading = options.resetViewBeforeLoading;
 			cacheInMemory = options.cacheInMemory;
 			cacheOnDisk = options.cacheOnDisk;
+			nativeAllocation = options.nativeAllocation;
 			imageScaleType = options.imageScaleType;
 			decodingOptions = options.decodingOptions;
 			delayBeforeLoading = options.delayBeforeLoading;

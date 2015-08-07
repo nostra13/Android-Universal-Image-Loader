@@ -24,6 +24,9 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.ViewScaleType;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
+import com.nostra13.universalimageloader.utils.L;
+
+import java.lang.reflect.Field;
 
 /**
  * Contains needed information for decoding image to Bitmap
@@ -32,6 +35,8 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
  * @since 1.8.3
  */
 public class ImageDecodingInfo {
+	private static Field inNativeAllocField;
+	private static boolean noInNativeAllocField;
 
 	private final String imageKey;
 	private final String imageUri;
@@ -63,6 +68,7 @@ public class ImageDecodingInfo {
 		considerExifParams = displayOptions.isConsiderExifParams();
 		decodingOptions = new Options();
 		copyOptions(displayOptions.getDecodingOptions(), decodingOptions);
+		if (displayOptions.isNativeAllocation() && Build.VERSION.SDK_INT <= 10) setNativeAllocation(decodingOptions);
 	}
 
 	private void copyOptions(Options srcOptions, Options destOptions) {
@@ -90,6 +96,29 @@ public class ImageDecodingInfo {
 	private void copyOptions11(Options srcOptions, Options destOptions) {
 		destOptions.inBitmap = srcOptions.inBitmap;
 		destOptions.inMutable = srcOptions.inMutable;
+	}
+
+	private void setNativeAllocation(Options options) {
+		if (noInNativeAllocField) return;
+		try {
+			if (inNativeAllocField == null) {
+				inNativeAllocField = Options.class.getDeclaredField("inNativeAlloc");
+				if (!inNativeAllocField.isAccessible()) inNativeAllocField.setAccessible(true);
+			}
+			inNativeAllocField.setBoolean(options, true);
+		} catch (IllegalArgumentException ex) {
+			L.e(ex);
+			noInNativeAllocField = true;
+		} catch (SecurityException ex) {
+			L.e(ex);
+			noInNativeAllocField = true;
+		} catch (IllegalAccessException ex) {
+			L.e(ex);
+			noInNativeAllocField = true;
+		} catch (NoSuchFieldException ex) {
+			L.e(ex);
+			noInNativeAllocField = true;
+		}
 	}
 
 	/** @return Original {@linkplain com.nostra13.universalimageloader.utils.MemoryCacheUtils#generateKey(String, ImageSize) image key} (used in memory cache). */
