@@ -81,6 +81,8 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 			paint = new Paint();
 			paint.setAntiAlias(true);
 			paint.setShader(bitmapShader);
+			paint.setFilterBitmap(true);
+			paint.setDither(true);
 		}
 
 		@Override
