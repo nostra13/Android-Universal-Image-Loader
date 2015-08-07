@@ -15,7 +15,16 @@
  *******************************************************************************/
 package com.nostra13.universalimageloader.core.display;
 
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
@@ -23,7 +32,7 @@ import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
 /**
- * Can display bitmap with rounded corners. This implementation works only with ImageViews wrapped
+ * Can display bitmap cropped by a circle. This implementation works only with ImageViews wrapped
  * in ImageViewAware.
  * <br />
  * This implementation is inspired by
@@ -34,22 +43,17 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
  * If this implementation doesn't meet your needs then consider
  * <a href="https://github.com/vinc3m1/RoundedImageView">RoundedImageView</a> or
  * <a href="https://github.com/Pkmmte/CircularImageView">CircularImageView</a> projects for usage.
- *
- * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
- * @since 1.5.6
  */
-public class RoundedBitmapDisplayer implements BitmapDisplayer {
+public class CircleBitmapDisplayer implements BitmapDisplayer {
 
-	protected final int cornerRadius;
-	protected final int margin;
+	protected final Integer strokeColor;
 
-	public RoundedBitmapDisplayer(int cornerRadiusPixels) {
-		this(cornerRadiusPixels, 0);
+	public CircleBitmapDisplayer() {
+		this(null);
 	}
 
-	public RoundedBitmapDisplayer(int cornerRadiusPixels, int marginPixels) {
-		this.cornerRadius = cornerRadiusPixels;
-		this.margin = marginPixels;
+	public CircleBitmapDisplayer(Integer strokeColor) {
+		this.strokeColor = strokeColor;
 	}
 
 	@Override
@@ -58,48 +62,56 @@ public class RoundedBitmapDisplayer implements BitmapDisplayer {
 			throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
 		}
 
-		imageAware.setImageDrawable(new RoundedDrawable(bitmap, cornerRadius, margin));
+		imageAware.setImageDrawable(new RoundedDrawable(bitmap, strokeColor));
 	}
 
 	public static class RoundedDrawable extends Drawable {
 
-		protected final float cornerRadius;
-		protected final int margin;
+		protected float radius;
 
 		protected final RectF mRect = new RectF(),
 				mBitmapRect;
 		protected final BitmapShader bitmapShader;
 		protected final Paint paint;
+		protected final Paint strokePaint;
 
-		public RoundedDrawable(Bitmap bitmap, int cornerRadius, int margin) {
-			this.cornerRadius = cornerRadius;
-			this.margin = margin;
+		public RoundedDrawable(Bitmap bitmap, Integer strokeColor) {
+			radius = Math.min(bitmap.getWidth(), bitmap.getHeight()) / 2;
 
 			bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-			mBitmapRect = new RectF (margin, margin, bitmap.getWidth() - margin, bitmap.getHeight() - margin);
+			mBitmapRect = new RectF (0, 0, bitmap.getWidth(), bitmap.getHeight());
 			
 			paint = new Paint();
 			paint.setAntiAlias(true);
 			paint.setShader(bitmapShader);
 			paint.setFilterBitmap(true);
 			paint.setDither(true);
+			if (strokeColor == null) strokePaint = null;
+			else {
+				strokePaint = new Paint();
+				strokePaint.setStyle(Paint.Style.STROKE);
+				strokePaint.setColor(strokeColor);
+				strokePaint.setStrokeWidth(0.0F);
+				strokePaint.setAntiAlias(true);
+			}
 		}
 
 		@Override
 		protected void onBoundsChange(Rect bounds) {
 			super.onBoundsChange(bounds);
-			mRect.set(margin, margin, bounds.width() - margin, bounds.height() - margin);
+			mRect.set(0, 0, bounds.width(), bounds.height());
+			radius = Math.min(bounds.width(), bounds.height()) / 2;
 			
 			// Resize the original bitmap to fit the new bound
 			Matrix shaderMatrix = new Matrix();
 			shaderMatrix.setRectToRect(mBitmapRect, mRect, Matrix.ScaleToFit.FILL);
 			bitmapShader.setLocalMatrix(shaderMatrix);
-			
 		}
 
 		@Override
 		public void draw(Canvas canvas) {
-			canvas.drawRoundRect(mRect, cornerRadius, cornerRadius, paint);
+			canvas.drawCircle(radius, radius, radius, paint);
+			if (strokePaint != null) canvas.drawCircle(radius, radius, radius, strokePaint);
 		}
 
 		@Override
