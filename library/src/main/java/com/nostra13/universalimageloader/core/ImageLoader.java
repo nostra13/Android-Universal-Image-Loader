@@ -21,6 +21,7 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -204,8 +205,8 @@ public class ImageLoader {
 	 * @throws IllegalArgumentException if passed <b>imageAware</b> is null
 	 */
 	public void displayImage(String uri, ImageAware imageAware, DisplayImageOptions options,
-							 ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
-		displayImage(uri,imageAware,options,null,listener,progressListener);
+			ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
+		displayImage(uri, imageAware, options, null, listener, progressListener);
 	}
 
 	/**
@@ -219,7 +220,7 @@ public class ImageLoader {
 	 *                         decoding and displaying. If <b>null</b> - default display image options
 	 *                         {@linkplain ImageLoaderConfiguration.Builder#defaultDisplayImageOptions(DisplayImageOptions)
 	 *                         from configuration} will be used.
-	 * @param targetImageSize 	   {@linkplain ImageSize} Image target size. If <b>null</b> - size will depend on the view
+	 * @param targetSize       {@linkplain ImageSize} Image target size. If <b>null</b> - size will depend on the view
 	 * @param listener         {@linkplain ImageLoadingListener Listener} for image loading process. Listener fires
 	 *                         events on UI thread if this method is called on UI thread.
 	 * @param progressListener {@linkplain com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener
@@ -231,8 +232,7 @@ public class ImageLoader {
 	 * @throws IllegalArgumentException if passed <b>imageAware</b> is null
 	 */
 	public void displayImage(String uri, ImageAware imageAware, DisplayImageOptions options,
-							 ImageSize targetImageSize,
-			ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
+			ImageSize targetSize, ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
 		checkConfiguration();
 		if (imageAware == null) {
 			throw new IllegalArgumentException(ERROR_WRONG_ARGUMENTS);
@@ -256,10 +256,7 @@ public class ImageLoader {
 			return;
 		}
 
-		ImageSize targetSize;
-		if (targetImageSize != null) {
-			targetSize = targetImageSize;
-		}else {
+		if (targetSize == null) {
 			targetSize = ImageSizeUtils.defineTargetSizeForView(imageAware, configuration.getMaxImageSize());
 		}
 		String memoryCacheKey = MemoryCacheUtils.generateKey(uri, targetSize);
@@ -333,6 +330,7 @@ public class ImageLoader {
 	public void displayImage(String uri, ImageView imageView, ImageSize targetImageSize) {
 		displayImage(uri, new ImageViewAware(imageView), null, targetImageSize, null, null);
 	}
+
 	/**
 	 * Adds display image task to execution pool. Image will be set to ImageView when it's turn.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
