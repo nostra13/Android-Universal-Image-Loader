@@ -27,8 +27,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
+
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.sample.Constants;
 import com.nostra13.universalimageloader.sample.R;
 import com.nostra13.universalimageloader.sample.activity.SimpleImageActivity;
@@ -82,6 +84,7 @@ public class ImageGalleryFragment extends BaseFragment {
 					.cacheOnDisk(true)
 					.considerExifParams(true)
 					.bitmapConfig(Bitmap.Config.RGB_565)
+					.displayer(new RoundedBitmapDisplayer(20))
 					.build();
 		}
 
