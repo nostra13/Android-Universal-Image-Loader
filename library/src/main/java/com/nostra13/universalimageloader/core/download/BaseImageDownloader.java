@@ -207,7 +207,7 @@ public class BaseImageDownloader implements ImageDownloader {
 	 * @return {@link InputStream} of image
 	 * @throws FileNotFoundException if the provided URI could not be opened
 	 */
-	protected InputStream getStreamFromContent(String imageUri, Object extra) throws FileNotFoundException {
+	protected InputStream getStreamFromContent(String imageUri, Object extra) throws IOException {
 		ContentResolver res = context.getContentResolver();
 
 		Uri uri = Uri.parse(imageUri);
