@@ -221,6 +221,8 @@ public class BaseImageDownloader implements ImageDownloader {
 			}
 		} else if (imageUri.startsWith(CONTENT_CONTACTS_URI_PREFIX)) { // contacts photo
 			return getContactPhotoStream(uri);
+		} else if (imageUri.startsWith(CONTENT_PHOTOS_URI_PREFIX) && imageUri.toString().contains("/ACTUAL")) { // get from google photos app
+	    		return getPhotosPhotoStream(imageUri);
 		}
 
 		return res.openInputStream(uri);
@@ -233,9 +235,7 @@ public class BaseImageDownloader implements ImageDownloader {
 			return ContactsContract.Contacts.openContactPhotoInputStream(res, uri, true);
 		} else {
 			return ContactsContract.Contacts.openContactPhotoInputStream(res, uri);
-		} else if (imageUri.startsWith(CONTENT_PHOTOS_URI_PREFIX) && imageUri.toString().contains("/ACTUAL")) { // get from google photos app
-	    		return getPhotosPhotoStream(imageUri);
-		}
+		} ]
 	}
 	
 	/**
