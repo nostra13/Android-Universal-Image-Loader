@@ -63,6 +63,7 @@ public class BaseImageDownloader implements ImageDownloader {
 	protected static final int MAX_REDIRECT_COUNT = 5;
 
 	protected static final String CONTENT_CONTACTS_URI_PREFIX = "content://com.android.contacts/";
+	protected static final String CONTENT_PHOTOS_URI_PREFIX = "content://com.google.android.apps.photos.contentprovider";
 
 	private static final String ERROR_UNSUPPORTED_SCHEME = "UIL doesn't support scheme(protocol) by default [%s]. " + "You should implement this support yourself (BaseImageDownloader.getStreamFromOtherSource(...))";
 
@@ -232,8 +233,39 @@ public class BaseImageDownloader implements ImageDownloader {
 			return ContactsContract.Contacts.openContactPhotoInputStream(res, uri, true);
 		} else {
 			return ContactsContract.Contacts.openContactPhotoInputStream(res, uri);
+		} else if (imageUri.startsWith(CONTENT_PHOTOS_URI_PREFIX) && imageUri.toString().contains("/ACTUAL")) { // get from google photos app
+	    		return getPhotosPhotoStream(imageUri);
 		}
 	}
+	
+	/**
+	 * fixing the content uri from google photo app
+	 * 
+	 *  @param uri uri that you get from google photo app
+	 */
+	protected InputStream getPhotosPhotoStream(String uri) throws IOException {
+	        Uri parsedUri;
+	        uri = uri.replace(CONTENT_PHOTOS_URI_PREFIX, "");
+	
+	        String[] parts = uri.split("/");
+	        if (parts.length > 4) {
+	            String finalString = "";
+	
+	            for(int i = 3 ; i < parts.length - 2 ; i ++){
+	                if(!finalString.isEmpty()){
+	                    finalString +="/";
+	                }
+	                finalString += parts[i];
+	            }
+	
+	            parsedUri = Uri.parse(URLDecoder.decode(finalString));
+	        }else{
+	            parsedUri = Uri.parse(uri);
+	            return context.getContentResolver().openInputStream(parsedUri);
+	        }
+	
+	        return getStream(parsedUri.toString(), null);
+	    }
 
 	/**
 	 * Retrieves {@link InputStream} of image by URI (image is located in assets of application).
