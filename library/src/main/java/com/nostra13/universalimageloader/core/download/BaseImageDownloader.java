@@ -235,7 +235,7 @@ public class BaseImageDownloader implements ImageDownloader {
 			return ContactsContract.Contacts.openContactPhotoInputStream(res, uri, true);
 		} else {
 			return ContactsContract.Contacts.openContactPhotoInputStream(res, uri);
-		} ]
+		}
 	}
 	
 	/**
