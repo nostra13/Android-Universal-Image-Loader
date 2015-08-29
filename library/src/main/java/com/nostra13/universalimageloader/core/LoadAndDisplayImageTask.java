@@ -48,7 +48,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @see ImageLoadingInfo
  * @since 1.3.1
  */
-final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
+public final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	private static final String LOG_WAITING_FOR_RESUME = "ImageLoader is paused. Waiting...  [%s]";
 	private static final String LOG_RESUME_AFTER_PAUSE = ".. Resume loading [%s]";
