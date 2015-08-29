@@ -456,7 +456,7 @@ public final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyList
 		return false;
 	}
 
-	String getLoadingUri() {
+	public String getLoadingUri() {
 		return uri;
 	}
 
