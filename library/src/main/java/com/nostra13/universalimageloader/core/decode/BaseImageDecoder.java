@@ -174,13 +174,15 @@ public class BaseImageDecoder implements ImageDecoder {
 	}
 
 	protected InputStream resetStream(InputStream imageStream, ImageDecodingInfo decodingInfo) throws IOException {
-		try {
-			imageStream.reset();
-		} catch (IOException e) {
-			IoUtils.closeSilently(imageStream);
-			imageStream = getImageStream(decodingInfo);
+		if (imageStream.markSupported()) {
+			try {
+				imageStream.reset();
+				return imageStream;
+			} catch (IOException ignored) {
+			}
 		}
-		return imageStream;
+		IoUtils.closeSilently(imageStream);
+		return getImageStream(decodingInfo);
 	}
 
 	protected Bitmap considerExactScaleAndOrientatiton(Bitmap subsampledBitmap, ImageDecodingInfo decodingInfo,
