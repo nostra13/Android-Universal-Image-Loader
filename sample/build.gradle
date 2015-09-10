@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.nostra13.universalimageloader"
         minSdkVersion 5
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 40
         versionName "1.9.5"
     }
@@ -19,8 +19,8 @@ android {
 
 dependencies {
     compile project(':library')
-    compile 'com.android.support:support-v4:22.2.0'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
+    compile 'com.android.support:support-v4:23.0.1'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
 }
 
 
