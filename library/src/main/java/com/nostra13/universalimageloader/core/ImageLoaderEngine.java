@@ -18,6 +18,7 @@ package com.nostra13.universalimageloader.core;
 import android.view.View;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
+import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
@@ -71,6 +72,13 @@ class ImageLoaderEngine {
 			public void run() {
 				File image = configuration.diskCache.get(task.getLoadingUri());
 				boolean isImageCachedOnDisk = image != null && image.exists();
+				if (!isImageCachedOnDisk) {
+					ImageDownloader.Scheme scheme = ImageDownloader.Scheme.ofUri(task.getLoadingUri());
+					isImageCachedOnDisk = scheme == ImageDownloader.Scheme.ASSETS
+							|| scheme == ImageDownloader.Scheme.CONTENT
+							|| scheme == ImageDownloader.Scheme.FILE
+							|| scheme == ImageDownloader.Scheme.DRAWABLE;
+				}
 				initExecutorsIfNeed();
 				if (isImageCachedOnDisk) {
 					taskExecutorForCachedImages.execute(task);
