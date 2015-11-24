@@ -208,12 +208,23 @@ public class ImageLoader {
 			ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
 		displayImage(uri, imageAware, options, null, listener, progressListener);
 	}
+	
+	
+	public void displayImage(String uri, ImageAware imageAware, DisplayImageOptions options,
+			ImageSize targetSize, ImageLoadingListener listener, ImageLoadingProgressListener progressListener){
+		displayImage( uri,  uri,  imageAware,  options,
+			 targetSize,  listener,  progressListener);		
+	} 
+	
 
 	/**
 	 * Adds display image task to execution pool. Image will be set to ImageAware when it's turn.<br />
 	 * <b>NOTE:</b> {@link #init(ImageLoaderConfiguration)} method must be called before this method call
 	 *
 	 * @param uri              Image URI (i.e. "http://site.com/image.png", "file:///mnt/sdcard/image.png")
+	 * 
+	 * @param key 		   Unique key rather than using URI, fix for services like S3
+	 * 
 	 * @param imageAware       {@linkplain com.nostra13.universalimageloader.core.imageaware.ImageAware Image aware view}
 	 *                         which should display image
 	 * @param options          {@linkplain com.nostra13.universalimageloader.core.DisplayImageOptions Options} for image
@@ -231,7 +242,7 @@ public class ImageLoader {
 	 * @throws IllegalStateException    if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 * @throws IllegalArgumentException if passed <b>imageAware</b> is null
 	 */
-	public void displayImage(String uri, ImageAware imageAware, DisplayImageOptions options,
+	public void displayImage(String uri, String key, ImageAware imageAware, DisplayImageOptions options,
 			ImageSize targetSize, ImageLoadingListener listener, ImageLoadingProgressListener progressListener) {
 		checkConfiguration();
 		if (imageAware == null) {
@@ -259,7 +270,7 @@ public class ImageLoader {
 		if (targetSize == null) {
 			targetSize = ImageSizeUtils.defineTargetSizeForView(imageAware, configuration.getMaxImageSize());
 		}
-		String memoryCacheKey = MemoryCacheUtils.generateKey(uri, targetSize);
+		String memoryCacheKey = MemoryCacheUtils.generateKey(key, targetSize);
 		engine.prepareDisplayTaskFor(imageAware, memoryCacheKey);
 
 		listener.onLoadingStarted(uri, imageAware.getWrappedView());
@@ -312,6 +323,7 @@ public class ImageLoader {
 	 * @throws IllegalStateException    if {@link #init(ImageLoaderConfiguration)} method wasn't called before
 	 * @throws IllegalArgumentException if passed <b>imageView</b> is null
 	 */
+	 
 	public void displayImage(String uri, ImageView imageView) {
 		displayImage(uri, new ImageViewAware(imageView), null, null, null);
 	}
