@@ -56,6 +56,8 @@ public final class ImageSizeUtils {
 			}else{
 				readBitMaxSizeWithEgl10();
 			}
+		}catch (RuntimeException e){
+			e.printStackTrace();
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -80,6 +82,7 @@ public final class ImageSizeUtils {
 		egl.eglChooseConfig(dpy, configAttr, configs, 1, numConfig);
 		if (numConfig[0] == 0) {
 			// TROUBLE! No config found.
+			return;
 		}
 		EGLConfig config = configs[0];
 
@@ -124,6 +127,7 @@ public final class ImageSizeUtils {
 				configs, 0, 1, numConfig, 0);
 		if (numConfig[0] == 0) {
 			// TROUBLE! No config found.
+			return;
 		}
 		android.opengl.EGLConfig config = configs[0];
 		int[] surfAttr = {
