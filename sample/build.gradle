@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 23
     buildToolsVersion "23.0.2"
 
     defaultConfig {
@@ -12,6 +12,7 @@ android {
         versionName "1.9.5"
     }
 
+    useLibrary 'org.apache.http.legacy'
     lintOptions {
         abortOnError false
     }
@@ -19,7 +20,7 @@ android {
 
 dependencies {
     compile project(':library')
-    compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.android.support:support-v4:23.1.1'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
 }
 
