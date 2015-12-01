@@ -1,4 +1,4 @@
-# ![Logo](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/sample/src/main/res/drawable-mdpi/ic_launcher.png) Universal Image Loader [![Build Status](https://travis-ci.org/nostra13/Android-Universal-Image-Loader.svg?branch=master)](https://travis-ci.org/nostra13/Android-Universal-Image-Loader) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.nostra13.universalimageloader/parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.nostra13.universalimageloader/parent)
+# ![Logo](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/sample/src/main/res/drawable-mdpi/ic_launcher.png) Universal Image Loader [![Build Status](https://travis-ci.org/nostra13/Android-Universal-Image-Loader.svg?branch=master)](https://travis-ci.org/nostra13/Android-Universal-Image-Loader) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.nostra13.universalimageloader/universal-image-loader/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.nostra13.universalimageloader/universal-image-loader)
 
 Android library **[#1](https://www.gitrep.com/search?utf8=✓&omni_search=&public_tags%5B%5D=android&description=&search=true&sort=star_count&commit=Search)** on GitHub.
 UIL aims to provide a powerful, flexible and highly customizable instrument for image loading, caching and displaying. It provides a lot of configuration options and good control over the image loading and caching process.
@@ -6,15 +6,9 @@ UIL aims to provide a powerful, flexible and highly customizable instrument for 
 ![Screenshot](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/UniversalImageLoader.png)
 
 ## Project News 
- * Really have no time for development but anyway UIL is still alive :)
- * 1.9.4 is last version deployed by Maven. Moving to Gradle deploy process...
-
-**Upcoming changes in new UIL version (1.9.5+)**
- * Memory Cache redesign
- * **New API:** `DisplayImageOptions.targetSize(ImageSize)`
- * HTTP cache support
- * Consider `BitmapFactory.Options.inBitmap`
- * Time-to-live option for files in LruDiskCache
+ * Really have no time for development... so I stop project maintaining since Nov 27 :(
+ * UIL [27.11.2011 - 27.11.2015]
+ * Thanks to all developers for your support :)
 
 ## Features
  * Multithread image loading (async or sync)
@@ -26,9 +20,8 @@ UIL aims to provide a powerful, flexible and highly customizable instrument for 
 Android 2.0+ support
 
 ## Downloads
- * **[universal-image-loader-1.9.4.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.4.jar)**
- * **[universal-image-loader-1.9.4-with-sources.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.4-with-sources.jar)** (for Eclipse)
- * [![Demo app](https://camo.githubusercontent.com/dc1ffe0e4d25c2c28a69423c3c78000ef7ee96bf/68747470733a2f2f646576656c6f7065722e616e64726f69642e636f6d2f696d616765732f6272616e642f656e5f6170705f7267625f776f5f34352e706e67)](https://play.google.com/store/apps/details?id=com.nostra13.universalimageloader.sample) [![QR Code](https://lh3.ggpht.com/csXEddxiLgQ6FxckefjQnP1PVugbaAYOdcuTa3vVtGV1PlWbFu2dYggoH8rI1w2RdEz1=w50)](http://chart.apis.google.com/chart?chs=300x300&cht=qr&chld=|1&chl=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.nostra13.universalimageloader.sample) [<img src="http://mobway.in/image/apk.png" height="45px" />](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.9.4.apk)
+ * **[universal-image-loader-1.9.5.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.5.jar)**
+ * [![Demo app](https://camo.githubusercontent.com/dc1ffe0e4d25c2c28a69423c3c78000ef7ee96bf/68747470733a2f2f646576656c6f7065722e616e64726f69642e636f6d2f696d616765732f6272616e642f656e5f6170705f7267625f776f5f34352e706e67)](https://play.google.com/store/apps/details?id=com.nostra13.universalimageloader.sample) [![QR Code](https://lh3.ggpht.com/csXEddxiLgQ6FxckefjQnP1PVugbaAYOdcuTa3vVtGV1PlWbFu2dYggoH8rI1w2RdEz1=w50)](http://chart.apis.google.com/chart?chs=300x300&cht=qr&chld=|1&chl=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.nostra13.universalimageloader.sample) [<img src="http://mobway.in/image/apk.png" height="45px" />](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.9.5.apk)
 
 ## [Documentation](https://github.com/nostra13/Android-Universal-Image-Loader/wiki)
  * **[Quick Setup](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Quick-Setup)**
@@ -137,8 +130,8 @@ You can support the project and thank the author for his hard work :)
 
  * [AndroidQuery : ImageLoading](https://code.google.com/p/android-query/wiki/ImageLoading)
  * [DroidParts : ImageFetcher](http://droidparts.org/image_fetcher.html)
- * [Glide](https://github.com/bumptech/glide)
  * [Fresco](https://github.com/facebook/fresco)
+ * [Glide](https://github.com/bumptech/glide)
  * [Picasso](https://github.com/square/picasso)
  * [UrlImageViewHelper](https://github.com/koush/UrlImageViewHelper)
  * [Volley : ImageLoader](https://android.googlesource.com/platform/frameworks/volley/)

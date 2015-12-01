@@ -1,6 +1,16 @@
 Change Log
 ===
 
+v1.9.5 *(27.11.2015)*
+---
+ * **New API:**
+   * `ImageLoader.displayImage(..., ImageSize targetImageSize, ...)`
+ * CircleBitmapDisplayer
+ * Better rendering of scaled images.
+ * Fixed bugs:
+   * inPurgeable and inInputShareable causes file descriptor leak on KitKat ([#1020](https://github.com/nostra13/Android-Universal-Image-Loader/issues/1020))
+   * markSupported() ([#1026](https://github.com/nostra13/Android-Universal-Image-Loader/issues/1026))
+
 v1.9.4 *(29.05.2015)*
 ---
  * **New API:**
