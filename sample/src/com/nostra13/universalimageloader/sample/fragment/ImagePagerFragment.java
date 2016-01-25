@@ -122,7 +122,10 @@ public class ImagePagerFragment extends BaseFragment {
 							message = "Unknown error";
 							break;
 					}
-					Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+					Activity activity = getActivity();
+					if (activity != null && !activity.isDestroyed()) {
+						Toast.makeText(activity, message,Toast.LENGTH_SHORT).show();
+					}
 
 					spinner.setVisibility(View.GONE);
 				}
