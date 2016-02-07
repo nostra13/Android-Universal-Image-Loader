@@ -249,7 +249,7 @@ public class ImageLoader {
 			listener.onLoadingStarted(uri, imageAware.getWrappedView());
 			if (options.shouldShowImageForEmptyUri()) {
 				imageAware.setImageDrawable(options.getImageForEmptyUri(configuration.resources));
-			} else {
+			} else if (options.isResetViewBeforeLoading()) {
 				imageAware.setImageDrawable(null);
 			}
 			listener.onLoadingComplete(uri, imageAware.getWrappedView(), null);
