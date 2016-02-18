@@ -19,6 +19,7 @@
 			android:textSize="24sp" />
 
 		<Button
+			android:textAllCaps="false"
 			android:layout_width="320dp"
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="10dip"
@@ -27,6 +28,7 @@
 			android:text="@string/button_image_list" />
 
 		<Button
+			android:textAllCaps="false"
 			android:layout_width="320dp"
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="10dip"
@@ -35,6 +37,7 @@
 			android:text="@string/button_image_grid" />
 
 		<Button
+			android:textAllCaps="false"
 			android:layout_width="320dp"
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="10dip"
@@ -43,6 +46,7 @@
 			android:text="@string/button_image_pager" />
 
 		<Button
+			android:textAllCaps="false"
 			android:layout_width="320dp"
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="10dip"
@@ -51,12 +55,22 @@
 			android:text="@string/button_image_gallery" />
 
 		<Button
+			android:textAllCaps="false"
 			android:layout_width="320dp"
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="10dip"
 			android:layout_marginRight="10dip"
 			android:onClick="onFragmentsClick"
 			android:text="@string/button_list_and_grid" />
+
+		<Button
+			android:textAllCaps="false"
+			android:layout_width="320dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="10dip"
+			android:layout_marginRight="10dip"
+			android:onClick="onLifecycleImageListClick"
+			android:text="@string/button_lifecycle" />
 	</LinearLayout>
 
 </ScrollView>

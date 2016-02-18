@@ -28,6 +28,7 @@ import com.nostra13.universalimageloader.sample.fragment.ImageGalleryFragment;
 import com.nostra13.universalimageloader.sample.fragment.ImageGridFragment;
 import com.nostra13.universalimageloader.sample.fragment.ImageListFragment;
 import com.nostra13.universalimageloader.sample.fragment.ImagePagerFragment;
+import com.nostra13.universalimageloader.sample.fragment.LifecycleImageListFragment;
 import com.nostra13.universalimageloader.utils.L;
 
 import java.io.File;
@@ -79,6 +80,12 @@ public class HomeActivity extends Activity {
 
 	public void onFragmentsClick(View view) {
 		Intent intent = new Intent(this, ComplexImageActivity.class);
+		startActivity(intent);
+	}
+
+	public void onLifecycleImageListClick(View view){
+		Intent intent = new Intent(this, SimpleImageActivity.class);
+		intent.putExtra(Constants.Extra.FRAGMENT_INDEX, LifecycleImageListFragment.INDEX);
 		startActivity(intent);
 	}
 

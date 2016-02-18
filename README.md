@@ -5,7 +5,8 @@ UIL aims to provide a powerful, flexible and highly customizable instrument for 
 
 ![Screenshot](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/UniversalImageLoader.png)
 
-## Project News 
+## Project News
+ * Support Activity/Fragment Lifecycle
  * Really have no time for development... so I stop project maintaining since Nov 27 :(
  * UIL [27.11.2011 - 27.11.2015]
  * Thanks to all developers for your support :)
@@ -112,6 +113,35 @@ imageLoader.loadImage(imageUri, targetSize, options, new SimpleImageLoadingListe
 ImageSize targetSize = new ImageSize(80, 50); // result Bitmap will be fit to this size
 Bitmap bmp = imageLoader.loadImageSync(imageUri, targetSize, options);
 ```
+
+## Support Activity/Fragment Lifecycle
+``` java
+
+	private static LifecycleHandler mHandler;
+	private DisplayImageOptions mOptions;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mHandler = new LifecycleHandler(Looper.getMainLooper());
+        mOptions = new DisplayImageOptions.Builder()
+                                .handler(mHandler)
+                                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mHandler.bind();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mHandler.unbind();
+    }
+```
+
 
 ## Load & Display Task Flow
 ![Task Flow](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/wiki/UIL_Flow.png)

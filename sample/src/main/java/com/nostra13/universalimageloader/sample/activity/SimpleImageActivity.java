@@ -24,6 +24,7 @@ import com.nostra13.universalimageloader.sample.fragment.ImageGalleryFragment;
 import com.nostra13.universalimageloader.sample.fragment.ImageGridFragment;
 import com.nostra13.universalimageloader.sample.fragment.ImageListFragment;
 import com.nostra13.universalimageloader.sample.fragment.ImagePagerFragment;
+import com.nostra13.universalimageloader.sample.fragment.LifecycleImageListFragment;
 
 /**
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
@@ -71,6 +72,14 @@ public class SimpleImageActivity extends FragmentActivity {
 					fr = new ImageGalleryFragment();
 				}
 				titleRes = R.string.ac_name_image_gallery;
+				break;
+			case LifecycleImageListFragment.INDEX:
+				tag = LifecycleImageListFragment.class.getSimpleName();
+				fr = getSupportFragmentManager().findFragmentByTag(tag);
+				if (fr == null) {
+					fr = new LifecycleImageListFragment();
+				}
+				titleRes = R.string.ac_name_lifecycle;
 				break;
 		}
 
