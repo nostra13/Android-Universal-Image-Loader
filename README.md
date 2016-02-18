@@ -116,7 +116,6 @@ Bitmap bmp = imageLoader.loadImageSync(imageUri, targetSize, options);
 
 ### Support Activity/Fragment Lifecycle
 ``` java
-
 	private static LifecycleHandler mHandler;
 	private DisplayImageOptions mOptions;
 
