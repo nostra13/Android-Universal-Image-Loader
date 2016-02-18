@@ -114,7 +114,7 @@ ImageSize targetSize = new ImageSize(80, 50); // result Bitmap will be fit to th
 Bitmap bmp = imageLoader.loadImageSync(imageUri, targetSize, options);
 ```
 
-## Support Activity/Fragment Lifecycle
+### Support Activity/Fragment Lifecycle
 ``` java
 
 	private static LifecycleHandler mHandler;
