@@ -20,6 +20,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.os.Looper;
+
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
@@ -481,6 +483,9 @@ public final class DisplayImageOptions {
 
 		/** Builds configured {@link DisplayImageOptions} object */
 		public DisplayImageOptions build() {
+			if (null == handler) {
+				handler = new Handler(Looper.getMainLooper());
+			}
 			return new DisplayImageOptions(this);
 		}
 	}

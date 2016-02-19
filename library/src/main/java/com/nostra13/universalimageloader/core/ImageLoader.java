@@ -16,8 +16,6 @@
 package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -272,16 +270,18 @@ public class ImageLoader {
 				ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageAware, targetSize, memoryCacheKey,
 						options, listener, progressListener, engine.getLockForUri(uri));
 				ProcessAndDisplayImageTask displayTask = new ProcessAndDisplayImageTask(engine, bmp, imageLoadingInfo,
-						defineHandler(options));
+                        options.getHandler());
 				if (options.isSyncLoading()) {
 					displayTask.run();
 				} else {
 					engine.submit(displayTask);
 				}
 			} else {
-				options.getDisplayer().display(bmp, imageAware, LoadedFrom.MEMORY_CACHE);
-				listener.onLoadingComplete(uri, imageAware.getWrappedView(), bmp);
-			}
+                ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageAware, targetSize, memoryCacheKey,
+                        options, listener, progressListener, engine.getLockForUri(uri));
+                DisplayBitmapTask displayTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine, LoadedFrom.MEMORY_CACHE);
+                DisplayBitmapTask.runTask(displayTask, options.isSyncLoading(), options.getHandler(), engine);
+            }
 		} else {
 			if (options.shouldShowImageOnLoading()) {
 				imageAware.setImageDrawable(options.getImageOnLoading(configuration.resources));
@@ -292,7 +292,7 @@ public class ImageLoader {
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageAware, targetSize, memoryCacheKey,
 					options, listener, progressListener, engine.getLockForUri(uri));
 			LoadAndDisplayImageTask displayTask = new LoadAndDisplayImageTask(engine, imageLoadingInfo,
-					defineHandler(options));
+                    options.getHandler());
 			if (options.isSyncLoading()) {
 				displayTask.run();
 			} else {
@@ -781,23 +781,13 @@ public class ImageLoader {
 		configuration = null;
 	}
 
-	private static Handler defineHandler(DisplayImageOptions options) {
-		Handler handler = options.getHandler();
-		if (options.isSyncLoading()) {
-			handler = null;
-		} else if (handler == null && Looper.myLooper() == Looper.getMainLooper()) {
-			handler = new Handler();
-		}
-		return handler;
-	}
-
-	/**
-	 * Listener which is designed for synchronous image loading.
-	 *
-	 * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
-	 * @since 1.9.0
-	 */
-	private static class SyncImageLoadingListener extends SimpleImageLoadingListener {
+    /**
+     * Listener which is designed for synchronous image loading.
+     *
+     * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+     * @since 1.9.0
+     */
+    private static class SyncImageLoadingListener extends SimpleImageLoadingListener {
 
 		private Bitmap loadedImage;
 

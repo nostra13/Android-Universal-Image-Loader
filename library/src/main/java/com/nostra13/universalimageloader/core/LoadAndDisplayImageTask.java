@@ -172,9 +172,9 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 			loadFromUriLock.unlock();
 		}
 
-		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine, loadedFrom);
-		runTask(displayBitmapTask, syncLoading, handler, engine);
-	}
+        DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo, engine, loadedFrom);
+        DisplayBitmapTask.runTask(displayBitmapTask, syncLoading, handler, engine);
+    }
 
 	/** @return <b>true</b> - if task should be interrupted; <b>false</b> - otherwise */
 	private boolean waitIfPaused() {
@@ -346,7 +346,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 					progressListener.onProgressUpdate(uri, imageAware.getWrappedView(), current, total);
 				}
 			};
-			runTask(r, false, handler, engine);
+            DisplayBitmapTask.runTask(r, false, handler, engine);
 		}
 		return true;
 	}
@@ -362,7 +362,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 				listener.onLoadingFailed(uri, imageAware.getWrappedView(), new FailReason(failType, failCause));
 			}
 		};
-		runTask(r, false, handler, engine);
+        DisplayBitmapTask.runTask(r, false, handler, engine);
 	}
 
 	private void fireCancelEvent() {
@@ -373,7 +373,7 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 				listener.onLoadingCancelled(uri, imageAware.getWrappedView());
 			}
 		};
-		runTask(r, false, handler, engine);
+        DisplayBitmapTask.runTask(r, false, handler, engine);
 	}
 
 	private ImageDownloader getDownloader() {
@@ -460,16 +460,6 @@ final class LoadAndDisplayImageTask implements Runnable, IoUtils.CopyListener {
 
 	String getLoadingUri() {
 		return uri;
-	}
-
-	static void runTask(Runnable r, boolean sync, Handler handler, ImageLoaderEngine engine) {
-		if (sync) {
-			r.run();
-		} else if (handler == null) {
-			engine.fireCallback(r);
-		} else {
-			handler.post(r);
-		}
 	}
 
 	/**

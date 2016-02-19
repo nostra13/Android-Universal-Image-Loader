@@ -35,6 +35,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.CircleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.lifecycle.LifecycleHandler;
+import com.nostra13.universalimageloader.core.lifecycle.LifecycleObservable;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.sample.Constants;
@@ -52,24 +53,35 @@ public class LifecycleImageListFragment extends AbsListViewBaseFragment {
 
     public static final int INDEX = 4;
 
+    private LifecycleObservable mObservable;
     private static LifecycleHandler mHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mObservable = new LifecycleObservable();
         mHandler = new LifecycleHandler(Looper.getMainLooper());
+        mObservable.addObserver(mHandler);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mHandler.bind();
+        mObservable.bind();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mHandler.unbind();
+        mObservable.unbind();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mObservable.clear();
+        mHandler.removeCallbacksAndMessages(null);
+        AnimateFirstDisplayListener.displayedImages.clear();
     }
 
     @Override
@@ -84,13 +96,6 @@ public class LifecycleImageListFragment extends AbsListViewBaseFragment {
             }
         });
         return rootView;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mHandler.removeCallbacksAndMessages(null);
-        AnimateFirstDisplayListener.displayedImages.clear();
     }
 
     private static class ImageAdapter extends BaseAdapter {

@@ -16,6 +16,8 @@
 package com.nostra13.universalimageloader.core;
 
 import android.graphics.Bitmap;
+import android.os.Handler;
+
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
@@ -78,4 +80,14 @@ final class DisplayBitmapTask implements Runnable {
 		String currentCacheKey = engine.getLoadingUriForView(imageAware);
 		return !memoryCacheKey.equals(currentCacheKey);
 	}
+
+    static void runTask(Runnable r, boolean sync, Handler handler, ImageLoaderEngine engine) {
+        if (sync) {
+            r.run();
+        } else if (handler == null) {
+            engine.fireCallback(r);
+        } else {
+            handler.post(r);
+        }
+    }
 }
