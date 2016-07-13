@@ -23,6 +23,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.ResponseBody;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -47,6 +48,6 @@ public class OkHttpImageDownloader extends BaseImageDownloader {
 		ResponseBody responseBody = client.newCall(request).execute().body();
 		InputStream inputStream = responseBody.byteStream();
 		int contentLength = (int) responseBody.contentLength();
-		return new ContentLengthInputStream(inputStream, contentLength);
+		return new ContentLengthInputStream(new BufferedInputStream(inputStream, BUFFER_SIZE), contentLength);
 	}
 }

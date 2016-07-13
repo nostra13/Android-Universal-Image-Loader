@@ -22,6 +22,7 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.nostra13.universalimageloader.core.download.ImageDownloader.Scheme;
 import com.nostra13.universalimageloader.utils.ImageSizeUtils;
 import com.nostra13.universalimageloader.utils.IoUtils;
@@ -77,6 +78,7 @@ public class BaseImageDecoder implements ImageDecoder {
 			return null;
 		}
 		try {
+			imageStream.mark(BaseImageDownloader.BUFFER_SIZE);
 			imageInfo = defineImageSizeAndRotation(imageStream, decodingInfo);
 			imageStream = resetStream(imageStream, decodingInfo);
 			Options decodingOptions = prepareDecodingOptions(imageInfo.imageSize, decodingInfo);

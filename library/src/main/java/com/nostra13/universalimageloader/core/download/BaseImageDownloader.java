@@ -56,7 +56,7 @@ public class BaseImageDownloader implements ImageDownloader {
 	public static final int DEFAULT_HTTP_READ_TIMEOUT = 20 * 1000; // milliseconds
 
 	/** {@value} */
-	protected static final int BUFFER_SIZE = 32 * 1024; // 32 Kb
+	public static final int BUFFER_SIZE = 32 * 1024; // 32 Kb
 	/** {@value} */
 	protected static final String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
 
