@@ -765,7 +765,9 @@ public class ImageLoader {
 	 * ImageLoader still can be used after calling this method.
 	 */
 	public void stop() {
-		engine.stop();
+		if (engine != null) {
+			engine.stop();
+		}
 	}
 
 	/**
@@ -774,11 +776,13 @@ public class ImageLoader {
 	 * method.
 	 */
 	public void destroy() {
-		if (configuration != null) L.d(LOG_DESTROY);
-		stop();
-		configuration.diskCache.close();
-		engine = null;
-		configuration = null;
+		if (isInited()) {
+			L.d(LOG_DESTROY);
+			stop();
+			configuration.diskCache.close();
+			engine = null;
+			configuration = null;
+		}
 	}
 
 	private static Handler defineHandler(DisplayImageOptions options) {
