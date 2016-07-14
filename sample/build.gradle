@@ -10,6 +10,9 @@ android {
         targetSdkVersion 24
         versionCode 40
         versionName "1.9.5"
+        jackOptions {
+            enabled true
+        }
     }
 
     useLibrary 'org.apache.http.legacy'
