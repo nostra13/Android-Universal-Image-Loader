@@ -23,6 +23,23 @@ Android 2.0+ support
  * **[universal-image-loader-1.9.5.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.5.jar)**
  * [<img src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge.png" height="45px" />](https://play.google.com/store/apps/details?id=com.nostra13.universalimageloader.sample) [![QR Code](https://lh3.ggpht.com/csXEddxiLgQ6FxckefjQnP1PVugbaAYOdcuTa3vVtGV1PlWbFu2dYggoH8rI1w2RdEz1=w50)](http://chart.apis.google.com/chart?chs=300x300&cht=qr&chld=|1&chl=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.nostra13.universalimageloader.sample) [<img src="http://mobway.in/image/apk.png" height="45px" />](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-sample-1.9.5.apk)
 
+### Snapshots
+
+You can install the latest snapshot using [JitPack](https://jitpack.io/#nostra13/Android-Universal-Image-Loader):
+
+```gradle
+repositories {
+	// ...
+	maven { url "https://jitpack.io" }
+}
+```
+and by specifying `-SNAPSHOT` as the version:
+```gradle
+dependencies {
+	compile 'com.github.nostra13:Android-Universal-Image-Loader:-SNAPSHOT'
+}
+```
+
 ## [Documentation](https://github.com/nostra13/Android-Universal-Image-Loader/wiki)
  * **[Quick Setup](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Quick-Setup)**
  * **[Configuration](https://github.com/nostra13/Android-Universal-Image-Loader/wiki/Configuration)**
