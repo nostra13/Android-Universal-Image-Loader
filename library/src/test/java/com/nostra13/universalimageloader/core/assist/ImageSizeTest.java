@@ -89,39 +89,39 @@ public class ImageSizeTest {
 		final ViewScaleType scaleType = ViewScaleType.FIT_INSIDE;
 		int result;
 
-		ImageSize srcSize = new ImageSize(300, 100);
+		ImageSize imageSize = new ImageSize(300, 100);
 		ImageSize targetSize = new ImageSize(30, 10);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, false);
 		Assertions.assertThat(result).isEqualTo(10);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(8);
 
-		srcSize = new ImageSize(300, 100);
+		imageSize = new ImageSize(300, 100);
 		targetSize = new ImageSize(200, 200);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, false);
 		Assertions.assertThat(result).isEqualTo(1);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(1);
 
-		srcSize = new ImageSize(300, 100);
+		imageSize = new ImageSize(300, 100);
 		targetSize = new ImageSize(55, 40);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, false);
 		Assertions.assertThat(result).isEqualTo(5);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(4);
 
-		srcSize = new ImageSize(300, 100);
+		imageSize = new ImageSize(300, 100);
 		targetSize = new ImageSize(30, 40);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, false);
 		Assertions.assertThat(result).isEqualTo(10);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(8);
 
-		srcSize = new ImageSize(5000, 70);
+		imageSize = new ImageSize(5000, 70);
 		targetSize = new ImageSize(2000, 30);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, false);
 		Assertions.assertThat(result).isEqualTo(3);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(4);
 	}
 
@@ -130,39 +130,39 @@ public class ImageSizeTest {
 		final ViewScaleType scaleType = ViewScaleType.CROP;
 		int result;
 
-		ImageSize srcSize = new ImageSize(300, 100);
+		ImageSize imageSize = new ImageSize(300, 100);
 		ImageSize targetSize = new ImageSize(30, 10);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, false);
 		Assertions.assertThat(result).isEqualTo(10);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(8);
 
-		srcSize = new ImageSize(300, 100);
+		imageSize = new ImageSize(300, 100);
 		targetSize = new ImageSize(200, 200);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, false);
 		Assertions.assertThat(result).isEqualTo(1);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(1);
 
-		srcSize = new ImageSize(300, 100);
+		imageSize = new ImageSize(300, 100);
 		targetSize = new ImageSize(55, 40);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, false);
 		Assertions.assertThat(result).isEqualTo(2);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(2);
 
-		srcSize = new ImageSize(300, 100);
+		imageSize = new ImageSize(300, 100);
 		targetSize = new ImageSize(30, 30);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, false);
 		Assertions.assertThat(result).isEqualTo(3);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(2);
 
-		srcSize = new ImageSize(5000, 70);
+		imageSize = new ImageSize(5000, 70);
 		targetSize = new ImageSize(300, 30);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, false);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, false);
 		Assertions.assertThat(result).isEqualTo(3);
-		result = ImageSizeUtils.computeImageSampleSize(srcSize, targetSize, scaleType, true);
+		result = ImageSizeUtils.computeImageSampleSize(imageSize, targetSize, scaleType, true);
 		Assertions.assertThat(result).isEqualTo(4);
 	}
 

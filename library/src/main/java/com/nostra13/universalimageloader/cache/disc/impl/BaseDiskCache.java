@@ -156,8 +156,8 @@ public abstract class BaseDiskCache implements DiskCache {
 	public void clear() {
 		File[] files = cacheDir.listFiles();
 		if (files != null) {
-			for (File f : files) {
-				f.delete();
+			for (File file : files) {
+				file.delete();
 			}
 		}
 	}
