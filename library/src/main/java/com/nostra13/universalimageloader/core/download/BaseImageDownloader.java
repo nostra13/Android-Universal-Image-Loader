@@ -26,8 +26,10 @@ import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
+
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
+import com.nostra13.universalimageloader.utils.Base64;
 import com.nostra13.universalimageloader.utils.IoUtils;
 
 import java.io.BufferedInputStream;
@@ -47,6 +49,7 @@ import java.net.URLConnection;
  * {@link URLConnection} is used to retrieve image stream from network.
  *
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @author Leo Link (mr[dot]leolink[at]gmail[dot]com)
  * @since 1.8.0
  */
 public class BaseImageDownloader implements ImageDownloader {
@@ -94,6 +97,8 @@ public class BaseImageDownloader implements ImageDownloader {
 				return getStreamFromAssets(imageUri, extra);
 			case DRAWABLE:
 				return getStreamFromDrawable(imageUri, extra);
+			case BASE64:
+				return getStreamFromBase64(imageUri, extra);
 			case UNKNOWN:
 			default:
 				return getStreamFromOtherSource(imageUri, extra);
@@ -261,6 +266,19 @@ public class BaseImageDownloader implements ImageDownloader {
 		String drawableIdString = Scheme.DRAWABLE.crop(imageUri);
 		int drawableId = Integer.parseInt(drawableIdString);
 		return context.getResources().openRawResource(drawableId);
+	}
+
+    /**
+	 * Retrieves {@link InputStream} of a {@link android.util.Base64}-encoded string.
+	 *
+	 * @param imageUri {@link android.util.Base64}-encoded string
+	 * @param extra    Auxiliary object which was passed to {@link DisplayImageOptions.Builder#extraForDownloader(Object)
+	 *                 DisplayImageOptions.extraForDownloader(Object)}; can be null
+	 * @return {@link InputStream} of image
+	 */
+	protected InputStream getStreamFromBase64(String imageUri, Object extra) {
+		String base64 = imageUri.substring(imageUri.indexOf("base64,") + 7);
+		return new ByteArrayInputStream(Base64.decode(base64, Base64.DEFAULT));
 	}
 
 	/**
