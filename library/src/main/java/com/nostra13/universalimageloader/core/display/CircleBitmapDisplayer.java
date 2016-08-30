@@ -82,10 +82,14 @@ public class CircleBitmapDisplayer implements BitmapDisplayer {
 		protected float strokeRadius;
 
 		public CircleDrawable(Bitmap bitmap, Integer strokeColor, float strokeWidth) {
-			radius = Math.min(bitmap.getWidth(), bitmap.getHeight()) / 2;
+			int diameter = Math.min(bitmap.getWidth(), bitmap.getHeight());
+			radius = diameter / 2f;
 
 			bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-			mBitmapRect = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+			float left = (bitmap.getWidth() - diameter) / 2f;
+			float top = (bitmap.getHeight() - diameter) / 2f;
+			mBitmapRect = new RectF(left, top, diameter, diameter);
 
 			paint = new Paint();
 			paint.setAntiAlias(true);
