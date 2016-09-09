@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ContentLengthInputStream;
@@ -38,9 +39,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 
 /**
  * Provides retrieving of {@link InputStream} of image by URI from network or file system or app resources.<br />
@@ -286,7 +289,13 @@ public class BaseImageDownloader implements ImageDownloader {
 	}
 
 	private boolean isVideoFileUri(String uri) {
-		String extension = MimeTypeMap.getFileExtensionFromUrl(uri);
+		String encodedUri;
+		try {
+			encodedUri = URLEncoder.encode(uri, "UTF-8").replace("+", "%20");
+		} catch(UnsupportedEncodingException e) {
+			encodedUri = uri;
+		}
+		String extension = MimeTypeMap.getFileExtensionFromUrl(encodedUri);
 		String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 		return mimeType != null && mimeType.startsWith("video/");
 	}
