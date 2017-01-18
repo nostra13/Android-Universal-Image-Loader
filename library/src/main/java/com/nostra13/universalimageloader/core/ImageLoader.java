@@ -285,7 +285,7 @@ public class ImageLoader {
                 options.getDisplayer().display(bmp, imageAware, LoadedFrom.MEMORY_CACHE);
                 View WrappedView = imageAware.getWrappedView();
                 if (WrappedView != null) {
-                    WrappedView.setTag(R.id.imageloader_img_id, memoryCacheKey);
+                    WrappedView.setTag(R.id.imageloader_img_id, uri);
                 }
                 listener.onLoadingComplete(uri, imageAware.getWrappedView(), bmp);
             }

@@ -22,7 +22,6 @@ import com.nostra13.universalimageloader.R;
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
-import com.nostra13.universalimageloader.core.imageaware.ViewAware;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -75,7 +74,7 @@ final class DisplayBitmapTask implements Runnable {
             displayer.display(bitmap, imageAware, loadedFrom);
             View WrappedView = imageAware.getWrappedView();
             if (WrappedView != null) {
-                WrappedView.setTag(R.id.imageloader_img_id, memoryCacheKey);
+                WrappedView.setTag(R.id.imageloader_img_id, imageUri);
             }
             engine.cancelDisplayTaskFor(imageAware);
             listener.onLoadingComplete(imageUri, imageAware.getWrappedView(), bitmap);

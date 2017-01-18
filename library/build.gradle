@@ -3,17 +3,17 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 23
     buildToolsVersion "24.0.2"
-
     defaultConfig {
         minSdkVersion 5
         targetSdkVersion 22
         versionCode 41
-        versionName "1.9.6"
+        versionName "1.9.6-SNAPSHOT"
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
         targetCompatibility JavaVersion.VERSION_1_6
+    }
+    productFlavors {
     }
 }
 
@@ -22,7 +22,6 @@ dependencies {
     testCompile 'org.robolectric:robolectric:3.0-rc3'
     testCompile 'com.squareup.assertj:assertj-android:1.0.0'
 }
-
 
 // build a jar with source files
 task sourcesJar(type: Jar) {
@@ -42,4 +41,5 @@ android.libraryVariants.all { variant ->
     artifacts.add('archives', task);
 }
 
-apply from: '../gradle/maven_push.gradle'
+//apply from: '../gradle/maven_push.gradle'
+apply from: '../gradle/maven_me.gradle'
