@@ -47,6 +47,12 @@ Android 2.0+ support
 **NOTE:** Use `drawable://` only if you really need it! Always **consider the native way** to load drawables - `ImageView.setImageResource(...)` instead of using of `ImageLoader`.
 
 ### Simple
+Add this to your app `build.gradle`:
+
+```
+compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+```
+
 ``` java
 ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
 ```
