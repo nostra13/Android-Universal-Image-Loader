@@ -36,11 +36,11 @@ import java.io.OutputStream;
  * @since 1.0.0
  */
 public abstract class BaseDiskCache implements DiskCache {
-	/** {@value */
+	/** {@value} */
 	public static final int DEFAULT_BUFFER_SIZE = 32 * 1024; // 32 Kb
-	/** {@value */
+	/** {@value} */
 	public static final Bitmap.CompressFormat DEFAULT_COMPRESS_FORMAT = Bitmap.CompressFormat.PNG;
-	/** {@value */
+	/** {@value} */
 	public static final int DEFAULT_COMPRESS_QUALITY = 100;
 
 	private static final String ERROR_ARG_NULL = " argument must be not null";
