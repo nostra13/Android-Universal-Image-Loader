@@ -70,7 +70,12 @@ imageLoader.loadImage(imageUri, new SimpleImageLoadingListener() {
 	}
 });
 ```
+## Synchronous
 ``` java
+// Instantiate with default configurations
+ImageLoaderConfiguration imageLoaderConfiguration = ImageLoaderConfiguration.createDefault(this);
+imageLoader.init(imageLoaderConfiguration);
+
 // Load image, decode it to Bitmap and return Bitmap synchronously
 Bitmap bmp = imageLoader.loadImageSync(imageUri);
 ```
