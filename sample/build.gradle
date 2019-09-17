@@ -1,33 +1,44 @@
-buildscript {
-    repositories {
-        mavenCentral()
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+
+    defaultConfig {
+        applicationId "com.nostra13.universalimageloader"
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode 40
+        versionName "1.9.5"
     }
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.+'
+    useLibrary 'org.apache.http.legacy'
+    lintOptions {
+        abortOnError false
     }
-}
-
-
-apply plugin: 'android'
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    implementation project(':library')
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.squareup.okhttp:okhttp:2.4.0'
 }
 
-android {
-    compileSdkVersion 16
-    buildToolsVersion "18.1"
 
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            res.srcDirs = ['res']
-        }
+File propFile = file('signing.properties');
+if (propFile.exists()) {
+    def Properties props = new Properties()
+    props.load(new FileInputStream(propFile))
+
+    if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+        android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
+        android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
+        android.signingConfigs.release.keyAlias = props['KEY_ALIAS']
+        android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
+    } else {
+        android.buildTypes.release.signingConfig = null
     }
+} else {
+    android.buildTypes.release.signingConfig = null
 }
