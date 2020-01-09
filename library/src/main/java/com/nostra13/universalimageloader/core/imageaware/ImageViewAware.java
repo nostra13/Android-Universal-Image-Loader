@@ -78,10 +78,10 @@ public class ImageViewAware extends ViewAware {
 			ImageView imageView = (ImageView) viewRef.get();
 			if (imageView != null) {
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    width = imageView.getMaxWidth();
-			    } else {
-                    width = getImageViewFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
-                }
+					width = imageView.getMaxWidth();
+				} else {
+					width = getImageViewFieldValue(imageView, "mMaxWidth"); // Check maxWidth parameter
+				}
 			}
 		}
 		return width;
