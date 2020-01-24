@@ -53,6 +53,12 @@ implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 **NOTE:** Use `drawable://` only if you really need it! Always **consider the native way** to load drawables - `ImageView.setImageResource(...)` instead of using of `ImageLoader`.
 
 ### Simple
+
+**Initialize ImageLoader instance on oncreate**
+```java
+ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(MyActivity.this));
+```
+
 ``` java
 ImageLoader imageLoader = ImageLoader.getInstance(); // Get singleton instance
 ```
