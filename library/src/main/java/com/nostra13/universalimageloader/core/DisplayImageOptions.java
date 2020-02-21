@@ -351,13 +351,7 @@ public final class DisplayImageOptions {
 		 * Sets whether loaded image will be cached on disk
 		 *
 		 * @deprecated Use {@link #cacheOnDisk(boolean)} instead
-		 */
-		@Deprecated
-		public Builder cacheOnDisc(boolean cacheOnDisk) {
-			return cacheOnDisk(cacheOnDisk);
-		}
-
-		/** Sets whether loaded image will be cached on disk */
+		 */		
 		public Builder cacheOnDisk(boolean cacheOnDisk) {
 			this.cacheOnDisk = cacheOnDisk;
 			return this;
