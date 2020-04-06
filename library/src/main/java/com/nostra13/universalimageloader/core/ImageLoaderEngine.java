@@ -31,6 +31,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.nostra13.universalimageloader.core.download.ImageDownloader.*;
+
 /**
  * {@link ImageLoader} engine which responsible for {@linkplain LoadAndDisplayImageTask display task} execution.
  *
@@ -70,7 +72,8 @@ class ImageLoaderEngine {
 			@Override
 			public void run() {
 				File image = configuration.diskCache.get(task.getLoadingUri());
-				boolean isImageCachedOnDisk = image != null && image.exists();
+				boolean isImageCachedOnDisk = image != null && image.exists()
+						|| isLocalUri(task.getLoadingUri());
 				initExecutorsIfNeed();
 				if (isImageCachedOnDisk) {
 					taskExecutorForCachedImages.execute(task);
@@ -85,6 +88,11 @@ class ImageLoaderEngine {
 	void submit(ProcessAndDisplayImageTask task) {
 		initExecutorsIfNeed();
 		taskExecutorForCachedImages.execute(task);
+	}
+
+	private boolean isLocalUri(String uri) {
+		Scheme scheme = Scheme.ofUri(uri);
+		return scheme == Scheme.ASSETS || scheme == Scheme.FILE || scheme == Scheme.DRAWABLE;
 	}
 
 	private void initExecutorsIfNeed() {
