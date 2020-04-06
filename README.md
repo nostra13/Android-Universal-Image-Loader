@@ -1,6 +1,6 @@
 # ![Logo](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/sample/src/main/res/drawable-mdpi/ic_launcher.png) Universal Image Loader [![Build Status](https://travis-ci.org/nostra13/Android-Universal-Image-Loader.svg?branch=master)](https://travis-ci.org/nostra13/Android-Universal-Image-Loader) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.nostra13.universalimageloader/universal-image-loader/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.nostra13.universalimageloader/universal-image-loader)
 
-Android library **[#1](https://www.gitrep.com/search?utf8=✓&omni_search=&public_tags%5B%5D=android&description=&search=true&sort=star_count&commit=Search)** on GitHub.
+The great ancestor of modern image-loading libraries :)  
 UIL aims to provide a powerful, flexible and highly customizable instrument for image loading, caching and displaying. It provides a lot of configuration options and good control over the image loading and caching process.
 
 ![Screenshot](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/UniversalImageLoader.png)
@@ -11,13 +11,13 @@ UIL aims to provide a powerful, flexible and highly customizable instrument for 
  * Thanks to all developers for your support :)
 
 ## Features
- * Multithread image loading (async or sync)
+ * Multi-thread image loading (async or sync)
  * Wide customization of ImageLoader's configuration (thread executors, downloader, decoder, memory and disk cache, display image options, etc.)
  * Many customization options for every display image call (stub images, caching switch, decoding options, Bitmap processing and displaying, etc.)
  * Image caching in memory and/or on disk (device's file system or SD card)
  * Listening loading process (including downloading progress)
 
-Android 2.0+ support
+Android 4.1+ support
 
 ## Downloads
  * **[universal-image-loader-1.9.5.jar](https://github.com/nostra13/Android-Universal-Image-Loader/raw/master/downloads/universal-image-loader-1.9.5.jar)**
@@ -133,12 +133,9 @@ You can support the project and thank the author for his hard work :)
 
 ## Alternative libraries
 
- * [AndroidQuery : ImageLoading](https://code.google.com/p/android-query/wiki/ImageLoading)
- * [DroidParts : ImageFetcher](http://droidparts.org/image_fetcher.html)
  * [Fresco](https://github.com/facebook/fresco)
  * [Glide](https://github.com/bumptech/glide)
  * [Picasso](https://github.com/square/picasso)
- * [UrlImageViewHelper](https://github.com/koush/UrlImageViewHelper)
  * [Volley : ImageLoader](https://android.googlesource.com/platform/frameworks/volley/)
 
 ## License
