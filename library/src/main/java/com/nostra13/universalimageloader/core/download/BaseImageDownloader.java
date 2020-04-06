@@ -286,7 +286,7 @@ public class BaseImageDownloader implements ImageDownloader {
 	}
 
 	private boolean isVideoFileUri(String uri) {
-		String extension = MimeTypeMap.getFileExtensionFromUrl(uri);
+		String extension = MimeTypeMap.getFileExtensionFromUrl(Uri.encode(uri));
 		String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 		return mimeType != null && mimeType.startsWith("video/");
 	}
