@@ -749,12 +749,20 @@ public class ImageLoader {
 	 * Already running tasks are not paused.
 	 */
 	public void pause() {
-		engine.pause();
+		if (isInited()) {
+			engine.pause();
+		} else {
+			L.w("Trying to pause not-initialized ImageLoader");
+		}
 	}
 
 	/** Resumes waiting "load&display" tasks */
 	public void resume() {
-		engine.resume();
+		if (isInited()) {
+			engine.resume();
+		} else {
+			L.w("Trying to resume not-initialized ImageLoader");
+		}
 	}
 
 	/**
@@ -765,7 +773,11 @@ public class ImageLoader {
 	 * ImageLoader still can be used after calling this method.
 	 */
 	public void stop() {
-		engine.stop();
+		if (isInited()) {
+			engine.stop();
+		} else {
+			L.w("Trying to stop not-initialized ImageLoader");
+		}
 	}
 
 	/**
@@ -774,11 +786,15 @@ public class ImageLoader {
 	 * method.
 	 */
 	public void destroy() {
-		if (configuration != null) L.d(LOG_DESTROY);
-		stop();
-		configuration.diskCache.close();
-		engine = null;
-		configuration = null;
+		if (isInited()) {
+			L.d(LOG_DESTROY);
+			stop();
+			configuration.diskCache.close();
+			engine = null;
+			configuration = null;
+		} else {
+			L.w("Trying to destroy not-initialized ImageLoader");
+		}
 	}
 
 	private static Handler defineHandler(DisplayImageOptions options) {
