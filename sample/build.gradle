@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.nostra13.universalimageloader"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 40
         versionName "1.9.5"
