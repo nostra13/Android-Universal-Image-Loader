@@ -124,7 +124,7 @@ Bitmap bmp = imageLoader.loadImageSync(imageUri, targetSize, options);
 
 
 ## Applications using Universal Image Loader
-**[MediaHouse, UPnP/DLNA Browser]** | **[Prezzi Benzina (AndroidFuel)]** | **[ROM Toolbox Lite]**, [Pro] | [Stadium Astro] | [Chef Astro] | [Sporee - Live Soccer Scores] | **[EyeEm - Photo Filter Camera]** | **[Topface - meeting is easy]** | **[reddit is fun]** | **[Diaro - personal diary]** | **[Meetup]** | [Vingle - Magazines by Fans] | [Anime Music Radio] | [WidgetLocker Theme Viewer] | [ShortBlogger for Tumblr] | [SnapDish Food Camera] | **[Twitch]** | [TVShow Time, TV show guide] | [Planning Center Services] | **[Lapse It]** | [My Cloud Player for SoundCloud] | **[SoundTracking]** | [LoopLR Social Video] | [Hír24] | **[Immobilien Scout24]** | **[Lieferheld - Pizza Pasta Sushi]** | [Loocator: free sex datings] | [벨팡-개편 이벤트,컬러링,벨소리,무료,최신가요,링투유] | [Streambels AirPlay/DLNA Player] | [Ship Mate - All Cruise Lines] | [Disk & Storage Analyzer] | [糗事百科] | [Balance BY] | **[Anti Theft Alarm - Security]** | **[XiiaLive™ - Internet Radio]** | **[Bandsintown Concerts]** | **[Save As Web Archive]** | [MCPE STORE -Download MCPE file] | **[All-In-One Toolbox (29 Tools)]** | [Zaim] | **[Calculator Plus Free]** | [Truedialer by Truecaller] | [DoggCatcher Podcast Player] | [PingTools Network Utilities] | [The Traveler] | [minube: travel photo album] | [Wear Store for Wear Apps] | [Cast Store for Chromecast Apps] | [WebMoney Keeper] 
+**[MediaHouse, UPnP/DLNA Browser]** | **[Prezzi Benzina (AndroidFuel)]** | **[ROM Toolbox Lite]**, [Pro] | [Stadium Astro] | [Chef Astro] | [Sporee - Live Soccer Scores] | **[EyeEm - Photo Filter Camera]** | **[Topface - meeting is easy]** | **[reddit is fun]** | **[Diaro - personal diary]** | **[Meetup]** | [Vingle - Magazines by Fans] | [Anime Music Radio] | [WidgetLocker Theme Viewer] | [ShortBlogger for Tumblr] | [SnapDish Food Camera] | **[Twitch]** | [TVShow Time, TV show guide] | [Planning Center Services] | **[Lapse It]** | [My Cloud Player for SoundCloud] | **[SoundTracking]** | [LoopLR Social Video] | [Hír24] | **[Immobilien Scout24]** | **[Lieferheld - Pizza Pasta Sushi]** | [Loocator: free sex datings] | [벨팡-개편 이벤트,컬러링,벨소리,무료,최신가요,링투유] | [Streambels AirPlay/DLNA Player] | [Ship Mate - All Cruise Lines] | [Disk & Storage Analyzer] | [糗事百科] | [Balance BY] | **[Anti Theft Alarm - Security]** | **[XiiaLive™ - Internet Radio]** | **[Bandsintown Concerts]** | **[Save As Web Archive]** | [MCPE STORE -Download MCPE file] | **[All-In-One Toolbox (29 Tools)]** | [Zaim] | **[Calculator Plus Free]** | [Truedialer by Truecaller] | [DoggCatcher Podcast Player] | [PingTools Network Utilities] | [The Traveler] | [minube: travel photo album] | [Wear Store for Wear Apps] | [Cast Store for Chromecast Apps] | [WebMoney Keeper] | [NewPipe]
 
 
 
@@ -178,6 +178,7 @@ Bitmap bmp = imageLoader.loadImageSync(imageUri, targetSize, options);
 [Wear Store for Wear Apps]: https://play.google.com/store/apps/details?id=goko.ws2
 [Cast Store for Chromecast Apps]: https://play.google.com/store/apps/details?id=goko.gcs
 [WebMoney Keeper]: https://play.google.com/store/apps/details?id=com.webmoney.my
+[NewPipe]: https://f-droid.org/packages/org.schabi.newpipe/
 
 
 ## Donation
