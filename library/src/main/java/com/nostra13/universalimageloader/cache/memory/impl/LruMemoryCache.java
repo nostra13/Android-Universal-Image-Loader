@@ -2,12 +2,10 @@ package com.nostra13.universalimageloader.cache.memory.impl;
 
 import android.graphics.Bitmap;
 
-import com.nostra13.universalimageloader.cache.memory.MemoryCache;
-
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A cache that holds strong references to a limited number of Bitmaps. Each time a Bitmap is accessed, it is moved to
@@ -19,20 +17,16 @@ import java.util.Map;
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  * @since 1.8.1
  */
-public class LruMemoryCache implements MemoryCache {
+public class LruMemoryCache extends BaseMemoryCache {
 
 	private final LinkedHashMap<String, Bitmap> map;
 
-	private final int maxSize;
 	/** Size of this cache in bytes */
 	private int size;
 
 	/** @param maxSize Maximum sum of the sizes of the Bitmaps in this cache */
 	public LruMemoryCache(int maxSize) {
-		if (maxSize <= 0) {
-			throw new IllegalArgumentException("maxSize <= 0");
-		}
-		this.maxSize = maxSize;
+		super(maxSize);
 		this.map = new LinkedHashMap<String, Bitmap>(0, 0.75f, true);
 	}
 
@@ -53,7 +47,7 @@ public class LruMemoryCache implements MemoryCache {
 
 	/** Caches {@code Bitmap} for {@code key}. The Bitmap is moved to the head of the queue. */
 	@Override
-	public final boolean put(String key, Bitmap value) {
+	public final void put(String key, Bitmap value) {
 		if (key == null || value == null) {
 			throw new NullPointerException("key == null || value == null");
 		}
@@ -67,7 +61,11 @@ public class LruMemoryCache implements MemoryCache {
 		}
 
 		trimToSize(maxSize);
-		return true;
+	}
+
+	@Override
+	public int size() {
+		return size;
 	}
 
 	/**
@@ -96,6 +94,7 @@ public class LruMemoryCache implements MemoryCache {
 				value = toEvict.getValue();
 				map.remove(key);
 				size -= sizeOf(key, value);
+				fireRemovedEvent(key, value);
 			}
 		}
 	}
@@ -112,12 +111,13 @@ public class LruMemoryCache implements MemoryCache {
 			if (previous != null) {
 				size -= sizeOf(key, previous);
 			}
+			fireRemovedEvent(key, previous);
 			return previous;
 		}
 	}
 
 	@Override
-	public Collection<String> keys() {
+	public Set<String> keys() {
 		synchronized (this) {
 			return new HashSet<String>(map.keySet());
 		}
