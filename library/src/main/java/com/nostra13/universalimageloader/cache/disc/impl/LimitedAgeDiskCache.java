@@ -37,8 +37,7 @@ public class LimitedAgeDiskCache extends BaseDiskCache {
 
 	private final long maxFileAge;
 
-	private final Map<File, Long> loadingDates = Collections.synchronizedMap(new HashMap<File, Long>());
-
+	private final ConcurrentHashMap<File, Long> loadingDates = new ConcurrentHashMap<>();
 	/**
 	 * @param cacheDir Directory for file caching
 	 * @param maxAge   Max file age (in seconds). If file age will exceed this value then it'll be removed on next

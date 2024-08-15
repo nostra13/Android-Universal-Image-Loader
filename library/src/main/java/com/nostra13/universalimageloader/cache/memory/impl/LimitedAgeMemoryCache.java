@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Decorator for {@link MemoryCache}. Provides special feature for cache: if some cached object age exceeds defined
@@ -37,7 +38,7 @@ public class LimitedAgeMemoryCache implements MemoryCache {
 	private final MemoryCache cache;
 
 	private final long maxAge;
-	private final Map<String, Long> loadingDates = Collections.synchronizedMap(new HashMap<String, Long>());
+	private final ConcurrentHashMap<String, Long> loadingDates = new ConcurrentHashMap<>();
 
 	/**
 	 * @param cache  Wrapped memory cache

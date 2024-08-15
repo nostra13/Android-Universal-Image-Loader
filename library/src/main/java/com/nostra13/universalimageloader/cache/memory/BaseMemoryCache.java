@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 
 import java.lang.ref.Reference;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Base memory cache. Implements common functionality for memory cache. Provides object references (
@@ -30,7 +31,7 @@ import java.util.*;
 public abstract class BaseMemoryCache implements MemoryCache {
 
 	/** Stores not strong references to objects */
-	private final Map<String, Reference<Bitmap>> softMap = Collections.synchronizedMap(new HashMap<String, Reference<Bitmap>>());
+	private final ConcurrentHashMap<String, Reference<Bitmap>> softMap = = new ConcurrentHashMap<>();
 
 	@Override
 	public Bitmap get(String key) {

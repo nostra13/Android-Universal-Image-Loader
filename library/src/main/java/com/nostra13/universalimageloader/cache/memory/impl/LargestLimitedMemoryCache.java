@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Limited {@link Bitmap bitmap} cache. Provides {@link Bitmap bitmaps} storing. Size of all stored bitmaps will not to
@@ -43,7 +44,7 @@ public class LargestLimitedMemoryCache extends LimitedMemoryCache {
 	 * size will exceed limit then object with the largest size is deleted (but it continue exist at
 	 * {@link #softMap} and can be collected by GC at any time)
 	 */
-	private final Map<Bitmap, Integer> valueSizes = Collections.synchronizedMap(new HashMap<Bitmap, Integer>());
+	private final ConcurrentHashMap<Bitmap, Integer> valueSizes = new ConcurrentHashMap<>();
 
 	public LargestLimitedMemoryCache(int sizeLimit) {
 		super(sizeLimit);

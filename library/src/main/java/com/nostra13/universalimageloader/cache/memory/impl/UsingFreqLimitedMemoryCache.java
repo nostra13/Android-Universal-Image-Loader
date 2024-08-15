@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
+import java.util.concurrent.ConcurrentHashMap;
 /**
  * Limited {@link Bitmap bitmap} cache. Provides {@link Bitmap bitmaps} storing. Size of all stored bitmaps will not to
  * exceed size limit. When cache reaches limit size then the bitmap which used the least frequently is deleted from
@@ -43,7 +43,7 @@ public class UsingFreqLimitedMemoryCache extends LimitedMemoryCache {
 	 * size will exceed limit then object with the least frequently usage is deleted (but it continue exist at
 	 * {@link #softMap} and can be collected by GC at any time)
 	 */
-	private final Map<Bitmap, Integer> usingCounts = Collections.synchronizedMap(new HashMap<Bitmap, Integer>());
+	private final ConcurrentHashMap<Bitmap, Integer> usingCounts = new ConcurrentHashMap<>();
 
 	public UsingFreqLimitedMemoryCache(int sizeLimit) {
 		super(sizeLimit);
