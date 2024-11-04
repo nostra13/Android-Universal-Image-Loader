@@ -174,7 +174,7 @@ v1.8.0 *(10.02.2013)*
    * `FailReason.UNSUPPORTED_URI_SCHEME` and `FailReason.NETWORK_DENIED`
    * `ImageScaleType.NONE`
  * Added `DiscCacheUtil`
- * Prepared ImageLoader to be extandable for creation of multiple instances ([#158](https://github.com/nostra13/Android-Universal-Image-Loader/issues/158))
+ * Prepared ImageLoader to be extendable for creation of multiple instances ([#158](https://github.com/nostra13/Android-Universal-Image-Loader/issues/158))
  * Fixed bug "Images aren't loaded after "Clear Cache" in app info" ([#168](https://github.com/nostra13/Android-Universal-Image-Loader/issues/168))
  * Switched to Apache 2.0 license
 
