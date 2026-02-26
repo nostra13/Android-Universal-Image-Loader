@@ -21,7 +21,6 @@ import android.util.DisplayMetrics;
 import com.nostra13.universalimageloader.cache.disc.DiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.MemoryCache;
-import com.nostra13.universalimageloader.cache.memory.impl.FuzzyKeyMemoryCache;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
@@ -29,7 +28,6 @@ import com.nostra13.universalimageloader.core.decode.ImageDecoder;
 import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 import com.nostra13.universalimageloader.utils.L;
-import com.nostra13.universalimageloader.utils.MemoryCacheUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -176,7 +174,6 @@ public final class ImageLoaderConfiguration {
 
 		private int threadPoolSize = DEFAULT_THREAD_POOL_SIZE;
 		private int threadPriority = DEFAULT_THREAD_PRIORITY;
-		private boolean denyCacheImageMultipleSizesInMemory = false;
 		private QueueProcessingType tasksProcessingType = DEFAULT_TASK_PROCESSING_TYPE;
 
 		private int memoryCacheSize = 0;
@@ -318,19 +315,6 @@ public final class ImageLoaderConfiguration {
 					this.threadPriority = threadPriority;
 				}
 			}
-			return this;
-		}
-
-		/**
-		 * When you display an image in a small {@link android.widget.ImageView ImageView} and later you try to display
-		 * this image (from identical URI) in a larger {@link android.widget.ImageView ImageView} so decoded image of
-		 * bigger size will be cached in memory as a previous decoded image of smaller size.<br />
-		 * So <b>the default behavior is to allow to cache multiple sizes of one image in memory</b>. You can
-		 * <b>deny</b> it by calling <b>this</b> method: so when some image will be cached in memory then previous
-		 * cached size of this image (if it exists) will be removed from memory cache before.
-		 */
-		public Builder denyCacheImageMultipleSizesInMemory() {
-			this.denyCacheImageMultipleSizesInMemory = true;
 			return this;
 		}
 
@@ -582,9 +566,6 @@ public final class ImageLoaderConfiguration {
 			}
 			if (memoryCache == null) {
 				memoryCache = DefaultConfigurationFactory.createMemoryCache(context, memoryCacheSize);
-			}
-			if (denyCacheImageMultipleSizesInMemory) {
-				memoryCache = new FuzzyKeyMemoryCache(memoryCache, MemoryCacheUtils.createFuzzyKeyComparator());
 			}
 			if (downloader == null) {
 				downloader = DefaultConfigurationFactory.createImageDownloader(context);
